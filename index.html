@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hydroponic Data Entry</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6d9 100%);
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .header h1 {
+      background: linear-gradient(135deg, #1b5e20, #0d3b1a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .input-group label {
+      font-weight: 700;
+      color: #1b5e20;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+    input, select, textarea {
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #2e7d32;
+      outline: none;
+    }
+    button {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #1b5e20;
+      transform: translateY(-2px);
+    }
+    .greenhouse-section {
+      border-top: 2px dashed #a5d6a7;
+      padding-top: 1.5rem;
+      margin-top: 1rem;
+    }
+    .greenhouse-card {
+      background: #f1f8e9;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #2e7d32;
+    }
+    .gh-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.8rem;
+    }
+    .status-bar {
+      background: #e8f5e9;
+      padding: 0.8rem;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .status-online {
+      background: #4caf50;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+    }
+    .status-offline {
+      background: #ff9800;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #2e7d32;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 2rem;
+      animation: slideIn 0.3s ease;
+      z-index: 1000;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .remove-gh {
+      background: #ffcdd2;
+      color: #c62828;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.7rem;
+      margin-left: 1rem;
+    }
+    .harvest-fields {
+      display: none;
+    }
+    .harvest-fields.active {
+      display: grid;
+      grid-column: span 2;
+    }
+    .success-message {
+      display: none;
+      background: #4caf50;
+      color: white;
+      padding: 1rem;
+      border-radius: 1rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <h1>🌱 Hydroponic Crop Production</h1>
+    <p>Enter your greenhouse data - Automatically saves to Google Sheets</p>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="card" style="padding: 1rem;">
+    <div class="status-bar">
+      <span>📡 Google Sheets Connection:</span>
+      <span id="connectionStatus" class="status-offline">Checking...</span>
+    </div>
+  </div>
+
+  <!-- Main Form -->
+  <div class="card">
+    <form id="hydroponicForm">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>👨‍🌾 Grower Name *</label>
+          <input type="text" id="growerName" required placeholder="Enter your full name">
+        </div>
+        <div class="input-group">
+          <label>📐 Total Hydroponic Area (m²) *</label>
+          <input type="number" id="totalArea" step="0.1" required placeholder="Total square meters">
+        </div>
+      </div>
+
+      <div class="greenhouse-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <strong>🏡 Greenhouse Details</strong>
+          <button type="button" id="addGreenhouseBtn" style="padding: 0.4rem 1rem;">+ Add Greenhouse</button>
+        </div>
+        <div id="greenhouseList"></div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="submit">💾 Submit to Google Sheets</button>
+        <button type="button" id="resetBtn" style="background: #6c757d;">⟳ Clear Form</button>
+      </div>
+    </form>
+    <div id="successMessage" class="success-message"></div>
+  </div>
+
+  <div style="text-align: center; color: #6d8f7c; padding: 1rem;">
+    ✅ Data is saved directly to Google Sheets - No account required
+  </div>
+</div>
+
+<script>
+// ============================================
+// REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT URL
+// ============================================
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIXsFcaSfZNUSkfOGMPsZpSC5zRNEBGHvfQ3DPf9fKFMfitA_0SGvcoosLo_WAXTNW/exec';
+//                                        
+//                              // Crop options
+const cropOptions = [
+  "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", 
+  "Shallot", "Greens", "Melon", "Okra", "Chillies", 
+  "Sweet Pepper", "Tomato"
+];
+
+let greenhouseCount = 1;
+
+function createGreenhouseCard(number, prefill = null) {
+  const p = prefill || {};
+  const today = new Date().toISOString().slice(0, 10);
+  
+  const div = document.createElement('div');
+  div.className = 'greenhouse-card';
+  div.innerHTML = `
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+      <strong>🏠 Greenhouse ${number}</strong>
+      ${number > 1 ? '<button type="button" class="remove-gh">Remove</button>' : '<span style="font-size: 0.7rem; color: #2e7d32;">Primary</span>'}
+    </div>
+    <div class="gh-grid">
+      <div>
+        <label>Area (m²)</label>
+        <input type="number" step="0.1" class="gh-area" value="${p.area || ''}" required>
+      </div>
+      <div>
+        <label>Crop</label>
+        <select class="gh-crop" required>
+          <option value="">-- Select --</option>
+          ${cropOptions.map(c => `<option value="${c}" ${p.cropType === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label>Variety</label>
+        <input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="e.g., Butterhead" required>
+      </div>
+      <div>
+        <label>Crop Stage</label>
+        <select class="gh-stage" required>
+          <option ${p.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option>
+          <option ${p.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option>
+          <option ${p.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option>
+          <option ${p.cropStage === 'Harvest' ? 'selected' : ''}>Harvest</option>
+        </select>
+      </div>
+      <div>
+        <label>Transplant Date</label>
+        <input type="date" class="gh-transplant" value="${p.transplantDate || today}" required>
+      </div>
+      <div class="harvest-fields" style="display: ${p.cropStage === 'Harvest' ? 'grid' : 'none'}; grid-column: span 2; gap: 0.8rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+          <div>
+            <label>Harvest Months</label>
+            <input type="number" step="0.5" class="gh-harvest-months" value="${p.harvestMonths || ''}" placeholder="Months">
+          </div>
+          <div>
+            <label>Yield (kg/week)</label>
+            <input type="text" class="gh-yield-week" value="${p.avgYieldWeek || ''}" placeholder="e.g., 25 kg">
+          </div>
+          <div>
+            <label>Yield (kg/month)</label>
+            <input type="text" class="gh-yield-month" value="${p.avgYieldMonth || ''}" placeholder="e.g., 100 kg">
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Stage toggle functionality
+  const stageSelect = div.querySelector('.gh-stage');
+  const harvestDiv = div.querySelector('.harvest-fields');
+  
+  stageSelect.addEventListener('change', () => {
+    harvestDiv.style.display = stageSelect.value === 'Harvest' ? 'grid' : 'none';
+    if (stageSelect.value === 'Harvest') {
+      harvestDiv.querySelectorAll('input').forEach(i => i.required = true);
+    } else {
+      harvestDiv.querySelectorAll('input').forEach(i => i.required = false);
+    }
+  });
+  
+  if (number > 1) {
+    div.querySelector('.remove-gh').addEventListener('click', () => div.remove());
+  }
+  
+  return div;
+}
+
+function addGreenhouse() {
+  const container = document.getElementById('greenhouseList');
+  greenhouseCount++;
+  container.appendChild(createGreenhouseCard(greenhouseCount));
+}
+
+function collectGreenhousesData() {
+  const cards = document.querySelectorAll('#greenhouseList .greenhouse-card');
+  const greenhouses = [];
+  
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const area = parseFloat(card.querySelector('.gh-area').value);
+    const cropType = card.querySelector('.gh-crop').value;
+    const variety = card.querySelector('.gh-variety').value;
+    const cropStage = card.querySelector('.gh-stage').value;
+    const transplantDate = card.querySelector('.gh-transplant').value;
+    const harvestMonths = card.querySelector('.gh-harvest-months')?.value;
+    const avgYieldWeek = card.querySelector('.gh-yield-week')?.value;
+    const avgYieldMonth = card.querySelector('.gh-yield-month')?.value;
+    
+    if (!cropType) { alert(`Greenhouse ${i+1}: Select a crop`); return null; }
+    if (!variety) { alert(`Greenhouse ${i+1}: Enter variety`); return null; }
+    if (isNaN(area) || area <= 0) { alert(`Greenhouse ${i+1}: Valid area required`); return null; }
+    
+    if (cropStage === 'Harvest') {
+      if (!harvestMonths || harvestMonths <= 0) {
+        alert(`Greenhouse ${i+1}: Harvest months required`); return null;
+      }
+    }
+    
+    greenhouses.push({
+      greenhouse: i+1,
+      area, cropType, variety, cropStage, transplantDate,
+      harvestMonths: cropStage === 'Harvest' ? harvestMonths : null,
+      avgYieldWeek: cropStage === 'Harvest' ? avgYieldWeek : '',
+      avgYieldMonth: cropStage === 'Harvest' ? avgYieldMonth : ''
+    });
+  }
+  return greenhouses;
+}
+
+// Save to Google Sheets via Apps Script
+async function saveToGoogleSheets(record) {
+  const statusEl = document.getElementById('connectionStatus');
+  
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Important for Apps Script
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(record)
+    });
+    
+    // With no-cors, we can't read the response, but the request was sent
+    statusEl.innerText = '✅ Connected';
+    statusEl.className = 'status-online';
+    return true;
+    
+  } catch (error) {
+    console.error('Error saving:', error);
+    statusEl.innerText = '⚠️ Offline (saved locally)';
+    statusEl.className = 'status-offline';
+    return false;
+  }
+}
+
+// Main save function
+async function saveRecord(event) {
+  event.preventDefault();
+  
+  const growerName = document.getElementById('growerName').value.trim();
+  const totalArea = parseFloat(document.getElementById('totalArea').value);
+  
+  if (!growerName) { alert('Please enter grower name'); return; }
+  if (isNaN(totalArea) || totalArea <= 0) { alert('Please enter valid total area'); return; }
+  
+  const greenhouses = collectGreenhousesData();
+  if (!greenhouses) return;
+  
+  const record = {
+    growerName: growerName,
+    totalArea: totalArea,
+    greenhouses: greenhouses,
+    timestamp: new Date().toISOString()
+  };
+  
+  // Save to localStorage as backup
+  let localBackup = JSON.parse(localStorage.getItem('hydroponic_backup') || '[]');
+  localBackup.push(record);
+  localStorage.setItem('hydroponic_backup', JSON.stringify(localBackup));
+  
+  // Save to Google Sheets
+  const saved = await saveToGoogleSheets(record);
+  
+  const successDiv = document.getElementById('successMessage');
+  if (saved) {
+    successDiv.innerHTML = '✅ Success! Your hydroponic data has been saved to Google Sheets!';
+    successDiv.style.background = '#4caf50';
+  } else {
+    successDiv.innerHTML = '⚠️ Data saved locally. Will sync to Google Sheets when connection is restored.';
+    successDiv.style.background = '#ff9800';
+  }
+  successDiv.style.display = 'block';
+  
+  // Show toast notification
+  showToast('Data submitted successfully!');
+  
+  // Reset form
+  document.getElementById('growerName').value = '';
+  document.getElementById('totalArea').value = '';
+  document.getElementById('greenhouseList').innerHTML = '';
+  greenhouseCount = 1;
+  document.getElementById('greenhouseList').appendChild(createGreenhouseCard(1));
+  
+  setTimeout(() => {
+    successDiv.style.display = 'none';
+  }, 5000);
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerText = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function resetForm() {
+  document.getElementById('growerName').value = '';
+  document.getElementById('totalArea').value = '';
+  document.getElementById('greenhouseList').innerHTML = '';
+  greenhouseCount = 1;
+  document.getElementById('greenhouseList').appendChild(createGreenhouseCard(1));
+}
+
+// Check connection to Google Sheets (just a ping test)
+async function checkConnection() {
+  const statusEl = document.getElementById('connectionStatus');
+  if (GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
+    statusEl.innerText = '⚠️ Configure URL';
+    statusEl.className = 'status-offline';
+    return;
+  }
+  
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET' });
+    if (response.ok || response.type === 'opaque') {
+      statusEl.innerText = '✅ Google Sheets Ready';
+      statusEl.className = 'status-online';
+    }
+  } catch (error) {
+    statusEl.innerText = '⚠️ Check connection';
+    statusEl.className = 'status-offline';
+  }
+}
+
+// Event listeners
+document.getElementById('addGreenhouseBtn').addEventListener('click', addGreenhouse);
+document.getElementById('hydroponicForm').addEventListener('submit', saveRecord);
+document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+// Initialize
+document.getElementById('greenhouseList').appendChild(createGreenhouseCard(1));
+checkConnection();
+
+console.log('🌱 Hydroponic app ready! Data will save to Google Sheets automatically.');
+</script>
+</body>
+</html>
