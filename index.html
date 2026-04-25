@@ -23,7 +23,6 @@
       margin: 0 auto;
     }
 
-    /* header fresh */
     .header {
       text-align: center;
       margin-bottom: 1.8rem;
@@ -58,10 +57,8 @@
       font-size: 0.9rem;
     }
 
-    /* card style */
     .card {
       background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(0px);
       border-radius: 2rem;
       padding: 1.8rem;
       margin-bottom: 1.5rem;
@@ -69,7 +66,6 @@
       border: 1px solid rgba(70, 120, 70, 0.2);
     }
 
-    /* form grids */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -147,7 +143,6 @@
       margin-bottom: 1.2rem;
       border-left: 5px solid #2c7a2e;
       box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-      transition: all 0.1s;
     }
 
     .gh-grid {
@@ -239,6 +234,19 @@
       margin-top: 1rem;
     }
 
+    .config-panel {
+      background: #f0f7ea;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #c5dfbc;
+    }
+
+    .config-panel label {
+      font-size: 0.75rem;
+      color: #2c5e2f;
+    }
+
     @media (max-width: 680px) {
       body { padding: 1rem; }
       .card { padding: 1.2rem; }
@@ -253,7 +261,19 @@
     <div class="subhead">🌿 Smart Crop Data Capture</div>
   </div>
 
-  <!-- Main Entry Form (clean UI, no tabs, no logs visibility) -->
+  <!-- Hidden config panel for admin (optional) -->
+  <div class="card" style="padding: 1rem; background: #f9fff7;">
+    <details style="cursor: pointer;">
+      <summary style="color: #3a7a3e; font-weight: 500;">⚙️ Google Sheets Configuration (Admin)</summary>
+      <div class="config-panel" style="margin-top: 0.8rem;">
+        <label>🔗 Web App URL:</label>
+        <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwvvKYbrfMlZ5cY00o6CBVT8tBbzVYxn50KbuadIiwO026gGkNPL_ZAI6fPjJV23qpw/exec" style="width:100%; font-size:0.8rem; margin-top:4px;">
+        <p style="font-size:0.7rem; color:#6e8f6e; margin-top:6px;">After deploying your Google Apps Script, replace this URL with your own Web App URL.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Main Entry Form -->
   <div class="card">
     <form id="hydroponicForm">
       <div class="form-grid">
@@ -283,29 +303,39 @@
     <div id="successMessage" class="success-message"></div>
   </div>
   <div class="footer-note">
-    ✅ Data is saved automatically — secure cloud backup
+    ✅ Data is saved in tabular format — one row per greenhouse for easy analysis
   </div>
 </div>
 
 <script>
 // ==================================================
-// GOOGLE APPS SCRIPT WEB APP URL (configured)
+// GOOGLE APPS SCRIPT WEB APP URL (editable by admin)
 // ==================================================
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvvKYbrfMlZ5cY00o6CBVT8tBbzVYxn50KbuadIiwO026gGkNPL_ZAI6fPjJV23qpw/exec';
+let GOOGLE_SCRIPT_URL = document.getElementById('scriptUrl')?.value || 'https://script.google.com/macros/s/AKfycbwvvKYbrfMlZ5cY00o6CBVT8tBbzVYxn50KbuadIiwO026gGkNPL_ZAI6fPjJV23qpw/exec';
 
-// Crop library - "Crop"
+// Update URL if changed in config
+document.getElementById('scriptUrl')?.addEventListener('change', (e) => {
+  GOOGLE_SCRIPT_URL = e.target.value;
+  localStorage.setItem('google_sheet_url', GOOGLE_SCRIPT_URL);
+});
+
+// Load saved URL
+const savedUrl = localStorage.getItem('google_sheet_url');
+if (savedUrl && document.getElementById('scriptUrl')) {
+  document.getElementById('scriptUrl').value = savedUrl;
+  GOOGLE_SCRIPT_URL = savedUrl;
+}
+
+// Crop library
 const cropOptions = [
   "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", 
   "Shallot", "Greens", "Melon", "Okra", "Chillies", 
   "Sweet Pepper", "Tomato"
 ];
 
-// Tomato subtypes
 const TOMATO_TYPES = ["Cooking", "Salad", "Cherry"];
-
 let greenhouseCounter = 1;
 
-// ------------------ Helper: Build greenhouse card with Tomato dynamic field ------------------
 function buildGreenhouseCard(sequence, prefillData = null) {
   const p = prefillData || {};
   const today = new Date().toISOString().slice(0, 10);
@@ -334,7 +364,7 @@ function buildGreenhouseCard(sequence, prefillData = null) {
       </div>
       <div>
         <label>Variety / Cultivar</label>
-        <input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="e.g., Buttercrunch, Red Oak" required>
+        <input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="e.g., Buttercrunch" required>
       </div>
       <div>
         <label>Crop stage *</label>
@@ -350,17 +380,16 @@ function buildGreenhouseCard(sequence, prefillData = null) {
         <input type="date" class="gh-transplant" value="${p.transplantDate || today}" required>
       </div>
     </div>
-    <div class="tomato-subfield" id="tomatoSub_${Date.now()}_${sequence}">
+    <div class="tomato-subfield">
       <label style="font-weight:600; margin-bottom:6px; display:inline-block;">🍅 Tomato Type:</label>
       <select class="gh-tomato-type" style="width:100%;">
         <option value="">-- Select tomato variety --</option>
         ${TOMATO_TYPES.map(t => `<option value="${t}" ${savedTomatoType === t ? 'selected' : ''}>${t}</option>`).join('')}
       </select>
-      <div style="font-size:0.7rem; color:#7a6a2e; margin-top:4px;">Cooking / Salad / Cherry</div>
     </div>
-    <div class="harvest-fields" id="harvestGroup_${Date.now()}_${sequence}">
+    <div class="harvest-fields">
       <div>
-        <label>📆 Harvest months (duration)</label>
+        <label>📆 Harvest months</label>
         <input type="number" step="0.5" class="gh-harvest-months" placeholder="Months" value="${p.harvestMonths || ''}">
       </div>
       <div>
@@ -381,263 +410,177 @@ function buildGreenhouseCard(sequence, prefillData = null) {
   const stageSelect = wrapper.querySelector('.gh-stage');
   const harvestDiv = wrapper.querySelector('.harvest-fields');
   
-  // Toggle tomato subtype visibility based on Crop selection
   function updateTomatoVisibility() {
     if (cropSelect.value === 'Tomato') {
       tomatoDiv.classList.add('active');
-      const tomatoSelect = wrapper.querySelector('.gh-tomato-type');
-      if (tomatoSelect) tomatoSelect.required = true;
+      wrapper.querySelector('.gh-tomato-type').required = true;
     } else {
       tomatoDiv.classList.remove('active');
-      const tomatoSelect = wrapper.querySelector('.gh-tomato-type');
-      if (tomatoSelect) {
-        tomatoSelect.required = false;
-        tomatoSelect.value = '';
-      }
+      const tt = wrapper.querySelector('.gh-tomato-type');
+      if (tt) { tt.required = false; tt.value = ''; }
     }
   }
   
-  // Harvest stage visibility logic
   function updateHarvestVisibility() {
     if (stageSelect.value === 'Harvest') {
       harvestDiv.classList.add('active');
-      const hmInput = harvestDiv.querySelector('.gh-harvest-months');
-      if (hmInput) hmInput.required = true;
+      harvestDiv.querySelector('.gh-harvest-months').required = true;
     } else {
       harvestDiv.classList.remove('active');
-      const hmInput = harvestDiv.querySelector('.gh-harvest-months');
-      if (hmInput) hmInput.required = false;
+      if (harvestDiv.querySelector('.gh-harvest-months')) 
+        harvestDiv.querySelector('.gh-harvest-months').required = false;
     }
   }
   
   cropSelect.addEventListener('change', updateTomatoVisibility);
   stageSelect.addEventListener('change', updateHarvestVisibility);
-  
-  // initial sync
   updateTomatoVisibility();
   updateHarvestVisibility();
   
   if (sequence > 1) {
-    const removeBtn = wrapper.querySelector('.remove-gh');
-    if (removeBtn) removeBtn.addEventListener('click', () => wrapper.remove());
+    wrapper.querySelector('.remove-gh')?.addEventListener('click', () => wrapper.remove());
   }
   
   return wrapper;
 }
 
 function addNewGreenhouse() {
-  const container = document.getElementById('greenhouseList');
   greenhouseCounter++;
-  const newCard = buildGreenhouseCard(greenhouseCounter);
-  container.appendChild(newCard);
+  document.getElementById('greenhouseList').appendChild(buildGreenhouseCard(greenhouseCounter));
 }
 
-// Collect all greenhouses with Tomato type data
 function collectAllGreenhouses() {
   const cards = document.querySelectorAll('#greenhouseList .greenhouse-card');
   const greenhouses = [];
   for (let idx = 0; idx < cards.length; idx++) {
     const card = cards[idx];
-    const areaInput = card.querySelector('.gh-area');
-    const cropSelect = card.querySelector('.gh-crop');
-    const varietyInput = card.querySelector('.gh-variety');
-    const stageSelect = card.querySelector('.gh-stage');
+    const areaVal = parseFloat(card.querySelector('.gh-area').value);
+    const cropType = card.querySelector('.gh-crop').value;
+    const variety = card.querySelector('.gh-variety').value.trim();
+    const cropStage = card.querySelector('.gh-stage').value;
     const transplantDate = card.querySelector('.gh-transplant').value;
-    const tomatoTypeSelect = card.querySelector('.gh-tomato-type');
+    const tomatoType = card.querySelector('.gh-tomato-type')?.value || null;
     
-    const areaVal = parseFloat(areaInput?.value);
-    const cropType = cropSelect?.value;
-    const variety = varietyInput?.value.trim();
-    const cropStage = stageSelect?.value;
-    let tomatoType = null;
-    
-    if (!cropType) { alert(`Greenhouse ${idx+1}: Please select a crop.`); return null; }
-    if (!variety) { alert(`Greenhouse ${idx+1}: Enter crop variety.`); return null; }
-    if (isNaN(areaVal) || areaVal <= 0) { alert(`Greenhouse ${idx+1}: Enter a valid area > 0.`); return null; }
-    if (!transplantDate) { alert(`Greenhouse ${idx+1}: Please select transplant date.`); return null; }
-    
-    // Tomato validation: if crop is Tomato, tomato type is mandatory
-    if (cropType === 'Tomato') {
-      if (!tomatoTypeSelect || !tomatoTypeSelect.value) {
-        alert(`Greenhouse ${idx+1}: For Tomato crop, please select Tomato Type (Cooking/Salad/Cherry).`);
-        return null;
-      }
-      tomatoType = tomatoTypeSelect.value;
+    if (!cropType) { alert(`Greenhouse ${idx+1}: Select a crop.`); return null; }
+    if (!variety) { alert(`Greenhouse ${idx+1}: Enter variety.`); return null; }
+    if (isNaN(areaVal) || areaVal <= 0) { alert(`Greenhouse ${idx+1}: Valid area > 0.`); return null; }
+    if (!transplantDate) { alert(`Greenhouse ${idx+1}: Select transplant date.`); return null; }
+    if (cropType === 'Tomato' && !tomatoType) {
+      alert(`Greenhouse ${idx+1}: For Tomato, select Type (Cooking/Salad/Cherry).`);
+      return null;
     }
     
-    let harvestMonths = null;
-    let avgYieldWeek = '';
-    let avgYieldMonth = '';
+    let harvestMonths = null, avgYieldWeek = '', avgYieldMonth = '';
     if (cropStage === 'Harvest') {
-      const hmInput = card.querySelector('.gh-harvest-months');
-      const rawMonths = hmInput?.value;
-      if (!rawMonths || parseFloat(rawMonths) <= 0) {
-        alert(`Greenhouse ${idx+1}: When stage is Harvest, please enter harvest months duration.`);
-        return null;
-      }
-      harvestMonths = parseFloat(rawMonths);
-      avgYieldWeek = card.querySelector('.gh-yield-week')?.value || '';
-      avgYieldMonth = card.querySelector('.gh-yield-month')?.value || '';
+      const hm = card.querySelector('.gh-harvest-months').value;
+      if (!hm || parseFloat(hm) <= 0) { alert(`Greenhouse ${idx+1}: Enter harvest months.`); return null; }
+      harvestMonths = parseFloat(hm);
+      avgYieldWeek = card.querySelector('.gh-yield-week').value || '';
+      avgYieldMonth = card.querySelector('.gh-yield-month').value || '';
     }
     
-    greenhouses.push({
-      greenhouseIndex: idx+1,
-      area: areaVal,
-      cropType: cropType,
-      variety: variety,
-      cropStage: cropStage,
-      transplantDate: transplantDate,
-      tomatoType: tomatoType,
-      harvestMonths: harvestMonths,
-      avgYieldWeek: avgYieldWeek,
-      avgYieldMonth: avgYieldMonth
-    });
+    greenhouses.push({ greenhouseIndex: idx+1, area: areaVal, cropType, variety, cropStage, transplantDate, tomatoType, harvestMonths, avgYieldWeek, avgYieldMonth });
   }
-  if (greenhouses.length === 0) { alert("Please add at least one greenhouse."); return null; }
-  return greenhouses;
+  return greenhouses.length ? greenhouses : (alert("Add at least one greenhouse"), null);
 }
 
-// Simple user-friendly toast (no technical details)
-function showUserToast(message, isError = false) {
-  const toastDiv = document.createElement('div');
-  toastDiv.className = 'toast';
-  toastDiv.innerText = message;
-  if (isError) toastDiv.style.background = '#c54534';
-  else toastDiv.style.background = '#1f6e2c';
-  document.body.appendChild(toastDiv);
-  setTimeout(() => toastDiv.remove(), 3200);
+function showUserToast(msg, isErr = false) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerText = msg;
+  toast.style.background = isErr ? '#c54534' : '#1f6e2c';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3200);
 }
 
-// Save to Google Sheets (silent, no technical status shown)
+// Send data to Google Sheets in tabular format (each greenhouse as separate row)
 async function postToGoogleSheets(payload) {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
-    console.warn("Google Sheets endpoint placeholder");
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('script.google.com') === false) {
+    console.warn("Invalid Google Sheets URL");
     return false;
   }
   try {
-    await fetch(GOOGLE_SCRIPT_URL, {
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
+      mode: 'cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    return true;
+    const result = await response.json();
+    return result.success === true;
   } catch (err) {
-    console.error("Google Sheets network error:", err);
+    console.error("Sheets error:", err);
     return false;
   }
 }
 
-// MAIN SUBMIT handler – growers see only success messages, never connection status
 async function handleFormSubmit(event) {
   event.preventDefault();
   
   const growerName = document.getElementById('growerName').value.trim();
-  const totalAreaRaw = document.getElementById('totalArea').value;
-  const totalArea = parseFloat(totalAreaRaw);
+  const totalArea = parseFloat(document.getElementById('totalArea').value);
   
-  if (!growerName) {
-    alert("Please enter grower name.");
-    return;
-  }
-  if (isNaN(totalArea) || totalArea <= 0) {
-    alert("Total hydroponic area must be a positive number.");
-    return;
-  }
+  if (!growerName) { alert("Enter grower name."); return; }
+  if (isNaN(totalArea) || totalArea <= 0) { alert("Valid total area."); return; }
   
-  const greenhousesData = collectAllGreenhouses();
-  if (!greenhousesData) return;
+  const greenhouses = collectAllGreenhouses();
+  if (!greenhouses) return;
   
   const submissionRecord = {
-    growerName: growerName,
-    totalArea: totalArea,
-    greenhouses: greenhousesData,
+    growerName, totalArea, greenhouses,
     timestamp: new Date().toISOString(),
     recordId: `hyd_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`
   };
   
-  // 1) Always backup locally (offline resilience)
-  let backupArray = [];
-  try {
-    const storedBackup = localStorage.getItem('hydroponic_backup');
-    backupArray = storedBackup ? JSON.parse(storedBackup) : [];
-    backupArray.push(submissionRecord);
-    if (backupArray.length > 60) backupArray.shift();
-    localStorage.setItem('hydroponic_backup', JSON.stringify(backupArray));
-  } catch (e) { console.warn("Local backup issue", e); }
+  // Local backup
+  let backup = JSON.parse(localStorage.getItem('hydroponic_backup') || '[]');
+  backup.push(submissionRecord);
+  if (backup.length > 60) backup.shift();
+  localStorage.setItem('hydroponic_backup', JSON.stringify(backup));
   
-  // 2) Attempt push to Google Sheets (background, no user-facing status)
   const sheetsSuccess = await postToGoogleSheets(submissionRecord);
   
   const successDiv = document.getElementById('successMessage');
   if (sheetsSuccess) {
-    successDiv.innerHTML = '✅ Data saved to Google Sheets successfully! Your entries are stored securely.';
+    successDiv.innerHTML = '✅ Data saved! Each greenhouse appears as a separate row in Google Sheets.';
     successDiv.style.background = '#1f6e2c';
-    showUserToast('✓ Saved to cloud');
+    showUserToast('✓ Synced to Sheets (tabular format)');
   } else {
-    successDiv.innerHTML = '📁 Data saved locally. It will sync automatically when connection is restored.';
+    successDiv.innerHTML = '📁 Saved locally. Check Google Script URL and redeploy as Web App.';
     successDiv.style.background = '#e68a2e';
-    showUserToast('📱 Saved offline — will sync later', false);
+    showUserToast('⚠️ Offline save - check script URL', false);
   }
   successDiv.style.display = 'block';
-  setTimeout(() => { successDiv.style.display = 'none'; }, 5000);
+  setTimeout(() => successDiv.style.display = 'none', 5000);
   
-  // Reset form fields for next entry (clear after successful submission)
+  // Reset form
   document.getElementById('growerName').value = '';
   document.getElementById('totalArea').value = '';
   document.getElementById('greenhouseList').innerHTML = '';
   greenhouseCounter = 1;
-  const initialCard = buildGreenhouseCard(1);
-  document.getElementById('greenhouseList').appendChild(initialCard);
+  document.getElementById('greenhouseList').appendChild(buildGreenhouseCard(1));
 }
 
-// Clear all user inputs (reset form)
 function resetEntireForm() {
-  if (confirm('Clear all unsaved data from the form?')) {
+  if (confirm('Clear all form data?')) {
     document.getElementById('growerName').value = '';
     document.getElementById('totalArea').value = '';
     document.getElementById('greenhouseList').innerHTML = '';
     greenhouseCounter = 1;
-    const freshCard = buildGreenhouseCard(1);
-    document.getElementById('greenhouseList').appendChild(freshCard);
+    document.getElementById('greenhouseList').appendChild(buildGreenhouseCard(1));
     showUserToast('Form cleared', false);
   }
 }
 
-// SILENT CONNECTION CHECK – never shown to users. internal only.
-async function silentConnectionHeartbeat() {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) return;
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-    await fetch(GOOGLE_SCRIPT_URL, { method: 'GET', signal: controller.signal, mode: 'no-cors' });
-    clearTimeout(timeoutId);
-    console.log("[background] Sheets endpoint reachable");
-  } catch (err) {
-    console.log("[background] Sheets endpoint not reachable, will retry later");
-  }
-}
-
-// Initialize the interface: load one default greenhouse and attach events.
 function initApp() {
-  const container = document.getElementById('greenhouseList');
-  container.innerHTML = '';
+  document.getElementById('greenhouseList').innerHTML = '';
   greenhouseCounter = 1;
-  const defaultCard = buildGreenhouseCard(1);
-  container.appendChild(defaultCard);
-  
+  document.getElementById('greenhouseList').appendChild(buildGreenhouseCard(1));
   document.getElementById('addGreenhouseBtn').addEventListener('click', addNewGreenhouse);
   document.getElementById('hydroponicForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('resetBtn').addEventListener('click', resetEntireForm);
-  
-  // Silent background check for connectivity every 90 seconds, but never shown to user.
-  setInterval(() => {
-    silentConnectionHeartbeat();
-  }, 90000);
-  silentConnectionHeartbeat();
 }
 
-// start everything
 initApp();
 </script>
 </body>
