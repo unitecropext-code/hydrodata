@@ -278,7 +278,10 @@
 </div>
 
 <script>
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygaBoNkMW1tfnjh3ZK2lLWIWaESClxgYkyAqtebs--S3RLbyqvlXWa2eBYSatsU0wk/exec';
+// ============================================================
+// IMPORTANT: Replace this URL with your Google Apps Script Web App URL
+// ============================================================
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwGxgTSlHzy9JKyaNNLcIzPtOqBATKrGHq6QOtIrT6J-BacprcDdgmxarKEVmLD7t8/exec';
 
 const cropOptions = [
   "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", 
@@ -477,27 +480,48 @@ function collectTabularData() {
 }
 
 async function sendToGoogleSheets(records) {
+  // Check if URL is configured
+  if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec') {
+    console.error("Please update GOOGLE_SCRIPT_URL with your actual Apps Script URL");
+    showToast('Configuration error: Please set the correct Google Sheets URL', true);
+    return false;
+  }
+  
   try {
+    console.log("Sending to:", GOOGLE_SCRIPT_URL);
+    console.log("Records:", records);
+    
     const payload = { records: records };
     
     const response = await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
       mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(payload)
     });
     
+    if (!response.ok) {
+      console.error("HTTP error:", response.status, response.statusText);
+      showToast(`HTTP Error: ${response.status}`, true);
+      return false;
+    }
+    
     const result = await response.json();
+    console.log("Server response:", result);
     
     if (result.success) {
       return true;
     } else {
       console.error("Server error:", result.error);
+      showToast(`Error: ${result.error}`, true);
       return false;
     }
     
   } catch (error) {
-    console.error("Network error:", error);
+    console.error("Network error details:", error);
+    showToast(`Connection error: ${error.message}`, true);
     return false;
   }
 }
@@ -534,23 +558,23 @@ async function handleFormSubmit(event) {
       showToast(`✓ ${records.length} record(s) saved`);
       resetFormFields();
     } else {
-      successDiv.innerHTML = `⚠️ Failed to save`;
-      successDiv.style.background = '#e68a2e';
+      successDiv.innerHTML = `❌ Failed to save - Check console for details`;
+      successDiv.style.background = '#c54534';
       successDiv.style.display = 'block';
     }
     setTimeout(() => { 
       successDiv.style.display = 'none'; 
-    }, 3000);
+    }, 4000);
   } catch (err) {
-    console.error("Error:", err);
-    showToast('❌ Error saving data', true);
+    console.error("Submission error:", err);
+    showToast(`Error: ${err.message}`, true);
     const successDiv = document.getElementById('successMessage');
-    successDiv.innerHTML = `❌ Error saving data`;
+    successDiv.innerHTML = `❌ Error: ${err.message}`;
     successDiv.style.background = '#c54534';
     successDiv.style.display = 'block';
     setTimeout(() => { 
       successDiv.style.display = 'none'; 
-    }, 3000);
+    }, 4000);
   } finally {
     submitBtn.innerHTML = originalText;
     submitBtn.disabled = false;
@@ -581,6 +605,13 @@ function init() {
   document.getElementById('addGreenhouseBtn').addEventListener('click', addNewGreenhouse);
   document.getElementById('hydroponicForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('resetBtn').addEventListener('click', manualReset);
+  
+  // Check URL configuration on startup
+  if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec') {
+    console.warn("⚠️ Please update GOOGLE_SCRIPT_URL with your actual Apps Script URL");
+  } else {
+    console.log("✅ Using Google Apps Script URL:", GOOGLE_SCRIPT_URL);
+  }
 }
 
 if (document.readyState === 'loading') {
