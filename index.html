@@ -59,17 +59,11 @@
 
     .card {
       background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(0px);
       border-radius: 2rem;
       padding: 1.8rem;
       margin-bottom: 1.5rem;
       box-shadow: 0 12px 28px rgba(0, 32, 0, 0.12);
       border: 1px solid rgba(70, 120, 70, 0.2);
-    }
-
-    /* all tech/connection status is fully hidden from UI - no badges, no widgets */
-    .hidden-tech {
-      display: none;
     }
 
     .form-grid {
@@ -164,6 +158,8 @@
       padding: 0.2rem 1rem;
       font-size: 0.7rem;
       border-radius: 2rem;
+      border: none;
+      cursor: pointer;
     }
 
     .remove-gh:hover {
@@ -245,7 +241,6 @@
     <div class="subhead">🌿 Smart crop logging · Greenhouse management</div>
   </div>
 
-  <!-- Main Entry Form: clean interface, no connection widgets, no debug info -->
   <div class="card">
     <form id="hydroponicForm">
       <div class="form-grid">
@@ -280,11 +275,12 @@
 </div>
 
 <script>
-// ==================================================
-// GOOGLE APPS SCRIPT WEB APP URL - FIXED & ACTIVE ENDPOINT
-// IMPORTANT: This endpoint is correctly configured and accepts POST/GET with JSON
-// ==================================================
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkKpw02RAf_6hDINCHnXoscRKyTP7PI2mM1LrOFI1WwH_ympDQ9rKUxa0qohvZijXL/exec';
+// IMPORTANT: Replace this URL with your ACTUAL Google Apps Script Web App URL
+// Steps to get your URL:
+// 1. Deploy your Apps Script as a Web App
+// 2. Copy the URL (looks like: https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec)
+// 3. Paste it below
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxD_II29gwEcwPrYuCoLwMk5yHszy3rEXIkcGJjgu7e0ZyGZnSl1WJPuKIXNKLOEq7Lvw/exec';
 
 // Crop library
 const cropOptions = [
@@ -295,19 +291,16 @@ const cropOptions = [
 
 let greenhouseCounter = 1;
 
-// helper to prefill date input with today
 function getTodayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
-// Build greenhouse card with robust harvest visibility and data binding
 function buildGreenhouseCard(sequence, prefillData = null) {
   const p = prefillData || {};
   const today = getTodayISO();
   
   const wrapper = document.createElement('div');
   wrapper.className = 'greenhouse-card';
-  // use a data attribute for easier reference
   wrapper.setAttribute('data-gh-seq', sequence);
   
   const headerHtml = `
@@ -345,7 +338,7 @@ function buildGreenhouseCard(sequence, prefillData = null) {
         <input type="date" class="gh-transplant" value="${p.transplantDate || today}">
       </div>
     </div>
-    <div class="harvest-fields" id="harvestGroup_${Date.now()}_${sequence}">
+    <div class="harvest-fields">
       <div>
         <label>📆 Harvest months (duration)</label>
         <input type="number" step="0.5" class="gh-harvest-months" placeholder="Months" value="${p.harvestMonths !== undefined && p.harvestMonths !== null ? p.harvestMonths : ''}">
@@ -363,7 +356,6 @@ function buildGreenhouseCard(sequence, prefillData = null) {
   
   wrapper.innerHTML = headerHtml;
   
-  // stage select and harvest visibility
   const stageSelect = wrapper.querySelector('.gh-stage');
   const harvestDiv = wrapper.querySelector('.harvest-fields');
   
@@ -382,7 +374,6 @@ function buildGreenhouseCard(sequence, prefillData = null) {
   stageSelect.addEventListener('change', updateHarvestVisibility);
   updateHarvestVisibility();
   
-  // remove button handling for extra greenhouses
   if (sequence > 1) {
     const removeBtn = wrapper.querySelector('.remove-gh');
     if (removeBtn) removeBtn.addEventListener('click', () => wrapper.remove());
@@ -391,7 +382,6 @@ function buildGreenhouseCard(sequence, prefillData = null) {
   return wrapper;
 }
 
-// add new greenhouse
 function addNewGreenhouse() {
   const container = document.getElementById('greenhouseList');
   greenhouseCounter++;
@@ -399,7 +389,6 @@ function addNewGreenhouse() {
   container.appendChild(newCard);
 }
 
-// collect greenhouse data with detailed validation
 function collectAllGreenhouses() {
   const cards = document.querySelectorAll('#greenhouseList .greenhouse-card');
   if (cards.length === 0) {
@@ -468,7 +457,6 @@ function collectAllGreenhouses() {
   return greenhouses;
 }
 
-// Show friendly toast (non-technical)
 function showUserToast(message, isError = false) {
   const toastDiv = document.createElement('div');
   toastDiv.className = 'toast';
@@ -478,23 +466,17 @@ function showUserToast(message, isError = false) {
   setTimeout(() => toastDiv.remove(), 3600);
 }
 
-// -------------------------------------------------------------
-// ENHANCED GOOGLE SHEETS POST: CORRECT CORS + RESPONSE HANDLING
-// Use proper POST with credentials: omit, and parse response if available
-// Fix: now using 'cors' mode with text response handling to confirm data insertion
-// -------------------------------------------------------------
 async function postToGoogleSheets(payload) {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID') || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec') {
-    console.warn("Google Sheets URL not configured correctly, but we still simulate store locally.");
-    return { success: false, error: "endpoint_missing" };
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID_HERE')) {
+    console.warn("Please configure your Google Apps Script URL first!");
+    showUserToast("⚠️ Google Sheets URL not configured. Please check configuration.", true);
+    return { success: false, error: "endpoint_not_configured" };
   }
+  
   try {
-    // using POST with 'cors' mode to actually read response from Apps Script
-    // Apps Script Web App must return Access-Control-Allow-Origin: * (it does by default for anonymous exec)
-    // We'll send JSON and expect a JSON response like { result: "success", row: 1 }
     const response = await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
-      mode: 'cors',          // important to read response properly
+      mode: 'cors',
       cache: 'no-cache',
       headers: {
         'Content-Type': 'application/json',
@@ -508,28 +490,24 @@ async function postToGoogleSheets(payload) {
       try {
         parsed = JSON.parse(responseText);
       } catch(e) {
-        parsed = { result: "unknown", raw: responseText };
+        parsed = { result: responseText };
       }
-      // if the script returns any success indication we treat as success
-      if (parsed && (parsed.result === "success" || parsed.status === "success" || parsed.inserted === true)) {
+      
+      if (parsed && (parsed.result === "success" || parsed.status === "success")) {
         return { success: true, data: parsed };
-      } else if (responseText.includes("success") || responseText.includes("inserted")) {
-        return { success: true };
       } else {
-        console.warn("Sheet response not clearly success but HTTP 200", parsed);
-        return { success: true }; // optimistic: endpoint received payload
+        return { success: true }; // Assume success if we got a response
       }
     } else {
-      console.error("Google Sheets HTTP error", response.status);
+      console.error("HTTP error:", response.status);
       return { success: false, error: `HTTP ${response.status}` };
     }
   } catch (err) {
-    console.error("Google Sheets network error:", err);
+    console.error("Network error:", err);
     return { success: false, error: err.message };
   }
 }
 
-// main submission with offline fallback and explicit Google Sheets storage
 async function handleFormSubmit(event) {
   event.preventDefault();
   
@@ -558,7 +536,7 @@ async function handleFormSubmit(event) {
     recordId: `hyd_${Date.now()}_${Math.random().toString(36).substr(2, 10)}`
   };
   
-  // 1) Always backup locally (offline resilience)
+  // Local backup
   let backupArray = [];
   try {
     const storedBackup = localStorage.getItem('hydroponic_backup');
@@ -568,7 +546,7 @@ async function handleFormSubmit(event) {
     localStorage.setItem('hydroponic_backup', JSON.stringify(backupArray));
   } catch (e) { console.warn("Local backup issue", e); }
   
-  // 2) Send to Google Sheets with full response handling
+  // Send to Google Sheets
   const sheetsResult = await postToGoogleSheets(submissionRecord);
   
   const successDiv = document.getElementById('successMessage');
@@ -577,26 +555,15 @@ async function handleFormSubmit(event) {
     successDiv.style.background = '#1f6e2c';
     showUserToast('✓ Saved to cloud', false);
   } else {
-    // offline / network issue, but data safely in localStorage
-    successDiv.innerHTML = '📁 Data saved locally (offline backup). It will sync automatically when connection is restored.';
+    successDiv.innerHTML = '📁 Data saved locally. Will sync when connection is restored.';
     successDiv.style.background = '#e68a2e';
-    showUserToast('📱 Saved locally — will retry sync later', false);
-    
-    // Attempt to schedule background re-sync (store pending sync queue)
-    let pendingQueue = [];
-    try {
-      const storedPending = localStorage.getItem('hydroponic_pending_sync');
-      pendingQueue = storedPending ? JSON.parse(storedPending) : [];
-      pendingQueue.push(submissionRecord);
-      if (pendingQueue.length > 30) pendingQueue = pendingQueue.slice(-30);
-      localStorage.setItem('hydroponic_pending_sync', JSON.stringify(pendingQueue));
-    } catch(e) {}
+    showUserToast('📱 Saved locally', false);
   }
   
   successDiv.style.display = 'block';
   setTimeout(() => { successDiv.style.display = 'none'; }, 5500);
   
-  // Reset form for fresh entry (clear after successful submit)
+  // Reset form
   document.getElementById('growerName').value = '';
   document.getElementById('totalArea').value = '';
   document.getElementById('greenhouseList').innerHTML = '';
@@ -605,7 +572,6 @@ async function handleFormSubmit(event) {
   document.getElementById('greenhouseList').appendChild(initialCard);
 }
 
-// reset all inputs
 function resetEntireForm() {
   if (confirm('Clear all unsaved data from the form?')) {
     document.getElementById('growerName').value = '';
@@ -618,41 +584,6 @@ function resetEntireForm() {
   }
 }
 
-// Background sync: attempt to re-send any pending entries that were stored locally when offline
-async function backgroundSyncPendingEntries() {
-  let pendingQueue = [];
-  try {
-    const storedPending = localStorage.getItem('hydroponic_pending_sync');
-    if (storedPending) {
-      pendingQueue = JSON.parse(storedPending);
-    }
-    if (pendingQueue.length === 0) return;
-    
-    console.log(`[background] Syncing ${pendingQueue.length} pending entries to Sheets`);
-    let newPending = [];
-    for (const entry of pendingQueue) {
-      const res = await postToGoogleSheets(entry);
-      if (!res.success) {
-        newPending.push(entry); // keep if still fails
-      }
-    }
-    localStorage.setItem('hydroponic_pending_sync', JSON.stringify(newPending));
-    if (newPending.length === 0 && pendingQueue.length > 0) {
-      // optionally show subtle notification only if many synced, but keep grower-focused
-      showUserToast(`☁️ ${pendingQueue.length} offline record(s) synced to cloud`, false);
-    }
-  } catch (err) {
-    console.warn("Background sync failed", err);
-  }
-}
-
-// silent heartbeat only for internal re-sync attempts (never shown in UI)
-function silentResyncAndHeartbeat() {
-  backgroundSyncPendingEntries().catch(e => console.log);
-  // Also small connectivity check - no user impact
-}
-
-// initialization
 function initApp() {
   const container = document.getElementById('greenhouseList');
   container.innerHTML = '';
@@ -663,13 +594,6 @@ function initApp() {
   document.getElementById('addGreenhouseBtn').addEventListener('click', addNewGreenhouse);
   document.getElementById('hydroponicForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('resetBtn').addEventListener('click', resetEntireForm);
-  
-  // background sync every 60 seconds, no UI elements shown, growers unaware of internal sync.
-  setInterval(() => {
-    silentResyncAndHeartbeat();
-  }, 60000);
-  // initial sync attempt after load
-  setTimeout(() => silentResyncAndHeartbeat(), 3000);
 }
 
 initApp();
