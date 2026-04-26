@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Hydroponic Tracker | Google Sheets Save</title>
+    <title>Hydroponic Tracker | Google Sheets Tabular Save</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -104,7 +104,6 @@
             border-radius: 28px;
             font-size: 1rem;
             background: white;
-            color: #3b2e1a;
             cursor: pointer;
         }
 
@@ -276,6 +275,27 @@
             flex-wrap: wrap;
         }
 
+        .preview-table {
+            background: #f5f5f0;
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 20px;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .preview-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .preview-table th, .preview-table td {
+            border: 1px solid #ccc;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -285,16 +305,14 @@
 <body>
 <div class="container">
     <div class="card">
-        <h1>🌱 Hydroponic Grower Tracker <span style="font-size: 0.9rem;">| Google Sheets Sync</span></h1>
-        <div class="subtitle">Data saves directly to your Google Sheet</div>
+        <h1>🌱 Hydroponic Data Tracker <span style="font-size: 0.9rem;">| Tabular Google Sheets Save</span></h1>
+        <div class="subtitle">Each greenhouse row saved as a separate record in your Google Sheet</div>
 
-        <!-- Connection Status -->
         <div id="connectionStatus" class="connection-status">
             <span>🟢 Checking connection...</span>
             <button type="button" onclick="testConnection()" style="background:#1976d2; padding:6px 16px;">Test Connection</button>
         </div>
 
-        <!-- Zone Selection -->
         <div class="zone-panel" id="zoneSelector">
             <button type="button" data-zone="E1" class="zone-btn active">📍 Zone E1</button>
             <button type="button" data-zone="E2" class="zone-btn">📍 Zone E2</button>
@@ -302,24 +320,20 @@
             <button type="button" data-zone="E4" class="zone-btn">📍 Zone E4</button>
         </div>
 
-        <!-- Substrate Type -->
         <div class="substrate-section">
-            <div class="substrate-label">
-                🌿 Substrate / Growing System
-            </div>
+            <div class="substrate-label">🌿 Substrate / Growing System</div>
             <select id="substrateType" class="substrate-dropdown">
                 <option value="Coir based">🧫 Coir Based</option>
-                <option value="NFT">💧 NFT (Nutrient Film Technique)</option>
-                <option value="DFT">🌊 DFT (Deep Flow Technique)</option>
+                <option value="NFT">💧 NFT</option>
+                <option value="DFT">🌊 DFT</option>
                 <option value="Aquaponics">🐟 Aquaponics</option>
             </select>
         </div>
 
-        <!-- Grower Section -->
         <div class="grower-section">
             <div class="grower-header">
                 <div class="grower-select-wrapper">
-                    <label style="margin-right: 5px;">👨‍🌾 Select Grower:</label>
+                    <label>👨‍🌾 Select Grower:</label>
                     <select id="growerSelect" class="grower-dropdown">
                         <option value="">-- Choose a grower --</option>
                     </select>
@@ -327,35 +341,39 @@
                 </div>
             </div>
             <div id="newGrowerFields" class="new-grower-fields">
-                <div class="input-group">
-                    <label>Grower Full Name *</label>
-                    <input type="text" id="newGrowerName" placeholder="e.g., New Planter Name">
-                </div>
-                <div class="input-group">
-                    <label>Contact Number</label>
-                    <input type="text" id="newGrowerContact" placeholder="Optional">
-                </div>
-                <div class="input-group">
-                    <label>Field Location</label>
-                    <input type="text" id="newGrowerLocation" placeholder="Optional">
-                </div>
-                <button type="button" id="saveNewGrowerBtn" style="background:#3d704b;">✓ Add & Select</button>
+                <input type="text" id="newGrowerName" placeholder="Full Name *">
+                <input type="text" id="newGrowerContact" placeholder="Contact Number">
+                <input type="text" id="newGrowerLocation" placeholder="Field Location">
+                <button type="button" id="saveNewGrowerBtn" style="background:#3d704b;">✓ Add</button>
                 <button type="button" id="cancelNewGrowerBtn" class="secondary">Cancel</button>
             </div>
         </div>
 
-        <!-- Main Form -->
         <form id="hydroponicForm">
             <div class="form-grid">
                 <div class="input-group">
-                    <label>📐 Total Hydroponic Area (m²) *</label>
-                    <input type="number" id="totalArea" step="0.1" placeholder="Total growing area" required />
+                    <label>📐 Total Greenhouse Area (m²) *</label>
+                    <input type="number" id="totalArea" step="0.1" placeholder="Total area" required />
                 </div>
             </div>
             <div id="greenhousesContainer"></div>
-            <button type="button" id="addGreenhouse" style="margin-bottom: 18px; background: #2b5e6e;">+ Add Greenhouse Unit</button>
+            <button type="button" id="addGreenhouse" style="margin-bottom: 18px; background: #2b5e6e;">+ Add Greenhouse</button>
+            
+            <!-- Preview of how data will look in Google Sheets -->
+            <div class="preview-table">
+                <strong>📋 Preview: Data will be saved in this tabular format (one row per greenhouse)</strong>
+                <table id="previewTable">
+                    <thead>
+                        <tr><th>Timestamp</th><th>Grower Name</th><th>Total Greenhouse Area (m2)</th><th>GH #</th><th>Crop</th><th>Variety</th><th>Crop Stage</th><th>Area (m2)</th><th>Date Transplanted</th><th>Av Yield per Week (kg)</th><th>Av Yield Per Month (kg)</th><th>Months of Harvest</th><th>Substrate Type</th><th>Zone</th></tr>
+                    </thead>
+                    <tbody id="previewBody">
+                        <tr><td colspan="14">Fill form to see preview</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
             <div class="btn-group">
-                <button type="submit" id="saveBtn">💾 Save to Google Sheets</button>
+                <button type="submit" id="saveBtn">💾 Save to Google Sheets (Tabular Format)</button>
                 <button type="button" id="clearForm" class="secondary">⟳ Clear Form</button>
             </div>
         </form>
@@ -364,129 +382,98 @@
 
 <script>
     // ============================================================
-    // GOOGLE SHEETS CONFIGURATION - REPLACE WITH YOUR URL
+    // GOOGLE SHEETS CONFIGURATION
     // ============================================================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwT1hoQRkO3cI9o2Nf29oExuqv4RfwPIwp7gbKBHp9bGMkdcDwzCDeeQDME3EY62LnR/exec";
     const SHEET_ID = "1aY-_usm74Ge_dyvV_5wQrGQPKRd5UytvkERUEAg4DyI";
     
     // ============================================================
-    // GROWER LIST FROM EXCEL (Hydroponics sheet)
+    // GROWER LIST FROM EXCEL
     // ============================================================
     const EXCEL_GROWERS = [
         "ABEELUCK Rajiv", "BADAL Sharmila", "BANGALEE Indardev", "BEECARRY Unoop", "BEEHARRY Sooraj",
         "BEERGOONAUTH Navin", "BHUNDHOO Hemlata", "BUDHOO Basdeo", "BULDAN Dhunanjay", "BULDEE Bulveerdeo",
-        "BULDEE Pradeo", "BURKUT ALLY", "BUSROPUN Yasin", "CHENEL Jean Gregoire", "CHINAN Siven",
-        "CHOWDHOORY VINOD", "DANOOA Krishna", "DOMUN Prema", "DOMUN Zuhayr", "DOOBLAD Juggeanbul",
-        "DOUTAL Ashveen", "DOUTAL KRESSANall", "EATALLY Flex Farm", "ELAHEE Bibi Mehreen", "ELAHEE Swalley",
-        "EUROFARM LTD", "FOOLHEEA Khooshal", "FUTTINGA Prema", "GHURHOO KAMAL", "GHUROO Megnath",
-        "GHUROO Nirmala", "GHUROO Pravesh", "GOPAUL Dharmeshwaree", "GUNGARAM Devrani", "GUNOORY ARTI",
-        "HURRYLALL SANTOSH", "JAMOOKEEAH Sooryawatee", "JAUNE Ralph", "Jeeana Vrinda Devi", "JEETUN Ganshyam",
-        "Jhaumeer Mohamed Hossen", "Jhaumeer Rushda", "Jhaumeer Waheeda", "Joomun Mohammad Razia", "JOORAWON Nandinee",
-        "KAULLYSING Shivshankar", "KAULLYSING Sujan", "KAULLYSING Tinesh", "KISSOONDOYAL Jotee", "KOYLAS Kamal",
-        "KUREEMUN TANWEER", "LALLAWOOA Utam Kumar", "LALLBEEHARRY Mohun Kumar", "LALLMOHAMED Farhaan", "LOLLMUN Hemantsing",
-        "MATHOOR Parsad Kewal", "MAUDHOO Abbedanand", "MAUDHOO Mahen", "MAUDHOO Manoj", "MOHUN Veena",
-        "MULTRA Menasha", "MUNOGHEE Madvi", "MUNSOOR MOHAMMED UMAR", "NOOROODIN Auhammad", "NUKCHEDY Vijay",
-        "NUNDAH Sandya", "NUNDOO Ganeshwar", "PARIAN Vishnada", "PEEROO Ebad", "POORUNDER Manish",
-        "PUTLAROW Karuna", "RAHATOLEE Bibi Sabina", "RAHATOLEE Memaa Begum", "RAJCOOMAR Soodarshan", "RAMBURRUN Atish",
-        "RAMBURRUN Devika", "RAMHOTA Sudhakar (C/O Poorander Munnish", "RAMJUG Amriteshwarnath", "RAMJUG ARTI", "RAMJUG DEVINA",
-        "RAMJUG Janishwarnath", "RAMJUG Mahadeo", "RAMJUG Maheshwarnath", "RAMJUG Manraj", "RAMJUG Monish",
-        "RAMJUG Rajnee", "RAMJUG Satish (Sanjay)", "RAMJUG Tavishwarnath", "RAMJUG Yagnish", "RAMKISSOON Chintamanee",
-        "RAMKISSOON Jeetendra", "RAMKISSOON RAJIV", "RAMKISSOON VISHAM", "RAMLAGUN Arvin", "RAMNIAL Harish",
-        "RAMSURRUN Vishnu", "RAMTALLY Dawood", "RAMTALLY Suhayl", "RAWOOJEE Chandragassen", "RAWOOJEE Navin",
-        "RUHOMUTALLY Rehan", "RUHOMUTALLY Tawfic", "SAVOO Visnaden", "SAWKATALLY Ismael", "SEEBUN Benuduth",
-        "SEEBUN Nitin", "SEEWOOLALL Meetyadev", "SHEORAJ Shaheel Yashvant", "SOHUR Preety", "SOOBEN Logendiren",
-        "SOOBRATTEE MOOSA QURBAN", "SOOKHEE Bhoosun Kumar", "SOOKOOREE Vikash", "SOOKOYEE Kavita", "SOOKUN SOOROOTAMSINGH",
-        "SOUKY Veemal Singh", "SUNKUR Juswantee", "SUNKUR Ravi", "TAKOOR Chandraduth", "UNMOLE Heerasagar",
-        "UNMOLE Soobhawtee", "Woodun Hemraj c/o Woodun Veggies", "Woodun L Pallavi Devi"
+        "CHENEL Jean Gregoire", "CHINAN Siven", "DANOOA Krishna", "DOMUN Prema", "DOOBLAD Juggeanbul",
+        "DOUTAL Ashveen", "ELAHEE Swalley", "EUROFARM LTD", "GHURHOO KAMAL", "GHUROO Megnath",
+        "GOPAUL Dharmeshwaree", "GUNOORY ARTI", "JAMOOKEEAH Sooryawatee", "JEETUN Ganshyam",
+        "Jhaumeer Mohamed Hossen", "JOORAWON Nandinee", "KAULLYSING Shivshankar", "KISSOONDOYAL Jotee",
+        "KOYLAS Kamal", "LALLAWOOA Utam Kumar", "LALLBEEHARRY Mohun Kumar", "LOLLMUN Hemantsing",
+        "MAUDHOO Abbedanand", "MOHUN Veena", "MUNOGHEE Madvi", "NOOROODIN Auhammad", "NUKCHEDY Vijay",
+        "NUNDAH Sandya", "PARIAN Vishnada", "PEEROO Ebad", "POORUNDER Manish", "RAHATOLEE Bibi Sabina",
+        "RAMBURRUN Atish", "RAMJUG Mahadeo", "RAMKISSOON Chintamanee", "RAMLAGUN Arvin", "RAMNIAL Harish",
+        "RAMTALLY Dawood", "RAWOOJEE Chandragassen", "RUHOMUTALLY Tawfic", "SAVOO Visnaden", "SEEBUN Benuduth",
+        "SEEWOOLALL Meetyadev", "SOOBEN Logendiren", "SOOKHEE Bhoosun Kumar", "SOOKUN SOOROOTAMSINGH",
+        "SUNKUR Juswantee", "TAKOOR Chandraduth", "UNMOLE Heerasagar", "Woodun Hemraj c/o Woodun Veggies"
     ];
 
     const CUSTOM_GROWERS_KEY = "hydroponic_custom_growers";
     let currentZone = "E1";
     let greenhouseCounter = 1;
-    const cropOptions = ["Cabbage", "Cauliflower", "Lettuce", "Tomato", "Sweet Pepper", "Cucumber", "Strawberry", "Basil", "Mint"];
+    const cropOptions = ["Tomato", "Cabbage", "Cauliflower", "Lettuce", "Sweet Pepper", "Cucumber", "Strawberry", "Basil", "Mint"];
+    const tomatoTypes = ["Cherry Tomato", "Roma Tomato", "Beefsteak Tomato", "Heirloom Tomato", "Grape Tomato", "Yellow Tomato"];
 
     // Load custom growers
-    function loadCustomGrowers() {
-        const stored = localStorage.getItem(CUSTOM_GROWERS_KEY);
-        return stored ? JSON.parse(stored) : [];
-    }
-
-    function saveCustomGrowers(growers) {
-        localStorage.setItem(CUSTOM_GROWERS_KEY, JSON.stringify(growers));
-    }
-
-    function getAllGrowers() {
-        return [...EXCEL_GROWERS, ...loadCustomGrowers()];
-    }
-
-    function populateGrowerDropdown(selectedName = "") {
+    function loadCustomGrowers() { return JSON.parse(localStorage.getItem(CUSTOM_GROWERS_KEY) || "[]"); }
+    function saveCustomGrowers(growers) { localStorage.setItem(CUSTOM_GROWERS_KEY, JSON.stringify(growers)); }
+    function getAllGrowers() { return [...EXCEL_GROWERS, ...loadCustomGrowers()]; }
+    
+    function populateGrowerDropdown(selected = "") {
         const select = document.getElementById('growerSelect');
-        const allGrowers = getAllGrowers();
         select.innerHTML = '<option value="">-- Choose a grower --</option>';
-        allGrowers.forEach(grower => {
-            const option = document.createElement('option');
-            option.value = grower;
-            option.textContent = grower;
-            if (grower === selectedName) option.selected = true;
-            select.appendChild(option);
+        getAllGrowers().forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g;
+            opt.textContent = g;
+            if (g === selected) opt.selected = true;
+            select.appendChild(opt);
         });
     }
 
-    function addNewGrower(fullName, contact, location) {
-        if (!fullName.trim()) return false;
-        const customList = loadCustomGrowers();
-        if (customList.includes(fullName.trim()) || EXCEL_GROWERS.includes(fullName.trim())) {
-            return false;
-        }
-        customList.push(fullName.trim());
-        saveCustomGrowers(customList);
+    function addNewGrower(name, contact, location) {
+        if (!name.trim()) return false;
+        const custom = loadCustomGrowers();
+        if (custom.includes(name.trim()) || EXCEL_GROWERS.includes(name.trim())) return false;
+        custom.push(name.trim());
+        saveCustomGrowers(custom);
         const meta = JSON.parse(localStorage.getItem("grower_metadata") || "{}");
-        meta[fullName.trim()] = { contact: contact || "", location: location || "" };
+        meta[name.trim()] = { contact, location };
         localStorage.setItem("grower_metadata", JSON.stringify(meta));
-        populateGrowerDropdown(fullName.trim());
+        populateGrowerDropdown(name.trim());
         return true;
     }
 
-    function getGrowerMeta(growerName) {
-        const meta = JSON.parse(localStorage.getItem("grower_metadata") || "{}");
-        return meta[growerName] || { contact: "", location: "" };
-    }
+    function getGrowerMeta(name) { return JSON.parse(localStorage.getItem("grower_metadata") || "{}")[name] || { contact: "", location: "" }; }
 
-    // Test connection to Google Sheets
+    // Test connection
     async function testConnection() {
         const statusDiv = document.getElementById('connectionStatus');
         try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'GET',
-                mode: 'cors'
-            });
+            const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET', mode: 'cors' });
             if (response.ok) {
-                statusDiv.innerHTML = '<span>✅ Connected to Google Sheets! Ready to save data.</span><button type="button" onclick="testConnection()" style="background:#1976d2; padding:6px 16px;">Test Connection</button>';
+                statusDiv.innerHTML = '<span>✅ Connected to Google Sheets! Ready to save.</span><button type="button" onclick="testConnection()" style="background:#1976d2; padding:6px 16px;">Test Connection</button>';
                 showToast('Connection successful!');
-            } else {
-                throw new Error('Connection failed');
-            }
+            } else throw new Error();
         } catch (error) {
-            statusDiv.innerHTML = '<span>⚠️ Cannot connect. Make sure you deployed the Apps Script with "Anyone" access.</span><button type="button" onclick="testConnection()" style="background:#1976d2; padding:6px 16px;">Test Connection</button>';
-            showToast('Connection failed. Please check your Apps Script URL.', true);
+            statusDiv.innerHTML = '<span>⚠️ Cannot connect. Check Apps Script URL & deployment.</span><button type="button" onclick="testConnection()" style="background:#1976d2; padding:6px 16px;">Test Connection</button>';
+            showToast('Connection failed', true);
         }
     }
 
-    // Save to Google Sheets
-    async function saveToGoogleSheets(data) {
+    // Save each greenhouse as a ROW in Google Sheets (tabular format)
+    async function saveTabularToSheets(rows) {
+        const payload = {
+            action: "saveTabular",
+            sheetId: SHEET_ID,
+            rows: rows,
+            timestamp: new Date().toISOString()
+        };
         const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const result = await response.json();
         return result.result === 'success' || result.status === 'success';
     }
@@ -496,16 +483,28 @@
         const container = document.getElementById('greenhousesContainer');
         const card = document.createElement('div');
         card.className = 'greenhouse-card';
+        card.dataset.ghIndex = number;
+        
+        // For Tomato crop, show variety options
+        const varietyHtml = `
+            <select class="gh-variety" style="width:100%">
+                <option value="">Select variety...</option>
+                ${tomatoTypes.map(t => `<option value="${t}" ${data.variety === t ? 'selected' : ''}>${t}</option>`).join('')}
+                <option value="Other" ${data.variety === 'Other' ? 'selected' : ''}>Other (specify)</option>
+            </select>
+            <input type="text" class="gh-variety-other" placeholder="Other variety" style="display:none; margin-top:5px;" value="${data.varietyOther || ''}">
+        `;
+        
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; margin-bottom:8px;">
                 <strong>🌿 Greenhouse ${number}</strong>
-                ${number > 1 ? '<button type="button" class="remove-gh" style="background:#c0392b; padding:4px 18px; border-radius:30px;">Remove</button>' : '<span style="color:#388e3c;">Primary unit</span>'}
+                ${number > 1 ? '<button type="button" class="remove-gh" style="background:#c0392b; padding:4px 18px;">Remove</button>' : '<span style="color:#388e3c;">Primary</span>'}
             </div>
             <div class="gh-grid">
                 <div><label>Area (m²) *</label><input type="number" step="0.1" class="gh-area" value="${data.area || ''}" placeholder="m²"></div>
                 <div><label>Crop Type *</label><select class="gh-crop"><option value="">Select...</option>${cropOptions.map(c => `<option value="${c}" ${data.cropType === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
-                <div><label>Variety *</label><input type="text" class="gh-variety" value="${data.variety || ''}" placeholder="Variety"></div>
-                <div><label>Growth Stage *</label><select class="gh-stage"><option value="Seedling" ${data.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option><option value="Vegetative" ${data.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option><option value="Flowering" ${data.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option><option value="Harvest" ${data.cropStage === 'Harvest' ? 'selected' : ''}>Harvest</option></select></div>
+                <div><label>Variety *</label><div class="variety-container">${varietyHtml}</div></div>
+                <div><label>Crop Stage *</label><select class="gh-stage"><option value="Seedling" ${data.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option><option value="Vegetative" ${data.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option><option value="Flowering" ${data.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option><option value="Harvest" ${data.cropStage === 'Harvest' ? 'selected' : ''}>Harvest</option></select></div>
                 <div><label>Transplant Date</label><input type="date" class="gh-transplant" value="${data.transplantDate || new Date().toISOString().split('T')[0]}"></div>
             </div>
             <div class="harvest-fields">
@@ -513,54 +512,138 @@
                 <div><label>Average Yield (kg/week)</label><input type="number" step="0.1" class="gh-yield-week" value="${data.avgYieldWeek || ''}" placeholder="kg/week"></div>
             </div>
         `;
+        
+        // Variety logic
+        const varietySelect = card.querySelector('.gh-variety');
+        const varietyOther = card.querySelector('.gh-variety-other');
+        varietySelect.addEventListener('change', () => {
+            if (varietySelect.value === 'Other') {
+                varietyOther.style.display = 'block';
+                varietyOther.required = true;
+            } else {
+                varietyOther.style.display = 'none';
+                varietyOther.required = false;
+            }
+        });
+        if (varietySelect.value === 'Other') varietyOther.style.display = 'block';
+        
         const stageSelect = card.querySelector('.gh-stage');
         const harvestDiv = card.querySelector('.harvest-fields');
-        const toggleHarvest = () => {
-            if (stageSelect.value === 'Harvest') harvestDiv.classList.add('active');
-            else harvestDiv.classList.remove('active');
-        };
-        stageSelect.addEventListener('change', toggleHarvest);
-        toggleHarvest();
+        const toggle = () => stageSelect.value === 'Harvest' ? harvestDiv.classList.add('active') : harvestDiv.classList.remove('active');
+        stageSelect.addEventListener('change', toggle);
+        toggle();
+        
         if (number > 1) {
-            card.querySelector('.remove-gh').addEventListener('click', () => card.remove());
+            card.querySelector('.remove-gh').addEventListener('click', () => {
+                card.remove();
+                updatePreview();
+            });
         }
+        
+        // Add input listeners for preview
+        card.querySelectorAll('input, select').forEach(el => el.addEventListener('change', updatePreview));
+        card.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updatePreview));
+        
         container.appendChild(card);
+        updatePreview();
     }
 
-    function collectGreenhouseData() {
+    function getGreenhouseVariety(card) {
+        const select = card.querySelector('.gh-variety');
+        if (select.value === 'Other') {
+            return card.querySelector('.gh-variety-other').value.trim() || 'Other';
+        }
+        return select.value;
+    }
+
+    function collectGreenhouseRows(growerName, totalArea, substrateType, zone) {
         const cards = document.querySelectorAll('.greenhouse-card');
-        const greenhouses = [];
+        const rows = [];
+        const timestamp = new Date().toISOString();
+        
         for (let i = 0; i < cards.length; i++) {
             const card = cards[i];
             const area = parseFloat(card.querySelector('.gh-area').value);
             const cropType = card.querySelector('.gh-crop').value;
-            const variety = card.querySelector('.gh-variety').value.trim();
+            const variety = getGreenhouseVariety(card);
             const stage = card.querySelector('.gh-stage').value;
             const transplantDate = card.querySelector('.gh-transplant').value;
+            
             if (!cropType || !variety || isNaN(area) || area <= 0) {
                 throw new Error(`Greenhouse ${i+1}: area, crop type and variety required.`);
             }
-            let harvestMonths = null;
-            let avgYieldWeek = '';
+            
+            let harvestMonths = '';
+            let weeklyYield = '';
+            let monthlyYield = '';
+            
             if (stage === 'Harvest') {
                 const months = parseFloat(card.querySelector('.gh-harvest-months').value);
                 if (isNaN(months) || months <= 0) throw new Error(`Harvest duration required for GH ${i+1}`);
                 harvestMonths = months;
-                avgYieldWeek = card.querySelector('.gh-yield-week').value || '0';
+                weeklyYield = card.querySelector('.gh-yield-week').value || '0';
+                monthlyYield = (parseFloat(weeklyYield) * 4.33).toFixed(2);
             }
-            greenhouses.push({
-                greenhouseNumber: i+1,
-                area_m2: area,
-                cropType: cropType,
+            
+            // Tomato type specific field (if crop is Tomato)
+            const tomatoType = cropType === 'Tomato' ? variety : '';
+            
+            rows.push({
+                timestamp: timestamp,
+                growerName: growerName,
+                totalGreenhouseAreaM2: totalArea,
+                greenhouseNumber: i + 1,
+                crop: cropType,
                 variety: variety,
                 cropStage: stage,
-                transplantDate: transplantDate,
-                harvestDurationMonths: harvestMonths,
-                avgYieldKgWeek: stage === 'Harvest' ? parseFloat(avgYieldWeek) : 0
+                areaM2: area,
+                dateTransplanted: transplantDate,
+                avgYieldPerWeekKg: weeklyYield || '',
+                avgYieldPerMonthKg: monthlyYield || '',
+                monthsOfHarvest: harvestMonths || '',
+                tomatoType: tomatoType,
+                substrateType: substrateType,
+                zone: zone
             });
         }
-        if (greenhouses.length === 0) throw new Error("Add at least one greenhouse");
-        return greenhouses;
+        
+        if (rows.length === 0) throw new Error("Add at least one greenhouse");
+        return rows;
+    }
+
+    function updatePreview() {
+        const growerName = document.getElementById('growerSelect').value || '[Select Grower]';
+        const totalArea = document.getElementById('totalArea').value || '0';
+        const substrateType = document.getElementById('substrateType').value;
+        
+        try {
+            const rows = collectGreenhouseRows(growerName, totalArea, substrateType, currentZone);
+            const tbody = document.getElementById('previewBody');
+            if (rows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="14">No greenhouse data</td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map(row => `
+                <tr>
+                    <td>${new Date().toLocaleString()}</td>
+                    <td>${row.growerName}</td>
+                    <td>${row.totalGreenhouseAreaM2}</td>
+                    <td>${row.greenhouseNumber}</td>
+                    <td>${row.crop}</td>
+                    <td>${row.variety}</td>
+                    <td>${row.cropStage}</td>
+                    <td>${row.areaM2}</td>
+                    <td>${row.dateTransplanted}</td>
+                    <td>${row.avgYieldPerWeekKg}</td>
+                    <td>${row.avgYieldPerMonthKg}</td>
+                    <td>${row.monthsOfHarvest}</td>
+                    <td>${row.substrateType}</td>
+                    <td>${row.zone}</td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            document.getElementById('previewBody').innerHTML = `<tr><td colspan="14">⚠️ ${err.message}</td></tr>`;
+        }
     }
 
     function showToast(msg, isError = false) {
@@ -574,59 +657,39 @@
     async function handleSubmit(e) {
         e.preventDefault();
         const selectedGrower = document.getElementById('growerSelect').value;
-        if (!selectedGrower) {
-            showToast("Please select or add a grower", true);
-            return;
-        }
+        if (!selectedGrower) { showToast("Please select or add a grower", true); return; }
+        
         const totalArea = parseFloat(document.getElementById('totalArea').value);
-        if (isNaN(totalArea) || totalArea <= 0) {
-            showToast("Valid total area required", true);
-            return;
-        }
+        if (isNaN(totalArea) || totalArea <= 0) { showToast("Valid total area required", true); return; }
+        
         const substrateType = document.getElementById('substrateType').value;
-        let greenhouses;
+        
+        let rows;
         try {
-            greenhouses = collectGreenhouseData();
+            rows = collectGreenhouseRows(selectedGrower, totalArea, substrateType, currentZone);
         } catch (err) {
             showToast(err.message, true);
             return;
         }
-
-        const growerMeta = getGrowerMeta(selectedGrower);
-        const submission = {
-            recordType: "hydroponic_entry",
-            growerName: selectedGrower,
-            growerContact: growerMeta.contact || "",
-            growerLocation: growerMeta.location || "",
-            totalAreaM2: totalArea,
-            substrateSystem: substrateType,
-            zone: currentZone,
-            sheetId: SHEET_ID,
-            greenhouses: greenhouses,
-            timestamp: new Date().toISOString(),
-            recordId: `hyd_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`
-        };
-
+        
         const saveBtn = document.getElementById('saveBtn');
         const originalText = saveBtn.innerText;
         saveBtn.innerText = '💾 Saving to Google Sheets...';
         saveBtn.disabled = true;
         
         try {
-            const success = await saveToGoogleSheets(submission);
+            const success = await saveTabularToSheets(rows);
             if (success) {
-                showToast(`✅ Data saved to Google Sheets! (Zone ${currentZone})`);
+                showToast(`✅ ${rows.length} row(s) saved to Google Sheets!`);
                 setTimeout(() => {
-                    if (confirm('Data saved successfully! Clear form for next entry?')) {
-                        clearForm();
-                    }
+                    if (confirm('Data saved! Clear form for next entry?')) clearForm();
                 }, 500);
             } else {
-                showToast('❌ Failed to save. Check console for details.', true);
+                showToast('Failed to save', true);
             }
         } catch (error) {
-            console.error('Save error:', error);
-            showToast('❌ Failed to save to Google Sheets. Check Apps Script URL and deployment.', true);
+            console.error(error);
+            showToast('Error saving to Google Sheets. Check Apps Script.', true);
         } finally {
             saveBtn.innerText = originalText;
             saveBtn.disabled = false;
@@ -634,78 +697,62 @@
     }
 
     function clearForm() {
-        if (confirm('Clear all form data?')) {
+        if (confirm('Clear all data?')) {
             document.getElementById('totalArea').value = '';
             document.getElementById('greenhousesContainer').innerHTML = '';
             greenhouseCounter = 1;
             addGreenhouseCard(1);
             document.getElementById('growerSelect').value = '';
+            updatePreview();
             showToast('Form cleared');
         }
     }
 
     // Event handlers
     function initZoneSelector() {
-        const btns = document.querySelectorAll('.zone-btn');
-        btns.forEach(btn => {
+        document.querySelectorAll('.zone-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const zone = btn.getAttribute('data-zone');
-                if (zone) {
-                    currentZone = zone;
-                    btns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    showToast(`Zone switched to ${zone}`);
-                }
+                currentZone = btn.getAttribute('data-zone');
+                document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                updatePreview();
+                showToast(`Zone: ${currentZone}`);
             });
         });
     }
 
-    // New grower UI
-    function toggleNewGrowerForm(show) {
+    function toggleNewGrower(show) {
         const div = document.getElementById('newGrowerFields');
-        if (show) {
-            div.classList.add('active');
-        } else {
-            div.classList.remove('active');
+        div.classList.toggle('active', show);
+        if (!show) {
             document.getElementById('newGrowerName').value = '';
             document.getElementById('newGrowerContact').value = '';
             document.getElementById('newGrowerLocation').value = '';
         }
     }
 
-    document.getElementById('showNewGrowerBtn').addEventListener('click', () => toggleNewGrowerForm(true));
-    document.getElementById('cancelNewGrowerBtn').addEventListener('click', () => toggleNewGrowerForm(false));
-    document.getElementById('saveNewGrowerBtn').addEventListener('click', () => {
+    document.getElementById('showNewGrowerBtn').onclick = () => toggleNewGrower(true);
+    document.getElementById('cancelNewGrowerBtn').onclick = () => toggleNewGrower(false);
+    document.getElementById('saveNewGrowerBtn').onclick = () => {
         const name = document.getElementById('newGrowerName').value.trim();
-        const contact = document.getElementById('newGrowerContact').value.trim();
-        const location = document.getElementById('newGrowerLocation').value.trim();
-        if (!name) {
-            showToast("Grower name is required", true);
-            return;
-        }
-        const success = addNewGrower(name, contact, location);
-        if (success) {
-            showToast(`Grower "${name}" added successfully`);
-            toggleNewGrowerForm(false);
-        } else {
-            showToast("Grower already exists", true);
-        }
-    });
-
-    document.getElementById('addGreenhouse').addEventListener('click', () => {
-        greenhouseCounter++;
-        addGreenhouseCard(greenhouseCounter);
-    });
-    document.getElementById('hydroponicForm').addEventListener('submit', handleSubmit);
-    document.getElementById('clearForm').addEventListener('click', clearForm);
+        if (!name) { showToast("Name required", true); return; }
+        if (addNewGrower(name, document.getElementById('newGrowerContact').value, document.getElementById('newGrowerLocation').value)) {
+            showToast(`Grower "${name}" added`);
+            toggleNewGrower(false);
+        } else { showToast("Grower already exists", true); }
+    };
     
-    // Initialize
+    document.getElementById('addGreenhouse').onclick = () => { greenhouseCounter++; addGreenhouseCard(greenhouseCounter); };
+    document.getElementById('hydroponicForm').addEventListener('submit', handleSubmit);
+    document.getElementById('clearForm').onclick = clearForm;
+    document.getElementById('totalArea').addEventListener('input', updatePreview);
+    document.getElementById('growerSelect').addEventListener('change', updatePreview);
+    document.getElementById('substrateType').addEventListener('change', updatePreview);
+    
     populateGrowerDropdown();
     addGreenhouseCard(1);
     initZoneSelector();
     setTimeout(() => testConnection(), 1000);
-    
-    // Expose testConnection globally
     window.testConnection = testConnection;
 </script>
 </body>
