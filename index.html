@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Hydroponic Data Tracker | Smart Crop Data Capture</title>
+  <title>Hydroponic Data Tracker | Tomato Type Support</title>
   <style>
     * {
       margin: 0;
@@ -19,7 +19,7 @@
     }
 
     .app-wrapper {
-      max-width: 1280px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -35,7 +35,6 @@
       color: transparent;
       font-size: 2.2rem;
       font-weight: 700;
-      letter-spacing: -0.3px;
       display: inline-flex;
       align-items: center;
       gap: 12px;
@@ -44,9 +43,6 @@
     .header h1:before {
       content: "🌊";
       font-size: 2rem;
-      background: none;
-      -webkit-background-clip: unset;
-      background-clip: unset;
       color: #2b6e3c;
     }
 
@@ -59,7 +55,6 @@
 
     .card {
       background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(0px);
       border-radius: 2rem;
       padding: 1.8rem;
       margin-bottom: 1.5rem;
@@ -88,7 +83,7 @@
       letter-spacing: 0.3px;
     }
 
-    input, select, textarea {
+    input, select {
       padding: 0.75rem 1rem;
       border: 2px solid #e2efe3;
       border-radius: 1.2rem;
@@ -131,6 +126,13 @@
       background: #53755a;
     }
 
+    button.danger {
+      background: #c7452c;
+    }
+    button.danger:hover {
+      background: #a3351f;
+    }
+
     .greenhouse-section {
       border-top: 2px dashed #bddcb9;
       padding-top: 1.2rem;
@@ -143,13 +145,11 @@
       padding: 1.2rem 1.5rem;
       margin-bottom: 1.2rem;
       border-left: 5px solid #2c7a2e;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-      transition: all 0.1s;
     }
 
     .gh-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
       align-items: start;
     }
@@ -161,33 +161,6 @@
       font-size: 0.7rem;
       border-radius: 2rem;
       cursor: pointer;
-      border: none;
-    }
-
-    .remove-gh:hover {
-      background: #ffe0df;
-      color: #a13228;
-    }
-
-    .tomato-subfield {
-      display: none;
-      margin-top: 0.6rem;
-      background: #fff8e7;
-      border-radius: 1rem;
-      padding: 0.6rem 1rem;
-      border-left: 3px solid #e0a800;
-      grid-column: 1 / -1;
-    }
-
-    .tomato-subfield.active {
-      display: block;
-    }
-
-    .tomato-subfield label {
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: inline-block;
-      color: #856404;
     }
 
     .harvest-fields {
@@ -205,6 +178,90 @@
       gap: 1rem;
     }
 
+    .tomato-type-field {
+      display: none;
+      margin-top: 0.5rem;
+    }
+    .tomato-type-field.active {
+      display: block;
+    }
+
+    /* Table Styles */
+    .records-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+      gap: 1rem;
+    }
+    .records-header h3 {
+      color: #1a5a20;
+      font-size: 1.3rem;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 1.2rem;
+      background: white;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .data-table th {
+      background: #2b6e3c;
+      color: white;
+      padding: 0.9rem 0.8rem;
+      text-align: left;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    .data-table td {
+      padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid #e0ecdf;
+      vertical-align: top;
+    }
+    .data-table tr:hover {
+      background: #f1f9ef;
+    }
+    .badge-crop {
+      background: #e8f5e9;
+      padding: 0.2rem 0.6rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+    .badge-tomato {
+      background: #ffefe0;
+      color: #c45c1a;
+      padding: 0.2rem 0.6rem;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+      margin-left: 0.3rem;
+    }
+    .table-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .icon-btn {
+      background: transparent;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.7rem;
+      box-shadow: none;
+      border-radius: 1rem;
+    }
+    .icon-btn:hover {
+      background: #e0e7dd;
+      transform: none;
+    }
+    .empty-table {
+      text-align: center;
+      padding: 2rem;
+      color: #6f9e77;
+    }
     .success-message {
       display: none;
       background: #2c7a2e;
@@ -213,9 +270,7 @@
       border-radius: 1.5rem;
       margin-top: 1.5rem;
       text-align: center;
-      font-weight: 500;
     }
-
     .toast {
       position: fixed;
       bottom: 24px;
@@ -224,29 +279,28 @@
       color: white;
       padding: 0.8rem 1.5rem;
       border-radius: 2.5rem;
-      font-weight: 500;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
       z-index: 1200;
       animation: fadeSlide 0.25s ease;
     }
-
     @keyframes fadeSlide {
       from { opacity: 0; transform: translateX(40px); }
       to { opacity: 1; transform: translateX(0); }
     }
-
     .btn-group {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
       margin-top: 1.2rem;
     }
-
-    @media (max-width: 680px) {
+    .footer-note {
+      text-align: center;
+      color: #457a4a;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 760px) {
       body { padding: 1rem; }
-      .card { padding: 1.2rem; }
-      .gh-grid { grid-template-columns: 1fr; }
+      .data-table th, .data-table td { padding: 0.5rem; font-size: 0.75rem; }
     }
   </style>
 </head>
@@ -254,20 +308,20 @@
 <div class="app-wrapper">
   <div class="header">
     <h1>Hydroponic Data Tracker</h1>
-    <div class="subhead">🌿 Smart Crop Data Capture</div>
+    <div class="subhead">🌿 Tomato Type Support · Tabular Records · Smart Greenhouse Logging</div>
   </div>
 
-  <!-- Main Entry Form -->
+  <!-- Data Entry Form -->
   <div class="card">
     <form id="hydroponicForm">
       <div class="form-grid">
         <div class="input-group">
           <label>👨‍🌾 Grower name *</label>
-          <input type="text" id="growerName" placeholder="Full name or operator ID" required>
+          <input type="text" id="growerName" placeholder="Full name" required>
         </div>
         <div class="input-group">
           <label>📐 Total hydroponic area (m²) *</label>
-          <input type="number" id="totalArea" step="0.1" placeholder="Total square meters" required>
+          <input type="number" id="totalArea" step="0.1" placeholder="Total m²" required>
         </div>
       </div>
 
@@ -280,147 +334,137 @@
       </div>
 
       <div class="btn-group">
-        <button type="submit">💾 Save to Google Sheets</button>
+        <button type="submit">💾 Save to Google Sheets & Table</button>
         <button type="button" id="resetBtn" class="secondary">⟳ Clear form</button>
       </div>
     </form>
     <div id="successMessage" class="success-message"></div>
   </div>
+
+  <!-- Tabular Records Section -->
+  <div class="card">
+    <div class="records-header">
+      <h3>📋 Submitted Records (Tabular View)</h3>
+      <button type="button" id="clearAllRecordsBtn" class="danger" style="background:#b33a22;">🗑 Clear all records</button>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table" id="dataTable">
+        <thead>
+          <tr>
+            <th>Date</th><th>Grower</th><th>Total Area</th><th>Greenhouse</th><th>Crop</th><th>Variety</th><th>Tomato Type</th><th>Stage</th><th>Area(m²)</th><th>Yield Info</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr class="empty-table"><td colspan="11">No records yet. Submit your first greenhouse data.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer-note">
+    ✅ Tomato crops include an extra field: Cooking / Salad / Cherry. Data stored in Google Sheets + local table.
+  </div>
 </div>
 
 <script>
-// ==================================================
-// GOOGLE APPS SCRIPT WEB APP URL (fixed - hidden from users)
-// ==================================================
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgxMw3sNznlfjO_n-8g9ui5wLygtLtWnBe69H8ChWC7Eyv5UMlqm5teOTjj-2vSByw/exec';
+// ==========================================
+// GOOGLE APPS SCRIPT URL
+// ==========================================
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIXsFcaSfZNUSkfOGMPsZpSC5zRNEBGHvfQ3DPf9fKFMfitA_0SGvcoosLo_WAXTNW/exec';
 
-// Crop library
 const cropOptions = [
   "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", 
   "Shallot", "Greens", "Melon", "Okra", "Chillies", 
   "Sweet Pepper", "Tomato"
 ];
 
-// Tomato subtypes
-const TOMATO_TYPES = ["Cooking", "Salad", "Cherry"];
+// Tomato type options
+const tomatoTypes = ["Cooking", "Salad", "Cherry"];
 
 let greenhouseCounter = 1;
+let allRecords = [];
 
-// Helper: Build greenhouse card with Tomato dynamic field
+// ---------- Build Greenhouse Card with conditional Tomato Type field ----------
 function buildGreenhouseCard(sequence, prefillData = null) {
   const p = prefillData || {};
   const today = new Date().toISOString().slice(0, 10);
   const wrapper = document.createElement('div');
   wrapper.className = 'greenhouse-card';
   
-  const savedCrop = p.cropType || '';
-  const savedTomatoType = p.tomatoType || '';
-  
-  const headerHtml = `
+  // Create inner HTML with tomato type hidden initially
+  wrapper.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <strong>🌱 Greenhouse ${sequence}</strong>
-      ${sequence > 1 ? '<button type="button" class="remove-gh" style="background:#ffe0dd;">✖ Remove</button>' : '<span style="font-size:0.7rem; background:#dff0df; padding:2px 12px; border-radius:20px;">Primary greenhouse</span>'}
+      ${sequence > 1 ? '<button type="button" class="remove-gh">✖ Remove</button>' : '<span style="font-size:0.7rem; background:#dff0df; padding:2px 12px; border-radius:20px;">Primary</span>'}
     </div>
     <div class="gh-grid">
-      <div>
-        <label>Area (m²) *</label>
-        <input type="number" step="0.1" class="gh-area" value="${p.area || ''}" required>
-      </div>
-      <div>
-        <label>Crop *</label>
-        <select class="gh-crop" required>
-          <option value="">-- Select --</option>
-          ${cropOptions.map(c => `<option value="${c}" ${savedCrop === c ? 'selected' : ''}>${c}</option>`).join('')}
-        </select>
-      </div>
-      <div>
-        <label>Variety / Cultivar</label>
-        <input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="e.g., Buttercrunch, Red Oak" required>
-      </div>
-      <div>
-        <label>Crop stage *</label>
-        <select class="gh-stage" required>
-          <option ${p.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option>
-          <option ${p.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option>
-          <option ${p.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option>
-          <option ${p.cropStage === 'Harvest' ? 'selected' : ''}>Harvest</option>
-        </select>
-      </div>
-      <div>
-        <label>Transplant / start date</label>
-        <input type="date" class="gh-transplant" value="${p.transplantDate || today}" required>
-      </div>
+      <div><label>Area (m²) *</label><input type="number" step="0.1" class="gh-area" value="${p.area || ''}" required></div>
+      <div><label>Crop type *</label><select class="gh-crop" required>
+        <option value="">-- Select --</option>
+        ${cropOptions.map(c => `<option value="${c}" ${p.cropType === c ? 'selected' : ''}>${c}</option>`).join('')}
+      </select></div>
+      <div><label>Variety</label><input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="Variety" required></div>
+      <div><label>Crop stage *</label><select class="gh-stage" required>
+        <option ${p.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option>
+        <option ${p.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option>
+        <option ${p.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option>
+        <option ${p.cropStage === 'Harvest' ? 'selected' : ''}>Harvest</option>
+      </select></div>
+      <div><label>Transplant date</label><input type="date" class="gh-transplant" value="${p.transplantDate || today}" required></div>
     </div>
-    <div class="tomato-subfield" id="tomatoSub_${Date.now()}_${sequence}">
-      <label>🍅 Tomato Type:</label>
-      <select class="gh-tomato-type" style="width:100%;">
-        <option value="">-- Select tomato variety --</option>
-        ${TOMATO_TYPES.map(t => `<option value="${t}" ${savedTomatoType === t ? 'selected' : ''}>${t}</option>`).join('')}
+    <div class="tomato-type-field" style="margin-top: 0.8rem; padding-left: 0.2rem;">
+      <label style="font-weight:600; color:#b45116;">🍅 Tomato Type (for Tomato crops)</label>
+      <select class="gh-tomato-type" style="margin-top: 0.3rem; width:100%; max-width:250px;">
+        <option value="">-- Select type --</option>
+        ${tomatoTypes.map(t => `<option value="${t}" ${p.tomatoType === t ? 'selected' : ''}>${t}</option>`).join('')}
       </select>
-      <div style="font-size:0.7rem; color:#7a6a2e; margin-top:4px;">Cooking / Salad / Cherry</div>
     </div>
-    <div class="harvest-fields" id="harvestGroup_${Date.now()}_${sequence}">
-      <div>
-        <label>📆 Harvest months (duration)</label>
-        <input type="number" step="0.5" class="gh-harvest-months" placeholder="Months" value="${p.harvestMonths || ''}">
-      </div>
-      <div>
-        <label>📊 Avg yield (kg/week)</label>
-        <input type="text" class="gh-yield-week" placeholder="e.g., 24 kg" value="${p.avgYieldWeek || ''}">
-      </div>
-      <div>
-        <label>📈 Avg yield (kg/month)</label>
-        <input type="text" class="gh-yield-month" placeholder="e.g., 95 kg" value="${p.avgYieldMonth || ''}">
-      </div>
+    <div class="harvest-fields">
+      <div><label>📆 Harvest months</label><input type="number" step="0.5" class="gh-harvest-months" value="${p.harvestMonths || ''}" placeholder="Months"></div>
+      <div><label>📊 Yield (kg/week)</label><input type="text" class="gh-yield-week" value="${p.avgYieldWeek || ''}" placeholder="kg/week"></div>
+      <div><label>📈 Yield (kg/month)</label><input type="text" class="gh-yield-month" value="${p.avgYieldMonth || ''}" placeholder="kg/month"></div>
     </div>
   `;
   
-  wrapper.innerHTML = headerHtml;
-  
   const cropSelect = wrapper.querySelector('.gh-crop');
-  const tomatoDiv = wrapper.querySelector('.tomato-subfield');
+  const tomatoDiv = wrapper.querySelector('.tomato-type-field');
+  const tomatoSelect = wrapper.querySelector('.gh-tomato-type');
   const stageSelect = wrapper.querySelector('.gh-stage');
   const harvestDiv = wrapper.querySelector('.harvest-fields');
   
-  // Toggle tomato subtype visibility based on Crop selection
-  function updateTomatoVisibility() {
-    if (cropSelect.value === 'Tomato') {
+  // Function to toggle tomato field visibility based on crop selection
+  const updateTomatoVisibility = () => {
+    const selectedCrop = cropSelect.value;
+    if (selectedCrop === 'Tomato') {
       tomatoDiv.classList.add('active');
-      const tomatoSelect = wrapper.querySelector('.gh-tomato-type');
-      if (tomatoSelect) tomatoSelect.required = true;
+      tomatoSelect.required = true;
+      // if prefill has tomatoType, set it
     } else {
       tomatoDiv.classList.remove('active');
-      const tomatoSelect = wrapper.querySelector('.gh-tomato-type');
-      if (tomatoSelect) {
-        tomatoSelect.required = false;
-        tomatoSelect.value = '';
-      }
+      tomatoSelect.required = false;
+      tomatoSelect.value = ''; // clear if not tomato
     }
-  }
+  };
   
-  // Harvest stage visibility logic
-  function updateHarvestVisibility() {
+  // Harvest fields toggling
+  const updateHarvestVisibility = () => {
     if (stageSelect.value === 'Harvest') {
       harvestDiv.classList.add('active');
-      const hmInput = harvestDiv.querySelector('.gh-harvest-months');
-      if (hmInput) hmInput.required = true;
+      wrapper.querySelector('.gh-harvest-months').required = true;
     } else {
       harvestDiv.classList.remove('active');
-      const hmInput = harvestDiv.querySelector('.gh-harvest-months');
-      if (hmInput) hmInput.required = false;
+      wrapper.querySelector('.gh-harvest-months').required = false;
     }
-  }
+  };
   
   cropSelect.addEventListener('change', updateTomatoVisibility);
   stageSelect.addEventListener('change', updateHarvestVisibility);
   
-  // initial sync
+  // Initial sync
   updateTomatoVisibility();
   updateHarvestVisibility();
   
   if (sequence > 1) {
-    const removeBtn = wrapper.querySelector('.remove-gh');
-    if (removeBtn) removeBtn.addEventListener('click', () => wrapper.remove());
+    wrapper.querySelector('.remove-gh')?.addEventListener('click', () => wrapper.remove());
   }
   
   return wrapper;
@@ -429,222 +473,237 @@ function buildGreenhouseCard(sequence, prefillData = null) {
 function addNewGreenhouse() {
   const container = document.getElementById('greenhouseList');
   greenhouseCounter++;
-  const newCard = buildGreenhouseCard(greenhouseCounter);
-  container.appendChild(newCard);
+  container.appendChild(buildGreenhouseCard(greenhouseCounter));
 }
 
-// Collect all greenhouses with Tomato type data
-function collectAllGreenhouses() {
-  const cards = document.querySelectorAll('#greenhouseList .greenhouse-card');
-  const greenhouses = [];
-  for (let idx = 0; idx < cards.length; idx++) {
-    const card = cards[idx];
-    const areaInput = card.querySelector('.gh-area');
-    const cropSelect = card.querySelector('.gh-crop');
-    const varietyInput = card.querySelector('.gh-variety');
-    const stageSelect = card.querySelector('.gh-stage');
-    const transplantDate = card.querySelector('.gh-transplant').value;
-    const tomatoTypeSelect = card.querySelector('.gh-tomato-type');
-    
-    const areaVal = parseFloat(areaInput?.value);
-    const cropType = cropSelect?.value;
-    const variety = varietyInput?.value.trim();
-    const cropStage = stageSelect?.value;
-    let tomatoType = null;
-    
-    if (!cropType) { alert(`Greenhouse ${idx+1}: Please select a crop.`); return null; }
-    if (!variety) { alert(`Greenhouse ${idx+1}: Enter crop variety.`); return null; }
-    if (isNaN(areaVal) || areaVal <= 0) { alert(`Greenhouse ${idx+1}: Enter a valid area > 0.`); return null; }
-    if (!transplantDate) { alert(`Greenhouse ${idx+1}: Please select transplant date.`); return null; }
-    
-    // Tomato validation: if crop is Tomato, tomato type is mandatory
-    if (cropType === 'Tomato') {
-      if (!tomatoTypeSelect || !tomatoTypeSelect.value) {
-        alert(`Greenhouse ${idx+1}: For Tomato crop, please select Tomato Type (Cooking/Salad/Cherry).`);
-        return null;
-      }
-      tomatoType = tomatoTypeSelect.value;
-    }
-    
-    let harvestMonths = null;
-    let avgYieldWeek = '';
-    let avgYieldMonth = '';
-    if (cropStage === 'Harvest') {
-      const hmInput = card.querySelector('.gh-harvest-months');
-      const rawMonths = hmInput?.value;
-      if (!rawMonths || parseFloat(rawMonths) <= 0) {
-        alert(`Greenhouse ${idx+1}: When stage is Harvest, please enter harvest months duration.`);
-        return null;
-      }
-      harvestMonths = parseFloat(rawMonths);
-      avgYieldWeek = card.querySelector('.gh-yield-week')?.value || '';
-      avgYieldMonth = card.querySelector('.gh-yield-month')?.value || '';
-    }
-    
-    greenhouses.push({
-      greenhouseIndex: idx+1,
-      area: areaVal,
-      cropType: cropType,
-      variety: variety,
-      cropStage: cropStage,
-      transplantDate: transplantDate,
-      tomatoType: tomatoType,
-      harvestMonths: harvestMonths,
-      avgYieldWeek: avgYieldWeek,
-      avgYieldMonth: avgYieldMonth
-    });
-  }
-  if (greenhouses.length === 0) { alert("Please add at least one greenhouse."); return null; }
-  return greenhouses;
-}
-
-// Simple user-friendly toast
-function showUserToast(message, isError = false) {
-  const toastDiv = document.createElement('div');
-  toastDiv.className = 'toast';
-  toastDiv.innerText = message;
-  if (isError) toastDiv.style.background = '#c54534';
-  else toastDiv.style.background = '#1f6e2c';
-  document.body.appendChild(toastDiv);
-  setTimeout(() => toastDiv.remove(), 3200);
-}
-
-// Save to Google Sheets with proper tabular format
-async function postToGoogleSheets(payload) {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
-    console.warn("Google Sheets endpoint placeholder");
-    return false;
-  }
-  try {
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      return result.success === true;
-    }
-    return false;
-  } catch (err) {
-    console.error("Google Sheets network error:", err);
-    return false;
-  }
-}
-
-// MAIN SUBMIT handler
-async function handleFormSubmit(event) {
-  event.preventDefault();
-  
+// Collect form data as flat rows (one per greenhouse) including tomatoType if applicable
+function collectFormAsTabularRows() {
   const growerName = document.getElementById('growerName').value.trim();
   const totalAreaRaw = document.getElementById('totalArea').value;
   const totalArea = parseFloat(totalAreaRaw);
+  if (!growerName) { alert("Grower name required"); return null; }
+  if (isNaN(totalArea) || totalArea <= 0) { alert("Valid total area required"); return null; }
+
+  const cards = document.querySelectorAll('#greenhouseList .greenhouse-card');
+  if (cards.length === 0) { alert("Add at least one greenhouse"); return null; }
   
-  if (!growerName) {
-    alert("Please enter grower name.");
-    return;
+  const rows = [];
+  for (let idx = 0; idx < cards.length; idx++) {
+    const card = cards[idx];
+    const areaVal = parseFloat(card.querySelector('.gh-area').value);
+    const cropType = card.querySelector('.gh-crop').value;
+    const variety = card.querySelector('.gh-variety').value.trim();
+    const cropStage = card.querySelector('.gh-stage').value;
+    const transplantDate = card.querySelector('.gh-transplant').value;
+    
+    // Tomato type retrieval (only matters if tomato is selected)
+    let tomatoType = '';
+    const tomatoSelect = card.querySelector('.gh-tomato-type');
+    if (cropType === 'Tomato') {
+      tomatoType = tomatoSelect ? tomatoSelect.value : '';
+      if (!tomatoType) {
+        alert(`Greenhouse ${idx+1}: Tomato crop requires selecting Tomato Type (Cooking, Salad, or Cherry).`);
+        return null;
+      }
+    }
+    
+    if (!cropType) { alert(`Greenhouse ${idx+1}: select crop`); return null; }
+    if (!variety) { alert(`Greenhouse ${idx+1}: enter variety`); return null; }
+    if (isNaN(areaVal) || areaVal <= 0) { alert(`Greenhouse ${idx+1}: valid area`); return null; }
+    
+    let harvestMonths = '', yieldWeek = '', yieldMonth = '';
+    if (cropStage === 'Harvest') {
+      const hm = card.querySelector('.gh-harvest-months').value;
+      if (!hm || parseFloat(hm) <= 0) { alert(`Greenhouse ${idx+1}: harvest months required`); return null; }
+      harvestMonths = hm;
+      yieldWeek = card.querySelector('.gh-yield-week').value || '';
+      yieldMonth = card.querySelector('.gh-yield-month').value || '';
+    }
+    
+    rows.push({
+      id: `${Date.now()}_${idx}_${Math.random().toString(36).substr(2, 6)}`,
+      timestamp: new Date().toISOString(),
+      growerName: growerName,
+      totalAreaHydroponic: totalArea,
+      greenhouseNumber: idx+1,
+      greenhouseArea: areaVal,
+      cropType: cropType,
+      variety: variety,
+      tomatoType: cropType === 'Tomato' ? tomatoType : '',   // extra column for tomato variety
+      cropStage: cropStage,
+      transplantDate: transplantDate,
+      harvestMonths: harvestMonths,
+      avgYieldWeek: yieldWeek,
+      avgYieldMonth: yieldMonth,
+      submissionGroup: Date.now()
+    });
   }
-  if (isNaN(totalArea) || totalArea <= 0) {
-    alert("Total hydroponic area must be a positive number.");
-    return;
-  }
-  
-  const greenhousesData = collectAllGreenhouses();
-  if (!greenhousesData) return;
-  
-  const submissionRecord = {
-    growerName: growerName,
-    totalArea: totalArea,
-    greenhouses: greenhousesData,
-    timestamp: new Date().toISOString(),
-    recordId: `hyd_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`
-  };
-  
-  // 1) Always backup locally (offline resilience)
-  let backupArray = [];
+  return rows;
+}
+
+// Send to Google Sheets
+async function postBatchToSheets(recordBatch) {
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) return false;
   try {
-    const storedBackup = localStorage.getItem('hydroponic_backup');
-    backupArray = storedBackup ? JSON.parse(storedBackup) : [];
-    backupArray.push(submissionRecord);
-    if (backupArray.length > 60) backupArray.shift();
-    localStorage.setItem('hydroponic_backup', JSON.stringify(backupArray));
-  } catch (e) { console.warn("Local backup issue", e); }
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ batch: recordBatch, type: 'tabular_with_tomato', timestamp: new Date().toISOString() })
+    });
+    return true;
+  } catch (err) { console.error(err); return false; }
+}
+
+// Render table with Tomato Type column
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  if (!allRecords.length) {
+    tbody.innerHTML = '<tr class="empty-table"><td colspan="11">📭 No records yet. Submit greenhouse data to see table.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '';
+  const sorted = [...allRecords].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+  sorted.forEach(rec => {
+    const row = tbody.insertRow();
+    const dateDisplay = new Date(rec.timestamp).toLocaleString().slice(0,16);
+    const tomatoDisplay = rec.tomatoType ? `<span class="badge-tomato">🍅 ${rec.tomatoType}</span>` : '—';
+    const yieldInfo = rec.cropStage === 'Harvest' ? `🍅 Harvest: ${rec.harvestMonths} mo | W:${rec.avgYieldWeek || '-'} M:${rec.avgYieldMonth || '-'}` : '—';
+    
+    row.innerHTML = `
+      <td style="white-space: nowrap;">${escapeHtml(dateDisplay)}</td>
+      <td>${escapeHtml(rec.growerName)}</td>
+      <td>${rec.totalAreaHydroponic} m²</td>
+      <td>GH #${rec.greenhouseNumber}</td>
+      <td><span class="badge-crop">${escapeHtml(rec.cropType)}</span></td>
+      <td>${escapeHtml(rec.variety)}</td>
+      <td>${tomatoDisplay}</td>
+      <td>${rec.cropStage}</td>
+      <td>${rec.greenhouseArea} m²</td>
+      <td style="max-width:180px; font-size:0.75rem;">${escapeHtml(yieldInfo)}</td>
+      <td class="table-actions"><button class="icon-btn delete-single" data-id="${rec.id}">🗑 Delete</button></td>
+    `;
+  });
   
-  // 2) Attempt push to Google Sheets
-  const sheetsSuccess = await postToGoogleSheets(submissionRecord);
+  document.querySelectorAll('.delete-single').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = btn.getAttribute('data-id');
+      deleteSingleRecord(id);
+    });
+  });
+}
+
+function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+function deleteSingleRecord(recordId) {
+  if (confirm('Delete this record permanently?')) {
+    allRecords = allRecords.filter(r => r.id !== recordId);
+    saveRecordsToLocal();
+    renderTable();
+    showUserToast('Record deleted');
+  }
+}
+
+function saveRecordsToLocal() {
+  localStorage.setItem('hydroponic_tabular_records', JSON.stringify(allRecords));
+}
+
+function loadRecordsFromLocal() {
+  const stored = localStorage.getItem('hydroponic_tabular_records');
+  if (stored) {
+    try {
+      allRecords = JSON.parse(stored);
+      if (!Array.isArray(allRecords)) allRecords = [];
+    } catch(e) { allRecords = []; }
+  } else {
+    allRecords = [];
+  }
+  renderTable();
+}
+
+function clearAllRecords() {
+  if (confirm('⚠️ Delete ALL saved records? This action cannot be undone.')) {
+    allRecords = [];
+    saveRecordsToLocal();
+    renderTable();
+    showUserToast('All records cleared');
+  }
+}
+
+async function handleFormSubmit(event) {
+  event.preventDefault();
+  const rows = collectFormAsTabularRows();
+  if (!rows) return;
+  
+  allRecords.push(...rows);
+  saveRecordsToLocal();
+  renderTable();
+  
+  const sheetsOk = await postBatchToSheets(rows);
   
   const successDiv = document.getElementById('successMessage');
-  if (sheetsSuccess) {
-    successDiv.innerHTML = '✅ Data saved to Google Sheets successfully!';
+  if (sheetsOk) {
+    successDiv.innerHTML = `✅ ${rows.length} greenhouse record(s) saved. Tomato types included in Google Sheets.`;
     successDiv.style.background = '#1f6e2c';
-    showUserToast('✓ Saved to cloud');
+    showUserToast('✓ Synced to cloud with tomato data');
   } else {
-    successDiv.innerHTML = '📁 Data saved locally. It will sync automatically when connection is restored.';
+    successDiv.innerHTML = `📁 ${rows.length} record(s) saved locally. Tomato type data preserved locally.`;
     successDiv.style.background = '#e68a2e';
-    showUserToast('📱 Saved offline — will sync later', false);
+    showUserToast('📱 Saved offline (tomato type included)');
   }
   successDiv.style.display = 'block';
-  setTimeout(() => { successDiv.style.display = 'none'; }, 5000);
+  setTimeout(() => { successDiv.style.display = 'none'; }, 4000);
   
-  // Reset form fields for next entry
+  // Reset form after submission
   document.getElementById('growerName').value = '';
   document.getElementById('totalArea').value = '';
   document.getElementById('greenhouseList').innerHTML = '';
   greenhouseCounter = 1;
-  const initialCard = buildGreenhouseCard(1);
-  document.getElementById('greenhouseList').appendChild(initialCard);
+  document.getElementById('greenhouseList').appendChild(buildGreenhouseCard(1));
 }
 
-// Clear all user inputs
-function resetEntireForm() {
-  if (confirm('Clear all unsaved data from the form?')) {
+function resetFormUI() {
+  if (confirm('Clear current form inputs? This will not affect saved records.')) {
     document.getElementById('growerName').value = '';
     document.getElementById('totalArea').value = '';
     document.getElementById('greenhouseList').innerHTML = '';
     greenhouseCounter = 1;
-    const freshCard = buildGreenhouseCard(1);
-    document.getElementById('greenhouseList').appendChild(freshCard);
-    showUserToast('Form cleared', false);
+    document.getElementById('greenhouseList').appendChild(buildGreenhouseCard(1));
+    showUserToast('Form cleared');
   }
 }
 
-// Silent connection check (no UI shown)
+function showUserToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerText = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2800);
+}
+
 async function silentConnectionHeartbeat() {
   if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) return;
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-    await fetch(GOOGLE_SCRIPT_URL, { method: 'GET', signal: controller.signal, mode: 'cors' });
-    clearTimeout(timeoutId);
-    console.log("[background] Sheets endpoint reachable");
-  } catch (err) {
-    console.log("[background] Sheets endpoint not reachable, will retry later");
-  }
+  try { await fetch(GOOGLE_SCRIPT_URL, { method: 'GET', mode: 'no-cors' }); } catch(e) {}
 }
 
-// Initialize the interface
-function initApp() {
+// Initialize
+function init() {
   const container = document.getElementById('greenhouseList');
   container.innerHTML = '';
   greenhouseCounter = 1;
-  const defaultCard = buildGreenhouseCard(1);
-  container.appendChild(defaultCard);
+  container.appendChild(buildGreenhouseCard(1));
   
   document.getElementById('addGreenhouseBtn').addEventListener('click', addNewGreenhouse);
   document.getElementById('hydroponicForm').addEventListener('submit', handleFormSubmit);
-  document.getElementById('resetBtn').addEventListener('click', resetEntireForm);
+  document.getElementById('resetBtn').addEventListener('click', resetFormUI);
+  document.getElementById('clearAllRecordsBtn').addEventListener('click', clearAllRecords);
   
-  // Silent background check every 90 seconds
-  setInterval(() => {
-    silentConnectionHeartbeat();
-  }, 90000);
+  loadRecordsFromLocal();
   silentConnectionHeartbeat();
+  setInterval(silentConnectionHeartbeat, 90000);
 }
 
-// start everything
-initApp();
+init();
 </script>
 </body>
 </html>
