@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Hydroponic Data Tracker | Google Sheets Tabular Format</title>
+  <title>Hydroponic Data Tracker</title>
   <style>
     * {
       margin: 0;
@@ -154,6 +154,7 @@
       font-size: 0.7rem;
       border-radius: 2rem;
       cursor: pointer;
+      border: none;
     }
 
     .harvest-fields {
@@ -227,7 +228,6 @@
       margin-top: 1.5rem;
       padding: 0.8rem;
       border-top: 1px solid #c8e0c4;
-      font-style: italic;
     }
 
     @media (max-width: 680px) {
@@ -240,10 +240,9 @@
 <div class="app-wrapper">
   <div class="header">
     <h1>Hydroponic Data Tracker</h1>
-    <div class="subhead">🌿 Smart Greenhouse Management · Direct to Google Sheets</div>
+    <div class="subhead">🌿 Smart Greenhouse Management</div>
   </div>
 
-  <!-- Data Entry Form -->
   <div class="card">
     <form id="hydroponicForm">
       <div class="form-grid">
@@ -252,37 +251,34 @@
           <input type="text" id="growerName" placeholder="Full name" required>
         </div>
         <div class="input-group">
-          <label>📐 Total Hydroponic Area (m²) *</label>
+          <label>📐 Total Area (m²) *</label>
           <input type="number" id="totalArea" step="0.1" placeholder="Total square meters" required>
         </div>
       </div>
 
       <div class="greenhouse-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
-          <strong>🏡 Greenhouse Details (each greenhouse = one row in sheet)</strong>
+          <strong>🏡 Greenhouse Details</strong>
           <button type="button" id="addGreenhouseBtn" style="background:#2b6e3c; padding: 0.4rem 1.2rem;">+ Add Greenhouse</button>
         </div>
         <div id="greenhouseList"></div>
       </div>
 
       <div class="btn-group">
-        <button type="submit">💾 Save to Google Sheets</button>
-        <button type="button" id="resetBtn" class="secondary">⟳ Clear Form</button>
+        <button type="submit">💾 Save to Sheets</button>
+        <button type="button" id="resetBtn" class="secondary">⟳ Clear</button>
       </div>
     </form>
     <div id="successMessage" class="success-message"></div>
   </div>
   
   <div class="footer-note">
-    All rights reserved. Beta Version 2026
+    Hydroponic Data Tracker
   </div>
 </div>
 
 <script>
-// ============================================================
-// GOOGLE APPS SCRIPT WEB APP URL (Replace with your deployed URL)
-// ============================================================
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYmctO2RzWdoebrnVWDM-WG4RetgLo_ssgNxxQDLLNeGnXWynbTMCEMlyIlmRKVlI/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbygaBoNkMW1tfnjh3ZK2lLWIWaESClxgYkyAqtebs--S3RLbyqvlXWa2eBYSatsU0wk/exec';
 
 const cropOptions = [
   "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", 
@@ -294,7 +290,6 @@ const tomatoTypes = ["Cooking", "Salad", "Cherry"];
 
 let greenhouseCounter = 1;
 
-// ---------- Build Greenhouse Card ----------
 function buildGreenhouseCard(sequence, prefillData = null) {
   const p = prefillData || {};
   const today = new Date().toISOString().slice(0, 10);
@@ -308,12 +303,12 @@ function buildGreenhouseCard(sequence, prefillData = null) {
     </div>
     <div class="gh-grid">
       <div><label>Area (m²) *</label><input type="number" step="0.1" class="gh-area" value="${p.area || ''}" placeholder="m²" required></div>
-      <div><label>Crop Type *</label><select class="gh-crop" required>
+      <div><label>Crop *</label><select class="gh-crop" required>
         <option value="">-- Select --</option>
         ${cropOptions.map(c => `<option value="${c}" ${p.cropType === c ? 'selected' : ''}>${c}</option>`).join('')}
       </select></div>
-      <div><label>Variety *</label><input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="e.g., Butterhead, Roma" required></div>
-      <div><label>Crop Stage *</label><select class="gh-stage" required>
+      <div><label>Variety *</label><input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="Variety" required></div>
+      <div><label>Stage *</label><select class="gh-stage" required>
         <option ${p.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option>
         <option ${p.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option>
         <option ${p.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option>
@@ -322,16 +317,16 @@ function buildGreenhouseCard(sequence, prefillData = null) {
       <div><label>Date Transplanted *</label><input type="date" class="gh-transplant" value="${p.transplantDate || today}" required></div>
     </div>
     <div class="tomato-type-field">
-      <label style="font-weight:600; color:#b45116;">🍅 Tomato Type (for Tomato crops)</label>
+      <label>🍅 Tomato Type</label>
       <select class="gh-tomato-type">
-        <option value="">-- Select type --</option>
+        <option value="">-- Select --</option>
         ${tomatoTypes.map(t => `<option value="${t}" ${p.tomatoType === t ? 'selected' : ''}>${t}</option>`).join('')}
       </select>
     </div>
     <div class="harvest-fields">
-      <div><label>📆 Months of Harvest</label><input type="number" step="0.5" class="gh-harvest-months" value="${p.harvestMonths || ''}" placeholder="Duration in months"></div>
-      <div><label>📊 Av Yield per Week (kg)</label><input type="text" class="gh-yield-week" value="${p.avgYieldWeek || ''}" placeholder="kg/week"></div>
-      <div><label>📈 Av Yield per Month (kg)</label><input type="text" class="gh-yield-month" value="${p.avgYieldMonth || ''}" placeholder="kg/month"></div>
+      <div><label>📆 Months of Harvest</label><input type="number" step="0.5" class="gh-harvest-months" value="${p.harvestMonths || ''}" placeholder="Months"></div>
+      <div><label>📊 Yield per Week</label><input type="text" class="gh-yield-week" value="${p.avgYieldWeek || ''}" placeholder="kg/week"></div>
+      <div><label>📈 Yield per Month</label><input type="text" class="gh-yield-month" value="${p.avgYieldMonth || ''}" placeholder="kg/month"></div>
     </div>
   `;
   
@@ -355,10 +350,12 @@ function buildGreenhouseCard(sequence, prefillData = null) {
   const updateHarvestVisibility = () => {
     if (stageSelect.value === 'Harvest') {
       harvestDiv.classList.add('active');
-      wrapper.querySelector('.gh-harvest-months').required = true;
+      const monthsInput = wrapper.querySelector('.gh-harvest-months');
+      if (monthsInput) monthsInput.required = true;
     } else {
       harvestDiv.classList.remove('active');
-      wrapper.querySelector('.gh-harvest-months').required = false;
+      const monthsInput = wrapper.querySelector('.gh-harvest-months');
+      if (monthsInput) monthsInput.required = false;
     }
   };
   
@@ -369,7 +366,10 @@ function buildGreenhouseCard(sequence, prefillData = null) {
   updateHarvestVisibility();
   
   if (sequence > 1) {
-    wrapper.querySelector('.remove-gh')?.addEventListener('click', () => wrapper.remove());
+    const removeBtn = wrapper.querySelector('.remove-gh');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => wrapper.remove());
+    }
   }
   
   return wrapper;
@@ -381,17 +381,25 @@ function addNewGreenhouse() {
   container.appendChild(buildGreenhouseCard(greenhouseCounter));
 }
 
-// Collect data in exact tabular format matching requested columns
 function collectTabularData() {
   const growerName = document.getElementById('growerName').value.trim();
   const totalAreaRaw = document.getElementById('totalArea').value;
   const totalArea = parseFloat(totalAreaRaw);
   
-  if (!growerName) { alert("Please enter Grower Name"); return null; }
-  if (isNaN(totalArea) || totalArea <= 0) { alert("Please enter valid Total Hydroponic Area"); return null; }
+  if (!growerName) { 
+    alert("Please enter Grower Name"); 
+    return null; 
+  }
+  if (isNaN(totalArea) || totalArea <= 0) { 
+    alert("Please enter valid Total Area"); 
+    return null; 
+  }
   
   const cards = document.querySelectorAll('#greenhouseList .greenhouse-card');
-  if (cards.length === 0) { alert("Please add at least one greenhouse"); return null; }
+  if (cards.length === 0) { 
+    alert("Please add at least one greenhouse"); 
+    return null; 
+  }
   
   const rows = [];
   const formattedTimestamp = new Date().toLocaleString('en-US', { 
@@ -408,21 +416,32 @@ function collectTabularData() {
     const cropStage = card.querySelector('.gh-stage').value;
     const transplantDate = card.querySelector('.gh-transplant').value;
     
-    // Tomato type validation
     let tomatoType = '';
     if (cropType === 'Tomato') {
       const tomatoSelect = card.querySelector('.gh-tomato-type');
       tomatoType = tomatoSelect ? tomatoSelect.value : '';
       if (!tomatoType) {
-        alert(`Greenhouse ${idx+1}: Tomato crop requires selecting Tomato Type (Cooking, Salad, or Cherry).`);
+        alert(`Greenhouse ${idx+1}: Tomato crop requires selecting Tomato Type`);
         return null;
       }
     }
     
-    if (!cropType) { alert(`Greenhouse ${idx+1}: Please select a Crop`); return null; }
-    if (!variety) { alert(`Greenhouse ${idx+1}: Please enter Variety`); return null; }
-    if (isNaN(areaVal) || areaVal <= 0) { alert(`Greenhouse ${idx+1}: Please enter valid Area (m²)`); return null; }
-    if (!transplantDate) { alert(`Greenhouse ${idx+1}: Please select Date Transplanted`); return null; }
+    if (!cropType) { 
+      alert(`Greenhouse ${idx+1}: Please select a Crop`); 
+      return null; 
+    }
+    if (!variety) { 
+      alert(`Greenhouse ${idx+1}: Please enter Variety`); 
+      return null; 
+    }
+    if (isNaN(areaVal) || areaVal <= 0) { 
+      alert(`Greenhouse ${idx+1}: Please enter valid Area`); 
+      return null; 
+    }
+    if (!transplantDate) { 
+      alert(`Greenhouse ${idx+1}: Please select Date Transplanted`); 
+      return null; 
+    }
     
     let harvestMonths = '';
     let yieldWeek = '';
@@ -438,87 +457,51 @@ function collectTabularData() {
       yieldMonth = card.querySelector('.gh-yield-month').value || '';
     }
     
-    // Create row exactly matching the required columns:
-    // Timestamp | Grower Name | Total Area (m2) | GH # | Crop | Variety | Crop Stage | Area (m2) | Date Transplanted | Av Yield per Week | Av Yield per Month | Months of Harvest | Tomato Type
-    rows.push({
-      timestamp: formattedTimestamp,
-      isoDate: new Date().toISOString(),
-      growerName: growerName,
-      totalAreaM2: totalArea,
-      greenhouseNumber: idx + 1,
-      crop: cropType,
-      variety: variety,
-      cropStage: cropStage,
-      areaM2: areaVal,
-      dateTransplanted: transplantDate,
-      avgYieldPerWeek: yieldWeek,
-      avgYieldPerMonth: yieldMonth,
-      monthsOfHarvest: harvestMonths,
-      tomatoType: tomatoType
-    });
+    rows.push([
+      formattedTimestamp,
+      growerName,
+      totalArea,
+      idx + 1,
+      cropType,
+      variety,
+      cropStage,
+      areaVal,
+      transplantDate,
+      yieldWeek,
+      yieldMonth,
+      harvestMonths,
+      tomatoType
+    ]);
   }
   return rows;
 }
 
-// Send data to Google Sheets with exact column mapping
-async function sendToGoogleSheets(tabularRows) {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
-    console.warn("Google Sheets URL not configured");
-    return false;
-  }
-  
+async function sendToGoogleSheets(records) {
   try {
-    // Prepare payload with explicit column headers as requested
-    const payload = {
-      action: "saveHydroponicTabular",
-      headers: [
-        "Timestamp",
-        "Grower Name",
-        "Total Area (m2)",
-        "GH #",
-        "Crop",
-        "Variety",
-        "Crop Stage",
-        "Area (m2)",
-        "Date Transplanted",
-        "Av Yield per Week (kg or unit)",
-        "Av Yield per Month (kg or unit)",
-        "Months of Harvest",
-        "Tomato Type"
-      ],
-      records: tabularRows.map(row => [
-        row.timestamp,
-        row.growerName,
-        row.totalAreaM2,
-        row.greenhouseNumber,
-        row.crop,
-        row.variety,
-        row.cropStage,
-        row.areaM2,
-        row.dateTransplanted,
-        row.avgYieldPerWeek,
-        row.avgYieldPerMonth,
-        row.monthsOfHarvest,
-        row.tomatoType
-      ]),
-      submittedAt: new Date().toISOString()
-    };
+    const payload = { records: records };
     
-    await fetch(GOOGLE_SCRIPT_URL, {
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
+      mode: 'cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     
-    return true;
+    const result = await response.json();
+    
+    if (result.success) {
+      return true;
+    } else {
+      console.error("Server error:", result.error);
+      return false;
+    }
+    
   } catch (error) {
-    console.error("Network error sending to Google Sheets:", error);
+    console.error("Network error:", error);
     return false;
   }
 }
 
-// Show toast message
 function showToast(message, isError = false) {
   const toast = document.createElement('div');
   toast.className = 'toast';
@@ -529,44 +512,45 @@ function showToast(message, isError = false) {
   setTimeout(() => toast.remove(), 3500);
 }
 
-// Main form submit handler
 async function handleFormSubmit(event) {
   event.preventDefault();
   
-  const tabularData = collectTabularData();
-  if (!tabularData) return;
+  const records = collectTabularData();
+  if (!records) return;
   
-  // Show saving indicator
   const submitBtn = document.querySelector('button[type="submit"]');
   const originalText = submitBtn.innerHTML;
-  submitBtn.innerHTML = '⏳ Saving to Google Sheets...';
+  submitBtn.innerHTML = '⏳ Saving...';
   submitBtn.disabled = true;
   
   try {
-    const success = await sendToGoogleSheets(tabularData);
+    const success = await sendToGoogleSheets(records);
     
     const successDiv = document.getElementById('successMessage');
     if (success) {
-      const recordCount = tabularData.length;
-      successDiv.innerHTML = `✅ Success! ${recordCount} greenhouse record(s) saved to Google Sheets.`;
+      successDiv.innerHTML = `✅ ${records.length} record(s) saved successfully`;
       successDiv.style.background = '#1f6e2c';
-      showToast(`✓ ${recordCount} record(s) saved to Google Sheets`);
+      successDiv.style.display = 'block';
+      showToast(`✓ ${records.length} record(s) saved`);
       resetFormFields();
     } else {
-      successDiv.innerHTML = `⚠️ Unable to reach Google Sheets. Please check your internet connection and verify the Apps Script URL.`;
+      successDiv.innerHTML = `⚠️ Failed to save`;
       successDiv.style.background = '#e68a2e';
-      showToast('❌ Failed to save to Google Sheets', true);
+      successDiv.style.display = 'block';
     }
-    successDiv.style.display = 'block';
-    setTimeout(() => { successDiv.style.display = 'none'; }, 6000);
+    setTimeout(() => { 
+      successDiv.style.display = 'none'; 
+    }, 3000);
   } catch (err) {
-    console.error("Submission error:", err);
-    showToast('Error saving data', true);
+    console.error("Error:", err);
+    showToast('❌ Error saving data', true);
     const successDiv = document.getElementById('successMessage');
-    successDiv.innerHTML = `❌ Error: ${err.message || 'Could not save to Google Sheets'}`;
+    successDiv.innerHTML = `❌ Error saving data`;
     successDiv.style.background = '#c54534';
     successDiv.style.display = 'block';
-    setTimeout(() => { successDiv.style.display = 'none'; }, 5000);
+    setTimeout(() => { 
+      successDiv.style.display = 'none'; 
+    }, 3000);
   } finally {
     submitBtn.innerHTML = originalText;
     submitBtn.disabled = false;
@@ -582,30 +566,12 @@ function resetFormFields() {
 }
 
 function manualReset() {
-  if (confirm('Clear all form inputs? Unsaved data will be lost.')) {
+  if (confirm('Clear all data?')) {
     resetFormFields();
     showToast('Form cleared');
   }
 }
 
-// Silent connection test
-async function testConnection() {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
-    console.log("⚠️ Please configure GOOGLE_SCRIPT_URL with your Apps Script Web App URL");
-    return;
-  }
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-    await fetch(GOOGLE_SCRIPT_URL, { method: 'GET', signal: controller.signal, mode: 'no-cors' });
-    clearTimeout(timeoutId);
-    console.log("✅ Google Sheets endpoint reachable");
-  } catch (err) {
-    console.log("⚠️ Google Sheets endpoint not reachable");
-  }
-}
-
-// Initialize application
 function init() {
   const container = document.getElementById('greenhouseList');
   container.innerHTML = '';
@@ -615,13 +581,13 @@ function init() {
   document.getElementById('addGreenhouseBtn').addEventListener('click', addNewGreenhouse);
   document.getElementById('hydroponicForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('resetBtn').addEventListener('click', manualReset);
-  
-  // Test connection silently
-  setTimeout(testConnection, 1000);
-  setInterval(testConnection, 120000);
 }
 
-init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
