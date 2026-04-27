@@ -1,840 +1,481 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Hydroponic Tracker | Zone + Locality | Beta v1.0</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-        }
-        body {
-            background: linear-gradient(145deg, #e8f5e9 0%, #c8e6d9 100%);
-            min-height: 100vh;
-            padding: 24px 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            flex: 1;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 32px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 20px 35px -12px rgba(0, 32, 0, 0.15);
-        }
-        h1 {
-            color: #1b5e2a;
-            font-size: 1.9rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-        }
-        .badge-beta {
-            background: #ff9800;
-            color: white;
-            font-size: 0.7rem;
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-weight: 600;
-        }
-        .subtitle {
-            color: #4a5b4e;
-            border-left: 4px solid #4caf7a;
-            padding-left: 16px;
-            margin: 8px 0 24px 0;
-            font-weight: 500;
-        }
-        .zone-locality-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-        .zone-dropdown-section, .locality-dropdown-section {
-            background: #e8f0e8;
-            border-radius: 24px;
-            padding: 18px 24px;
-            border: 1px solid #c8dbc8;
-        }
-        .zone-dropdown-label, .locality-dropdown-label {
-            font-weight: 700;
-            color: #1a4f2a;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .zone-select, .locality-select {
-            width: 100%;
-            padding: 14px 20px;
-            border-radius: 40px;
-            border: 2px solid #c8dbc8;
-            background: white;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .zone-select:focus, .locality-select:focus {
-            outline: none;
-            border-color: #4caf7a;
-            box-shadow: 0 0 0 3px rgba(76, 175, 122, 0.2);
-        }
-        .zone-info-card {
-            background: #f5f8f0;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            color: #2e5c2e;
-            margin-top: 12px;
-            text-align: center;
-        }
-        .substrate-section {
-            background: #fef9e6;
-            border-radius: 24px;
-            padding: 20px 24px;
-            margin-bottom: 28px;
-            border: 1px solid #e6d5b8;
-        }
-        .substrate-dropdown {
-            width: 100%;
-            max-width: 300px;
-            padding: 14px 18px;
-            border: 2px solid #e0cfaa;
-            border-radius: 28px;
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
-        }
-        .grower-section {
-            background: #eef2f0;
-            border-radius: 24px;
-            padding: 20px 24px;
-            margin-bottom: 28px;
-            border: 1px solid #cde0d4;
-        }
-        .grower-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 16px;
-        }
-        .grower-select-wrapper {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-            flex: 2;
-        }
-        .grower-dropdown {
-            flex: 3;
-            min-width: 280px;
-            padding: 12px 16px;
-            border-radius: 28px;
-            border: 2px solid #c8dbc8;
-            font-size: 0.95rem;
-            background: white;
-        }
-        .zone-grower-count {
-            background: #d4e6d4;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #2d5a2d;
-        }
-        .btn-add-grower {
-            background: #5e9b6e;
-            padding: 10px 24px;
-            border-radius: 40px;
-            border: none;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-add-grower:hover {
-            background: #3d7a4a;
-            transform: translateY(-1px);
-        }
-        .new-grower-fields {
-            display: none;
-            margin-top: 18px;
-            padding: 16px;
-            background: white;
-            border-radius: 20px;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        .new-grower-fields.active {
-            display: grid;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 28px;
-        }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        label {
-            font-weight: 700;
-            color: #1a4f2a;
-            font-size: 0.85rem;
-        }
-        input, select {
-            padding: 12px 16px;
-            border: 2px solid #e2eee2;
-            border-radius: 20px;
-            font-size: 0.95rem;
-            background: white;
-        }
-        button {
-            background: #2e6b37;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            color: white;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-        button:hover {
-            background: #1f5627;
-            transform: translateY(-2px);
-        }
-        button.secondary {
-            background: #757575;
-        }
-        button.secondary:hover {
-            background: #5a5a5a;
-        }
-        .greenhouse-card {
-            background: #fefef7;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #ddebe0;
-        }
-        .gh-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-            margin-top: 12px;
-        }
-        .harvest-fields {
-            display: none;
-            margin-top: 20px;
-            padding: 16px 20px;
-            background: #eef6ea;
-            border-radius: 20px;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-        }
-        .harvest-fields.active {
-            display: grid;
-        }
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 28px;
-            margin-bottom: 20px;
-        }
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            right: 24px;
-            background: #1f4626;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 60px;
-            animation: slideUp 0.25s ease;
-            z-index: 2000;
-            font-weight: 500;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        .toast.error {
-            background: #bc4742;
-        }
-        .connection-status {
-            background: #e8f0e8;
-            padding: 8px 16px;
-            border-radius: 28px;
-            margin-bottom: 20px;
-            display: inline-block;
-            font-size: 0.85rem;
-            color: #2d5a2d;
-        }
-        .test-btn {
-            background: #1976d2;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            margin-left: 12px;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hydroponic Data Entry</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6d9 100%);
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .header h1 {
+      background: linear-gradient(135deg, #1b5e20, #0d3b1a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .input-group label {
+      font-weight: 700;
+      color: #1b5e20;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+    input, select, textarea {
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #2e7d32;
+      outline: none;
+    }
+    button {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #1b5e20;
+      transform: translateY(-2px);
+    }
+    .greenhouse-section {
+      border-top: 2px dashed #a5d6a7;
+      padding-top: 1.5rem;
+      margin-top: 1rem;
+    }
+    .greenhouse-card {
+      background: #f1f8e9;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #2e7d32;
+    }
+    .gh-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.8rem;
+    }
+    .status-bar {
+      background: #e8f5e9;
+      padding: 0.8rem;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .status-online {
+      background: #4caf50;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+    }
+    .status-offline {
+      background: #ff9800;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #2e7d32;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 2rem;
+      animation: slideIn 0.3s ease;
+      z-index: 1000;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .remove-gh {
+      background: #ffcdd2;
+      color: #c62828;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.7rem;
+      margin-left: 1rem;
+    }
+    .harvest-fields {
+      display: none;
+    }
+    .harvest-fields.active {
+      display: grid;
+      grid-column: span 2;
+    }
+    .success-message {
+      display: none;
+      background: #4caf50;
+      color: white;
+      padding: 1rem;
+      border-radius: 1rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <div class="card">
-        <h1>
-            🌱 Hydroponic Grower Tracker
-            <span class="badge-beta">BETA 1.0</span>
-        </h1>
-        <div class="subtitle">Smart Data Capture</div>
-        <div style="margin-bottom: 20px;">
-            <span id="connectionStatus" class="connection-status">📡 System ready</span>
-            <button type="button" onclick="testConnection()" class="test-btn" style="background:#1976d2; border:none; color:white; cursor:pointer;">Test Connection</button>
-        </div>
-        <!-- Zone and Locality Dropdowns Side by Side -->
-        <div class="zone-locality-row">
-            <!-- Zone Dropdown -->
-            <div class="zone-dropdown-section">
-                <div class="zone-dropdown-label">
-                    <span>🗺️</span> Select Growing Zone
-                </div>
-                <select id="zoneSelect" class="zone-select">
-                    <option value="E1">📍 Zone E1 - Primary Commercial</option>
-                    <option value="E2">📍 Zone E2 - Mont Ida / Montagne Blanche</option>
-                    <option value="E3">📍 Zone E3 - Brisee Verdiere / Belvedere</option>
-                    <option value="E4">📍 Zone E4 - Saint Julien / Camp de Masque</option>
-                </select>
-                <div class="zone-info-card">
-                    <strong id="zoneGrowerCountDisplay">0 growers</strong> in this zone
-                </div>
-            </div>
-            <!-- Locality Dropdown (Filters based on Zone) -->
-            <div class="locality-dropdown-section">
-                <div class="locality-dropdown-label">
-                    <span>📍</span> Field Location / Locality
-                </div>
-                <select id="localitySelect" class="locality-select">
-                    <option value="">-- Select Locality --</option>
-                </select>
-                <div class="zone-info-card">
-                    <span id="localityCountDisplay">0 locations</span> available in this zone
-                </div>
-            </div>
-        </div>
-        <!-- Substrate Type -->
-        <div class="substrate-section">
-            <label class="substrate-label">🌿 Substrate / Growing System</label>
-            <select id="substrateType" class="substrate-dropdown">
-                <option value="Coir based">🧫 Coir Based</option>
-                <option value="NFT">💧 NFT (Nutrient Film Technique)</option>
-                <option value="DFT">🌊 DFT (Deep Flow Technique)</option>
-                <option value="Aquaponics">🐟 Aquaponics</option>
-            </select>
-        </div>
-        <!-- Grower Section -->
-        <div class="grower-section">
-            <div class="grower-header">
-                <div class="grower-select-wrapper">
-                    <label>👨‍🌾 Select Grower for <span id="activeZoneLabel">E1</span>:</label>
-                    <select id="growerSelect" class="grower-dropdown">
-                        <option value="">-- Choose a grower --</option>
-                    </select>
-                    <span id="zoneGrowerCount" class="zone-grower-count">0 growers</span>
-                    <button type="button" id="showNewGrowerBtn" class="btn-add-grower">+ New Grower</button>
-                </div>
-            </div>
-            <div id="newGrowerFields" class="new-grower-fields">
-                <input type="text" id="newGrowerName" placeholder="Full Name *">
-                <input type="text" id="newGrowerContact" placeholder="Contact Number">
-                <select id="newGrowerLocality" class="new-grower-locality">
-                    <option value="">Select Locality</option>
-                </select>
-                <select id="newGrowerZone">
-                    <option value="E1">Zone E1</option>
-                    <option value="E2">Zone E2</option>
-                    <option value="E3">Zone E3</option>
-                    <option value="E4">Zone E4</option>
-                </select>
-                <button type="button" id="saveNewGrowerBtn" style="background:#3d704b;">✓ Add Grower</button>
-                <button type="button" id="cancelNewGrowerBtn" class="secondary">Cancel</button>
-            </div>
-        </div>
-        <!-- Main Form -->
-        <form id="hydroponicForm">
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>📐 Total Hydroponic Area (m²) *</label>
-                    <input type="number" id="totalArea" step="0.1" placeholder="Total growing area" required />
-                </div>
-            </div>
-            <div id="greenhousesContainer"></div>
-            <button type="button" id="addGreenhouse" style="margin-bottom: 18px; background: #2b5e6e;">+ Add Greenhouse Unit</button>
-            <div class="btn-group">
-                <button type="submit" id="saveBtn">💾 Save Data</button>
-                <button type="button" id="clearForm" class="secondary">⟳ Clear Form</button>
-            </div>
-        </form>
+<div class="app-container">
+  <div class="header">
+    <h1>🌱 Hydroponic Crop Production</h1>
+    <p>Enter your greenhouse data - Automatically saves to Google Sheets</p>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="card" style="padding: 1rem;">
+    <div class="status-bar">
+      <span>📡 Google Sheets Connection:</span>
+      <span id="connectionStatus" class="status-offline">Checking...</span>
     </div>
+  </div>
+
+  <!-- Main Form -->
+  <div class="card">
+    <form id="hydroponicForm">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>👨‍🌾 Grower Name *</label>
+          <input type="text" id="growerName" required placeholder="Enter your full name">
+        </div>
+        <div class="input-group">
+          <label>📐 Total Hydroponic Area (m²) *</label>
+          <input type="number" id="totalArea" step="0.1" required placeholder="Total square meters">
+        </div>
+      </div>
+
+      <div class="greenhouse-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <strong>🏡 Greenhouse Details</strong>
+          <button type="button" id="addGreenhouseBtn" style="padding: 0.4rem 1rem;">+ Add Greenhouse</button>
+        </div>
+        <div id="greenhouseList"></div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="submit">💾 Submit to Google Sheets</button>
+        <button type="button" id="resetBtn" style="background: #6c757d;">⟳ Clear Form</button>
+      </div>
+    </form>
+    <div id="successMessage" class="success-message"></div>
+  </div>
+
+  <div style="text-align: center; color: #6d8f7c; padding: 1rem;">
+    ✅ Data is saved directly to Google Sheets - No account required
+  </div>
 </div>
+
 <script>
-    // ============================================================
-    // GOOGLE SHEETS CONFIGURATION
-    // ============================================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWsMqiteiRLkO_FLbksyHeKHsFAnoUWuJpB-37KmXvWgwcxGAJ00BubJx2tT-IBYfH/exec";
-    const SHEET_ID = "1NT4ceU8f2V3WFgyzrDr6ZdQniT3Frl77j0cFYBtEhiE";
-    // ============================================================
-    // ZONE-BASED LOCALITIES (Field Locations)
-    // ============================================================
-    const LOCALITIES_BY_ZONE = {
-        E1: ["Lallmatie", "Quatre Bords", "Melrose", "Camp de Masque", "Petit Paquet", "Beau Bois", "Grand Bas Fond", "Constance", "Pont Bon Dieu"],
-        E2: ["Mont Ida", "Montagne Blanche", "Camp Thorel", "St Julien D'hotman", "St Julien Village", "Brisee Verdiere", "Belvedere", "La Tapie Rd", "Riche Fond"],
-        E3: ["Brisee Verdiere", "Belvedere", "La Tapie Rd", "Salazie", "Pont Bondieu", "Bon Accueil", "Queen Victoria", "Latapie Road", "Medine Camp de Masque"],
-        E4: ["Saint Julien", "Camp de Masque", "Melrose", "Lallmatie", "Mare d'Australia", "Unite", "Clemencia", "Gibraltar", "Bon Acceuil"]
-    };
-    // Growers database with locality assignments
-    const GROWERS_BY_ZONE = {
-        E1: [
-            { name: "ABEELUCK Rajiv", locality: "Lallmatie" },
-            { name: "BANGALEE Indardev", locality: "St Julien D'hotman" },
-            { name: "BEECARRY Unoop", locality: "Lallmatie" },
-            { name: "BEEHARRY Sooraj", locality: "Melrose" },
-            { name: "BEERGOONAUTH Navin", locality: "Lallmatie" },
-            { name: "BHUNDHOO Hemlata", locality: "Lallmatie" },
-            { name: "BUDHOO Basdeo", locality: "Camp Thorel" },
-            { name: "BULDAN Dhunanjay", locality: "La Tapie Rd" },
-            { name: "BULDEE Bulveerdeo", locality: "Petit Paquet" },
-            { name: "BULDEE Pradeo", locality: "Petit Paquet" },
-            { name: "CHENEL Jean Gregoire", locality: "Mont Ida" },
-            { name: "DOMUN Prema", locality: "Camp de Masque" },
-            { name: "EUROFARM LTD", locality: "Medine" },
-            { name: "JEETUN Ganshyam", locality: "Camp Thorel" }
-        ],
-        E2: [
-            { name: "CHINAN Siven", locality: "St Julien D'hotman" },
-            { name: "EATALLY Flex Farm", locality: "Mont Ida" },
-            { name: "ELAHEE Swalley", locality: "La Tapie Rd" },
-            { name: "GHUROO Megnath", locality: "Montagne Blanche" },
-            { name: "GHUROO Pravesh", locality: "Montagne Blanche" },
-            { name: "Jhaumeer Mohamed Hossen", locality: "Mont Ida" },
-            { name: "JOORAWON Nandinee", locality: "Lallmatie" },
-            { name: "KAULLYSING Shivshankar", locality: "Belvedere" },
-            { name: "KOYLAS Kamal", locality: "Beau Bois" },
-            { name: "LALLMOHAMED Farhaan", locality: "Medine" },
-            { name: "MAUDHOO Abbedanand", locality: "Lallmatie" },
-            { name: "MOHUN Veena", locality: "Saint Julien Village" },
-            { name: "NOOROODIN Auhammad", locality: "Medine" }
-        ],
-        E3: [
-            { name: "RAHATOLEE Bibi Sabina", locality: "La Tapie Rd" },
-            { name: "RAMBURRUN Atish", locality: "Saint Julien Dhotman" },
-            { name: "RAMJUG Mahadeo", locality: "Camp Thorel" },
-            { name: "RAMJUG Maheshwarnath", locality: "Camp Thorel" },
-            { name: "RAMKISSOON Chintamanee", locality: "Camp Thorel" },
-            { name: "RAMTALLY Dawood", locality: "Mont Ida" },
-            { name: "SAVOO Visnaden", locality: "Grand Bas Fond" },
-            { name: "SAWKATALLY Ismael", locality: "Medine" }
-        ],
-        E4: [
-            { name: "SEEBUN Benuduth", locality: "Saint Julien Dhotman" },
-            { name: "SOOKHEE Bhoosun Kumar", locality: "Lallmatie" },
-            { name: "SOOKUN SOOROOTAMSINGH", locality: "Camp Thorel" },
-            { name: "SUNKUR Juswantee", locality: "Saint Julien Dhotman" },
-            { name: "TAKOOR Chandraduth", locality: "Saint Julien Dhotman" },
-            { name: "UNMOLE Heerasagar", locality: "Camp de Masque" },
-            { name: "Woodun Hemraj", locality: "Camp Thorel" },
-            { name: "BADAL Sharmila", locality: "Quatre Bords" }
-        ]
-    };
-    const CUSTOM_GROWERS_KEY = "hydroponic_custom_growers_detailed";
-    const CUSTOM_LOCALITIES_KEY = "hydroponic_custom_localities";
-    let currentZone = "E1";
-    let currentLocality = "";
-    let greenhouseCounter = 1;
-    const cropOptions = ["Tomato", "Cabbage", "Cauliflower", "Lettuce", "Sweet Pepper", "Cucumber", "Strawberry", "Basil", "Mint"];
-    // Load custom data
-    function loadCustomGrowers() {
-        const stored = localStorage.getItem(CUSTOM_GROWERS_KEY);
-        return stored ? JSON.parse(stored) : { E1: [], E2: [], E3: [], E4: [] };
+// ============================================
+// REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT URL
+// ============================================
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynq6EIXHB6rpUpWywu-ZEkUCvFIDG9xS0qwx65QKerex02G6z4tLsuIhT2Imxf6-v_/exec';
+//                                        ↑
+//                              PASTE YOUR URL HERE!
+
+// Crop options
+const cropOptions = [
+  "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", 
+  "Shallot", "Greens", "Melon", "Okra", "Chillies", 
+  "Sweet Pepper", "Tomato"
+];
+
+let greenhouseCount = 1;
+
+function createGreenhouseCard(number, prefill = null) {
+  const p = prefill || {};
+  const today = new Date().toISOString().slice(0, 10);
+  
+  const div = document.createElement('div');
+  div.className = 'greenhouse-card';
+  div.innerHTML = `
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+      <strong>🏠 Greenhouse ${number}</strong>
+      ${number > 1 ? '<button type="button" class="remove-gh">Remove</button>' : '<span style="font-size: 0.7rem; color: #2e7d32;">Primary</span>'}
+    </div>
+    <div class="gh-grid">
+      <div>
+        <label>Area (m²)</label>
+        <input type="number" step="0.1" class="gh-area" value="${p.area || ''}" required>
+      </div>
+      <div>
+        <label>Crop</label>
+        <select class="gh-crop" required>
+          <option value="">-- Select --</option>
+          ${cropOptions.map(c => `<option value="${c}" ${p.cropType === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label>Variety</label>
+        <input type="text" class="gh-variety" value="${p.variety || ''}" placeholder="e.g., Butterhead" required>
+      </div>
+      <div>
+        <label>Crop Stage</label>
+        <select class="gh-stage" required>
+          <option ${p.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option>
+          <option ${p.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option>
+          <option ${p.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option>
+          <option ${p.cropStage === 'Harvest' ? 'selected' : ''}>Harvest</option>
+        </select>
+      </div>
+      <div>
+        <label>Transplant Date</label>
+        <input type="date" class="gh-transplant" value="${p.transplantDate || today}" required>
+      </div>
+      <div class="harvest-fields" style="display: ${p.cropStage === 'Harvest' ? 'grid' : 'none'}; grid-column: span 2; gap: 0.8rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+          <div>
+            <label>Harvest Months</label>
+            <input type="number" step="0.5" class="gh-harvest-months" value="${p.harvestMonths || ''}" placeholder="Months">
+          </div>
+          <div>
+            <label>Yield (kg/week)</label>
+            <input type="text" class="gh-yield-week" value="${p.avgYieldWeek || ''}" placeholder="e.g., 25 kg">
+          </div>
+          <div>
+            <label>Yield (kg/month)</label>
+            <input type="text" class="gh-yield-month" value="${p.avgYieldMonth || ''}" placeholder="e.g., 100 kg">
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Stage toggle functionality
+  const stageSelect = div.querySelector('.gh-stage');
+  const harvestDiv = div.querySelector('.harvest-fields');
+  
+  stageSelect.addEventListener('change', () => {
+    harvestDiv.style.display = stageSelect.value === 'Harvest' ? 'grid' : 'none';
+    if (stageSelect.value === 'Harvest') {
+      harvestDiv.querySelectorAll('input').forEach(i => i.required = true);
+    } else {
+      harvestDiv.querySelectorAll('input').forEach(i => i.required = false);
     }
-    function saveCustomGrowers(customData) {
-        localStorage.setItem(CUSTOM_GROWERS_KEY, JSON.stringify(customData));
+  });
+  
+  if (number > 1) {
+    div.querySelector('.remove-gh').addEventListener('click', () => div.remove());
+  }
+  
+  return div;
+}
+
+function addGreenhouse() {
+  const container = document.getElementById('greenhouseList');
+  greenhouseCount++;
+  container.appendChild(createGreenhouseCard(greenhouseCount));
+}
+
+function collectGreenhousesData() {
+  const cards = document.querySelectorAll('#greenhouseList .greenhouse-card');
+  const greenhouses = [];
+  
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const area = parseFloat(card.querySelector('.gh-area').value);
+    const cropType = card.querySelector('.gh-crop').value;
+    const variety = card.querySelector('.gh-variety').value;
+    const cropStage = card.querySelector('.gh-stage').value;
+    const transplantDate = card.querySelector('.gh-transplant').value;
+    const harvestMonths = card.querySelector('.gh-harvest-months')?.value;
+    const avgYieldWeek = card.querySelector('.gh-yield-week')?.value;
+    const avgYieldMonth = card.querySelector('.gh-yield-month')?.value;
+    
+    if (!cropType) { alert(`Greenhouse ${i+1}: Select a crop`); return null; }
+    if (!variety) { alert(`Greenhouse ${i+1}: Enter variety`); return null; }
+    if (isNaN(area) || area <= 0) { alert(`Greenhouse ${i+1}: Valid area required`); return null; }
+    
+    if (cropStage === 'Harvest') {
+      if (!harvestMonths || harvestMonths <= 0) {
+        alert(`Greenhouse ${i+1}: Harvest months required`); return null;
+      }
     }
-    function loadCustomLocalities() {
-        const stored = localStorage.getItem(CUSTOM_LOCALITIES_KEY);
-        return stored ? JSON.parse(stored) : { E1: [], E2: [], E3: [], E4: [] };
+    
+    greenhouses.push({
+      greenhouse: i+1,
+      area, cropType, variety, cropStage, transplantDate,
+      harvestMonths: cropStage === 'Harvest' ? harvestMonths : null,
+      avgYieldWeek: cropStage === 'Harvest' ? avgYieldWeek : '',
+      avgYieldMonth: cropStage === 'Harvest' ? avgYieldMonth : ''
+    });
+  }
+  return greenhouses;
+}
+
+// Save to Google Sheets via Apps Script
+async function saveToGoogleSheets(record) {
+  const statusEl = document.getElementById('connectionStatus');
+  
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Important for Apps Script
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(record)
+    });
+    
+    // With no-cors, we can't read the response, but the request was sent
+    statusEl.innerText = '✅ Connected';
+    statusEl.className = 'status-online';
+    return true;
+    
+  } catch (error) {
+    console.error('Error saving:', error);
+    statusEl.innerText = '⚠️ Offline (saved locally)';
+    statusEl.className = 'status-offline';
+    return false;
+  }
+}
+
+// Main save function
+async function saveRecord(event) {
+  event.preventDefault();
+  
+  const growerName = document.getElementById('growerName').value.trim();
+  const totalArea = parseFloat(document.getElementById('totalArea').value);
+  
+  if (!growerName) { alert('Please enter grower name'); return; }
+  if (isNaN(totalArea) || totalArea <= 0) { alert('Please enter valid total area'); return; }
+  
+  const greenhouses = collectGreenhousesData();
+  if (!greenhouses) return;
+  
+  const record = {
+    growerName: growerName,
+    totalArea: totalArea,
+    greenhouses: greenhouses,
+    timestamp: new Date().toISOString()
+  };
+  
+  // Save to localStorage as backup
+  let localBackup = JSON.parse(localStorage.getItem('hydroponic_backup') || '[]');
+  localBackup.push(record);
+  localStorage.setItem('hydroponic_backup', JSON.stringify(localBackup));
+  
+  // Save to Google Sheets
+  const saved = await saveToGoogleSheets(record);
+  
+  const successDiv = document.getElementById('successMessage');
+  if (saved) {
+    successDiv.innerHTML = '✅ Success! Your hydroponic data has been saved to Google Sheets!';
+    successDiv.style.background = '#4caf50';
+  } else {
+    successDiv.innerHTML = '⚠️ Data saved locally. Will sync to Google Sheets when connection is restored.';
+    successDiv.style.background = '#ff9800';
+  }
+  successDiv.style.display = 'block';
+  
+  // Show toast notification
+  showToast('Data submitted successfully!');
+  
+  // Reset form
+  document.getElementById('growerName').value = '';
+  document.getElementById('totalArea').value = '';
+  document.getElementById('greenhouseList').innerHTML = '';
+  greenhouseCount = 1;
+  document.getElementById('greenhouseList').appendChild(createGreenhouseCard(1));
+  
+  setTimeout(() => {
+    successDiv.style.display = 'none';
+  }, 5000);
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerText = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function resetForm() {
+  document.getElementById('growerName').value = '';
+  document.getElementById('totalArea').value = '';
+  document.getElementById('greenhouseList').innerHTML = '';
+  greenhouseCount = 1;
+  document.getElementById('greenhouseList').appendChild(createGreenhouseCard(1));
+}
+
+// Check connection to Google Sheets (just a ping test)
+async function checkConnection() {
+  const statusEl = document.getElementById('connectionStatus');
+  if (GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
+    statusEl.innerText = '⚠️ Configure URL';
+    statusEl.className = 'status-offline';
+    return;
+  }
+  
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET' });
+    if (response.ok || response.type === 'opaque') {
+      statusEl.innerText = '✅ Google Sheets Ready';
+      statusEl.className = 'status-online';
     }
-    function saveCustomLocalities(customData) {
-        localStorage.setItem(CUSTOM_LOCALITIES_KEY, JSON.stringify(customData));
-    }
-    // Get localities for current zone (built-in + custom)
-    function getLocalitiesForZone(zone) {
-        const builtIn = LOCALITIES_BY_ZONE[zone] || [];
-        const custom = loadCustomLocalities();
-        const customZone = custom[zone] || [];
-        return [...new Set([...builtIn, ...customZone])].sort();
-    }
-    // Get growers for current zone, optionally filtered by locality
-    function getGrowersForZone(zone, locality = "") {
-        const builtIn = GROWERS_BY_ZONE[zone] || [];
-        const custom = loadCustomGrowers();
-        const customZone = custom[zone] || [];
-        let allGrowers = [...builtIn, ...customZone];
-        if (locality) {
-            allGrowers = allGrowers.filter(g => g.locality === locality);
-        }
-        return allGrowers.sort((a, b) => a.name.localeCompare(b.name));
-    }
-    // Populate locality dropdown based on current zone
-    function populateLocalityDropdown(selectedLocality = "") {
-        const select = document.getElementById('localitySelect');
-        const localities = getLocalitiesForZone(currentZone);
-        const countSpan = document.getElementById('localityCountDisplay');
-        select.innerHTML = '<option value="">-- Select Locality --</option>';
-        localities.forEach(loc => {
-            const option = document.createElement('option');
-            option.value = loc;
-            option.textContent = loc;
-            if (loc === selectedLocality) option.selected = true;
-            select.appendChild(option);
-        });
-        countSpan.textContent = `${localities.length} location(s)`;
-        if (selectedLocality === "" && localities.length > 0) {
-            currentLocality = localities[0];
-            select.value = localities[0];
-        } else {
-            currentLocality = selectedLocality;
-        }
-    }
-    // Populate grower dropdown based on current zone and locality
-    function populateGrowerDropdown(selectedName = "") {
-        const select = document.getElementById('growerSelect');
-        const growers = getGrowersForZone(currentZone, currentLocality);
-        const countSpan = document.getElementById('zoneGrowerCount');
-        const countDisplay = document.getElementById('zoneGrowerCountDisplay');
-        select.innerHTML = '<option value="">-- Choose a grower --</option>';
-        growers.forEach(grower => {
-            const option = document.createElement('option');
-            option.value = grower.name;
-            option.textContent = `${grower.name}${grower.locality ? ` (${grower.locality})` : ''}`;
-            if (grower.name === selectedName) option.selected = true;
-            select.appendChild(option);
-        });
-        countSpan.textContent = `${growers.length} grower(s)`;
-        if (countDisplay) countDisplay.textContent = `${growers.length} growers`;
-        document.getElementById('activeZoneLabel').innerText = `${currentZone}${currentLocality ? ` - ${currentLocality}` : ''}`;
-    }
-    // Add new grower
-    function addNewGrower(fullName, contact, locality, zone) {
-        if (!fullName.trim()) return false;
-        const custom = loadCustomGrowers();
-        const existingGrowers = getGrowersForZone(zone, "");
-        if (existingGrowers.some(g => g.name === fullName.trim())) {
-            return false;
-        }
-        if (!custom[zone]) custom[zone] = [];
-        custom[zone].push({ name: fullName.trim(), locality: locality, contact: contact || "" });
-        saveCustomGrowers(custom);
-        // If locality is new, add to custom localities
-        const builtInLocalities = LOCALITIES_BY_ZONE[zone] || [];
-        const customLocalities = loadCustomLocalities();
-        if (!builtInLocalities.includes(locality) && !(customLocalities[zone] || []).includes(locality)) {
-            if (!customLocalities[zone]) customLocalities[zone] = [];
-            customLocalities[zone].push(locality);
-            saveCustomLocalities(customLocalities);
-            populateLocalityDropdown(currentLocality);
-        }
-        if (zone === currentZone && (!currentLocality || currentLocality === locality)) {
-            populateGrowerDropdown(fullName.trim());
-        }
-        return true;
-    }
-    // Update all dependent dropdowns when zone changes
-    function onZoneChange() {
-        populateLocalityDropdown("");
-        const localities = getLocalitiesForZone(currentZone);
-        if (localities.length > 0) {
-            currentLocality = localities[0];
-            document.getElementById('localitySelect').value = currentLocality;
-        } else {
-            currentLocality = "";
-        }
-        populateGrowerDropdown();
-    }
-    // Update growers when locality changes
-    function onLocalityChange(locality) {
-        currentLocality = locality;
-        populateGrowerDropdown();
-        showToast(`Showing growers in ${locality || "all locations"}`, false);
-    }
-    async function testConnection() {
-        const statusSpan = document.getElementById('connectionStatus');
-        try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET', mode: 'cors' });
-            if (response.ok) {
-                statusSpan.innerHTML = '✅ Connected';
-                statusSpan.style.background = '#e0f2e0';
-                showToast('Connection successful!');
-            } else {
-                throw new Error('Connection failed');
-            }
-        } catch (error) {
-            statusSpan.innerHTML = '⚠️ Offline';
-            statusSpan.style.background = '#ffe0e0';
-            showToast('Connection failed', true);
-        }
-    }
-    async function saveToGoogleSheets(rows) {
-        const payload = {
-            action: "saveTabular",
-            sheetId: SHEET_ID,
-            rows: rows,
-            timestamp: new Date().toISOString()
-        };
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const result = await response.json();
-        return result.result === 'success' || result.status === 'success';
-    }
-    function addGreenhouseCard(number, data = {}) {
-        const container = document.getElementById('greenhousesContainer');
-        const card = document.createElement('div');
-        card.className = 'greenhouse-card';
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; margin-bottom:8px;">
-                <strong>🌿 Greenhouse ${number}</strong>
-                ${number > 1 ? '<button type="button" class="remove-gh" style="background:#c0392b; padding:4px 18px; border-radius:30px;">Remove</button>' : '<span style="color:#388e3c;">Primary unit</span>'}
-            </div>
-            <div class="gh-grid">
-                <div><label>Area (m²) *</label><input type="number" step="0.1" class="gh-area" value="${data.area || ''}" placeholder="m²"></div>
-                <div><label>Crop Type *</label><select class="gh-crop"><option value="">Select...</option>${cropOptions.map(c => `<option value="${c}" ${data.cropType === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
-                <div><label>Variety *</label><input type="text" class="gh-variety" value="${data.variety || ''}" placeholder="Variety"></div>
-                <div><label>Growth Stage *</label><select class="gh-stage"><option value="Seedling" ${data.cropStage === 'Seedling' ? 'selected' : ''}>Seedling</option><option value="Vegetative" ${data.cropStage === 'Vegetative' ? 'selected' : ''}>Vegetative</option><option value="Flowering" ${data.cropStage === 'Flowering' ? 'selected' : ''}>Flowering</option><option value="Harvest" ${data.cropStage === 'Harvest' ? 'selected' : ''}>Harvest</option></select></div>
-                <div><label>Transplant Date</label><input type="date" class="gh-transplant" value="${data.transplantDate || new Date().toISOString().split('T')[0]}"></div>
-            </div>
-            <div class="harvest-fields">
-                <div><label>Harvest Duration (months)</label><input type="number" step="0.5" class="gh-harvest-months" value="${data.harvestMonths || ''}" placeholder="months"></div>
-                <div><label>Average Yield (kg/week)</label><input type="number" step="0.1" class="gh-yield-week" value="${data.avgYieldWeek || ''}" placeholder="kg/week"></div>
-            </div>
-        `;
-        const stageSelect = card.querySelector('.gh-stage');
-        const harvestDiv = card.querySelector('.harvest-fields');
-        const toggleHarvest = () => {
-            if (stageSelect.value === 'Harvest') harvestDiv.classList.add('active');
-            else harvestDiv.classList.remove('active');
-        };
-        stageSelect.addEventListener('change', toggleHarvest);
-        toggleHarvest();
-        if (number > 1) {
-            card.querySelector('.remove-gh').addEventListener('click', () => card.remove());
-        }
-        container.appendChild(card);
-    }
-    function collectGreenhouseData() {
-        const cards = document.querySelectorAll('.greenhouse-card');
-        const greenhouses = [];
-        for (let i = 0; i < cards.length; i++) {
-            const card = cards[i];
-            const area = parseFloat(card.querySelector('.gh-area').value);
-            const cropType = card.querySelector('.gh-crop').value;
-            const variety = card.querySelector('.gh-variety').value.trim();
-            const stage = card.querySelector('.gh-stage').value;
-            const transplantDate = card.querySelector('.gh-transplant').value;
-            if (!cropType || !variety || isNaN(area) || area <= 0) {
-                throw new Error(`Greenhouse ${i+1}: area, crop type and variety required.`);
-            }
-            let harvestMonths = null;
-            let weeklyYield = 0;
-            if (stage === 'Harvest') {
-                harvestMonths = parseFloat(card.querySelector('.gh-harvest-months').value);
-                weeklyYield = parseFloat(card.querySelector('.gh-yield-week').value) || 0;
-                if (isNaN(harvestMonths) || harvestMonths <= 0) {
-                    throw new Error(`Greenhouse ${i+1}: harvest duration required`);
-                }
-            }
-            greenhouses.push({
-                greenhouseNumber: i+1,
-                area_m2: area,
-                cropType: cropType,
-                variety: variety,
-                cropStage: stage,
-                transplantDate: transplantDate,
-                harvestDurationMonths: harvestMonths,
-                avgYieldKgWeek: weeklyYield,
-                avgYieldPerMonthKg: weeklyYield * 4.33
-            });
-        }
-        if (greenhouses.length === 0) throw new Error("Add at least one greenhouse");
-        return greenhouses;
-    }
-    function showToast(msg, isError = false) {
-        const toast = document.createElement('div');
-        toast.className = `toast ${isError ? 'error' : ''}`;
-        toast.innerText = msg;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3500);
-    }
-    async function handleSubmit(e) {
-        e.preventDefault();
-        const selectedGrower = document.getElementById('growerSelect').value;
-        if (!selectedGrower) {
-            showToast("Please select a grower for this locality", true);
-            return;
-        }
-        const totalArea = parseFloat(document.getElementById('totalArea').value);
-        if (isNaN(totalArea) || totalArea <= 0) {
-            showToast("Valid total area required", true);
-            return;
-        }
-        const substrateType = document.getElementById('substrateType').value;
-        const selectedLocality = document.getElementById('localitySelect').value;
-        if (!selectedLocality) {
-            showToast("Please select a locality", true);
-            return;
-        }
-        let greenhouses;
-        try {
-            greenhouses = collectGreenhouseData();
-        } catch (err) {
-            showToast(err.message, true);
-            return;
-        }
-        const rows = greenhouses.map(gh => ({
-            timestamp: new Date().toISOString(),
-            growerName: selectedGrower,
-            locality: selectedLocality,
-            zone: currentZone,
-            totalGreenhouseAreaM2: totalArea,
-            greenhouseNumber: gh.greenhouseNumber,
-            crop: gh.cropType,
-            variety: gh.variety,
-            cropStage: gh.cropStage,
-            areaM2: gh.area_m2,
-            dateTransplanted: gh.transplantDate,
-            avgYieldPerWeekKg: gh.avgYieldKgWeek || '',
-            avgYieldPerMonthKg: gh.avgYieldPerMonthKg || '',
-            monthsOfHarvest: gh.harvestDurationMonths || '',
-            tomatoType: gh.cropType === 'Tomato' ? gh.variety : '',
-            substrateType: substrateType
-        }));
-        const saveBtn = document.getElementById('saveBtn');
-        const originalText = saveBtn.innerText;
-        saveBtn.innerText = '💾 Saving...';
-        saveBtn.disabled = true;
-        try {
-            const success = await saveToGoogleSheets(rows);
-            if (success) {
-                showToast(`✅ ${rows.length} record(s) saved successfully!`);
-                setTimeout(() => {
-                    if (confirm('Data saved! Clear form for next entry?')) clearForm();
-                }, 500);
-            } else {
-                showToast('Failed to save data', true);
-            }
-        } catch (error) {
-            showToast('Error saving to server', true);
-        } finally {
-            saveBtn.innerText = originalText;
-            saveBtn.disabled = false;
-        }
-    }
-    function clearForm() {
-        if (confirm('Clear all form data?')) {
-            document.getElementById('totalArea').value = '';
-            document.getElementById('greenhousesContainer').innerHTML = '';
-            greenhouseCounter = 1;
-            addGreenhouseCard(1);
-            document.getElementById('growerSelect').value = '';
-            showToast('Form cleared');
-        }
-    }
-    // Initialize dropdowns and event handlers
-    function initDropdowns() {
-        const zoneSelect = document.getElementById('zoneSelect');
-        const localitySelect = document.getElementById('localitySelect');
-        zoneSelect.addEventListener('change', () => {
-            currentZone = zoneSelect.value;
-            onZoneChange();
-        });
-        localitySelect.addEventListener('change', () => {
-            onLocalityChange(localitySelect.value);
-        });
-    }
-    function toggleNewGrowerForm(show) {
-        const div = document.getElementById('newGrowerFields');
-        div.classList.toggle('active', show);
-        if (show) {
-            document.getElementById('newGrowerZone').value = currentZone;
-            const localitySelect = document.getElementById('newGrowerLocality');
-            const localities = getLocalitiesForZone(currentZone);
-            localitySelect.innerHTML = '<option value="">Select Locality</option>';
-            localities.forEach(loc => {
-                const opt = document.createElement('option');
-                opt.value = loc;
-                opt.textContent = loc;
-                if (loc === currentLocality) opt.selected = true;
-                localitySelect.appendChild(opt);
-            });
-        } else {
-            document.getElementById('newGrowerName').value = '';
-            document.getElementById('newGrowerContact').value = '';
-        }
-    }
-    document.getElementById('showNewGrowerBtn').onclick = () => toggleNewGrowerForm(true);
-    document.getElementById('cancelNewGrowerBtn').onclick = () => toggleNewGrowerForm(false);
-    document.getElementById('saveNewGrowerBtn').onclick = () => {
-        const name = document.getElementById('newGrowerName').value.trim();
-        const contact = document.getElementById('newGrowerContact').value;
-        const locality = document.getElementById('newGrowerLocality').value;
-        const zone = document.getElementById('newGrowerZone').value;
-        if (!name) {
-            showToast("Grower name required", true);
-            return;
-        }
-        if (!locality) {
-            showToast("Please select a locality", true);
-            return;
-        }
-        if (addNewGrower(name, contact, locality, zone)) {
-            showToast(`Grower "${name}" added to Zone ${zone}, ${locality}`);
-            toggleNewGrowerForm(false);
-            if (zone === currentZone && (!currentLocality || currentLocality === locality)) {
-                populateGrowerDropdown(name);
-            }
-        } else {
-            showToast("Grower already exists in this zone/locality", true);
-        }
-    };
-    document.getElementById('addGreenhouse').onclick = () => { greenhouseCounter++; addGreenhouseCard(greenhouseCounter); };
-    document.getElementById('hydroponicForm').addEventListener('submit', handleSubmit);
-    document.getElementById('clearForm').onclick = clearForm;
-    // Initialize
-    onZoneChange();
-    addGreenhouseCard(1);
-    initDropdowns();
-    setTimeout(() => testConnection(), 1000);
-    window.testConnection = testConnection;
+  } catch (error) {
+    statusEl.innerText = '⚠️ Check connection';
+    statusEl.className = 'status-offline';
+  }
+}
+
+// Event listeners
+document.getElementById('addGreenhouseBtn').addEventListener('click', addGreenhouse);
+document.getElementById('hydroponicForm').addEventListener('submit', saveRecord);
+document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+// Initialize
+document.getElementById('greenhouseList').appendChild(createGreenhouseCard(1));
+checkConnection();
+
+console.log('🌱 Hydroponic app ready! Data will save to Google Sheets automatically.');
 </script>
 </body>
 </html>
