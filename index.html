@@ -164,6 +164,47 @@
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
 
+        .tomato-type-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tomato-type-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tomato-type-btn:hover {
+            border-color: #4CAF50;
+            background: #f0f9f0;
+            transform: translateY(-2px);
+        }
+
+        .tomato-type-btn.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .tomato-type-btn.cooking { border-left: 4px solid #FF6B6B; }
+        .tomato-type-btn.salad { border-left: 4px solid #4ECDC4; }
+        .tomato-type-btn.cherry { border-left: 4px solid #FFE66D; }
+        .tomato-type-btn.cocktail { border-left: 4px solid #A8E6CF; }
+
         .grower-input-wrapper {
             display: flex;
             gap: 10px;
@@ -367,6 +408,7 @@
             .grower-input-wrapper { flex-direction: column; }
             .btn-add-grower { width: 100%; justify-content: center; }
             .card-header { flex-direction: column; align-items: stretch; }
+            .tomato-type-btn { min-width: 80px; padding: 10px 12px; font-size: 12px; }
         }
     </style>
 </head>
@@ -526,12 +568,7 @@
             "Sweet Pepper", "Shallot", "Greens", "Tomato", "Okra", "Chillies"
         ];
         
-        // Tomato Type options
-        const tomatoTypeOptions = [
-            "Cooking", "Salad", "Cherry", "Cocktails"
-        ];
-        
-        // Substrate Type options - Updated
+        // Substrate Type options
         const substrateOptions = [
             "Cocopeat", "Aggregates", "Woodchips", "NFT", "DFT", "Aquaponics"
         ];
@@ -748,16 +785,7 @@
             return html;
         }
         
-        // Generate tomato type options HTML
-        function getTomatoTypeOptionsHTML(selectedValue = '') {
-            let html = '<option value="">Select Tomato Type</option>';
-            tomatoTypeOptions.forEach(type => {
-                html += `<option value="${type}" ${selectedValue === type ? 'selected' : ''}>${type}</option>`;
-            });
-            return html;
-        }
-        
-        // Generate substrate type options HTML - Updated
+        // Generate substrate type options HTML
         function getSubstrateOptionsHTML(selectedValue = '') {
             let html = '<option value="">Select Substrate</option>';
             substrateOptions.forEach(substrate => {
@@ -773,12 +801,50 @@
             return html;
         }
         
-        // Add greenhouse with updated dropdowns
+        // Generate Tomato Type Buttons HTML
+        function getTomatoTypeButtonsHTML(selectedValue = '') {
+            return `
+                <div class="tomato-type-buttons">
+                    <button type="button" class="tomato-type-btn salad ${selectedValue === 'Salad' ? 'active' : ''}" onclick="selectTomatoType(this, 'Salad')">
+                        <i class="fas fa-leaf"></i> Salad
+                    </button>
+                    <button type="button" class="tomato-type-btn cooking ${selectedValue === 'Cooking' ? 'active' : ''}" onclick="selectTomatoType(this, 'Cooking')">
+                        <i class="fas fa-utensils"></i> Cooking
+                    </button>
+                    <button type="button" class="tomato-type-btn cherry ${selectedValue === 'Cherry' ? 'active' : ''}" onclick="selectTomatoType(this, 'Cherry')">
+                        <i class="fas fa-cherries"></i> Cherry
+                    </button>
+                    <button type="button" class="tomato-type-btn cocktail ${selectedValue === 'Cocktail' ? 'active' : ''}" onclick="selectTomatoType(this, 'Cocktail')">
+                        <i class="fas fa-cocktail"></i> Cocktail
+                    </button>
+                </div>
+                <input type="hidden" class="gh-tomatotype" value="${selectedValue || ''}">
+            `;
+        }
+        
+        // Handle Tomato Type button selection
+        function selectTomatoType(button, type) {
+            const container = button.closest('.input-group');
+            const buttons = container.querySelectorAll('.tomato-type-btn');
+            const hiddenInput = container.querySelector('.gh-tomatotype');
+            
+            // Remove active class from all buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            button.classList.add('active');
+            // Set hidden input value
+            hiddenInput.value = type;
+        }
+        
+        // Add greenhouse with Tomato Type buttons
         function addGreenhouse(data = null) {
             const container = document.getElementById('greenhousesContainer');
             const card = document.createElement('div');
             card.className = 'greenhouse-card';
             card.id = `greenhouse-${greenhouseCount}`;
+            
+            const tomatoTypeHTML = getTomatoTypeButtonsHTML(data?.tomatoType || '');
+            
             card.innerHTML = `
                 <div class="card-header">
                     <div class="greenhouse-badge"><i class="fas fa-seedling"></i> Greenhouse ${greenhouseCount}</div>
@@ -837,9 +903,7 @@
                     </div>
                     <div class="input-group" id="tomatoTypeGroup_${greenhouseCount}" style="${data?.cropType === 'Tomato' ? '' : 'display: none;'}">
                         <label><i class="fas fa-tomato"></i> Tomato Type</label>
-                        <select class="gh-tomatotype">
-                            ${getTomatoTypeOptionsHTML(data?.tomatoType || '')}
-                        </select>
+                        ${tomatoTypeHTML}
                     </div>
                 </div>
             `;
@@ -857,6 +921,11 @@
                     tomatoTypeGroup.style.display = 'block';
                 } else {
                     tomatoTypeGroup.style.display = 'none';
+                    // Clear tomato type selection when hidden
+                    const hiddenInput = tomatoTypeGroup.querySelector('.gh-tomatotype');
+                    if (hiddenInput) hiddenInput.value = '';
+                    const buttons = tomatoTypeGroup.querySelectorAll('.tomato-type-btn');
+                    buttons.forEach(btn => btn.classList.remove('active'));
                 }
             }
         }
@@ -871,6 +940,7 @@
         function duplicateGreenhouse(id) {
             const source = document.getElementById(`greenhouse-${id}`);
             if(source) {
+                const tomatoHidden = source.querySelector('.gh-tomatotype');
                 const data = {
                     area: source.querySelector('.gh-area').value,
                     cropType: source.querySelector('.gh-crop').value,
@@ -881,7 +951,7 @@
                     avgYieldMonth: source.querySelector('.gh-monthly').value,
                     harvestMonths: source.querySelector('.gh-harvest').value,
                     substrateType: source.querySelector('.gh-substrate').value,
-                    tomatoType: source.querySelector('.gh-tomatotype')?.value || ''
+                    tomatoType: tomatoHidden ? tomatoHidden.value : ''
                 };
                 addGreenhouse(data);
                 showToast('Greenhouse duplicated');
@@ -894,7 +964,7 @@
             
             const greenhouses = [];
             document.querySelectorAll('.greenhouse-card').forEach(card => {
-                const tomatoSelect = card.querySelector('.gh-tomatotype');
+                const tomatoHidden = card.querySelector('.gh-tomatotype');
                 greenhouses.push({
                     greenhouse: greenhouses.length + 1,
                     area: card.querySelector('.gh-area').value,
@@ -906,7 +976,7 @@
                     avgYieldMonth: card.querySelector('.gh-monthly').value,
                     harvestMonths: card.querySelector('.gh-harvest').value,
                     substrateType: card.querySelector('.gh-substrate').value,
-                    tomatoType: tomatoSelect ? tomatoSelect.value : ''
+                    tomatoType: tomatoHidden ? tomatoHidden.value : ''
                 });
             });
             
@@ -918,7 +988,7 @@
                 greenhouses: greenhouses
             };
             
-            const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwhlgciprYglImYEYrqMPikS0ucuJm9lMpSVLFVQdhg8NwubUPQkaE079_7kK2hwlgLrQ/exec';
+            const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw8SzkiJ2U3EN6QtIBEZ6k3tEWdgMRlWCvblQjF65eKRG45sLvRbAP2yWpma_82Ne3kuA/exec';
             const btn = document.querySelector('.btn-submit');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
@@ -933,6 +1003,11 @@
                 while(document.querySelectorAll('.greenhouse-card').length > 1) document.querySelector('.greenhouse-card:last-child').remove();
                 const firstGH = document.querySelector('.greenhouse-card');
                 if(firstGH) firstGH.querySelectorAll('input, select').forEach(f => { if(f.type !== 'button') f.value = ''; });
+                // Clear tomato type buttons selection
+                const tomatoHidden = firstGH?.querySelector('.gh-tomatotype');
+                if(tomatoHidden) tomatoHidden.value = '';
+                const tomatoButtons = firstGH?.querySelectorAll('.tomato-type-btn');
+                tomatoButtons?.forEach(btn => btn.classList.remove('active'));
                 updateStats();
             } catch(err) { showToast('Error: ' + err.message, true); }
             finally { btn.innerHTML = originalText; btn.disabled = false; }
