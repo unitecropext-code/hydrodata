@@ -28,7 +28,6 @@
             z-index: 1;
         }
 
-        /* Modern Header */
         .modern-header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -79,7 +78,6 @@
             margin-top: 8px;
         }
 
-        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -93,6 +91,7 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s;
+            cursor: pointer;
         }
 
         .stat-card:hover {
@@ -103,7 +102,6 @@
         .stat-label { color: #666; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
         .stat-value { font-size: 28px; font-weight: 800; color: #2c3e50; }
 
-        /* Form Sections */
         .form-section {
             background: white;
             border-radius: 20px;
@@ -122,6 +120,7 @@
             gap: 10px;
             padding-bottom: 15px;
             border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
         }
 
         .smart-grid {
@@ -159,7 +158,36 @@
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
 
-        /* Zone Button Group */
+        .grower-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .grower-input-wrapper input {
+            flex: 1;
+        }
+
+        .btn-add-grower {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add-grower:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
         .zone-buttons {
             display: flex;
             gap: 12px;
@@ -188,7 +216,6 @@
             border-color: #4CAF50;
         }
 
-        /* Greenhouse Cards */
         .greenhouse-card {
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             border-radius: 15px;
@@ -248,6 +275,7 @@
         .smart-btn-primary { background: #4CAF50; color: white; }
         .smart-btn-secondary { background: #FF9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
+        .smart-btn-info { background: #2196F3; color: white; }
 
         .btn-submit {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -285,9 +313,54 @@
         }
 
         .toast.show { transform: translateX(0); }
+        .toast.success { border-left: 4px solid #4CAF50; }
+        .toast.error { border-left: 4px solid #f44336; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: flex-end;
+        }
 
         @media (max-width: 768px) {
-            .zone-buttons { justify-content: center; }
+            .grower-input-wrapper { flex-direction: column; }
+            .btn-add-grower { width: 100%; justify-content: center; }
             .card-header { flex-direction: column; align-items: stretch; }
         }
     </style>
@@ -307,10 +380,10 @@
             <div class="stat-card"><div class="stat-icon">🌱</div><div class="stat-label">Greenhouses</div><div class="stat-value" id="totalGH">0</div></div>
             <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-label">Total Area (m²)</div><div class="stat-value" id="totalAreaStat">0</div></div>
             <div class="stat-card"><div class="stat-icon">🌾</div><div class="stat-label">Crop Varieties</div><div class="stat-value" id="totalVarieties">0</div></div>
-            <div class="stat-card"><div class="stat-icon">👨‍🌾</div><div class="stat-label">Growers List</div><div class="stat-value" id="growerCount">0</div></div>
+            <div class="stat-card" onclick="showAllGrowers()"><div class="stat-icon">👨‍🌾</div><div class="stat-label">Growers List</div><div class="stat-value" id="growerCount">0</div></div>
         </div>
 
-        <!-- Zone Selection FIRST -->
+        <!-- Zone Selection -->
         <div class="form-section">
             <div class="section-title"><i class="fas fa-map-marker-alt"></i><span>Select Zone</span></div>
             <div class="zone-buttons" id="zoneButtons">
@@ -321,14 +394,19 @@
             </div>
         </div>
 
-        <!-- Grower Information -->
+        <!-- Grower Information with Add New Grower Button -->
         <div class="form-section">
             <div class="section-title"><i class="fas fa-user-friends"></i><span>Grower Information</span></div>
             <div class="smart-grid">
                 <div class="input-group">
                     <label><i class="fas fa-user"></i> Grower Name *</label>
-                    <input type="text" id="growerName" list="growerList" placeholder="Select or enter grower name" autocomplete="off">
-                    <datalist id="growerList"></datalist>
+                    <div class="grower-input-wrapper">
+                        <input type="text" id="growerName" list="growerList" placeholder="Select or enter grower name" autocomplete="off">
+                        <datalist id="growerList"></datalist>
+                        <button type="button" class="btn-add-grower" onclick="openAddGrowerModal()">
+                            <i class="fas fa-plus-circle"></i> New Grower
+                        </button>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label><i class="fas fa-map-marker-alt"></i> Locality</label>
@@ -350,7 +428,7 @@
         <div class="form-section">
             <div class="section-title">
                 <i class="fas fa-greenhouse"></i><span>Greenhouse Details</span>
-                <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add</button>
+                <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add Greenhouse</button>
             </div>
             <div id="greenhousesContainer"></div>
         </div>
@@ -360,12 +438,45 @@
         <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026 | Smart Data Capture Tool v2.0</div>
     </div>
 
+    <!-- Add Grower Modal -->
+    <div id="addGrowerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><i class="fas fa-user-plus"></i> Add New Grower</div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Grower Name *</label>
+                <input type="text" id="newGrowerName" placeholder="Enter full name">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Contact Number (Optional)</label>
+                <input type="text" id="newGrowerContact" placeholder="Enter contact number">
+            </div>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Locality</label>
+                <input type="text" id="newGrowerLocality" list="localityList" placeholder="Select locality">
+            </div>
+            <div class="modal-buttons">
+                <button class="smart-btn smart-btn-danger" onclick="closeAddGrowerModal()">Cancel</button>
+                <button class="smart-btn smart-btn-primary" onclick="addNewGrower()">Add Grower</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Growers Modal -->
+    <div id="viewGrowersModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header"><i class="fas fa-list"></i> Registered Growers (Zone E2)</div>
+            <div id="growersListContainer" style="max-height: 400px; overflow-y: auto;"></div>
+            <div class="modal-buttons">
+                <button class="smart-btn smart-btn-primary" onclick="closeViewGrowersModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="toast"><i class="fas fa-check-circle" style="color: #4CAF50;"></i><span id="toastMessage"></span></div>
 
     <script>
         // ==================== DATA INTEGRATION FROM EXCEL ====================
         
-        // Zone E1 Localities (Column A from EAST List of Localities)
         const zoneE1Localities = [
             "Alma", "Bagatelle Dam", "Bar Le Duc", "Beau Bois", "Bell Village", "Belle Rive",
             "Bonne Veine", "Camp Auguste", "Circonstance", "Cote D'Or", "Dagotiere", "Gentilly",
@@ -375,7 +486,6 @@
             "Roselyn Cottage", "Soreze", "St Pierre", "Valetta", "Verdun"
         ];
         
-        // Zone E2 Localities (Column B from EAST List of Localities)
         const zoneE2Localities = [
             "Balance John", "Bel Etang", "Belvédère", "Bon Accueil", "Bonne Mere", "Brisée Verdière",
             "Camp de Masque", "Camp Thorel", "Fuel", "Gaulettes Serrées", "Gibraltar", "Grand Bas Fond",
@@ -385,7 +495,6 @@
             "St Julien d'Hotman", "St Julien Village"
         ];
         
-        // Zone E3 Localities (Column C from EAST List of Localities)
         const zoneE3Localities = [
             "Argy", "Beau Rivage", "Belle Mare", "Belle Vue Allendy", "Bois d'Oiseaux", "Bramsthan",
             "Bras d'Eau", "Camp Garreau", "Camp Ithier", "Camp Marcelin", "Camp Poorun", "Camp Raffia",
@@ -396,7 +505,6 @@
             "Trou d'Eau Douce", "Victoria"
         ];
         
-        // Zone E4 Localities (Column D from EAST List of Localities)
         const zoneE4Localities = [
             "Balance John", "Beau Champ", "Beau Vallon", "Bel Air Rivière Sèche", "Belle Rive", "Belle Rose",
             "Bois Marchand", "Camp Beau Bois", "Camp de Masque Pavé", "Camp Jackerie", "Caroline", "Cent Gaulettes",
@@ -407,8 +515,8 @@
             "Quatre Soeurs", "Sebastopol", "Trois Ilots"
         ];
         
-        // Hydroponic Growers for Zone E2 (from List of planters Excel)
-        const zoneE2Growers = [
+        // Initial Zone E2 Growers from Excel
+        let zoneE2Growers = [
             "ABEELUCK Rajiv", "BADAL Sharmila", "BANGALEE Indardev", "BEECARRY Unoop", "BEEHARRY Sooraj",
             "BEERGOONAUTH Navin", "BHUNDHOO Hemlata", "BUDHOO Basdeo", "BULDAN Dhunanjay", "BULDEE Bulveerdeo",
             "BULDEE Pradeo", "BURKUT ALLY", "BUSROPUN Yasin", "CHENEL Jean Gregoire", "CHINAN Siven",
@@ -418,7 +526,7 @@
             "GHUROO Nirmala", "GHUROO Pravesh", "GOPAUL Dharmeshwaree", "GUNGARAM Devrani", "GUNOORY ARTI",
             "HURRYLALL SANTOSH", "JAMOOKEEAH Sooryawatee", "JAUNE Ralph", "Jeeana Vrinda Devi", "JEETUN Ganshyam",
             "Jhaumeer Mohamed Hossen", "Jhaumeer Rushda", "Jhaumeer Waheeda", "Joomun Mohammad Razia",
-            "JOORAWON Nandinee", "KAULLYSING  Shivshankar", "KAULLYSING Sujan", "KAULLYSING Tinesh",
+            "JOORAWON Nandinee", "KAULLYSING Shivshankar", "KAULLYSING Sujan", "KAULLYSING Tinesh",
             "KISSOONDOYAL Jotee", "KOYLAS Kamal", "KUREEMUN TANWEER", "LALLAWOOA Utam Kumar", "LALLBEEHARRY Mohun Kumar",
             "LALLMOHAMED Farhaan", "LOLLMUN Hemantsing", "MATHOOR Parsad Kewal", "MAUDHOO Abbedanand",
             "MAUDHOO Mahen", "MAUDHOO Manoj", "MOHUN Veena", "MULTRA Menasha", "MUNOGHEE Madvi",
@@ -440,11 +548,43 @@
         let currentZone = "E2";
         let greenhouseCount = 1;
         
-        // Update locality list based on selected zone
-        function updateLocalitiesByZone(zone) {
-            const localityInput = document.getElementById('locality');
-            const localityList = document.getElementById('localityList');
+        // Save growers to localStorage
+        function saveGrowersToLocal() {
+            localStorage.setItem('zoneE2Growers', JSON.stringify(zoneE2Growers));
+        }
+        
+        // Load growers from localStorage
+        function loadGrowersFromLocal() {
+            const saved = localStorage.getItem('zoneE2Growers');
+            if (saved) {
+                zoneE2Growers = JSON.parse(saved);
+            }
+        }
+        
+        // Update grower list for Zone E2
+        function updateGrowerList(zone) {
+            const growerInput = document.getElementById('growerName');
+            const growerList = document.getElementById('growerList');
             
+            growerList.innerHTML = '';
+            
+            if (zone === 'E2') {
+                zoneE2Growers.sort().forEach(grower => {
+                    const option = document.createElement('option');
+                    option.value = grower;
+                    growerList.appendChild(option);
+                });
+                growerInput.placeholder = "Select or enter grower name";
+                document.getElementById('growerCount').textContent = zoneE2Growers.length;
+            } else {
+                growerInput.placeholder = "Enter grower name";
+                document.getElementById('growerCount').textContent = "N/A";
+            }
+        }
+        
+        // Update locality list based on zone
+        function updateLocalitiesByZone(zone) {
+            const localityList = document.getElementById('localityList');
             let localities = [];
             switch(zone) {
                 case 'E1': localities = zoneE1Localities; break;
@@ -464,25 +604,89 @@
             document.getElementById('zoneDisplay').value = `Zone ${zone}`;
         }
         
-        // Update grower list for Zone E2 only
-        function updateGrowerList(zone) {
-            const growerInput = document.getElementById('growerName');
-            const growerList = document.getElementById('growerList');
-            
-            growerList.innerHTML = '';
-            
-            if (zone === 'E2') {
-                zoneE2Growers.forEach(grower => {
-                    const option = document.createElement('option');
-                    option.value = grower;
-                    growerList.appendChild(option);
-                });
-                growerInput.placeholder = "Select or enter grower name";
-                document.getElementById('growerCount').textContent = zoneE2Growers.length;
-            } else {
-                growerInput.placeholder = "Enter grower name";
-                document.getElementById('growerCount').textContent = "N/A";
+        // Add New Grower Function
+        function openAddGrowerModal() {
+            if (currentZone !== 'E2') {
+                showToast('New growers can only be added to Zone E2', true);
+                return;
             }
+            document.getElementById('addGrowerModal').style.display = 'flex';
+            document.getElementById('newGrowerName').value = '';
+            document.getElementById('newGrowerContact').value = '';
+            document.getElementById('newGrowerLocality').value = '';
+        }
+        
+        function closeAddGrowerModal() {
+            document.getElementById('addGrowerModal').style.display = 'none';
+        }
+        
+        function addNewGrower() {
+            const newGrowerName = document.getElementById('newGrowerName').value.trim();
+            if (!newGrowerName) {
+                showToast('Please enter grower name', true);
+                return;
+            }
+            
+            // Check if grower already exists
+            if (zoneE2Growers.includes(newGrowerName)) {
+                showToast('Grower already exists in the list', true);
+                closeAddGrowerModal();
+                return;
+            }
+            
+            // Add to array
+            zoneE2Growers.push(newGrowerName);
+            zoneE2Growers.sort();
+            saveGrowersToLocal();
+            updateGrowerList('E2');
+            
+            // Auto-select the new grower
+            document.getElementById('growerName').value = newGrowerName;
+            
+            // Optional: Save additional info to localStorage
+            const growerDetails = JSON.parse(localStorage.getItem('growerDetails') || '{}');
+            growerDetails[newGrowerName] = {
+                contact: document.getElementById('newGrowerContact').value,
+                locality: document.getElementById('newGrowerLocality').value,
+                dateAdded: new Date().toISOString()
+            };
+            localStorage.setItem('growerDetails', JSON.stringify(growerDetails));
+            
+            showToast(`✓ Grower "${newGrowerName}" added successfully!`);
+            closeAddGrowerModal();
+        }
+        
+        // View all growers
+        function showAllGrowers() {
+            if (currentZone !== 'E2') {
+                showToast('Grower list is only available for Zone E2', true);
+                return;
+            }
+            
+            const container = document.getElementById('growersListContainer');
+            container.innerHTML = '';
+            
+            zoneE2Growers.sort().forEach(grower => {
+                const growerCard = document.createElement('div');
+                growerCard.style.cssText = 'padding: 12px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;';
+                growerCard.innerHTML = `
+                    <span><i class="fas fa-user"></i> ${grower}</span>
+                    <button class="smart-btn smart-btn-info" style="padding: 5px 12px;" onclick="selectGrower('${grower.replace(/'/g, "\\'")}')">Select</button>
+                `;
+                container.appendChild(growerCard);
+            });
+            
+            document.getElementById('viewGrowersModal').style.display = 'flex';
+        }
+        
+        function selectGrower(growerName) {
+            document.getElementById('growerName').value = growerName;
+            closeViewGrowersModal();
+            showToast(`Selected: ${growerName}`);
+        }
+        
+        function closeViewGrowersModal() {
+            document.getElementById('viewGrowersModal').style.display = 'none';
         }
         
         // Zone selection handler
@@ -498,10 +702,6 @@
                     showToast(`Zone ${currentZone} selected`, false);
                 });
             });
-            // Set default active
-            document.querySelector('[data-zone="E2"]').classList.add('active');
-            updateLocalitiesByZone('E2');
-            updateGrowerList('E2');
         }
         
         // Toast notification
@@ -613,7 +813,7 @@
                 greenhouses: greenhouses
             };
             
-            const WEBAPP_URL = ' https://script.google.com/macros/s/AKfycbwhlgciprYglImYEYrqMPikS0ucuJm9lMpSVLFVQdhg8NwubUPQkaE079_7kK2hwlgLrQ/exec';
+            const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwhlgciprYglImYEYrqMPikS0ucuJm9lMpSVLFVQdhg8NwubUPQkaE079_7kK2hwlgLrQ/exec';
             const btn = document.querySelector('.btn-submit');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
@@ -621,8 +821,8 @@
             
             try {
                 await fetch(WEBAPP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                showToast('Data submitted successfully!');
-                // Reset form
+                showToast('✓ Data submitted successfully!');
+                // Reset form but keep one greenhouse
                 document.getElementById('growerName').value = '';
                 document.getElementById('locality').value = '';
                 document.getElementById('totalArea').value = '';
@@ -634,8 +834,17 @@
             finally { btn.innerHTML = originalText; btn.disabled = false; }
         }
         
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('addGrowerModal')) closeAddGrowerModal();
+            if (event.target === document.getElementById('viewGrowersModal')) closeViewGrowersModal();
+        }
+        
         // Initialize
+        loadGrowersFromLocal();
         initZoneButtons();
+        updateLocalitiesByZone('E2');
+        updateGrowerList('E2');
         addGreenhouse();
     </script>
 </body>
