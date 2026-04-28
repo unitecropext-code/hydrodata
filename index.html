@@ -484,7 +484,6 @@
             sections.forEach(s => { const v = s.querySelector('.gh-variety')?.value; if(v) varieties.add(v); });
             document.getElementById('totalVarieties').textContent = varieties.size;
             
-            // Update active growers count from input
             const growerName = document.getElementById('growerName').value;
             if (growerName) activeGrowers.add(growerName);
             document.getElementById('growerCount').textContent = activeGrowers.size;
@@ -553,6 +552,43 @@
             return html;
         }
         
+        // Toggle Harvest fields (Yield fields) based on crop stage
+        function toggleHarvestFields(selectElement) {
+            const greenhouseCard = selectElement.closest('.greenhouse-card');
+            const harvestFieldsGroup = greenhouseCard.querySelector('.harvest-fields-group');
+            
+            if (harvestFieldsGroup) {
+                if (selectElement.value === 'Harvesting') {
+                    harvestFieldsGroup.style.display = 'block';
+                } else {
+                    harvestFieldsGroup.style.display = 'none';
+                    // Clear harvest field values when hidden
+                    const weeklyInput = harvestFieldsGroup.querySelector('.gh-weekly');
+                    const monthlyInput = harvestFieldsGroup.querySelector('.gh-monthly');
+                    const harvestMonthsInput = harvestFieldsGroup.querySelector('.gh-harvest');
+                    if (weeklyInput) weeklyInput.value = '';
+                    if (monthlyInput) monthlyInput.value = '';
+                    if (harvestMonthsInput) harvestMonthsInput.value = '';
+                }
+            }
+        }
+        
+        // Toggle Tomato Type field visibility based on crop selection
+        function toggleTomatoType(selectElement) {
+            const greenhouseCard = selectElement.closest('.greenhouse-card');
+            const tomatoTypeGroup = greenhouseCard.querySelector('.tomato-type-group');
+            const tomatoSelect = tomatoTypeGroup?.querySelector('.gh-tomatotype');
+            
+            if (tomatoTypeGroup) {
+                if (selectElement.value === 'Tomato') {
+                    tomatoTypeGroup.style.display = 'block';
+                } else {
+                    tomatoTypeGroup.style.display = 'none';
+                    if (tomatoSelect) tomatoSelect.value = '';
+                }
+            }
+        }
+        
         // Add greenhouse
         function addGreenhouse(data = null) {
             const container = document.getElementById('greenhousesContainer');
@@ -561,6 +597,7 @@
             card.id = `greenhouse-${greenhouseCount}`;
             
             const showTomatoType = data?.cropType === 'Tomato';
+            const showHarvestFields = data?.cropStage === 'Harvesting';
             
             card.innerHTML = `
                 <div class="card-header">
@@ -587,7 +624,7 @@
                     </div>
                     <div class="input-group">
                         <label><i class="fas fa-chart-simple"></i> Crop Stage</label>
-                        <select class="gh-stage">
+                        <select class="gh-stage" onchange="toggleHarvestFields(this)">
                             ${getCropStageOptionsHTML(data?.cropStage || '')}
                         </select>
                     </div>
@@ -595,25 +632,37 @@
                         <label><i class="fas fa-calendar-alt"></i> Date Transplanted</label>
                         <input type="date" class="gh-transplant" value="${data?.transplantDate || ''}">
                     </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-chart-line"></i> Avg Yield/Week (kg)</label>
-                        <input type="number" class="gh-weekly" step="0.01" value="${data?.avgYieldWeek || ''}" placeholder="Weekly yield">
+                    
+                    <!-- HARVEST FIELDS - Only visible when Crop Stage = Harvesting -->
+                    <div class="harvest-fields-group" style="grid-column: span 2; display: ${showHarvestFields ? 'block' : 'none'};">
+                        <div style="background: #FFF8E1; padding: 15px; border-radius: 10px; margin-top: 5px;">
+                            <label style="margin-bottom: 10px; display: block; font-weight: 700; color: #E65100;">
+                                <i class="fas fa-chart-line"></i> 📊 HARVEST INFORMATION
+                            </label>
+                            <div class="smart-grid">
+                                <div class="input-group">
+                                    <label><i class="fas fa-chart-line"></i> Avg Yield/Week (kg)</label>
+                                    <input type="number" class="gh-weekly" step="0.01" value="${data?.avgYieldWeek || ''}" placeholder="Weekly yield">
+                                </div>
+                                <div class="input-group">
+                                    <label><i class="fas fa-chart-bar"></i> Avg Yield/Month (kg)</label>
+                                    <input type="number" class="gh-monthly" step="0.01" value="${data?.avgYieldMonth || ''}" placeholder="Monthly yield">
+                                </div>
+                                <div class="input-group">
+                                    <label><i class="fas fa-clock"></i> Number of Months Harvesting</label>
+                                    <input type="number" class="gh-harvest" step="1" min="0" max="12" value="${data?.harvestMonths || ''}" placeholder="e.g., 3 months">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-chart-bar"></i> Avg Yield/Month (kg)</label>
-                        <input type="number" class="gh-monthly" step="0.01" value="${data?.avgYieldMonth || ''}" placeholder="Monthly yield">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-clock"></i> Number of Months Harvesting</label>
-                        <input type="number" class="gh-harvest" step="1" min="0" max="12" value="${data?.harvestMonths || ''}" placeholder="e.g., 3 months">
-                    </div>
+                    
                     <div class="input-group">
                         <label><i class="fas fa-water"></i> Substrate Type</label>
                         <select class="gh-substrate">
                             ${getSubstrateOptionsHTML(data?.substrateType || '')}
                         </select>
                     </div>
-                    <div class="input-group" id="tomatoTypeGroup_${greenhouseCount}" style="${showTomatoType ? '' : 'display: none;'}">
+                    <div class="input-group tomato-type-group" style="display: ${showTomatoType ? 'block' : 'none'};">
                         <label><i class="fas fa-tomato"></i> Tomato Type</label>
                         <select class="gh-tomatotype">
                             ${getTomatoTypeOptionsHTML(data?.tomatoType || '')}
@@ -624,22 +673,6 @@
             container.appendChild(card);
             greenhouseCount++;
             updateStats();
-        }
-        
-        // Toggle Tomato Type field visibility based on crop selection
-        function toggleTomatoType(selectElement) {
-            const greenhouseCard = selectElement.closest('.greenhouse-card');
-            const tomatoTypeGroup = greenhouseCard.querySelector('[id*="tomatoTypeGroup"]');
-            const tomatoSelect = tomatoTypeGroup?.querySelector('.gh-tomatotype');
-            
-            if (tomatoTypeGroup) {
-                if (selectElement.value === 'Tomato') {
-                    tomatoTypeGroup.style.display = 'block';
-                } else {
-                    tomatoTypeGroup.style.display = 'none';
-                    if (tomatoSelect) tomatoSelect.value = '';
-                }
-            }
         }
         
         function removeGreenhouse(id) {
@@ -659,9 +692,9 @@
                     variety: source.querySelector('.gh-variety').value,
                     cropStage: source.querySelector('.gh-stage').value,
                     transplantDate: source.querySelector('.gh-transplant').value,
-                    avgYieldWeek: source.querySelector('.gh-weekly').value,
-                    avgYieldMonth: source.querySelector('.gh-monthly').value,
-                    harvestMonths: source.querySelector('.gh-harvest').value,
+                    avgYieldWeek: source.querySelector('.gh-weekly')?.value || '',
+                    avgYieldMonth: source.querySelector('.gh-monthly')?.value || '',
+                    harvestMonths: source.querySelector('.gh-harvest')?.value || '',
                     substrateType: source.querySelector('.gh-substrate').value,
                     tomatoType: tomatoSelect ? tomatoSelect.value : ''
                 };
@@ -687,6 +720,10 @@
             const greenhouses = [];
             document.querySelectorAll('.greenhouse-card').forEach(card => {
                 const tomatoSelect = card.querySelector('.gh-tomatotype');
+                const weeklyInput = card.querySelector('.gh-weekly');
+                const monthlyInput = card.querySelector('.gh-monthly');
+                const harvestInput = card.querySelector('.gh-harvest');
+                
                 greenhouses.push({
                     greenhouse: greenhouses.length + 1,
                     area: card.querySelector('.gh-area').value,
@@ -694,9 +731,9 @@
                     variety: card.querySelector('.gh-variety').value,
                     cropStage: card.querySelector('.gh-stage').value,
                     transplantDate: card.querySelector('.gh-transplant').value,
-                    avgYieldWeek: card.querySelector('.gh-weekly').value,
-                    avgYieldMonth: card.querySelector('.gh-monthly').value,
-                    harvestMonths: card.querySelector('.gh-harvest').value,
+                    avgYieldWeek: weeklyInput ? weeklyInput.value : '',
+                    avgYieldMonth: monthlyInput ? monthlyInput.value : '',
+                    harvestMonths: harvestInput ? harvestInput.value : '',
                     substrateType: card.querySelector('.gh-substrate').value,
                     tomatoType: tomatoSelect ? tomatoSelect.value : ''
                 });
@@ -736,4 +773,4 @@
         addGreenhouse();
     </script>
 </body>
-</html>
+</html>    
