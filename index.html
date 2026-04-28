@@ -91,7 +91,6 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s;
-            cursor: pointer;
         }
 
         .stat-card:hover {
@@ -162,36 +161,6 @@
             outline: none;
             border-color: #4CAF50;
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .grower-input-wrapper {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .grower-input-wrapper input {
-            flex: 1;
-        }
-
-        .btn-add-grower {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            white-space: nowrap;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-add-grower:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
 
         .zone-buttons {
@@ -281,7 +250,6 @@
         .smart-btn-primary { background: #4CAF50; color: white; }
         .smart-btn-secondary { background: #FF9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
-        .smart-btn-info { background: #2196F3; color: white; }
 
         .btn-submit {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -322,50 +290,7 @@
         .toast.success { border-left: 4px solid #4CAF50; }
         .toast.error { border-left: 4px solid #f44336; }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-            justify-content: flex-end;
-        }
-
         @media (max-width: 768px) {
-            .grower-input-wrapper { flex-direction: column; }
-            .btn-add-grower { width: 100%; justify-content: center; }
             .card-header { flex-direction: column; align-items: stretch; }
         }
     </style>
@@ -385,7 +310,7 @@
             <div class="stat-card"><div class="stat-icon">🌱</div><div class="stat-label">Greenhouses</div><div class="stat-value" id="totalGH">0</div></div>
             <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-label">Total Area (m²)</div><div class="stat-value" id="totalAreaStat">0</div></div>
             <div class="stat-card"><div class="stat-icon">🌾</div><div class="stat-label">Crop Varieties</div><div class="stat-value" id="totalVarieties">0</div></div>
-            <div class="stat-card" onclick="showAllGrowers()"><div class="stat-icon">👨‍🌾</div><div class="stat-label">Growers List</div><div class="stat-value" id="growerCount">0</div></div>
+            <div class="stat-card"><div class="stat-icon">👨‍🌾</div><div class="stat-label">Active Growers</div><div class="stat-value" id="growerCount">0</div></div>
         </div>
 
         <!-- Zone Selection -->
@@ -405,13 +330,7 @@
             <div class="smart-grid">
                 <div class="input-group">
                     <label><i class="fas fa-user"></i> Grower Name *</label>
-                    <div class="grower-input-wrapper">
-                        <input type="text" id="growerName" list="growerList" placeholder="Select or enter grower name" autocomplete="off">
-                        <datalist id="growerList"></datalist>
-                        <button type="button" class="btn-add-grower" onclick="openAddGrowerModal()">
-                            <i class="fas fa-plus-circle"></i> New Grower
-                        </button>
-                    </div>
+                    <input type="text" id="growerName" placeholder="Enter grower name" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label><i class="fas fa-map-marker-alt"></i> Locality</label>
@@ -443,44 +362,10 @@
         <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026 | Smart Data Capture Tool v2.0</div>
     </div>
 
-    <!-- Add Grower Modal -->
-    <div id="addGrowerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header"><i class="fas fa-user-plus"></i> Add New Grower</div>
-            <div class="input-group" style="margin-bottom: 15px;">
-                <label>Grower Name *</label>
-                <input type="text" id="newGrowerName" placeholder="Enter full name">
-            </div>
-            <div class="input-group" style="margin-bottom: 15px;">
-                <label>Contact Number (Optional)</label>
-                <input type="text" id="newGrowerContact" placeholder="Enter contact number">
-            </div>
-            <div class="input-group" style="margin-bottom: 15px;">
-                <label>Locality</label>
-                <input type="text" id="newGrowerLocality" list="localityList" placeholder="Select locality">
-            </div>
-            <div class="modal-buttons">
-                <button class="smart-btn smart-btn-danger" onclick="closeAddGrowerModal()">Cancel</button>
-                <button class="smart-btn smart-btn-primary" onclick="addNewGrower()">Add Grower</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Growers Modal -->
-    <div id="viewGrowersModal" class="modal">
-        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
-            <div class="modal-header"><i class="fas fa-list"></i> Registered Growers (Zone E2)</div>
-            <div id="growersListContainer" style="max-height: 400px; overflow-y: auto;"></div>
-            <div class="modal-buttons">
-                <button class="smart-btn smart-btn-primary" onclick="closeViewGrowersModal()">Close</button>
-            </div>
-        </div>
-    </div>
-
     <div id="toast" class="toast"><i class="fas fa-check-circle" style="color: #4CAF50;"></i><span id="toastMessage"></span></div>
 
     <script>
-        // ==================== DATA INTEGRATION FROM EXCEL ====================
+        // ==================== LOCALITIES DATA FROM EXCEL ====================
         
         const zoneE1Localities = [
             "Alma", "Bagatelle Dam", "Bar Le Duc", "Beau Bois", "Bell Village", "Belle Rive",
@@ -526,7 +411,7 @@
             "Sweet Pepper", "Shallot", "Greens", "Tomato", "Okra", "Chillies", "Eggplant"
         ];
         
-        // ========== TOMATO TYPE OPTIONS (Cooking, Salad, Cherry) ==========
+        // ========== TOMATO TYPE OPTIONS ==========
         const tomatoTypeOptions = [
             "Cooking", "Salad", "Cherry"
         ];
@@ -541,72 +426,9 @@
             "Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"
         ];
         
-        // Initial Zone E2 Growers from Excel
-        let zoneE2Growers = [
-            "ABEELUCK Rajiv", "BADAL Sharmila", "BANGALEE Indardev", "BEECARRY Unoop", "BEEHARRY Sooraj",
-            "BEERGOONAUTH Navin", "BHUNDHOO Hemlata", "BUDHOO Basdeo", "BULDAN Dhunanjay", "BULDEE Bulveerdeo",
-            "BULDEE Pradeo", "BURKUT ALLY", "BUSROPUN Yasin", "CHENEL Jean Gregoire", "CHINAN Siven",
-            "CHOWDHOORY VINOD", "DANOOA Krishna", "DOMUN Prema", "DOMUN Zuhayr", "DOOBLAD Juggeanbul",
-            "DOUTAL Ashveen", "DOUTAL KRESSANall", "EATALLY Flex Farm", "ELAHEE Bibi Mehreen", "ELAHEE Swalley",
-            "EUROFARM LTD", "FOOLHEEA Khooshal", "FUTTINGA Prema", "GHURHOO KAMAL", "GHUROO Megnath",
-            "GHUROO Nirmala", "GHUROO Pravesh", "GOPAUL Dharmeshwaree", "GUNGARAM Devrani", "GUNOORY ARTI",
-            "HURRYLALL SANTOSH", "JAMOOKEEAH Sooryawatee", "JAUNE Ralph", "Jeeana Vrinda Devi", "JEETUN Ganshyam",
-            "Jhaumeer Mohamed Hossen", "Jhaumeer Rushda", "Jhaumeer Waheeda", "Joomun Mohammad Razia",
-            "JOORAWON Nandinee", "KAULLYSING Shivshankar", "KAULLYSING Sujan", "KAULLYSING Tinesh",
-            "KISSOONDOYAL Jotee", "KOYLAS Kamal", "KUREEMUN TANWEER", "LALLAWOOA Utam Kumar", "LALLBEEHARRY Mohun Kumar",
-            "LALLMOHAMED Farhaan", "LOLLMUN Hemantsing", "MATHOOR Parsad Kewal", "MAUDHOO Abbedanand",
-            "MAUDHOO Mahen", "MAUDHOO Manoj", "MOHUN Veena", "MULTRA Menasha", "MUNOGHEE Madvi",
-            "MUNSOOR MOHAMMED UMAR", "NOOROODIN Auhammad", "NUKCHEDY Vijay", "NUNDAH Sandya", "NUNDOO Ganeshwar",
-            "PARIAN Vishnada", "PEEROO Ebad", "POORUNDER Manish", "PUTLAROW Karuna", "RAHATOLEE Bibi Sabina",
-            "RAHATOLEE Memaa Begum", "RAJCOOMAR Soodarshan", "RAMBURRUN Atish", "RAMBURRUN Devika",
-            "RAMHOTA Sudhakar", "RAMJUG Amriteshwarnath", "RAMJUG ARTI", "RAMJUG DEVINA", "RAMJUG Janishwarnath",
-            "RAMJUG Mahadeo", "RAMJUG Maheshwarnath", "RAMJUG Manraj", "RAMJUG Monish", "RAMJUG Rajnee",
-            "RAMJUG Satish (Sanjay)", "RAMJUG Tavishwarnath", "RAMJUG Yagnish", "RAMKISSOON Chintamanee",
-            "RAMKISSOON Jeetendra", "RAMKISSOON RAJIV", "RAMKISSOON VISHAM", "RAMLAGUN Arvin", "RAMNIAL Harish",
-            "RAMSURRUN Vishnu", "RAMTALLY Dawood", "RAMTALLY Suhayl", "RAWOOJEE Chandragassen", "RAWOOJEE Navin",
-            "RUHOMUTALLY Rehan", "RUHOMUTALLY Tawfic", "SAVOO Visnaden", "SAWKATALLY Ismael", "SEEBUN Benuduth",
-            "SEEBUN Nitin", "SEEWOOLALL Meetyadev", "SHEORAJ Shaheel Yashvant", "SOHUR Preety", "SOOBEN Logendiren",
-            "SOOBRATTEE MOOSA QURBAN", "SOOKHEE Bhoosun Kumar", "SOOKOOREE Vikash", "SOOKOYEE Kavita",
-            "SOOKUN SOOROOTAMSINGH", "SOUKY Veemal Singh", "SUNKUR Juswantee", "SUNKUR Ravi", "TAKOOR Chandraduth",
-            "UNMOLE Heerasagar", "UNMOLE Soobhawtee", "Woodun Hemraj c/o Woodun Veggies", "Woodun L Pallavi Devi"
-        ];
-        
         let currentZone = "E2";
         let greenhouseCount = 1;
-        
-        // Save growers to localStorage
-        function saveGrowersToLocal() {
-            localStorage.setItem('zoneE2Growers', JSON.stringify(zoneE2Growers));
-        }
-        
-        // Load growers from localStorage
-        function loadGrowersFromLocal() {
-            const saved = localStorage.getItem('zoneE2Growers');
-            if (saved) {
-                zoneE2Growers = JSON.parse(saved);
-            }
-        }
-        
-        // Update grower list for Zone E2
-        function updateGrowerList(zone) {
-            const growerInput = document.getElementById('growerName');
-            const growerList = document.getElementById('growerList');
-            
-            growerList.innerHTML = '';
-            
-            if (zone === 'E2') {
-                zoneE2Growers.sort().forEach(grower => {
-                    const option = document.createElement('option');
-                    option.value = grower;
-                    growerList.appendChild(option);
-                });
-                growerInput.placeholder = "Select or enter grower name";
-                document.getElementById('growerCount').textContent = zoneE2Growers.length;
-            } else {
-                growerInput.placeholder = "Enter grower name";
-                document.getElementById('growerCount').textContent = "N/A";
-            }
-        }
+        let activeGrowers = new Set();
         
         // Update locality list based on zone
         function updateLocalitiesByZone(zone) {
@@ -630,86 +452,6 @@
             document.getElementById('zoneDisplay').value = `Zone ${zone}`;
         }
         
-        // Add New Grower Function
-        function openAddGrowerModal() {
-            if (currentZone !== 'E2') {
-                showToast('New growers can only be added to Zone E2', true);
-                return;
-            }
-            document.getElementById('addGrowerModal').style.display = 'flex';
-            document.getElementById('newGrowerName').value = '';
-            document.getElementById('newGrowerContact').value = '';
-            document.getElementById('newGrowerLocality').value = '';
-        }
-        
-        function closeAddGrowerModal() {
-            document.getElementById('addGrowerModal').style.display = 'none';
-        }
-        
-        function addNewGrower() {
-            const newGrowerName = document.getElementById('newGrowerName').value.trim();
-            if (!newGrowerName) {
-                showToast('Please enter grower name', true);
-                return;
-            }
-            
-            if (zoneE2Growers.includes(newGrowerName)) {
-                showToast('Grower already exists in the list', true);
-                closeAddGrowerModal();
-                return;
-            }
-            
-            zoneE2Growers.push(newGrowerName);
-            zoneE2Growers.sort();
-            saveGrowersToLocal();
-            updateGrowerList('E2');
-            
-            document.getElementById('growerName').value = newGrowerName;
-            
-            const growerDetails = JSON.parse(localStorage.getItem('growerDetails') || '{}');
-            growerDetails[newGrowerName] = {
-                contact: document.getElementById('newGrowerContact').value,
-                locality: document.getElementById('newGrowerLocality').value,
-                dateAdded: new Date().toISOString()
-            };
-            localStorage.setItem('growerDetails', JSON.stringify(growerDetails));
-            
-            showToast(`✓ Grower "${newGrowerName}" added successfully!`);
-            closeAddGrowerModal();
-        }
-        
-        function showAllGrowers() {
-            if (currentZone !== 'E2') {
-                showToast('Grower list is only available for Zone E2', true);
-                return;
-            }
-            
-            const container = document.getElementById('growersListContainer');
-            container.innerHTML = '';
-            
-            zoneE2Growers.sort().forEach(grower => {
-                const growerCard = document.createElement('div');
-                growerCard.style.cssText = 'padding: 12px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;';
-                growerCard.innerHTML = `
-                    <span><i class="fas fa-user"></i> ${grower}</span>
-                    <button class="smart-btn smart-btn-info" style="padding: 5px 12px;" onclick="selectGrower('${grower.replace(/'/g, "\\'")}')">Select</button>
-                `;
-                container.appendChild(growerCard);
-            });
-            
-            document.getElementById('viewGrowersModal').style.display = 'flex';
-        }
-        
-        function selectGrower(growerName) {
-            document.getElementById('growerName').value = growerName;
-            closeViewGrowersModal();
-            showToast(`Selected: ${growerName}`);
-        }
-        
-        function closeViewGrowersModal() {
-            document.getElementById('viewGrowersModal').style.display = 'none';
-        }
-        
         // Zone selection handler
         function initZoneButtons() {
             const buttons = document.querySelectorAll('.zone-btn');
@@ -719,7 +461,6 @@
                     btn.classList.add('active');
                     currentZone = btn.dataset.zone;
                     updateLocalitiesByZone(currentZone);
-                    updateGrowerList(currentZone);
                     showToast(`Zone ${currentZone} selected`, false);
                 });
             });
@@ -742,6 +483,11 @@
             const varieties = new Set();
             sections.forEach(s => { const v = s.querySelector('.gh-variety')?.value; if(v) varieties.add(v); });
             document.getElementById('totalVarieties').textContent = varieties.size;
+            
+            // Update active growers count from input
+            const growerName = document.getElementById('growerName').value;
+            if (growerName) activeGrowers.add(growerName);
+            document.getElementById('growerCount').textContent = activeGrowers.size;
         }
         
         // Generate crop options HTML
@@ -763,7 +509,7 @@
             return html;
         }
         
-        // ========== TOMATO TYPE DROPDOWN (Cooking, Salad, Cherry) ==========
+        // Generate tomato type options HTML
         function getTomatoTypeOptionsHTML(selectedValue = '') {
             let html = '<option value="">Select Tomato Type</option>';
             tomatoTypeOptions.forEach(type => {
@@ -814,7 +560,6 @@
             card.className = 'greenhouse-card';
             card.id = `greenhouse-${greenhouseCount}`;
             
-            // Determine if Tomato Type should be shown
             const showTomatoType = data?.cropType === 'Tomato';
             
             card.innerHTML = `
@@ -925,8 +670,18 @@
             }
         }
         
+        // Update grower count when name is entered
+        document.getElementById('growerName').addEventListener('input', function() {
+            if (this.value.trim()) {
+                activeGrowers.add(this.value.trim());
+            } else {
+                activeGrowers.delete(this.value);
+            }
+            document.getElementById('growerCount').textContent = activeGrowers.size;
+        });
+        
         async function submitData() {
-            const growerName = document.getElementById('growerName').value;
+            const growerName = document.getElementById('growerName').value.trim();
             if(!growerName) { showToast('Enter grower name', true); return; }
             
             const greenhouses = [];
@@ -975,16 +730,9 @@
             finally { btn.innerHTML = originalText; btn.disabled = false; }
         }
         
-        window.onclick = function(event) {
-            if (event.target === document.getElementById('addGrowerModal')) closeAddGrowerModal();
-            if (event.target === document.getElementById('viewGrowersModal')) closeViewGrowersModal();
-        }
-        
         // Initialize
-        loadGrowersFromLocal();
         initZoneButtons();
         updateLocalitiesByZone('E2');
-        updateGrowerList('E2');
         addGreenhouse();
     </script>
 </body>
