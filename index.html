@@ -2,67 +2,363 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Hydroponic Data Tracker - Smart Data Capture Tool</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .modern-header { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 25px 30px; margin-bottom: 30px; }
-        .title-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .icon-badge { background: linear-gradient(135deg, #4CAF50, #45a049); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
-        .title-section h1 { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .beta-badge { background: #FF9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .subtitle { color: #666; font-size: 14px; margin-top: 8px; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-icon { font-size: 28px; margin-bottom: 10px; }
-        .stat-label { color: #666; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 28px; font-weight: 800; color: #2c3e50; }
-        
-        .form-section { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .section-title { font-size: 20px; font-weight: 700; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; flex-wrap: wrap; }
-        .smart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .input-group { position: relative; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
-        .input-group label i { margin-right: 6px; color: #4CAF50; }
-        .input-group input, .input-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: all 0.3s; font-family: 'Inter', sans-serif; }
-        .input-group input:focus, .input-group select:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76,175,80,0.1); }
-        
-        .zone-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 5px; }
-        .zone-btn { padding: 10px 24px; border: 2px solid #e0e0e0; background: white; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
-        .zone-btn:hover { border-color: #4CAF50; background: #f0f9f0; }
-        .zone-btn.active { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border-color: #4CAF50; }
-        
-        .greenhouse-card { background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #e0e0e0; transition: all 0.3s; position: relative; overflow: hidden; }
-        .greenhouse-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(135deg, #4CAF50, #45a049); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .greenhouse-badge { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 8px 16px; border-radius: 25px; font-weight: 600; font-size: 14px; }
-        .card-actions { display: flex; gap: 10px; }
-        .smart-btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 12px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Mobile First Design */
+        .modern-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .icon-badge {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .title-section h1 {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .beta-badge {
+            background: #FF9800;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        /* Stats Grid - Mobile Friendly */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+
+        .stat-icon { font-size: 24px; margin-bottom: 5px; }
+        .stat-label { color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 22px; font-weight: 800; color: #2c3e50; }
+
+        /* Form Sections */
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+        }
+
+        .smart-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            width: 100%;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .input-group label i {
+            margin-right: 6px;
+            color: #4CAF50;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            -webkit-appearance: none;
+            appearance: none;
+            background: white;
+        }
+
+        /* Zone Buttons - Scrollable on Mobile */
+        .zone-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .zone-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .zone-btn.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        /* Greenhouse Cards */
+        .greenhouse-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        .greenhouse-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 16px 0 0 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .greenhouse-badge {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .smart-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .smart-btn-primary { background: #4CAF50; color: white; }
         .smart-btn-secondary { background: #FF9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
-        
-        .btn-submit { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 18px 40px; font-size: 18px; font-weight: 700; border: none; border-radius: 50px; cursor: pointer; width: 100%; margin-top: 20px; }
-        .footer { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 20px; text-align: center; color: #666; font-size: 12px; margin-top: 30px; }
-        .toast { position: fixed; bottom: 30px; right: 30px; background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translateX(400px); transition: transform 0.3s; z-index: 1000; }
-        .toast.show { transform: translateX(0); }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Monthly Harvest Table - Mobile Friendly (Horizontal Scroll) */
+        .harvest-table-container {
+            background: #FFF8E1;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 2px solid #FF9800;
+            overflow-x: auto;
+        }
+
+        .monthly-harvest-table {
+            min-width: 600px;
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .monthly-harvest-table th {
+            background: #FF9800;
+            color: white;
+            padding: 8px 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .monthly-harvest-table td {
+            padding: 6px 4px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .monthly-harvest-table input {
+            width: 70px;
+            padding: 8px 4px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .avg-yield-section {
+            background: #E3F2FD;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .avg-yield-section .input-group {
+            margin-bottom: 0;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+            margin-top: 20px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            transition: transform 0.3s;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .toast.show { transform: translateY(0); }
         .toast.success { border-left: 4px solid #4CAF50; }
         .toast.error { border-left: 4px solid #f44336; }
-        
-        .harvest-table-container { background: #FFF8E1; border-radius: 15px; padding: 20px; margin-top: 20px; border: 2px solid #FF9800; overflow-x: auto; }
-        .monthly-harvest-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; }
-        .monthly-harvest-table th { background: #FF9800; color: white; padding: 10px; font-size: 12px; text-align: center; }
-        .monthly-harvest-table td { padding: 8px; text-align: center; border: 1px solid #e0e0e0; }
-        .monthly-harvest-table input { width: 100%; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 6px; }
-        .avg-yield-section { background: #E3F2FD; border-radius: 10px; padding: 15px; margin-top: 15px; display: flex; gap: 20px; flex-wrap: wrap; }
-        
-        @media (max-width: 768px) { .card-header { flex-direction: column; align-items: stretch; } }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .stats-grid { gap: 8px; }
+            .stat-card { padding: 10px; }
+            .stat-value { font-size: 18px; }
+            .zone-btn { min-width: 60px; font-size: 11px; padding: 8px; }
+            .monthly-harvest-table input { width: 55px; font-size: 11px; }
+        }
     </style>
 </head>
 <body>
@@ -73,24 +369,40 @@
                 <h1>Hydroponic Data Tracker</h1>
                 <span class="beta-badge">BETA 1.0</span>
             </div>
-            <div class="subtitle"><i class="fas fa-microchip"></i> Smart Data Capture Tool | Monthly Harvest Tracking</div>
+            <div class="subtitle"><i class="fas fa-microchip"></i> Smart Data Capture Tool | Mobile Friendly</div>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card"><div class="stat-icon">🌱</div><div class="stat-label">Greenhouses</div><div class="stat-value" id="totalGH">0</div></div>
-            <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-label">Total Area (m²)</div><div class="stat-value" id="totalAreaStat">0</div></div>
-            <div class="stat-card"><div class="stat-icon">🌾</div><div class="stat-label">Crop Varieties</div><div class="stat-value" id="totalVarieties">0</div></div>
-            <div class="stat-card"><div class="stat-icon">👨‍🌾</div><div class="stat-label">Active Growers</div><div class="stat-value" id="growerCount">0</div></div>
+            <div class="stat-card" onclick="showGreenhouseDetail()">
+                <div class="stat-icon">🌱</div>
+                <div class="stat-label">GREENHOUSES</div>
+                <div class="stat-value" id="totalGH">0</div>
+            </div>
+            <div class="stat-card" onclick="showAreaDetail()">
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">TOTAL AREA</div>
+                <div class="stat-value" id="totalAreaStat">0</div>
+            </div>
+            <div class="stat-card" onclick="showCropDetail()">
+                <div class="stat-icon">🌾</div>
+                <div class="stat-label">CROP VARIETIES</div>
+                <div class="stat-value" id="totalVarieties">0</div>
+            </div>
+            <div class="stat-card" onclick="showGrowerDetail()">
+                <div class="stat-icon">👨‍🌾</div>
+                <div class="stat-label">ACTIVE GROWERS</div>
+                <div class="stat-value" id="growerCount">0</div>
+            </div>
         </div>
 
         <!-- Zone Selection -->
         <div class="form-section">
             <div class="section-title"><i class="fas fa-map-marker-alt"></i><span>Select Zone</span></div>
             <div class="zone-buttons" id="zoneButtons">
-                <button class="zone-btn" data-zone="E1">📍 Zone E1</button>
-                <button class="zone-btn" data-zone="E2">📍 Zone E2</button>
-                <button class="zone-btn" data-zone="E3">📍 Zone E3</button>
-                <button class="zone-btn" data-zone="E4">📍 Zone E4</button>
+                <button class="zone-btn" data-zone="E1">📍 E1</button>
+                <button class="zone-btn" data-zone="E2">📍 E2</button>
+                <button class="zone-btn" data-zone="E3">📍 E3</button>
+                <button class="zone-btn" data-zone="E4">📍 E4</button>
             </div>
         </div>
 
@@ -98,10 +410,23 @@
         <div class="form-section">
             <div class="section-title"><i class="fas fa-user-friends"></i><span>Grower Information</span></div>
             <div class="smart-grid">
-                <div class="input-group"><label><i class="fas fa-user"></i> Grower Name *</label><input type="text" id="growerName" placeholder="Enter grower name"></div>
-                <div class="input-group"><label><i class="fas fa-map-marker-alt"></i> Locality</label><input type="text" id="locality" list="localityList"><datalist id="localityList"></datalist></div>
-                <div class="input-group"><label><i class="fas fa-layer-group"></i> Zone</label><input type="text" id="zoneDisplay" readonly></div>
-                <div class="input-group"><label><i class="fas fa-chart-line"></i> Total Area (m²)</label><input type="number" id="totalArea" step="0.01" placeholder="Total greenhouse area"></div>
+                <div class="input-group">
+                    <label><i class="fas fa-user"></i> Grower Name *</label>
+                    <input type="text" id="growerName" placeholder="Enter grower name">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Locality</label>
+                    <input type="text" id="locality" list="localityList" placeholder="Select locality">
+                    <datalist id="localityList"></datalist>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-layer-group"></i> Zone</label>
+                    <input type="text" id="zoneDisplay" readonly placeholder="Selected zone">
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-chart-line"></i> Total Area (m²)</label>
+                    <input type="number" id="totalArea" step="0.01" placeholder="Total greenhouse area">
+                </div>
             </div>
         </div>
 
@@ -109,7 +434,7 @@
         <div class="form-section">
             <div class="section-title">
                 <i class="fas fa-greenhouse"></i><span>Greenhouse Details</span>
-                <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add Greenhouse</button>
+                <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add</button>
             </div>
             <div id="greenhousesContainer"></div>
         </div>
@@ -122,18 +447,58 @@
     <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
 
     <script>
-        // ==================== DATA ====================
-        const zoneE1Localities = ["Alma", "Bagatelle Dam", "Beau Bois", "Bell Village"];
-        const zoneE2Localities = ["Balance John", "Bel Etang", "Belvédère", "Bon Accueil", "Lallmatie", "Mont Ida", "Montagne Blanche"];
-        const zoneE3Localities = ["Argy", "Beau Rivage", "Belle Mare"];
-        const zoneE4Localities = ["Beau Champ", "Beau Vallon", "Bel Air Rivière Sèche"];
+        // ==================== LOCALITIES FROM EXCEL (ZONE E1, E2, E3, E4) ====================
+        const zoneE1Localities = [
+            "Alma", "Bagatelle Dam", "Bar Le Duc", "Beau Bois", "Bell Village", "Belle Rive",
+            "Bonne Veine", "Camp Auguste", "Circonstance", "Cote D'Or", "Dagotiere", "Gentilly",
+            "Guibies", "Helvetia", "Hermitage", "L'Agrement", "L'Assurance", "L'Avenir", "L'Escalier Br Rd",
+            "L'Esperance", "La Laura", "Le Pouce", "Malinga", "Minissy", "Moka", "Nouvelle Decouverte",
+            "Petit Verger", "Providence", "Quartier Militaire", "Reduit", "Ripailles", "Riviere Baptiste",
+            "Roselyn Cottage", "Soreze", "St Pierre", "Valetta", "Verdun"
+        ];
         
-        const cropOptions = ["Cabbage", "Cauliflower", "English Cucumber", "Lettuce", "Melon", "Sweet Pepper", "Shallot", "Greens", "Tomato", "Okra", "Chillies", "Eggplant"];
+        const zoneE2Localities = [
+            "Balance John", "Beau Bois", "Bel Etang", "Belvédère", "Bon Accueil", "Bonne Mere",
+            "Brisée Verdière", "Camp de Masque", "Camp Thorel", "Fuel", "Gaulettes Serrées", "Gibraltar",
+            "Grand Bas Fond", "Lallmatie", "Latapie", "L'Unité", "Médine Camp de Masque", "Melrose",
+            "Mission Cross Rd", "Mont Ida", "Montagne Blanche", "Pellegrin", "Petit Paquet", "Pont Bon Dieu",
+            "Providence", "Quatre Bords", "Queen Victoria", "Riche Fond", "Salazie", "Salazie Rd",
+            "Sans Soucis", "St Julien d'Hotman", "St Julien Village"
+        ];
+        
+        const zoneE3Localities = [
+            "Argy", "Beau Bois", "Beau Rivage", "Belle Mare", "Belle Vue Allendy", "Bois d'Oiseaux",
+            "Bramsthan", "Bras d'Eau", "Camp Garreau", "Camp Ithier", "Camp Marcelin", "Camp Poorun",
+            "Camp Raffia", "Camp Ranoo", "Centre de Flacq", "Constance", "Grande Retraite", "Hermitage",
+            "Isidore Rose", "Kashinath", "La Porte Providence", "Laventure", "Mare Choisy", "Mare du Puits",
+            "Mare la Chaux", "Mare Providence", "Mare Tapsy", "Morc Constance", "Nehru Nagar", "Palmar",
+            "Petite Retraite", "Plaine de Gersigny", "Pont Blanc", "Poste de Flacq", "Quatre Cocos",
+            "Riche Mare", "Sept Croisées", "St Rémy", "Trou d'Eau Douce", "Victoria"
+        ];
+        
+        const zoneE4Localities = [
+            "Balance John", "Beau Champ", "Beau Vallon", "Bel Air Rivière Sèche", "Belle Rive",
+            "Belle Rose", "Bois Marchand", "Camp Beau Bois", "Camp de Masque Pavé", "Camp Jackerie",
+            "Caroline", "Cent Gaulettes", "Clavet", "Clémencia", "Deep River", "Deux Frères",
+            "Ecroignard", "Ernest Florent", "Grand River South East", "Ilot", "Kewal Nagar", "La Laura",
+            "La Lucie Roy", "La Nourrice", "Laventure", "Lesur", "L'Etoile", "Mare aux Goyaves",
+            "Mare Carrée", "Mare Triton", "Marie Jeanne", "Morc Roy", "Morc Sohawon", "Olivia",
+            "Pellegrin", "Petit Bois", "Petite Cabane", "Plaine Bananes", "Pointe aux Feuilles",
+            "Pont Lardier", "Quatre Soeurs", "Sebastopol", "Trois Ilots"
+        ];
+        
+        // ==================== CROP OPTIONS ====================
+        const cropOptions = [
+            "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", "Melon", 
+            "Sweet Pepper", "Shallot", "Greens", "Tomato", "Okra", "Chillies", "Eggplant"
+        ];
+        
         const unitBasedCrops = ["English Cucumber", "Cauliflower", "Cabbage", "Melon", "Lettuce"];
         const tomatoTypeOptions = ["Cooking", "Salad", "Cherry"];
         const substrateOptions = ["Cocopeat", "Aggregates", "Woodchips", "NFT", "DFT", "Aquaponics"];
         const cropStageOptions = ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"];
-        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const months = ["January", "February", "March", "April", "May", "June", 
+                        "July", "August", "September", "October", "November", "December"];
         
         let currentZone = "E2";
         let greenhouseCounter = 1;
@@ -142,12 +507,21 @@
         
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';
         
-        // ==================== UI FUNCTIONS ====================
+        // ==================== LOCALITY FUNCTIONS ====================
         function updateLocalitiesByZone(zone) {
             const localityList = document.getElementById('localityList');
-            let localities = zone === 'E1' ? zoneE1Localities : zone === 'E2' ? zoneE2Localities : zone === 'E3' ? zoneE3Localities : zoneE4Localities;
+            let localities = [];
+            if (zone === 'E1') localities = zoneE1Localities;
+            else if (zone === 'E2') localities = zoneE2Localities;
+            else if (zone === 'E3') localities = zoneE3Localities;
+            else if (zone === 'E4') localities = zoneE4Localities;
+            
             localityList.innerHTML = '';
-            localities.forEach(loc => { const option = document.createElement('option'); option.value = loc; localityList.appendChild(option); });
+            localities.forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc;
+                localityList.appendChild(option);
+            });
             document.getElementById('zoneDisplay').value = `Zone ${zone}`;
         }
         
@@ -174,21 +548,17 @@
         function updateStats() {
             const sections = document.querySelectorAll('.greenhouse-card');
             document.getElementById('totalGH').innerText = sections.length;
-            
             let totalArea = 0;
             sections.forEach(s => totalArea += parseFloat(s.querySelector('.gh-area')?.value) || 0);
             document.getElementById('totalAreaStat').innerText = totalArea.toFixed(2);
-            
             const varieties = new Set();
             sections.forEach(s => { const v = s.querySelector('.gh-crop')?.value; if(v && v !== "") varieties.add(v); });
             document.getElementById('totalVarieties').innerText = varieties.size;
-            
             const growerName = document.getElementById('growerName').value.trim();
             if (growerName) activeGrowersSet.add(growerName);
             document.getElementById('growerCount').innerText = activeGrowersSet.size;
         }
         
-        // ==================== CONVERSION FUNCTIONS ====================
         function getDisplayUnit(cropType) {
             return unitBasedCrops.includes(cropType) ? "units" : "kg";
         }
@@ -201,20 +571,20 @@
         // ==================== MONTHLY HARVEST TABLE ====================
         function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
             const displayUnit = getDisplayUnit(cropType);
-            let tableHtml = `<div class="harvest-table-container" id="harvestTable_${greenhouseId}">
-                <div style="font-weight:700; margin-bottom:15px;">📊 MONTHLY HARVEST YIELD (${displayUnit.toUpperCase()})</div>
+            let tableHtml = `<div class="harvest-table-container">
+                <div style="font-weight:700; margin-bottom:12px;">📊 MONTHLY HARVEST YIELD (${displayUnit.toUpperCase()})</div>
                 <table class="monthly-harvest-table">
                     <thead><tr>${months.map(m => `<th>${m.substring(0,3)}</th>`).join('')}</tr></thead>
                     <tbody><tr>`;
             for (let month of months) {
                 const savedValue = (existingData && existingData[month]) ? existingData[month].yield : '';
-                tableHtml += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${savedValue}" step="${displayUnit === 'units' ? '1' : '0.01'}" placeholder="${displayUnit}" style="width:80px; padding:5px; text-align:center;"></td>`;
+                tableHtml += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${savedValue}" step="${displayUnit === 'units' ? '1' : '0.01'}" placeholder="${displayUnit}"></td>`;
             }
             tableHtml += `</tr></tbody>
                 </table>
                 <div class="avg-yield-section">
-                    <div class="input-group"><label>Avg Yield per Week (${displayUnit})</label><input type="number" class="avg-weekly-yield" step="0.01" placeholder="per week"></div>
-                    <div class="input-group"><label>Avg Yield per Month (${displayUnit})</label><input type="number" class="avg-monthly-yield" step="0.01" placeholder="per month"></div>
+                    <div class="input-group"><label>Avg Yield/Week (${displayUnit})</label><input type="number" class="avg-weekly-yield" step="0.01" placeholder="per week"></div>
+                    <div class="input-group"><label>Avg Yield/Month (${displayUnit})</label><input type="number" class="avg-monthly-yield" step="0.01" placeholder="per month"></div>
                     <div class="input-group"><label>Months Harvesting</label><input type="number" class="harvest-months" step="1" min="0" max="12" placeholder="Months"></div>
                 </div>
                 <div style="background:#E3F2FD; padding:8px; border-radius:8px; font-size:11px; margin-top:10px;">
@@ -277,7 +647,6 @@
                 const avgWeekly = card.querySelector('.avg-weekly-yield');
                 const avgMonthly = card.querySelector('.avg-monthly-yield');
                 const harvestMonths = card.querySelector('.harvest-months');
-                
                 if (avgWeekly) avgWeekly.addEventListener('change', function() {
                     if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
                     window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value) || 0;
@@ -315,18 +684,18 @@
                 <div class="card-header">
                     <div class="greenhouse-badge"><i class="fas fa-seedling"></i> Greenhouse ${currentId}</div>
                     <div class="card-actions">
-                        <button class="smart-btn smart-btn-secondary" onclick="duplicateGreenhouse(${currentId})"><i class="fas fa-copy"></i> Duplicate</button>
-                        <button class="smart-btn smart-btn-danger" onclick="removeGreenhouse(${currentId})"><i class="fas fa-trash"></i> Remove</button>
+                        <button class="smart-btn smart-btn-secondary" onclick="duplicateGreenhouse(${currentId})"><i class="fas fa-copy"></i> Copy</button>
+                        <button class="smart-btn smart-btn-danger" onclick="removeGreenhouse(${currentId})"><i class="fas fa-trash"></i> Del</button>
                     </div>
                 </div>
                 <div class="smart-grid">
-                    <div class="input-group"><label><i class="fas fa-chart-pie"></i> Area (m²)</label><input type="number" class="gh-area" step="0.01" value="${data?.area || ''}" oninput="updateStats()"></div>
-                    <div class="input-group"><label><i class="fas fa-seedling"></i> Crop Cultivated</label><select class="gh-crop" onchange="toggleTomatoType(this)">${getCropOptionsHTML(data?.cropType || '')}</select></div>
-                    <div class="input-group"><label><i class="fas fa-tag"></i> Variety</label><input type="text" class="gh-variety" value="${data?.variety || ''}" oninput="updateStats()"></div>
-                    <div class="input-group"><label><i class="fas fa-chart-simple"></i> Crop Stage</label><select class="gh-stage" onchange="toggleHarvestSection(this)">${getCropStageOptionsHTML(data?.cropStage || '')}</select></div>
-                    <div class="input-group"><label><i class="fas fa-calendar-alt"></i> Date Transplanted</label><input type="date" class="gh-transplant" value="${data?.transplantDate || ''}"></div>
-                    <div class="input-group"><label><i class="fas fa-water"></i> Substrate Type</label><select class="gh-substrate">${getSubstrateOptionsHTML(data?.substrateType || '')}</select></div>
-                    <div class="input-group tomato-type-group" style="display: ${showTomatoType ? 'block' : 'none'};"><label><i class="fas fa-tomato"></i> Tomato Type</label><select class="gh-tomatotype">${getTomatoTypeOptionsHTML(data?.tomatoType || '')}</select></div>
+                    <div class="input-group"><label>Area (m²)</label><input type="number" class="gh-area" step="0.01" value="${data?.area || ''}" oninput="updateStats()"></div>
+                    <div class="input-group"><label>Crop</label><select class="gh-crop" onchange="toggleTomatoType(this)">${getCropOptionsHTML(data?.cropType || '')}</select></div>
+                    <div class="input-group"><label>Variety</label><input type="text" class="gh-variety" value="${data?.variety || ''}" oninput="updateStats()"></div>
+                    <div class="input-group"><label>Crop Stage</label><select class="gh-stage" onchange="toggleHarvestSection(this)">${getCropStageOptionsHTML(data?.cropStage || '')}</select></div>
+                    <div class="input-group"><label>Date Transplanted</label><input type="date" class="gh-transplant" value="${data?.transplantDate || ''}"></div>
+                    <div class="input-group"><label>Substrate</label><select class="gh-substrate">${getSubstrateOptionsHTML(data?.substrateType || '')}</select></div>
+                    <div class="input-group tomato-type-group" style="display: ${showTomatoType ? 'block' : 'none'};"><label>Tomato Type</label><select class="gh-tomatotype">${getTomatoTypeOptionsHTML(data?.tomatoType || '')}</select></div>
                 </div>`;
             
             container.appendChild(card);
@@ -338,7 +707,6 @@
                     if (stageSelect) window.toggleHarvestSection(stageSelect);
                 }, 100);
             }
-            
             greenhouseCounter++;
             updateStats();
         };
@@ -368,7 +736,40 @@
             }
         };
         
-        // ==================== SUBMIT DATA ====================
+        // ==================== STATS DETAILS ====================
+        function showGreenhouseDetail() {
+            const count = document.getElementById('totalGH').innerText;
+            const cards = document.querySelectorAll('.greenhouse-card');
+            let msg = `Total Greenhouses: ${count}\n\n`;
+            cards.forEach((card, i) => {
+                const crop = card.querySelector('.gh-crop')?.value || "Not set";
+                const area = card.querySelector('.gh-area')?.value || "0";
+                msg += `${i+1}. ${crop} (${area} m²)\n`;
+            });
+            alert(msg);
+        }
+        
+        function showAreaDetail() {
+            const total = document.getElementById('totalAreaStat').innerText;
+            alert(`Total Cultivation Area: ${total} m²`);
+        }
+        
+        function showCropDetail() {
+            const cards = document.querySelectorAll('.greenhouse-card');
+            const crops = new Set();
+            cards.forEach(card => {
+                const crop = card.querySelector('.gh-crop')?.value;
+                if (crop && crop !== "") crops.add(crop);
+            });
+            alert(`Crops Grown:\n${Array.from(crops).map((c, i) => `${i+1}. ${c}`).join('\n') || "None"}`);
+        }
+        
+        function showGrowerDetail() {
+            const name = document.getElementById('growerName').value.trim();
+            alert(`Current Grower: ${name || "Not entered"}`);
+        }
+        
+        // ==================== SUBMIT FUNCTION ====================
         window.submitData = async function() {
             const growerName = document.getElementById('growerName').value.trim();
             if (!growerName) { showToast('Enter grower name', true); return; }
@@ -445,6 +846,7 @@
                 }
                 window.monthlyHarvestData = {};
                 document.querySelectorAll('.harvest-table-container').forEach(s => s.remove());
+                activeGrowersSet.clear();
                 updateStats();
                 
             } catch (err) { 
@@ -455,20 +857,17 @@
             }
         };
         
-        // ==================== GROWER NAME TRACKING ====================
         document.getElementById('growerName').addEventListener('input', function() {
             if (this.value.trim()) activeGrowersSet.add(this.value.trim());
             updateStats();
         });
         
         // ==================== INITIALIZATION ====================
-        function init() {
+        window.addEventListener('DOMContentLoaded', () => {
             initZoneButtons();
             updateLocalitiesByZone('E2');
             window.addGreenhouse();
-        }
-        
-        window.addEventListener('DOMContentLoaded', init);
+        });
     </script>
 </body>
 </html>
