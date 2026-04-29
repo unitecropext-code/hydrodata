@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* --- All existing styles remain exactly the same --- */
         * {
             margin: 0;
             padding: 0;
@@ -28,7 +29,6 @@
             z-index: 1;
         }
 
-        /* Modern Header */
         .modern-header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -119,7 +119,7 @@
         .stat-label { color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600; }
         .stat-value { font-size: 32px; font-weight: 800; color: #2c3e50; line-height: 1.2; }
         .stat-unit { font-size: 12px; color: #999; font-weight: normal; margin-left: 4px; }
-        .stat-detail { font-size: 10px; color: #666; margin-top: 8px; padding-top: 6px; border-top: 1px solid #eee; }
+        .stat-detail { font-size: 11px; color: #666; margin-top: 8px; padding-top: 6px; border-top: 1px solid #eee; }
         .stat-progress-bar { background: #e0e0e0; border-radius: 10px; height: 6px; margin-top: 10px; overflow: hidden; }
         .progress-fill { background: linear-gradient(90deg, #4CAF50, #8BC34A); height: 100%; border-radius: 10px; transition: width 0.3s ease; }
         .stat-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
@@ -637,7 +637,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
         
-        // Enhanced updateStats function
+        // Enhanced updateStats function (cleaned)
         function updateStats() {
             const sections = document.querySelectorAll('.greenhouse-card');
             const totalGH = sections.length;
@@ -646,21 +646,16 @@
             const ghElement = document.getElementById('totalGH');
             animateValue(ghElement, parseInt(ghElement.innerText) || 0, totalGH, 300);
             
-            // Calculate area with breakdown
+            // Calculate total area and average
             let totalArea = 0;
-            let areasBySize = { small: 0, medium: 0, large: 0 };
-            
             sections.forEach(s => {
-                const area = parseFloat(s.querySelector('.gh-area')?.value) || 0;
-                totalArea += area;
-                if (area < 100) areasBySize.small++;
-                else if (area < 500) areasBySize.medium++;
-                else areasBySize.large++;
+                totalArea += parseFloat(s.querySelector('.gh-area')?.value) || 0;
             });
             
             const avgArea = totalGH > 0 ? (totalArea / totalGH).toFixed(1) : 0;
             document.getElementById('totalAreaStat').innerText = totalArea.toFixed(2);
-            document.getElementById('areaDetail').innerHTML = `Avg: ${avgArea} m²/GH | ${areasBySize.small}小, ${areasBySize.medium}中, ${areasBySize.large}大`;
+            // REMOVED the size categories (small/medium/large) - now just shows average
+            document.getElementById('areaDetail').innerHTML = `Avg: ${avgArea} m² per greenhouse`;
             
             // Progress bar for area (assuming 10,000 m² target)
             const areaProgress = Math.min((totalArea / 10000) * 100, 100);
@@ -729,7 +724,7 @@
             showToast(`Filtering by: ${crop} (Coming soon)`);
         }
         
-        // Enhanced detail functions
+        // Enhanced detail functions (cleaned)
         function showEnhancedGreenhouseDetail() {
             const sections = document.querySelectorAll('.greenhouse-card');
             const stageStats = { Seedling: 0, Vegetative: 0, Flowering: 0, Fruiting: 0, Harvesting: 0 };
@@ -766,10 +761,12 @@
             
             let msg = "📊 AREA DETAILS\n\n";
             msg += `🔹 Total Area: ${totalArea.toFixed(2)} m²\n`;
-            msg += `🔹 Average/GH: ${avgArea} m²\n`;
-            msg += `🔹 Smallest GH: ${minArea} m²\n`;
-            msg += `🔹 Largest GH: ${maxArea} m²\n`;
-            msg += `🔹 Target Progress: ${Math.min((totalArea / 10000) * 100, 100).toFixed(1)}% of 10,000 m²\n`;
+            msg += `🔹 Average per greenhouse: ${avgArea} m²\n`;
+            msg += `🔹 Smallest greenhouse: ${minArea} m²\n`;
+            msg += `🔹 Largest greenhouse: ${maxArea} m²\n`;
+            const target = 10000;
+            const progress = Math.min((totalArea / target) * 100, 100).toFixed(1);
+            msg += `🔹 Progress toward 10,000 m² target: ${progress}%\n`;
             alert(msg);
         }
         
@@ -800,7 +797,7 @@
             msg += `🔹 Current Grower: ${currentGrower}\n`;
             msg += `🔹 Session Growers: ${activeGrowersSet.size}\n`;
             if (activeGrowersSet.size > 0) {
-                msg += `🔹 Growers in Session:\n`;
+                msg += `🔹 Growers in this session:\n`;
                 activeGrowersSet.forEach(g => { msg += `   • ${g}\n`; });
             }
             alert(msg);
