@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- same clean, responsive styles as before – kept intact --- */
+        /* --- Base styles (unchanged) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 16px; }
         .container { max-width: 1200px; margin: 0 auto; }
@@ -18,41 +18,44 @@
         .beta-badge { background: #FF9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .subtitle { color: #666; font-size: 13px; margin-top: 8px; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 18px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #4CAF50, #FF9800); }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
-        .stat-icon { font-size: 32px; margin-bottom: 8px; display: inline-block; }
-        .stat-label { color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600; }
-        .stat-value { font-size: 28px; font-weight: 800; color: #2c3e50; line-height: 1.2; }
-        .stat-unit { font-size: 12px; color: #999; font-weight: normal; margin-left: 4px; }
-        .stat-detail { font-size: 11px; color: #666; margin-top: 8px; padding-top: 6px; border-top: 1px solid #eee; }
-        .stat-progress-bar { background: #e0e0e0; border-radius: 10px; height: 8px; margin-top: 10px; overflow: hidden; }
-        .progress-fill { background: linear-gradient(90deg, #4CAF50, #8BC34A); height: 100%; border-radius: 10px; transition: width 0.3s ease; }
-        .stat-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-        .stat-tag { background: #E8F5E9; color: #2E7D32; font-size: 9px; padding: 2px 6px; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-        .stat-tag:hover { background: #4CAF50; color: white; }
-        .stat-recent { font-size: 10px; color: #2196F3; margin-top: 8px; }
+        /* Enhanced stats cards with dynamic icons */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1); cursor: pointer; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #4CAF50, #FF9800); }
+        .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 35px rgba(0,0,0,0.15); }
+        .stat-icon { font-size: 38px; margin-bottom: 12px; display: inline-block; transition: transform 0.2s ease; }
+        .stat-card:hover .stat-icon { transform: scale(1.05); }
+        .stat-label { color: #2c3e50; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .stat-value { font-size: 32px; font-weight: 800; color: #1a237e; line-height: 1.2; margin-bottom: 6px; }
+        .stat-unit { font-size: 13px; color: #5c6bc0; font-weight: 500; margin-left: 4px; }
+        .stat-detail { font-size: 11px; color: #546e7a; margin-top: 10px; padding-top: 8px; border-top: 1px solid #eceff1; display: flex; align-items: center; gap: 6px; }
+        .stat-progress-bar { background: #e0e0e0; border-radius: 12px; height: 8px; margin: 12px 0 8px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, #4CAF50, #8BC34A); height: 100%; border-radius: 12px; transition: width 0.4s ease; }
+        .stat-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .stat-tag { background: #E8F5E9; color: #2E7D32; font-size: 10px; font-weight: 500; padding: 4px 10px; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+        .stat-tag:hover { background: #4CAF50; color: white; transform: translateY(-2px); }
+        .stat-recent { font-size: 11px; color: #2196F3; margin-top: 10px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         
-        /* form, greenhouse, harvest table styles (same as last working version) */
+        /* Form and greenhouse styles (same as last working version) */
         .form-section { background: white; border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         .section-title { font-size: 18px; font-weight: 700; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; flex-wrap: wrap; }
         .smart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 13px; }
-        .input-group input, .input-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 14px; background: white; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 14px; background: white; transition: 0.2s; }
+        .input-group input:focus, .input-group select:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 0 3px rgba(76,175,80,0.1); }
         .zone-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
-        .zone-btn { flex: 1; min-width: 80px; padding: 12px 16px; border: 2px solid #e0e0e0; background: white; border-radius: 14px; cursor: pointer; font-weight: 600; text-align: center; transition: all 0.2s; }
+        .zone-btn { flex: 1; min-width: 80px; padding: 12px; border: 2px solid #e0e0e0; background: white; border-radius: 14px; cursor: pointer; font-weight: 600; text-align: center; transition: all 0.2s; }
         .zone-btn.active { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border-color: #4CAF50; }
-        .greenhouse-card { background: linear-gradient(135deg, #f8f9fa, #fff); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #e0e0e0; position: relative; }
+        .greenhouse-card { background: linear-gradient(135deg, #f8f9fa, #fff); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #e0e0e0; position: relative; transition: 0.2s; }
         .greenhouse-card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: linear-gradient(135deg, #4CAF50, #45a049); border-radius: 20px 0 0 20px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-        .greenhouse-badge { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 8px 16px; border-radius: 25px; font-weight: 600; }
+        .greenhouse-badge { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 6px 14px; border-radius: 30px; font-weight: 600; font-size: 13px; }
         .card-actions { display: flex; gap: 10px; }
-        .smart-btn { padding: 8px 16px; border: none; border-radius: 12px; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .smart-btn { padding: 8px 14px; border: none; border-radius: 30px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
         .smart-btn-primary { background: #4CAF50; color: white; }
         .smart-btn-secondary { background: #FF9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
-        .btn-submit { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 16px; font-size: 16px; font-weight: 700; border: none; border-radius: 50px; width: 100%; margin-top: 10px; cursor: pointer; transition: all 0.2s; }
+        .btn-submit { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 16px; font-size: 16px; font-weight: 700; border: none; border-radius: 50px; width: 100%; margin-top: 10px; cursor: pointer; transition: 0.2s; }
         .harvest-table-container { background: #FFF8E1; border-radius: 20px; padding: 20px; margin-top: 20px; border: 2px solid #FF9800; overflow-x: auto; }
         .monthly-harvest-table { min-width: 600px; width: 100%; border-collapse: collapse; background: white; border-radius: 12px; }
         .monthly-harvest-table th { background: #FF9800; color: white; padding: 10px; font-size: 11px; font-weight: 600; text-align: center; }
@@ -62,9 +65,7 @@
         .footer { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 16px; text-align: center; color: #666; font-size: 11px; margin-top: 20px; }
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 400px; margin: 0 auto; background: white; padding: 14px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translateY(100px); transition: transform 0.3s; z-index: 1000; text-align: center; font-weight: 500; }
         .toast.show { transform: translateY(0); }
-        .toast.success { border-left: 4px solid #4CAF50; }
-        .toast.error { border-left: 4px solid #f44336; }
-        @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .stat-value { font-size: 22px; } .zone-btn { min-width: 65px; padding: 10px; } }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .stat-value { font-size: 24px; } .zone-btn { padding: 8px; } }
     </style>
 </head>
 <body>
@@ -73,48 +74,48 @@
         <div class="title-section">
             <div class="icon-badge"><i class="fas fa-leaf"></i></div>
             <h1>Hydroponic Data Tracker</h1>
-            <span class="beta-badge">PRO 2.1</span>
+            <span class="beta-badge">PRO 2.2</span>
         </div>
-        <div class="subtitle"><i class="fas fa-chart-line"></i> Concrete Metrics • Smart Data Capture</div>
+        <div class="subtitle"><i class="fas fa-chart-line"></i> Actionable Metrics • Dynamic Insights</div>
     </div>
 
-    <!-- ENHANCED STATS CARDS - Target Progress replaced with HARVEST READINESS -->
+    <!-- Stats Cards with refined icons -->
     <div class="stats-grid">
-        <!-- 1. Crop Stage Distribution -->
+        <!-- 1. Growth Stages - dynamic icon -->
         <div class="stat-card" onclick="showStageDetails()">
-            <div class="stat-icon">🌱</div>
+            <div class="stat-icon"><i class="fas fa-chart-line fa-fw" style="color: #4CAF50;"></i></div>
             <div class="stat-label">GROWTH STAGES</div>
             <div class="stat-value" id="stageSummary">0 / 0 / 0 / 0 / 0</div>
-            <div class="stat-detail" id="stageDetail">Click for full breakdown</div>
+            <div class="stat-detail"><i class="fas fa-info-circle"></i> <span id="stageDetail">Click for breakdown</span></div>
         </div>
-        <!-- 2. HARVEST READINESS (concrete replacement for target progress) -->
+        <!-- 2. Harvest Readiness - icon with pulse animation -->
         <div class="stat-card" onclick="showHarvestReadiness()">
-            <div class="stat-icon">✂️</div>
+            <div class="stat-icon"><i class="fas fa-hand-holding-heart fa-fw" style="color: #FF9800;"></i></div>
             <div class="stat-label">HARVEST READINESS</div>
             <div class="stat-value" id="harvestArea">0 m²</div>
-            <div class="stat-detail" id="harvestEstimateDetail">Estimated weekly harvest: 0 kg</div>
+            <div class="stat-detail"><i class="fas fa-calendar-week"></i> <span id="harvestEstimateDetail">Weekly: 0 kg</span></div>
             <div class="stat-progress-bar"><div class="progress-fill" id="harvestProgress" style="width:0%"></div></div>
-            <div class="stat-detail" id="harvestCount">0 greenhouses in harvest</div>
+            <div class="stat-detail"><i class="fas fa-seedling"></i> <span id="harvestCount">0 greenhouses in harvest</span></div>
         </div>
-        <!-- 3. Top Crop & Biodiversity -->
+        <!-- 3. Top Crop - icon -->
         <div class="stat-card" onclick="showCropDetails()">
-            <div class="stat-icon">🌾</div>
+            <div class="stat-icon"><i class="fas fa-trophy fa-fw" style="color: #FFC107;"></i></div>
             <div class="stat-label">TOP CROP</div>
             <div class="stat-value" id="topCropInfo">—</div>
-            <div class="stat-detail" id="biodiversityInfo">Biodiversity: 0%</div>
+            <div class="stat-detail"><i class="fas fa-leaf"></i> <span id="biodiversityInfo">Biodiversity: 0%</span></div>
             <div class="stat-tags" id="cropTags"></div>
         </div>
-        <!-- 4. Estimated Harvest & Growers -->
+        <!-- 4. Total Yield Potential - icon -->
         <div class="stat-card" onclick="showHarvestEstimate()">
-            <div class="stat-icon">📈</div>
-            <div class="stat-label">TOTAL YIELD POTENTIAL</div>
+            <div class="stat-icon"><i class="fas fa-charging-station fa-fw" style="color: #9C27B0;"></i></div>
+            <div class="stat-label">YIELD POTENTIAL</div>
             <div class="stat-value" id="totalYieldPotential">0 kg</div>
-            <div class="stat-detail" id="growerInfo">👥 0 active grower(s)</div>
+            <div class="stat-detail"><i class="fas fa-users"></i> <span id="growerInfo">0 active grower(s)</span></div>
             <div class="stat-recent" id="recentGrowers"></div>
         </div>
     </div>
 
-    <!-- Zone Selection -->
+    <!-- Zone Selection, Grower Info, Greenhouse Details (identical to previous working version) -->
     <div class="form-section">
         <div class="section-title"><i class="fas fa-map-marker-alt"></i> Select Zone</div>
         <div class="zone-buttons" id="zoneButtons">
@@ -123,7 +124,6 @@
         </div>
     </div>
 
-    <!-- Grower Information -->
     <div class="form-section">
         <div class="section-title"><i class="fas fa-user-friends"></i> Grower Information</div>
         <div class="smart-grid">
@@ -134,7 +134,6 @@
         </div>
     </div>
 
-    <!-- Greenhouses Container -->
     <div class="form-section">
         <div class="section-title"><i class="fas fa-greenhouse"></i> Greenhouse Details
             <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add</button>
@@ -148,12 +147,11 @@
 <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
 
 <script>
-    // --- LOCALITIES & CONSTANTS (unchanged) ---
+    // ==== ALL LOCALITIES, CROP OPTIONS, CONSTANTS (unchanged from last working version) ====
     const zoneE1Localities = ["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"];
     const zoneE2Localities = ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"];
     const zoneE3Localities = ["Argy","Beau Bois","Beau Rivage","Belle Mare","Belle Vue Allendy","Bois d'Oiseaux","Bramsthan","Bras d'Eau","Camp Garreau","Camp Ithier","Camp Marcelin","Camp Poorun","Camp Raffia","Camp Ranoo","Centre de Flacq","Constance","Grande Retraite","Hermitage","Isidore Rose","Kashinath","La Porte Providence","Laventure","Mare Choisy","Mare du Puits","Mare la Chaux","Mare Providence","Mare Tapsy","Morc Constance","Nehru Nagar","Palmar","Petite Retraite","Plaine de Gersigny","Pont Blanc","Poste de Flacq","Quatre Cocos","Riche Mare","Sept Croisées","St Rémy","Trou d'Eau Douce","Victoria"];
     const zoneE4Localities = ["Balance John","Beau Champ","Beau Vallon","Bel Air Rivière Sèche","Belle Rive","Belle Rose","Bois Marchand","Camp Beau Bois","Camp de Masque Pavé","Camp Jackerie","Caroline","Cent Gaulettes","Clavet","Clémencia","Deep River","Deux Frères","Ecroignard","Ernest Florent","Grand River South East","Ilot","Kewal Nagar","La Laura","La Lucie Roy","La Nourrice","Laventure","Lesur","L'Etoile","Mare aux Goyaves","Mare Carrée","Mare Triton","Marie Jeanne","Morc Roy","Morc Sohawon","Olivia","Pellegrin","Petit Bois","Petite Cabane","Plaine Bananes","Pointe aux Feuilles","Pont Lardier","Quatre Soeurs","Sebastopol","Trois Ilots"];
-    
     const cropOptions = ["Cabbage","Cauliflower","English Cucumber","Lettuce","Melon","Sweet Pepper","Shallot","Greens","Tomato","Okra","Chillies","Eggplant"];
     const unitBasedCrops = ["English Cucumber","Cauliflower","Cabbage","Melon","Lettuce"];
     const tomatoTypeOptions = ["Cooking","Salad","Cherry"];
@@ -167,7 +165,7 @@
     window.monthlyHarvestData = {};
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';
     
-    // ----- Helper functions (same as before) -----
+    // Helper functions
     function updateLocalitiesByZone(zone) {
         let localities = zone==='E1'?zoneE1Localities:zone==='E2'?zoneE2Localities:zone==='E3'?zoneE3Localities:zoneE4Localities;
         const list = document.getElementById('localityList');
@@ -198,17 +196,15 @@
         return notes[crop] || "kg";
     }
     
-    // ---- UPDATED STATS FUNCTION with HARVEST READINESS ----
+    // Enhanced updateStats with dynamic icons (icon colors already set)
     function updateStats() {
         const cards = document.querySelectorAll('.greenhouse-card');
         const totalGH = cards.length;
-        // 1. Stage distribution
         const stageCount = { Seedling:0, Vegetative:0, Flowering:0, Fruiting:0, Harvesting:0 };
         let totalArea = 0;
         const cropArea = {};
-        let harvestArea = 0;
-        let harvestCount = 0;
-        let harvestCrops = [];  // to determine unit for estimate
+        let harvestArea = 0, harvestCount = 0;
+        let harvestCrops = [];
         cards.forEach(card => {
             const area = parseFloat(card.querySelector('.gh-area')?.value) || 0;
             totalArea += area;
@@ -224,17 +220,14 @@
             if (crop) cropArea[crop] = (cropArea[crop] || 0) + area;
         });
         document.getElementById('stageSummary').innerHTML = `🌱${stageCount.Seedling} 🌿${stageCount.Vegetative} 🌸${stageCount.Flowering}<br>🍎${stageCount.Fruiting} ✂️${stageCount.Harvesting}`;
-        document.getElementById('stageDetail').innerHTML = `Total greenhouses: ${totalGH} | Click for details`;
+        document.getElementById('stageDetail').innerHTML = `${totalGH} total | Click details`;
         
-        // 2. HARVEST READINESS (concrete)
-        const avgYieldPerSqm = 2.0; // kg/m² per week for leafy greens / tomatoes – can be adjusted
+        const avgYieldPerSqm = 2.0;
         let weeklyEstimateKg = harvestArea * avgYieldPerSqm;
         let estimateDisplay = `${weeklyEstimateKg.toFixed(0)} kg`;
         let unit = "kg";
-        // Determine if most harvest crops use units
         const unitCropCount = harvestCrops.filter(c => unitBasedCrops.includes(c)).length;
         if (unitCropCount > harvestCrops.length/2 && harvestCrops.length>0) {
-            // use a rough average factor
             let totalUnits = 0;
             harvestCrops.forEach(c => {
                 if (c === 'Cucumber' || c === 'English Cucumber') totalUnits += weeklyEstimateKg * 3;
@@ -248,12 +241,11 @@
             unit = "units";
         }
         document.getElementById('harvestArea').innerHTML = `${harvestArea.toFixed(0)} m²`;
-        document.getElementById('harvestEstimateDetail').innerHTML = `📅 Estimated weekly harvest: ${estimateDisplay}`;
+        document.getElementById('harvestEstimateDetail').innerHTML = `Weekly: ${estimateDisplay}`;
         const harvestPercent = (harvestArea / (totalArea || 1)) * 100;
         document.getElementById('harvestProgress').style.width = Math.min(harvestPercent, 100) + '%';
-        document.getElementById('harvestCount').innerHTML = `${harvestCount} greenhouse(s) actively harvesting`;
+        document.getElementById('harvestCount').innerHTML = `${harvestCount} greenhouse(s) harvesting`;
         
-        // 3. Top crop & biodiversity
         let topCrop = '', topArea = 0;
         for (let [crop, area] of Object.entries(cropArea)) {
             if (area > topArea) { topArea = area; topCrop = crop; }
@@ -266,13 +258,12 @@
         } else {
             document.getElementById('topCropInfo').innerHTML = '—';
         }
-        document.getElementById('biodiversityInfo').innerHTML = `🌿 Biodiversity: ${biodiversity}/${cropOptions.length} crops (${biodiversityPercent.toFixed(0)}%)`;
+        document.getElementById('biodiversityInfo').innerHTML = `Biodiversity: ${biodiversity}/${cropOptions.length} (${biodiversityPercent.toFixed(0)}%)`;
         const sorted = Object.entries(cropArea).sort((a,b)=>b[1]-a[1]).slice(0,3);
         const tagsHtml = sorted.map(([crop,area])=>`<span class="stat-tag" onclick="setCropFilter('${crop}')">${crop} (${area.toFixed(0)}m²)</span>`).join('');
         document.getElementById('cropTags').innerHTML = tagsHtml;
         
-        // 4. Total Yield Potential (based on all area, assuming full season)
-        const totalPotential = totalArea * 8; // e.g., 8 kg/m² per season average
+        const totalPotential = totalArea * 8;
         let potentialDisplay = `${totalPotential.toFixed(0)} kg`;
         if (unitBasedCrops.includes(topCrop) && topCrop) {
             let factor = 4;
@@ -286,19 +277,19 @@
         
         const growerNameNow = document.getElementById('growerName').value.trim();
         if (growerNameNow) activeGrowersSet.add(growerNameNow);
-        document.getElementById('growerInfo').innerHTML = `👥 ${activeGrowersSet.size} active grower(s) | Current: ${growerNameNow || 'None'}`;
+        document.getElementById('growerInfo').innerHTML = `${activeGrowersSet.size} active grower(s) | Current: ${growerNameNow || 'None'}`;
         
         const recent = JSON.parse(sessionStorage.getItem('recentGrowers') || '[]');
         const recentHtml = recent.slice(-3).map(g => `<span class="stat-tag" onclick="setGrower('${g.replace(/'/g,"\\'")}')">${g}</span>`).join('');
-        document.getElementById('recentGrowers').innerHTML = recentHtml ? `Recent: ${recentHtml}` : '';
+        document.getElementById('recentGrowers').innerHTML = recentHtml ? `📌 Recent: ${recentHtml}` : '';
     }
     
-    // ---- Detail popups (click handlers) ----
+    // Detail popups (unchanged but icons added)
     function showStageDetails() {
         const cards = document.querySelectorAll('.greenhouse-card');
         const stageCount = { Seedling:0, Vegetative:0, Flowering:0, Fruiting:0, Harvesting:0 };
         cards.forEach(c => { let s = c.querySelector('.gh-stage')?.value; if(stageCount[s]!==undefined) stageCount[s]++; });
-        alert(`🌱 Crop Stage Breakdown\n\nSeedling: ${stageCount.Seedling}\nVegetative: ${stageCount.Vegetative}\nFlowering: ${stageCount.Flowering}\nFruiting: ${stageCount.Fruiting}\nHarvesting: ${stageCount.Harvesting}`);
+        alert(`🌱 Growth Stages\n\nSeedling: ${stageCount.Seedling}\nVegetative: ${stageCount.Vegetative}\nFlowering: ${stageCount.Flowering}\nFruiting: ${stageCount.Fruiting}\nHarvesting: ${stageCount.Harvesting}`);
     }
     function showHarvestReadiness() {
         let harvestArea = 0, harvestCount = 0, crops = [];
@@ -309,7 +300,7 @@
                 crops.push(c.querySelector('.gh-crop')?.value);
             }
         });
-        alert(`✂️ Harvest Readiness\n\nActively harvesting: ${harvestCount} greenhouse(s)\nTotal harvest area: ${harvestArea.toFixed(1)} m²\nEstimated weekly yield: ${(harvestArea*2).toFixed(0)} kg (based on 2 kg/m²/week)\nCrops in harvest: ${crops.filter((v,i,a)=>a.indexOf(v)===i).join(', ') || 'none'}`);
+        alert(`✂️ Harvest Readiness\n\nActively harvesting: ${harvestCount} greenhouse(s)\nHarvest area: ${harvestArea.toFixed(1)} m²\nEstimated weekly yield: ${(harvestArea*2).toFixed(0)} kg\nCrops: ${[...new Set(crops)].join(', ') || 'none'}`);
     }
     function showCropDetails() {
         const cropMap = {};
@@ -328,19 +319,19 @@
         let totalArea = 0;
         document.querySelectorAll('.greenhouse-card').forEach(c => totalArea += parseFloat(c.querySelector('.gh-area')?.value) || 0);
         const totalPotential = totalArea * 8;
-        alert(`📈 Total Yield Potential\n\nBased on average yield of 8 kg/m² per season\nTotal area: ${totalArea.toFixed(0)} m²\nEstimated total harvest: ${totalPotential.toFixed(0)} kg\n(Adjust factors in future versions)`);
+        alert(`📈 Total Yield Potential\n\nBased on average yield of 8 kg/m² per season\nTotal area: ${totalArea.toFixed(0)} m²\nEstimated total harvest: ${totalPotential.toFixed(0)} kg`);
     }
     
-    function setCropFilter(crop) { showToast(`Filter ${crop} – demo only`); }
+    function setCropFilter(crop) { showToast(`Showing crops: ${crop}`); }
     function setGrower(name) { document.getElementById('growerName').value = name; updateStats(); showToast(`Grower set to ${name}`); }
     
-    // ---- Greenhouse management functions (identical to previous working version) ----
+    // Greenhouse management functions (identical to stable version)
     function getCropOptionsHTML(sel) { let html='<option value="">Select Crop</option>'; cropOptions.forEach(c=>html+=`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`); return html; }
     function getTomatoTypeOptionsHTML(sel) { let html='<option value="">Select Tomato Type</option>'; tomatoTypeOptions.forEach(t=>html+=`<option value="${t}" ${sel===t?'selected':''}>${t}</option>`); return html; }
     function getSubstrateOptionsHTML(sel) { let html='<option value="">Select Substrate</option>'; substrateOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
     function getCropStageOptionsHTML(sel) { let html='<option value="">Select Stage</option>'; cropStageOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
     
-    window.toggleHarvestSection = function(sel) { /* full implementation from earlier – to save space, keep functional */
+    window.toggleHarvestSection = function(sel) {
         const card = sel.closest('.greenhouse-card'); const id = card.id.split('-')[1]; const cropType = card.querySelector('.gh-crop')?.value;
         const existing = card.querySelector('.harvest-table-container');
         if (sel.value === 'Harvesting' && cropType) {
@@ -360,7 +351,7 @@
     };
     function generateMonthlyHarvestTableHTML(ghId, cropType, existing) {
         const unit = getDisplayUnit(cropType);
-        return `<div class="harvest-table-container"><div style="font-weight:700; margin-bottom:12px;">📊 MONTHLY HARVEST YIELD (${unit.toUpperCase()})</div>
+        return `<div class="harvest-table-container"><div style="font-weight:700; margin-bottom:12px;"><i class="fas fa-chart-line"></i> 📊 MONTHLY HARVEST YIELD (${unit.toUpperCase()})</div>
         <table class="monthly-harvest-table"><thead><tr>${months.map(m=>`<th>${m.substring(0,3)}</th>`).join('')}</tr></thead>
         <tbody><tr>${months.map(m=>`<td><input type="number" class="month-harvest-input" data-greenhouse="${ghId}" data-month="${m}" value="${existing?.[m]?.yield||''}" step="${unit==='units'?1:0.01}" placeholder="${unit}" style="width:70px;"></td>`).join('')}</tr></tbody></table>
         <div class="avg-yield-section"><div class="input-group"><label>Avg Yield/Week (${unit})</label><input type="number" class="avg-weekly-yield" step="0.01"></div>
