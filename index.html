@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,375 +7,66 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            position: relative;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .modern-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-
-        .title-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .icon-badge {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-        }
-
-        .title-section h1 {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .beta-badge {
-            background: #FF9800;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .modern-header { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 25px 30px; margin-bottom: 30px; }
+        .title-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .icon-badge { background: linear-gradient(135deg, #4CAF50, #45a049); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .title-section h1 { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .beta-badge { background: #FF9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .subtitle { color: #666; font-size: 14px; margin-top: 8px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
         .stat-icon { font-size: 28px; margin-bottom: 10px; }
         .stat-label { color: #666; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
         .stat-value { font-size: 28px; font-weight: 800; color: #2c3e50; }
-
-        .form-section {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-            flex-wrap: wrap;
-        }
-
-        .smart-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .input-group {
-            position: relative;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .input-group label i {
-            margin-right: 6px;
-            color: #4CAF50;
-        }
-
-        .input-group input,
-        .input-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .zone-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 5px;
-        }
-
-        .zone-btn {
-            padding: 10px 24px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .zone-btn:hover {
-            border-color: #4CAF50;
-            background: #f0f9f0;
-        }
-
-        .zone-btn.active {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border-color: #4CAF50;
-        }
-
-        .greenhouse-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .greenhouse-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .greenhouse-badge {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .smart-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        
+        .form-section { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .section-title { font-size: 20px; font-weight: 700; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; flex-wrap: wrap; }
+        .smart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .input-group { position: relative; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+        .input-group label i { margin-right: 6px; color: #4CAF50; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: all 0.3s; font-family: 'Inter', sans-serif; }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76,175,80,0.1); }
+        
+        .zone-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 5px; }
+        .zone-btn { padding: 10px 24px; border: 2px solid #e0e0e0; background: white; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .zone-btn:hover { border-color: #4CAF50; background: #f0f9f0; }
+        .zone-btn.active { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border-color: #4CAF50; }
+        
+        .greenhouse-card { background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #e0e0e0; transition: all 0.3s; position: relative; overflow: hidden; }
+        .greenhouse-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .greenhouse-badge { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 8px 16px; border-radius: 25px; font-weight: 600; font-size: 14px; }
+        .card-actions { display: flex; gap: 10px; }
+        .smart-btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .smart-btn-primary { background: #4CAF50; color: white; }
         .smart-btn-secondary { background: #FF9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
-
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 18px 40px;
-            font-size: 18px;
-            font-weight: 700;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .footer {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            margin-top: 30px;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transform: translateX(400px);
-            transition: transform 0.3s;
-            z-index: 1000;
-        }
-
+        .smart-btn-info { background: #2196F3; color: white; }
+        
+        .btn-submit { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 18px 40px; font-size: 18px; font-weight: 700; border: none; border-radius: 50px; cursor: pointer; width: 100%; margin-top: 20px; }
+        .footer { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 20px; text-align: center; color: #666; font-size: 12px; margin-top: 30px; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translateX(400px); transition: transform 0.3s; z-index: 1000; }
         .toast.show { transform: translateX(0); }
         .toast.success { border-left: 4px solid #4CAF50; }
         .toast.error { border-left: 4px solid #f44336; }
-
-        /* Harvest Section Styles */
-        .harvest-section {
-            background: linear-gradient(135deg, #FFF8E1, #FFE0B2);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 2px solid #FF9800;
-        }
-
-        .harvest-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #E65100;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .monthly-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .month-card {
-            background: white;
-            border-radius: 10px;
-            padding: 10px;
-            text-align: center;
-            border-left: 3px solid #FF9800;
-            transition: transform 0.2s;
-        }
-
-        .month-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .month-name {
-            font-weight: 700;
-            font-size: 13px;
-            color: #E65100;
-            margin-bottom: 8px;
-        }
-
-        .month-input {
-            width: 100%;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .month-unit {
-            font-size: 10px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .unit-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .unit-badge.kg { background: #4CAF50; color: white; }
-        .unit-badge.units { background: #FF9800; color: white; }
-
-        .conversion-note {
-            background: #E3F2FD;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            margin-top: 12px;
-        }
-
-        @media (max-width: 768px) {
-            .card-header { flex-direction: column; align-items: stretch; }
-            .monthly-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        
+        /* Monthly Harvest Table Styles */
+        .harvest-table-container { background: #FFF8E1; border-radius: 15px; padding: 20px; margin-top: 20px; border: 2px solid #FF9800; overflow-x: auto; }
+        .harvest-table-title { font-size: 16px; font-weight: 700; color: #E65100; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .monthly-harvest-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+        .monthly-harvest-table th { background: #FF9800; color: white; padding: 10px; font-size: 12px; font-weight: 600; text-align: center; border: 1px solid #FFB74D; }
+        .monthly-harvest-table td { padding: 8px; text-align: center; border: 1px solid #e0e0e0; }
+        .monthly-harvest-table input { width: 100%; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; }
+        .avg-yield-section { background: #E3F2FD; border-radius: 10px; padding: 15px; margin-top: 15px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+        .avg-yield-section .input-group { flex: 1; min-width: 150px; margin-bottom: 0; }
+        
+        @media (max-width: 768px) { .card-header { flex-direction: column; align-items: stretch; } .monthly-harvest-table { font-size: 10px; } }
     </style>
 </head>
 <body>
@@ -386,7 +77,7 @@
                 <h1>Hydroponic Data Tracker</h1>
                 <span class="beta-badge">BETA 1.0</span>
             </div>
-            <div class="subtitle"><i class="fas fa-microchip"></i> Smart Data Capture Tool</div>
+            <div class="subtitle"><i class="fas fa-microchip"></i> Smart Data Capture Tool | Monthly Harvest Tracking</div>
         </div>
 
         <div class="stats-grid">
@@ -411,23 +102,10 @@
         <div class="form-section">
             <div class="section-title"><i class="fas fa-user-friends"></i><span>Grower Information</span></div>
             <div class="smart-grid">
-                <div class="input-group">
-                    <label><i class="fas fa-user"></i> Grower Name *</label>
-                    <input type="text" id="growerName" placeholder="Enter grower name" autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-map-marker-alt"></i> Locality</label>
-                    <input type="text" id="locality" list="localityList" placeholder="Select locality">
-                    <datalist id="localityList"></datalist>
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-layer-group"></i> Zone</label>
-                    <input type="text" id="zoneDisplay" readonly placeholder="Selected zone">
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-chart-line"></i> Total Area (m²)</label>
-                    <input type="number" id="totalArea" step="0.01" placeholder="Total greenhouse area">
-                </div>
+                <div class="input-group"><label><i class="fas fa-user"></i> Grower Name *</label><input type="text" id="growerName" placeholder="Enter grower name"></div>
+                <div class="input-group"><label><i class="fas fa-map-marker-alt"></i> Locality</label><input type="text" id="locality" list="localityList"><datalist id="localityList"></datalist></div>
+                <div class="input-group"><label><i class="fas fa-layer-group"></i> Zone</label><input type="text" id="zoneDisplay" readonly></div>
+                <div class="input-group"><label><i class="fas fa-chart-line"></i> Total Area (m²)</label><input type="number" id="totalArea" step="0.01" placeholder="Total greenhouse area"></div>
             </div>
         </div>
 
@@ -442,218 +120,43 @@
 
         <button class="btn-submit" onclick="submitData()"><i class="fas fa-cloud-upload-alt"></i> Submit Data</button>
 
-        <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026 | Smart Data Capture Tool v2.0</div>
+        <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026 | Monthly Harvest Tracking System</div>
     </div>
 
-    <div id="toast" class="toast"><i class="fas fa-check-circle" style="color: #4CAF50;"></i><span id="toastMessage"></span></div>
+    <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
 
     <script>
-        // ==================== LOCALITIES DATA ====================
-        const zoneE1Localities = [
-            "Alma", "Bagatelle Dam", "Bar Le Duc", "Beau Bois", "Bell Village", "Belle Rive",
-            "Bonne Veine", "Camp Auguste", "Circonstance", "Cote D'Or", "Dagotiere", "Gentilly",
-            "Guibies", "Helvetia", "Hermitage", "L'Agrement", "L'Assurance", "L'Avenir", "L'Escalier Br Rd",
-            "L'Esperance", "La Laura", "Le Pouce", "Malinga", "Minissy", "Moka", "Nouvelle Decouverte",
-            "Petit Verger", "Providence", "Quartier Militaire", "Reduit", "Ripailles", "Riviere Baptiste",
-            "Roselyn Cottage", "Soreze", "St Pierre", "Valetta", "Verdun"
-        ];
+        // ==================== DATA ====================
+        const zoneE1Localities = ["Alma", "Bagatelle Dam", "Beau Bois", "Bell Village"];
+        const zoneE2Localities = ["Balance John", "Bel Etang", "Belvédère", "Bon Accueil", "Lallmatie", "Mont Ida", "Montagne Blanche"];
+        const zoneE3Localities = ["Argy", "Beau Rivage", "Belle Mare"];
+        const zoneE4Localities = ["Beau Champ", "Beau Vallon", "Bel Air Rivière Sèche"];
         
-        const zoneE2Localities = [
-            "Balance John", "Bel Etang", "Belvédère", "Bon Accueil", "Bonne Mere", "Brisée Verdière",
-            "Camp de Masque", "Camp Thorel", "Fuel", "Gaulettes Serrées", "Gibraltar", "Grand Bas Fond",
-            "Lallmatie", "Latapie", "L'Unité", "Médine Camp de Masque", "Melrose", "Mission Cross Rd",
-            "Mont Ida", "Montagne Blanche", "Pellegrin", "Petit Paquet", "Pont Bon Dieu", "Providence",
-            "Quatre Bords", "Queen Victoria", "Riche Fond", "Salazie", "Salazie Rd", "Sans Soucis",
-            "St Julien d'Hotman", "St Julien Village"
-        ];
-        
-        const zoneE3Localities = [
-            "Argy", "Beau Rivage", "Belle Mare", "Belle Vue Allendy", "Bois d'Oiseaux", "Bramsthan",
-            "Bras d'Eau", "Camp Garreau", "Camp Ithier", "Camp Marcelin", "Camp Poorun", "Camp Raffia",
-            "Centre de Flacq", "Constance", "Grande Retraite", "Hermitage", "Isidore Rose", "Kashinath",
-            "La Porte Providence", "Laventure", "Mare Choisy", "Mare du Puits", "Mare la Chaux", "Mare Providence",
-            "Mare Tapsy", "Morc Constance", "Nehru Nagar", "Palmar", "Petite Retraite", "Plaine de Gersigny",
-            "Pont Blanc", "Poste de Flacq", "Quatre Cocos", "Riche Mare", "Sept Croisées", "St Rémy",
-            "Trou d'Eau Douce", "Victoria"
-        ];
-        
-        const zoneE4Localities = [
-            "Balance John", "Beau Champ", "Beau Vallon", "Bel Air Rivière Sèche", "Belle Rive", "Belle Rose",
-            "Bois Marchand", "Camp Beau Bois", "Camp de Masque Pavé", "Camp Jackerie", "Caroline", "Cent Gaulettes",
-            "Clavet", "Clémencia", "Deep River", "Deux Frères", "Ecroignard", "Ernest Florent", "Grand River South East",
-            "Ilot", "Kewal Nagar", "La Laura", "La Lucie Roy", "La Nourrice", "Laventure", "Lesur", "L'Etoile",
-            "Mare aux Goyaves", "Mare Carrée", "Mare Triton", "Marie Jeanne", "Morc Roy", "Morc Sohawon", "Olivia",
-            "Pellegrin", "Petit Bois", "Petite Cabane", "Plaine Bananes", "Pointe aux Feuilles", "Pont Lardier",
-            "Quatre Soeurs", "Sebastopol", "Trois Ilots"
-        ];
-        
-        // ========== CROP OPTIONS ==========
-        const cropOptions = [
-            "Cabbage", "Cauliflower", "English Cucumber", "Lettuce", "Melon", 
-            "Sweet Pepper", "Shallot", "Greens", "Tomato", "Okra", "Chillies", "Eggplant"
-        ];
-        
-        // ========== CROPS THAT USE UNITS INSTEAD OF KG ==========
-        const unitBasedCrops = ["Cucumber", "English Cucumber", "Cauliflower", "Cabbage", "Melon", "Lettuce"];
-        
-        // ========== TOMATO TYPE OPTIONS ==========
+        const cropOptions = ["Cabbage", "Cauliflower", "English Cucumber", "Lettuce", "Melon", "Sweet Pepper", "Shallot", "Greens", "Tomato", "Okra", "Chillies", "Eggplant"];
+        const unitBasedCrops = ["English Cucumber", "Cauliflower", "Cabbage", "Melon", "Lettuce"];
         const tomatoTypeOptions = ["Cooking", "Salad", "Cherry"];
-        
-        // Substrate Type options
-        const substrateOptions = [
-            "Cocopeat", "Aggregates", "Woodchips", "NFT", "DFT", "Aquaponics"
-        ];
-        
-        // Crop Stage options
-        const cropStageOptions = [
-            "Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"
-        ];
-        
-        // Months for harvest tracking
-        const months = ["January", "February", "March", "April", "May", "June", 
-                        "July", "August", "September", "October", "November", "December"];
+        const substrateOptions = ["Cocopeat", "Aggregates", "Woodchips", "NFT", "DFT", "Aquaponics"];
+        const cropStageOptions = ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"];
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
         let currentZone = "E2";
         let greenhouseCount = 1;
         let activeGrowers = new Set();
         
-        // Get conversion note for unit-based crops (UPDATED: Cucumber now 3 units per kg)
-        function getConversionNote(cropType) {
-            const conversions = {
-                "Cucumber": "3 units per kg (1 cucumber ≈ 350g)",
-                "English Cucumber": "3 units per kg (1 cucumber ≈ 350g)",
-                "Cauliflower": "~2 units per kg (1 cauliflower ≈ 500g)",
-                "Cabbage": "~2 units per kg (1 cabbage ≈ 500g)",
-                "Melon": "~1.5 units per kg (1 melon ≈ 667g)",
-                "Lettuce": "~5 heads per kg (1 head ≈ 200g)"
-            };
-            return conversions[cropType] || "Yield measured in kilograms (kg)";
-        }
-        
-        // Generate monthly harvest HTML for a greenhouse
-        function generateMonthlyHarvestHTML(greenhouseId, cropType, existingData = null) {
-            const useUnits = unitBasedCrops.includes(cropType);
-            const displayUnit = useUnits ? "units" : "kg";
-            const conversionNote = getConversionNote(cropType);
-            
-            let html = `
-                <div class="harvest-section" id="harvestSection_${greenhouseId}">
-                    <div class="harvest-title">
-                        <i class="fas fa-chart-line"></i> 🌾 HARVEST & YIELD INFORMATION
-                        <span class="unit-badge ${useUnits ? 'units' : 'kg'}">
-                            ${useUnits ? '📦 Displaying in UNITS' : '⚖️ Displaying in KG'}
-                        </span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-                        <div>
-                            <strong><i class="fas fa-seedling"></i> Crop: ${cropType}</strong>
-                        </div>
-                        <div>
-                            <span style="background: #4CAF50; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">
-                                <i class="fas fa-leaf"></i> Harvest Stage Active
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <label style="font-weight: 700; font-size: 13px;">
-                        <i class="fas fa-calendar-alt"></i> Monthly Harvest Yield (${displayUnit}):
-                    </label>
-                    <div class="monthly-grid" id="monthlyGrid_${greenhouseId}">
-            `;
-            
-            // Add month cards
-            for (let month of months) {
-                const savedValue = (existingData && existingData[month]) ? existingData[month].yield : '';
-                html += `
-                    <div class="month-card">
-                        <div class="month-name">${month}</div>
-                        <input type="number" 
-                               class="month-input" 
-                               data-greenhouse="${greenhouseId}"
-                               data-month="${month}"
-                               data-crop="${cropType}"
-                               data-unit="${displayUnit}"
-                               value="${savedValue}"
-                               step="0.01"
-                               placeholder="Enter ${displayUnit}">
-                        <div class="month-unit">${displayUnit}</div>
-                    </div>
-                `;
-            }
-            
-            html += `
-                    </div>
-                    <div class="conversion-note">
-                        <i class="fas fa-info-circle"></i> ${conversionNote}
-                    </div>
-                </div>
-            `;
-            
-            return html;
-        }
-        
-        // Update harvest section for a specific greenhouse
-        function updateGreenhouseHarvestSection(greenhouseId, cropType, cropStage, existingData = null) {
-            const greenhouseCard = document.getElementById(`greenhouse-${greenhouseId}`);
-            if (!greenhouseCard) return;
-            
-            // Remove existing harvest section if present
-            const existingSection = greenhouseCard.querySelector('.harvest-section');
-            if (existingSection) {
-                existingSection.remove();
-            }
-            
-            // Add harvest section only if crop stage is "Harvesting"
-            if (cropStage === "Harvesting" && cropType) {
-                const harvestHTML = generateMonthlyHarvestHTML(greenhouseId, cropType, existingData);
-                greenhouseCard.insertAdjacentHTML('beforeend', harvestHTML);
-                
-                // Add event listeners to store monthly data
-                const inputs = greenhouseCard.querySelectorAll('.month-input');
-                inputs.forEach(input => {
-                    input.addEventListener('change', function() {
-                        const month = this.dataset.month;
-                        const value = parseFloat(this.value) || 0;
-                        const greenhouseIdNum = this.dataset.greenhouse;
-                        if (!window.monthlyHarvestData[greenhouseIdNum]) {
-                            window.monthlyHarvestData[greenhouseIdNum] = {};
-                        }
-                        window.monthlyHarvestData[greenhouseIdNum][month] = {
-                            yield: value,
-                            unit: this.dataset.unit,
-                            crop: this.dataset.crop
-                        };
-                    });
-                });
-            }
-        }
-        
-        // Initialize monthly harvest data storage
+        // Store monthly harvest data per greenhouse
         window.monthlyHarvestData = {};
         
-        // Update locality list based on zone
+        const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+        
+        // ==================== UI FUNCTIONS ====================
         function updateLocalitiesByZone(zone) {
             const localityList = document.getElementById('localityList');
-            let localities = [];
-            switch(zone) {
-                case 'E1': localities = zoneE1Localities; break;
-                case 'E2': localities = zoneE2Localities; break;
-                case 'E3': localities = zoneE3Localities; break;
-                case 'E4': localities = zoneE4Localities; break;
-                default: localities = zoneE2Localities;
-            }
-            
+            let localities = zone === 'E1' ? zoneE1Localities : zone === 'E2' ? zoneE2Localities : zone === 'E3' ? zoneE3Localities : zoneE4Localities;
             localityList.innerHTML = '';
-            localities.forEach(loc => {
-                const option = document.createElement('option');
-                option.value = loc;
-                localityList.appendChild(option);
-            });
-            
+            localities.forEach(loc => { const option = document.createElement('option'); option.value = loc; localityList.appendChild(option); });
             document.getElementById('zoneDisplay').value = `Zone ${zone}`;
         }
         
-        // Zone selection handler
         function initZoneButtons() {
             const buttons = document.querySelectorAll('.zone-btn');
             buttons.forEach(btn => {
@@ -669,8 +172,7 @@
         
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            toastMessage.textContent = message;
+            document.getElementById('toastMessage').textContent = message;
             toast.className = `toast show ${isError ? 'error' : 'success'}`;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
@@ -684,135 +186,163 @@
             const varieties = new Set();
             sections.forEach(s => { const v = s.querySelector('.gh-variety')?.value; if(v) varieties.add(v); });
             document.getElementById('totalVarieties').textContent = varieties.size;
-            
             const growerName = document.getElementById('growerName').value;
             if (growerName) activeGrowers.add(growerName);
             document.getElementById('growerCount').textContent = activeGrowers.size;
         }
         
-        // Generate crop options HTML
+        // ==================== CONVERSION FUNCTIONS ====================
+        function convertToUnits(cropType, kgValue) {
+            const conversions = { "English Cucumber": kgValue * 3, "Cauliflower": kgValue * 2, "Cabbage": kgValue * 2, "Melon": kgValue * 1.5, "Lettuce": kgValue * 5 };
+            return conversions[cropType] || kgValue;
+        }
+        
+        function getDisplayUnit(cropType) {
+            return unitBasedCrops.includes(cropType) ? "units" : "kg";
+        }
+        
+        function getConversionNote(cropType) {
+            const conversions = { "English Cucumber": "3 units per kg", "Cauliflower": "2 units per kg", "Cabbage": "2 units per kg", "Melon": "1.5 units per kg", "Lettuce": "5 heads per kg" };
+            return conversions[cropType] || "Yield measured in kilograms (kg)";
+        }
+        
+        // ==================== MONTHLY HARVEST TABLE HTML ====================
+        function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
+            const displayUnit = getDisplayUnit(cropType);
+            
+            let tableHtml = `<div class="harvest-table-container" id="harvestTable_${greenhouseId}">
+                <div class="harvest-table-title">
+                    <i class="fas fa-chart-line"></i> 📊 MONTHLY HARVEST YIELD (${displayUnit})
+                    <span style="background: #FF9800; color: white; padding: 3px 10px; border-radius: 20px; font-size: 11px;">${displayUnit.toUpperCase()}</span>
+                </div>
+                <table class="monthly-harvest-table">
+                    <thead>
+                        <tr><th>January</th><th>February</th><th>March</th><th>April</th><th>May</th><th>June</th>
+                        <th>July</th><th>August</th><th>September</th><th>October</th><th>November</th><th>December</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>`;
+            
+            for (let month of months) {
+                const savedValue = (existingData && existingData[month]) ? existingData[month].yield : '';
+                tableHtml += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${savedValue}" step="${displayUnit === 'units' ? '1' : '0.01'}" placeholder="${displayUnit}"></td>`;
+            }
+            
+            tableHtml += `</tr></tbody></table>
+                <div class="avg-yield-section">
+                    <div class="input-group">
+                        <label><i class="fas fa-chart-line"></i> Average Yield per Week</label>
+                        <input type="number" class="avg-weekly-yield" step="0.01" placeholder="Enter ${displayUnit} per week">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-chart-bar"></i> Average Yield per Month</label>
+                        <input type="number" class="avg-monthly-yield" step="0.01" placeholder="Enter ${displayUnit} per month">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-clock"></i> Number of Months Harvesting</label>
+                        <input type="number" class="harvest-months" step="1" min="0" max="12" placeholder="Months">
+                    </div>
+                </div>
+                <div class="conversion-note" style="background:#E3F2FD; padding:8px 12px; border-radius:8px; font-size:11px; margin-top:10px;">
+                    <i class="fas fa-info-circle"></i> ${getConversionNote(cropType)}
+                </div>
+            </div>`;
+            
+            return tableHtml;
+        }
+        
+        // ==================== GENERATE FORM HTML ====================
         function getCropOptionsHTML(selectedValue = '') {
             let html = '<option value="">Select Crop</option>';
-            cropOptions.forEach(crop => {
-                let icon = '';
-                if (crop === 'Tomato') icon = '🍅 ';
-                else if (crop === 'Eggplant') icon = '🍆 ';
-                else if (crop === 'Cabbage') icon = '🥬 ';
-                else if (crop === 'Cauliflower') icon = '🥦 ';
-                else if (crop === 'Lettuce') icon = '🥗 ';
-                else if (crop === 'Sweet Pepper') icon = '🫑 ';
-                else if (crop === 'Chillies') icon = '🌶️ ';
-                else if (crop === 'Melon') icon = '🍈 ';
-                else if (crop === 'Okra') icon = '🌿 ';
-                else if (crop === 'English Cucumber') icon = '🥒 ';
-                html += `<option value="${crop}" ${selectedValue === crop ? 'selected' : ''}>${icon}${crop}</option>`;
-            });
+            cropOptions.forEach(crop => { html += `<option value="${crop}" ${selectedValue === crop ? 'selected' : ''}>${crop}</option>`; });
             return html;
         }
         
-        // Generate tomato type options HTML
         function getTomatoTypeOptionsHTML(selectedValue = '') {
             let html = '<option value="">Select Tomato Type</option>';
-            tomatoTypeOptions.forEach(type => {
-                let icon = '';
-                if (type === 'Cooking') icon = '🍳 ';
-                else if (type === 'Salad') icon = '🥗 ';
-                else if (type === 'Cherry') icon = '🍒 ';
-                html += `<option value="${type}" ${selectedValue === type ? 'selected' : ''}>${icon}${type}</option>`;
-            });
+            tomatoTypeOptions.forEach(type => { html += `<option value="${type}" ${selectedValue === type ? 'selected' : ''}>${type}</option>`; });
             return html;
         }
         
-        // Generate substrate type options HTML
         function getSubstrateOptionsHTML(selectedValue = '') {
             let html = '<option value="">Select Substrate</option>';
-            substrateOptions.forEach(substrate => {
-                let icon = '';
-                if (substrate === 'Cocopeat') icon = '🥥 ';
-                else if (substrate === 'Aggregates') icon = '🪨 ';
-                else if (substrate === 'Woodchips') icon = '🪵 ';
-                else if (substrate === 'NFT') icon = '💧 ';
-                else if (substrate === 'DFT') icon = '🌊 ';
-                else if (substrate === 'Aquaponics') icon = '🐟 ';
-                html += `<option value="${substrate}" ${selectedValue === substrate ? 'selected' : ''}>${icon}${substrate}</option>`;
-            });
+            substrateOptions.forEach(sub => { html += `<option value="${sub}" ${selectedValue === sub ? 'selected' : ''}>${sub}</option>`; });
             return html;
         }
         
-        // Generate crop stage options HTML
         function getCropStageOptionsHTML(selectedValue = '') {
             let html = '<option value="">Select Stage</option>';
-            cropStageOptions.forEach(stage => {
-                let icon = '';
-                if (stage === 'Seedling') icon = '🌱 ';
-                else if (stage === 'Vegetative') icon = '🌿 ';
-                else if (stage === 'Flowering') icon = '🌸 ';
-                else if (stage === 'Fruiting') icon = '🍎 ';
-                else if (stage === 'Harvesting') icon = '✂️ ';
-                html += `<option value="${stage}" ${selectedValue === stage ? 'selected' : ''}>${icon}${stage}</option>`;
-            });
+            cropStageOptions.forEach(stage => { html += `<option value="${stage}" ${selectedValue === stage ? 'selected' : ''}>${stage}</option>`; });
             return html;
         }
         
-        // Toggle Harvest fields and section based on crop stage
-        function toggleHarvestFields(selectElement) {
-            const greenhouseCard = selectElement.closest('.greenhouse-card');
-            const greenhouseId = greenhouseCard.id.split('-')[1];
-            const cropSelect = greenhouseCard.querySelector('.gh-crop');
-            const cropType = cropSelect ? cropSelect.value : '';
+        // ==================== TOGGLE FUNCTIONS ====================
+        function toggleHarvestSection(selectElement) {
+            const card = selectElement.closest('.greenhouse-card');
+            const id = card.id.split('-')[1];
+            const cropSelect = card.querySelector('.gh-crop');
+            const cropType = cropSelect?.value || '';
+            const existingSection = card.querySelector('.harvest-table-container');
             
             if (selectElement.value === 'Harvesting' && cropType) {
-                // Show harvest section
-                updateGreenhouseHarvestSection(greenhouseId, cropType, selectElement.value, window.monthlyHarvestData[greenhouseId]);
+                if (existingSection) existingSection.remove();
+                const tableHtml = generateMonthlyHarvestTableHTML(id, cropType, window.monthlyHarvestData[id]);
+                card.insertAdjacentHTML('beforeend', tableHtml);
+                
+                // Add event listeners for monthly harvest inputs
+                card.querySelectorAll('.month-harvest-input').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const month = this.dataset.month;
+                        const value = parseFloat(this.value) || 0;
+                        const ghId = this.dataset.greenhouse;
+                        const currentCrop = card.querySelector('.gh-crop').value;
+                        const unit = getDisplayUnit(currentCrop);
+                        
+                        if (!window.monthlyHarvestData[ghId]) window.monthlyHarvestData[ghId] = {};
+                        window.monthlyHarvestData[ghId][month] = { yield: value, unit: unit, crop: currentCrop };
+                        console.log(`Saved ${month}: ${value} ${unit} for GH${ghId}`);
+                    });
+                });
+                
+                // Add event listeners for avg yield fields
+                const avgWeekly = card.querySelector('.avg-weekly-yield');
+                const avgMonthly = card.querySelector('.avg-monthly-yield');
+                const harvestMonths = card.querySelector('.harvest-months');
+                
+                if (avgWeekly) avgWeekly.addEventListener('change', function() {
+                    if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
+                    window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value) || 0;
+                });
+                if (avgMonthly) avgMonthly.addEventListener('change', function() {
+                    if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
+                    window.monthlyHarvestData[id].avgMonthlyYield = parseFloat(this.value) || 0;
+                });
+                if (harvestMonths) harvestMonths.addEventListener('change', function() {
+                    if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
+                    window.monthlyHarvestData[id].harvestMonths = parseFloat(this.value) || 0;
+                });
+                
             } else {
-                // Remove harvest section
-                const existingSection = greenhouseCard.querySelector('.harvest-section');
-                if (existingSection) {
-                    existingSection.remove();
-                }
-                // Clear stored data for this greenhouse
-                if (window.monthlyHarvestData[greenhouseId]) {
-                    delete window.monthlyHarvestData[greenhouseId];
-                }
+                if (existingSection) existingSection.remove();
+                if (window.monthlyHarvestData[id]) delete window.monthlyHarvestData[id];
             }
         }
         
-        // Toggle Tomato Type field visibility based on crop selection
         function toggleTomatoType(selectElement) {
-            const greenhouseCard = selectElement.closest('.greenhouse-card');
-            const greenhouseId = greenhouseCard.id.split('-')[1];
-            const tomatoTypeGroup = greenhouseCard.querySelector('.tomato-type-group');
-            const tomatoSelect = tomatoTypeGroup?.querySelector('.gh-tomatotype');
-            const stageSelect = greenhouseCard.querySelector('.gh-stage');
-            
-            if (tomatoTypeGroup) {
-                if (selectElement.value === 'Tomato') {
-                    tomatoTypeGroup.style.display = 'block';
-                } else {
-                    tomatoTypeGroup.style.display = 'none';
-                    if (tomatoSelect) tomatoSelect.value = '';
-                }
-            }
-            
-            // Update harvest section if crop stage is harvesting
-            if (stageSelect && stageSelect.value === 'Harvesting' && selectElement.value) {
-                updateGreenhouseHarvestSection(greenhouseId, selectElement.value, 'Harvesting', window.monthlyHarvestData[greenhouseId]);
-            } else if (stageSelect && stageSelect.value === 'Harvesting') {
-                updateGreenhouseHarvestSection(greenhouseId, selectElement.value, 'Harvesting', window.monthlyHarvestData[greenhouseId]);
-            }
+            const card = selectElement.closest('.greenhouse-card');
+            const tomatoGroup = card.querySelector('.tomato-type-group');
+            if (tomatoGroup) tomatoGroup.style.display = selectElement.value === 'Tomato' ? 'block' : 'none';
         }
         
-        // Add greenhouse
+        // ==================== GREENHOUSE MANAGEMENT ====================
         function addGreenhouse(data = null) {
             const container = document.getElementById('greenhousesContainer');
+            const currentId = greenhouseCount;
+            const showTomatoType = data?.cropType === 'Tomato';
+            
             const card = document.createElement('div');
             card.className = 'greenhouse-card';
-            const currentId = greenhouseCount;
             card.id = `greenhouse-${currentId}`;
-            
-            const showTomatoType = data?.cropType === 'Tomato';
-            const showHarvestFields = data?.cropStage === 'Harvesting';
-            
             card.innerHTML = `
                 <div class="card-header">
                     <div class="greenhouse-badge"><i class="fas fa-seedling"></i> Greenhouse ${currentId}</div>
@@ -822,51 +352,24 @@
                     </div>
                 </div>
                 <div class="smart-grid">
-                    <div class="input-group">
-                        <label><i class="fas fa-chart-pie"></i> Area (m²)</label>
-                        <input type="number" class="gh-area" step="0.01" value="${data?.area || ''}" oninput="updateStats()">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-seedling"></i> Crop Cultivated</label>
-                        <select class="gh-crop" onchange="toggleTomatoType(this)">
-                            ${getCropOptionsHTML(data?.cropType || '')}
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-tag"></i> Variety</label>
-                        <input type="text" class="gh-variety" value="${data?.variety || ''}" placeholder="Enter variety" oninput="updateStats()">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-chart-simple"></i> Crop Stage</label>
-                        <select class="gh-stage" onchange="toggleHarvestFields(this)">
-                            ${getCropStageOptionsHTML(data?.cropStage || '')}
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-calendar-alt"></i> Date Transplanted</label>
-                        <input type="date" class="gh-transplant" value="${data?.transplantDate || ''}">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-water"></i> Substrate Type</label>
-                        <select class="gh-substrate">
-                            ${getSubstrateOptionsHTML(data?.substrateType || '')}
-                        </select>
-                    </div>
-                    <div class="input-group tomato-type-group" style="display: ${showTomatoType ? 'block' : 'none'};">
-                        <label><i class="fas fa-tomato"></i> Tomato Type</label>
-                        <select class="gh-tomatotype">
-                            ${getTomatoTypeOptionsHTML(data?.tomatoType || '')}
-                        </select>
-                    </div>
-                </div>
-            `;
+                    <div class="input-group"><label><i class="fas fa-chart-pie"></i> Area (m²)</label><input type="number" class="gh-area" step="0.01" value="${data?.area || ''}" oninput="updateStats()"></div>
+                    <div class="input-group"><label><i class="fas fa-seedling"></i> Crop Cultivated</label><select class="gh-crop" onchange="toggleTomatoType(this)">${getCropOptionsHTML(data?.cropType || '')}</select></div>
+                    <div class="input-group"><label><i class="fas fa-tag"></i> Variety</label><input type="text" class="gh-variety" value="${data?.variety || ''}" oninput="updateStats()"></div>
+                    <div class="input-group"><label><i class="fas fa-chart-simple"></i> Crop Stage</label><select class="gh-stage" onchange="toggleHarvestSection(this)">${getCropStageOptionsHTML(data?.cropStage || '')}</select></div>
+                    <div class="input-group"><label><i class="fas fa-calendar-alt"></i> Date Transplanted</label><input type="date" class="gh-transplant" value="${data?.transplantDate || ''}"></div>
+                    <div class="input-group"><label><i class="fas fa-water"></i> Substrate Type</label><select class="gh-substrate">${getSubstrateOptionsHTML(data?.substrateType || '')}</select></div>
+                    <div class="input-group tomato-type-group" style="display: ${showTomatoType ? 'block' : 'none'};"><label><i class="fas fa-tomato"></i> Tomato Type</label><select class="gh-tomatotype">${getTomatoTypeOptionsHTML(data?.tomatoType || '')}</select></div>
+                </div>`;
             
             container.appendChild(card);
             
-            // If there was existing harvest data for this greenhouse, restore it
+            // Restore harvest data if exists
             if (data?.cropStage === 'Harvesting' && data?.cropType) {
-                window.monthlyHarvestData[currentId] = data.monthlyHarvest || {};
-                updateGreenhouseHarvestSection(currentId, data.cropType, 'Harvesting', window.monthlyHarvestData[currentId]);
+                if (data.monthlyHarvest) window.monthlyHarvestData[currentId] = data.monthlyHarvest;
+                setTimeout(() => {
+                    const stageSelect = card.querySelector('.gh-stage');
+                    if (stageSelect) toggleHarvestSection(stageSelect);
+                }, 100);
             }
             
             greenhouseCount++;
@@ -875,65 +378,87 @@
         
         function removeGreenhouse(id) {
             const el = document.getElementById(`greenhouse-${id}`);
-            if(el) el.remove();
-            // Remove stored harvest data
-            if (window.monthlyHarvestData[id]) {
-                delete window.monthlyHarvestData[id];
-            }
+            if (el) el.remove();
+            delete window.monthlyHarvestData[id];
             updateStats();
             showToast('Greenhouse removed');
         }
         
         function duplicateGreenhouse(id) {
             const source = document.getElementById(`greenhouse-${id}`);
-            if(source) {
-                const tomatoSelect = source.querySelector('.gh-tomatotype');
-                const data = {
+            if (source) {
+                addGreenhouse({
                     area: source.querySelector('.gh-area').value,
                     cropType: source.querySelector('.gh-crop').value,
                     variety: source.querySelector('.gh-variety').value,
                     cropStage: source.querySelector('.gh-stage').value,
                     transplantDate: source.querySelector('.gh-transplant').value,
                     substrateType: source.querySelector('.gh-substrate').value,
-                    tomatoType: tomatoSelect ? tomatoSelect.value : '',
+                    tomatoType: source.querySelector('.gh-tomatotype')?.value || '',
                     monthlyHarvest: window.monthlyHarvestData[id] || {}
-                };
-                addGreenhouse(data);
+                });
                 showToast('Greenhouse duplicated');
             }
         }
         
-        // Update grower count when name is entered
-        document.getElementById('growerName').addEventListener('input', function() {
-            if (this.value.trim()) {
-                activeGrowers.add(this.value.trim());
-            }
-            document.getElementById('growerCount').textContent = activeGrowers.size;
-        });
-        
+        // ==================== SUBMIT DATA ====================
         async function submitData() {
             const growerName = document.getElementById('growerName').value.trim();
-            if(!growerName) { showToast('Enter grower name', true); return; }
+            if (!growerName) { showToast('Enter grower name', true); return; }
             
             const greenhouses = [];
-            document.querySelectorAll('.greenhouse-card').forEach(card => {
-                const tomatoSelect = card.querySelector('.gh-tomatotype');
-                const greenhouseId = card.id.split('-')[1];
+            const greenhouseCards = document.querySelectorAll('.greenhouse-card');
+            
+            for (let card of greenhouseCards) {
+                const id = card.id.split('-')[1];
+                const cropStage = card.querySelector('.gh-stage').value;
+                const cropType = card.querySelector('.gh-crop').value;
+                
+                // Collect monthly harvest data from table inputs
+                const monthlyHarvestForGH = window.monthlyHarvestData[id] || {};
+                
+                // Also capture from input fields directly
+                const monthInputs = card.querySelectorAll('.month-harvest-input');
+                monthInputs.forEach(input => {
+                    const month = input.dataset.month;
+                    const value = parseFloat(input.value) || 0;
+                    if (value > 0 || monthlyHarvestForGH[month]) {
+                        if (!monthlyHarvestForGH[month]) monthlyHarvestForGH[month] = {};
+                        monthlyHarvestForGH[month].yield = value;
+                        monthlyHarvestForGH[month].unit = getDisplayUnit(cropType);
+                        monthlyHarvestForGH[month].crop = cropType;
+                    }
+                });
+                
+                // Get avg yield values
+                const avgWeekly = card.querySelector('.avg-weekly-yield')?.value;
+                const avgMonthly = card.querySelector('.avg-monthly-yield')?.value;
+                const harvestMonthsCount = card.querySelector('.harvest-months')?.value;
+                
+                if (avgWeekly) monthlyHarvestForGH.avgWeeklyYield = parseFloat(avgWeekly);
+                if (avgMonthly) monthlyHarvestForGH.avgMonthlyYield = parseFloat(avgMonthly);
+                if (harvestMonthsCount) monthlyHarvestForGH.harvestMonthsCount = parseFloat(harvestMonthsCount);
+                
+                window.monthlyHarvestData[id] = monthlyHarvestForGH;
+                
+                console.log(`GH${id} Monthly Harvest Data:`, monthlyHarvestForGH);
                 
                 greenhouses.push({
-                    greenhouse: greenhouses.length + 1,
                     area: card.querySelector('.gh-area').value,
-                    cropType: card.querySelector('.gh-crop').value,
+                    cropType: cropType,
                     variety: card.querySelector('.gh-variety').value,
-                    cropStage: card.querySelector('.gh-stage').value,
+                    cropStage: cropStage,
                     transplantDate: card.querySelector('.gh-transplant').value,
                     substrateType: card.querySelector('.gh-substrate').value,
-                    tomatoType: tomatoSelect ? tomatoSelect.value : '',
-                    monthlyHarvest: window.monthlyHarvestData[greenhouseId] || {}
+                    tomatoType: card.querySelector('.gh-tomatotype')?.value || '',
+                    monthlyHarvest: monthlyHarvestForGH,
+                    avgWeeklyYield: avgWeekly || '',
+                    avgMonthlyYield: avgMonthly || '',
+                    harvestMonthsCount: harvestMonthsCount || ''
                 });
-            });
+            }
             
-            const data = {
+            const payload = {
                 growerName: growerName,
                 locality: document.getElementById('locality').value,
                 zone: currentZone,
@@ -942,40 +467,47 @@
                 submittedAt: new Date().toISOString()
             };
             
-            const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw_Rw7YeDHQj2KOHaq5867OT_hvc5tOjgx435X8swEj6QsxeIijEL6RthwNTjQzpRheVw/exec';
+            console.log("Submitting payload:", JSON.stringify(payload, null, 2));
+            
             const btn = document.querySelector('.btn-submit');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
             btn.disabled = true;
             
             try {
-                await fetch(WEBAPP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                showToast('✓ Data submitted successfully!');
+                await fetch(https://script.google.com/macros/s/AKfycbw_Rw7YeDHQj2KOHaq5867OT_hvc5tOjgx435X8swEj6QsxeIijEL6RthwNTjQzpRheVw/exec, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                showToast('✓ Data submitted successfully! Monthly harvest data saved to Sheet1, Sheet3, and Dashboard!');
                 
                 // Reset form
                 document.getElementById('growerName').value = '';
                 document.getElementById('locality').value = '';
                 document.getElementById('totalArea').value = '';
-                while(document.querySelectorAll('.greenhouse-card').length > 1) document.querySelector('.greenhouse-card:last-child').remove();
+                while (document.querySelectorAll('.greenhouse-card').length > 1) {
+                    document.querySelector('.greenhouse-card:last-child').remove();
+                }
                 const firstGH = document.querySelector('.greenhouse-card');
-                if(firstGH) firstGH.querySelectorAll('input, select').forEach(f => { if(f.type !== 'button') f.value = ''; });
-                
-                // Clear harvest data
+                if (firstGH) {
+                    firstGH.querySelectorAll('input, select').forEach(f => { if (f.type !== 'button') f.value = ''; });
+                }
                 window.monthlyHarvestData = {};
-                
-                // Remove any harvest sections
-                document.querySelectorAll('.harvest-section').forEach(section => section.remove());
-                
+                document.querySelectorAll('.harvest-table-container').forEach(s => s.remove());
                 updateStats();
                 
-            } catch(err) { showToast('Error: ' + err.message, true); }
-            finally { btn.innerHTML = originalText; btn.disabled = false; }
+            } catch (err) { 
+                console.error("Submit error:", err);
+                showToast('Error: ' + err.message, true); 
+            } finally { 
+                btn.innerHTML = originalText; 
+                btn.disabled = false; 
+            }
         }
         
-        // Initialize
-        initZoneButtons();
-        updateLocalitiesByZone('E2');
-        addGreenhouse();
+        // ==================== INITIALIZATION ====================
+        window.addEventListener('DOMContentLoaded', () => {
+            initZoneButtons();
+            updateLocalitiesByZone('E2');
+            addGreenhouse();
+        });
     </script>
 </body>
 </html>
