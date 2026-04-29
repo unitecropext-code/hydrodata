@@ -146,7 +146,7 @@
         // Store monthly harvest data per greenhouse
         window.monthlyHarvestData = {};
         
-        const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_Rw7YeDHQj2KOHaq5867OT_hvc5tOjgx435X8swEj6QsxeIijEL6RthwNTjQzpRheVw/exec';
         
         // ==================== UI FUNCTIONS ====================
         function updateLocalitiesByZone(zone) {
@@ -475,7 +475,7 @@
             btn.disabled = true;
             
             try {
-                await fetch(https://script.google.com/macros/s/AKfycbw_Rw7YeDHQj2KOHaq5867OT_hvc5tOjgx435X8swEj6QsxeIijEL6RthwNTjQzpRheVw/exec, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 showToast('✓ Data submitted successfully! Monthly harvest data saved to Sheet1, Sheet3, and Dashboard!');
                 
                 // Reset form
