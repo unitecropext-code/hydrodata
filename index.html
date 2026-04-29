@@ -18,7 +18,7 @@
         .subtitle { color: #666; font-size: 14px; margin-top: 8px; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer; }
         .stat-card:hover { transform: translateY(-5px); }
         .stat-icon { font-size: 28px; margin-bottom: 10px; }
         .stat-label { color: #666; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
@@ -47,7 +47,6 @@
         .smart-btn-primary { background: #4CAF50; color: white; }
         .smart-btn-secondary { background: #FF9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
-        .smart-btn-info { background: #2196F3; color: white; }
         
         .btn-submit { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 18px 40px; font-size: 18px; font-weight: 700; border: none; border-radius: 50px; cursor: pointer; width: 100%; margin-top: 20px; }
         .footer { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 20px; text-align: center; color: #666; font-size: 12px; margin-top: 30px; }
@@ -56,17 +55,14 @@
         .toast.success { border-left: 4px solid #4CAF50; }
         .toast.error { border-left: 4px solid #f44336; }
         
-        /* Monthly Harvest Table Styles */
         .harvest-table-container { background: #FFF8E1; border-radius: 15px; padding: 20px; margin-top: 20px; border: 2px solid #FF9800; overflow-x: auto; }
-        .harvest-table-title { font-size: 16px; font-weight: 700; color: #E65100; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .monthly-harvest-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
-        .monthly-harvest-table th { background: #FF9800; color: white; padding: 10px; font-size: 12px; font-weight: 600; text-align: center; border: 1px solid #FFB74D; }
+        .monthly-harvest-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; }
+        .monthly-harvest-table th { background: #FF9800; color: white; padding: 10px; font-size: 12px; text-align: center; }
         .monthly-harvest-table td { padding: 8px; text-align: center; border: 1px solid #e0e0e0; }
-        .monthly-harvest-table input { width: 100%; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; }
-        .avg-yield-section { background: #E3F2FD; border-radius: 10px; padding: 15px; margin-top: 15px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-        .avg-yield-section .input-group { flex: 1; min-width: 150px; margin-bottom: 0; }
+        .monthly-harvest-table input { width: 100%; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 6px; }
+        .avg-yield-section { background: #E3F2FD; border-radius: 10px; padding: 15px; margin-top: 15px; display: flex; gap: 20px; flex-wrap: wrap; }
         
-        @media (max-width: 768px) { .card-header { flex-direction: column; align-items: stretch; } .monthly-harvest-table { font-size: 10px; } }
+        @media (max-width: 768px) { .card-header { flex-direction: column; align-items: stretch; } }
     </style>
 </head>
 <body>
@@ -120,7 +116,7 @@
 
         <button class="btn-submit" onclick="submitData()"><i class="fas fa-cloud-upload-alt"></i> Submit Data</button>
 
-        <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026 | Monthly Harvest Tracking System</div>
+        <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026</div>
     </div>
 
     <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
@@ -140,10 +136,8 @@
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
         let currentZone = "E2";
-        let greenhouseCount = 1;
-        let activeGrowers = new Set();
-        
-        // Store monthly harvest data per greenhouse
+        let greenhouseCounter = 1;
+        let activeGrowersSet = new Set();
         window.monthlyHarvestData = {};
         
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_Rw7YeDHQj2KOHaq5867OT_hvc5tOjgx435X8swEj6QsxeIijEL6RthwNTjQzpRheVw/exec';
@@ -179,24 +173,22 @@
         
         function updateStats() {
             const sections = document.querySelectorAll('.greenhouse-card');
-            document.getElementById('totalGH').textContent = sections.length;
+            document.getElementById('totalGH').innerText = sections.length;
+            
             let totalArea = 0;
             sections.forEach(s => totalArea += parseFloat(s.querySelector('.gh-area')?.value) || 0);
-            document.getElementById('totalAreaStat').textContent = totalArea.toFixed(2);
+            document.getElementById('totalAreaStat').innerText = totalArea.toFixed(2);
+            
             const varieties = new Set();
-            sections.forEach(s => { const v = s.querySelector('.gh-variety')?.value; if(v) varieties.add(v); });
-            document.getElementById('totalVarieties').textContent = varieties.size;
-            const growerName = document.getElementById('growerName').value;
-            if (growerName) activeGrowers.add(growerName);
-            document.getElementById('growerCount').textContent = activeGrowers.size;
+            sections.forEach(s => { const v = s.querySelector('.gh-crop')?.value; if(v && v !== "") varieties.add(v); });
+            document.getElementById('totalVarieties').innerText = varieties.size;
+            
+            const growerName = document.getElementById('growerName').value.trim();
+            if (growerName) activeGrowersSet.add(growerName);
+            document.getElementById('growerCount').innerText = activeGrowersSet.size;
         }
         
         // ==================== CONVERSION FUNCTIONS ====================
-        function convertToUnits(cropType, kgValue) {
-            const conversions = { "English Cucumber": kgValue * 3, "Cauliflower": kgValue * 2, "Cabbage": kgValue * 2, "Melon": kgValue * 1.5, "Lettuce": kgValue * 5 };
-            return conversions[cropType] || kgValue;
-        }
-        
         function getDisplayUnit(cropType) {
             return unitBasedCrops.includes(cropType) ? "units" : "kg";
         }
@@ -206,52 +198,33 @@
             return conversions[cropType] || "Yield measured in kilograms (kg)";
         }
         
-        // ==================== MONTHLY HARVEST TABLE HTML ====================
+        // ==================== MONTHLY HARVEST TABLE ====================
         function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
             const displayUnit = getDisplayUnit(cropType);
-            
             let tableHtml = `<div class="harvest-table-container" id="harvestTable_${greenhouseId}">
-                <div class="harvest-table-title">
-                    <i class="fas fa-chart-line"></i> 📊 MONTHLY HARVEST YIELD (${displayUnit})
-                    <span style="background: #FF9800; color: white; padding: 3px 10px; border-radius: 20px; font-size: 11px;">${displayUnit.toUpperCase()}</span>
-                </div>
+                <div style="font-weight:700; margin-bottom:15px;">📊 MONTHLY HARVEST YIELD (${displayUnit.toUpperCase()})</div>
                 <table class="monthly-harvest-table">
-                    <thead>
-                        <tr><th>January</th><th>February</th><th>March</th><th>April</th><th>May</th><th>June</th>
-                        <th>July</th><th>August</th><th>September</th><th>October</th><th>November</th><th>December</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>`;
-            
+                    <thead><tr>${months.map(m => `<th>${m.substring(0,3)}</th>`).join('')}</tr></thead>
+                    <tbody><tr>`;
             for (let month of months) {
                 const savedValue = (existingData && existingData[month]) ? existingData[month].yield : '';
-                tableHtml += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${savedValue}" step="${displayUnit === 'units' ? '1' : '0.01'}" placeholder="${displayUnit}"></td>`;
+                tableHtml += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${savedValue}" step="${displayUnit === 'units' ? '1' : '0.01'}" placeholder="${displayUnit}" style="width:80px; padding:5px; text-align:center;"></td>`;
             }
-            
-            tableHtml += `</tr></tbody></table>
+            tableHtml += `</tr></tbody>
+                </table>
                 <div class="avg-yield-section">
-                    <div class="input-group">
-                        <label><i class="fas fa-chart-line"></i> Average Yield per Week</label>
-                        <input type="number" class="avg-weekly-yield" step="0.01" placeholder="Enter ${displayUnit} per week">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-chart-bar"></i> Average Yield per Month</label>
-                        <input type="number" class="avg-monthly-yield" step="0.01" placeholder="Enter ${displayUnit} per month">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-clock"></i> Number of Months Harvesting</label>
-                        <input type="number" class="harvest-months" step="1" min="0" max="12" placeholder="Months">
-                    </div>
+                    <div class="input-group"><label>Avg Yield per Week (${displayUnit})</label><input type="number" class="avg-weekly-yield" step="0.01" placeholder="per week"></div>
+                    <div class="input-group"><label>Avg Yield per Month (${displayUnit})</label><input type="number" class="avg-monthly-yield" step="0.01" placeholder="per month"></div>
+                    <div class="input-group"><label>Months Harvesting</label><input type="number" class="harvest-months" step="1" min="0" max="12" placeholder="Months"></div>
                 </div>
-                <div class="conversion-note" style="background:#E3F2FD; padding:8px 12px; border-radius:8px; font-size:11px; margin-top:10px;">
+                <div style="background:#E3F2FD; padding:8px; border-radius:8px; font-size:11px; margin-top:10px;">
                     <i class="fas fa-info-circle"></i> ${getConversionNote(cropType)}
                 </div>
             </div>`;
-            
             return tableHtml;
         }
         
-        // ==================== GENERATE FORM HTML ====================
+        // ==================== HTML GENERATORS ====================
         function getCropOptionsHTML(selectedValue = '') {
             let html = '<option value="">Select Crop</option>';
             cropOptions.forEach(crop => { html += `<option value="${crop}" ${selectedValue === crop ? 'selected' : ''}>${crop}</option>`; });
@@ -277,7 +250,7 @@
         }
         
         // ==================== TOGGLE FUNCTIONS ====================
-        function toggleHarvestSection(selectElement) {
+        window.toggleHarvestSection = function(selectElement) {
             const card = selectElement.closest('.greenhouse-card');
             const id = card.id.split('-')[1];
             const cropSelect = card.querySelector('.gh-crop');
@@ -289,7 +262,6 @@
                 const tableHtml = generateMonthlyHarvestTableHTML(id, cropType, window.monthlyHarvestData[id]);
                 card.insertAdjacentHTML('beforeend', tableHtml);
                 
-                // Add event listeners for monthly harvest inputs
                 card.querySelectorAll('.month-harvest-input').forEach(input => {
                     input.addEventListener('change', function() {
                         const month = this.dataset.month;
@@ -297,14 +269,11 @@
                         const ghId = this.dataset.greenhouse;
                         const currentCrop = card.querySelector('.gh-crop').value;
                         const unit = getDisplayUnit(currentCrop);
-                        
                         if (!window.monthlyHarvestData[ghId]) window.monthlyHarvestData[ghId] = {};
                         window.monthlyHarvestData[ghId][month] = { yield: value, unit: unit, crop: currentCrop };
-                        console.log(`Saved ${month}: ${value} ${unit} for GH${ghId}`);
                     });
                 });
                 
-                // Add event listeners for avg yield fields
                 const avgWeekly = card.querySelector('.avg-weekly-yield');
                 const avgMonthly = card.querySelector('.avg-monthly-yield');
                 const harvestMonths = card.querySelector('.harvest-months');
@@ -319,25 +288,24 @@
                 });
                 if (harvestMonths) harvestMonths.addEventListener('change', function() {
                     if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
-                    window.monthlyHarvestData[id].harvestMonths = parseFloat(this.value) || 0;
+                    window.monthlyHarvestData[id].harvestMonthsCount = parseFloat(this.value) || 0;
                 });
-                
             } else {
                 if (existingSection) existingSection.remove();
                 if (window.monthlyHarvestData[id]) delete window.monthlyHarvestData[id];
             }
-        }
+        };
         
-        function toggleTomatoType(selectElement) {
+        window.toggleTomatoType = function(selectElement) {
             const card = selectElement.closest('.greenhouse-card');
             const tomatoGroup = card.querySelector('.tomato-type-group');
             if (tomatoGroup) tomatoGroup.style.display = selectElement.value === 'Tomato' ? 'block' : 'none';
-        }
+        };
         
         // ==================== GREENHOUSE MANAGEMENT ====================
-        function addGreenhouse(data = null) {
+        window.addGreenhouse = function(data = null) {
             const container = document.getElementById('greenhousesContainer');
-            const currentId = greenhouseCount;
+            const currentId = greenhouseCounter;
             const showTomatoType = data?.cropType === 'Tomato';
             
             const card = document.createElement('div');
@@ -363,31 +331,30 @@
             
             container.appendChild(card);
             
-            // Restore harvest data if exists
             if (data?.cropStage === 'Harvesting' && data?.cropType) {
                 if (data.monthlyHarvest) window.monthlyHarvestData[currentId] = data.monthlyHarvest;
                 setTimeout(() => {
                     const stageSelect = card.querySelector('.gh-stage');
-                    if (stageSelect) toggleHarvestSection(stageSelect);
+                    if (stageSelect) window.toggleHarvestSection(stageSelect);
                 }, 100);
             }
             
-            greenhouseCount++;
+            greenhouseCounter++;
             updateStats();
-        }
+        };
         
-        function removeGreenhouse(id) {
+        window.removeGreenhouse = function(id) {
             const el = document.getElementById(`greenhouse-${id}`);
             if (el) el.remove();
             delete window.monthlyHarvestData[id];
             updateStats();
             showToast('Greenhouse removed');
-        }
+        };
         
-        function duplicateGreenhouse(id) {
+        window.duplicateGreenhouse = function(id) {
             const source = document.getElementById(`greenhouse-${id}`);
             if (source) {
-                addGreenhouse({
+                window.addGreenhouse({
                     area: source.querySelector('.gh-area').value,
                     cropType: source.querySelector('.gh-crop').value,
                     variety: source.querySelector('.gh-variety').value,
@@ -399,10 +366,10 @@
                 });
                 showToast('Greenhouse duplicated');
             }
-        }
+        };
         
         // ==================== SUBMIT DATA ====================
-        async function submitData() {
+        window.submitData = async function() {
             const growerName = document.getElementById('growerName').value.trim();
             if (!growerName) { showToast('Enter grower name', true); return; }
             
@@ -411,18 +378,14 @@
             
             for (let card of greenhouseCards) {
                 const id = card.id.split('-')[1];
-                const cropStage = card.querySelector('.gh-stage').value;
                 const cropType = card.querySelector('.gh-crop').value;
-                
-                // Collect monthly harvest data from table inputs
                 const monthlyHarvestForGH = window.monthlyHarvestData[id] || {};
                 
-                // Also capture from input fields directly
                 const monthInputs = card.querySelectorAll('.month-harvest-input');
                 monthInputs.forEach(input => {
                     const month = input.dataset.month;
                     const value = parseFloat(input.value) || 0;
-                    if (value > 0 || monthlyHarvestForGH[month]) {
+                    if (value > 0) {
                         if (!monthlyHarvestForGH[month]) monthlyHarvestForGH[month] = {};
                         monthlyHarvestForGH[month].yield = value;
                         monthlyHarvestForGH[month].unit = getDisplayUnit(cropType);
@@ -430,7 +393,6 @@
                     }
                 });
                 
-                // Get avg yield values
                 const avgWeekly = card.querySelector('.avg-weekly-yield')?.value;
                 const avgMonthly = card.querySelector('.avg-monthly-yield')?.value;
                 const harvestMonthsCount = card.querySelector('.harvest-months')?.value;
@@ -441,20 +403,15 @@
                 
                 window.monthlyHarvestData[id] = monthlyHarvestForGH;
                 
-                console.log(`GH${id} Monthly Harvest Data:`, monthlyHarvestForGH);
-                
                 greenhouses.push({
                     area: card.querySelector('.gh-area').value,
                     cropType: cropType,
                     variety: card.querySelector('.gh-variety').value,
-                    cropStage: cropStage,
+                    cropStage: card.querySelector('.gh-stage').value,
                     transplantDate: card.querySelector('.gh-transplant').value,
                     substrateType: card.querySelector('.gh-substrate').value,
                     tomatoType: card.querySelector('.gh-tomatotype')?.value || '',
-                    monthlyHarvest: monthlyHarvestForGH,
-                    avgWeeklyYield: avgWeekly || '',
-                    avgMonthlyYield: avgMonthly || '',
-                    harvestMonthsCount: harvestMonthsCount || ''
+                    monthlyHarvest: monthlyHarvestForGH
                 });
             }
             
@@ -467,8 +424,6 @@
                 submittedAt: new Date().toISOString()
             };
             
-            console.log("Submitting payload:", JSON.stringify(payload, null, 2));
-            
             const btn = document.querySelector('.btn-submit');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
@@ -476,9 +431,8 @@
             
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                showToast('✓ Data submitted successfully! Monthly harvest data saved to Sheet1, Sheet3, and Dashboard!');
+                showToast('✓ Data submitted successfully!');
                 
-                // Reset form
                 document.getElementById('growerName').value = '';
                 document.getElementById('locality').value = '';
                 document.getElementById('totalArea').value = '';
@@ -494,20 +448,27 @@
                 updateStats();
                 
             } catch (err) { 
-                console.error("Submit error:", err);
                 showToast('Error: ' + err.message, true); 
             } finally { 
                 btn.innerHTML = originalText; 
                 btn.disabled = false; 
             }
-        }
+        };
+        
+        // ==================== GROWER NAME TRACKING ====================
+        document.getElementById('growerName').addEventListener('input', function() {
+            if (this.value.trim()) activeGrowersSet.add(this.value.trim());
+            updateStats();
+        });
         
         // ==================== INITIALIZATION ====================
-        window.addEventListener('DOMContentLoaded', () => {
+        function init() {
             initZoneButtons();
             updateLocalitiesByZone('E2');
-            addGreenhouse();
-        });
+            window.addGreenhouse();
+        }
+        
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
