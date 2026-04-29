@@ -17,47 +17,49 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 12px;
+            padding: 16px;
             position: relative;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 1200px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
 
-        /* Mobile First Design */
+        /* Modern Header */
         .modern-header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .title-section {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
         .icon-badge {
             background: linear-gradient(135deg, #4CAF50, #45a049);
-            width: 50px;
-            height: 50px;
-            border-radius: 15px;
+            width: 55px;
+            height: 55px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
 
         .title-section h1 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
@@ -67,79 +69,104 @@
         .beta-badge {
             background: #FF9800;
             color: white;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
         }
 
         .subtitle {
             color: #666;
-            font-size: 12px;
-            margin-top: 6px;
+            font-size: 13px;
+            margin-top: 8px;
         }
 
-        /* Stats Grid - Mobile Friendly */
+        /* Stats Cards - Dynamic Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            text-align: center;
+            padding: 18px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-card:active {
-            transform: scale(0.98);
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #FF9800);
         }
 
-        .stat-icon { font-size: 24px; margin-bottom: 5px; }
-        .stat-label { color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 22px; font-weight: 800; color: #2c3e50; }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon { font-size: 32px; margin-bottom: 8px; display: inline-block; }
+        .stat-label { color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600; }
+        .stat-value { font-size: 32px; font-weight: 800; color: #2c3e50; line-height: 1.2; }
+        .stat-unit { font-size: 12px; color: #999; font-weight: normal; margin-left: 4px; }
+        .stat-trend { font-size: 11px; margin-top: 8px; color: #4CAF50; }
 
         /* Form Sections */
         .form-section {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
 
         .section-title {
             font-size: 18px;
             font-weight: 700;
             color: #2c3e50;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding-bottom: 10px;
+            gap: 10px;
+            padding-bottom: 12px;
             border-bottom: 2px solid #f0f0f0;
             flex-wrap: wrap;
         }
 
+        .section-title i {
+            color: #4CAF50;
+            font-size: 20px;
+        }
+
+        /* Responsive Grid */
         .smart-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .input-group {
-            width: 100%;
+            position: relative;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 600;
             color: #333;
             font-size: 13px;
@@ -153,37 +180,47 @@
         .input-group input,
         .input-group select {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 14px;
             transition: all 0.3s;
             font-family: 'Inter', sans-serif;
-            -webkit-appearance: none;
-            appearance: none;
             background: white;
         }
 
-        /* Zone Buttons - Scrollable on Mobile */
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        /* Zone Buttons */
         .zone-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-top: 5px;
         }
 
         .zone-btn {
             flex: 1;
-            min-width: 70px;
-            padding: 10px;
+            min-width: 80px;
+            padding: 12px 16px;
             border: 2px solid #e0e0e0;
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 14px;
             transition: all 0.3s;
             text-align: center;
+        }
+
+        .zone-btn:hover {
+            border-color: #4CAF50;
+            background: #f0f9f0;
+            transform: translateY(-2px);
         }
 
         .zone-btn.active {
@@ -195,10 +232,11 @@
         /* Greenhouse Cards */
         .greenhouse-card {
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
             border: 1px solid #e0e0e0;
+            transition: all 0.3s;
             position: relative;
         }
 
@@ -207,71 +245,88 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 4px;
+            width: 5px;
             height: 100%;
             background: linear-gradient(135deg, #4CAF50, #45a049);
-            border-radius: 16px 0 0 16px;
+            border-radius: 20px 0 0 20px;
+        }
+
+        .greenhouse-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
 
         .greenhouse-badge {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 8px 16px;
+            border-radius: 25px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .card-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
 
         .smart-btn {
-            padding: 6px 12px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 500;
-            font-size: 12px;
+            font-size: 13px;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .smart-btn-primary { background: #4CAF50; color: white; }
         .smart-btn-secondary { background: #FF9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
+        .smart-btn-info { background: #2196F3; color: white; }
+
+        .smart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+        }
 
         .btn-submit {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 16px;
+            padding: 16px 24px;
             font-size: 16px;
             font-weight: 700;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             width: 100%;
+            transition: all 0.3s;
             margin-top: 10px;
         }
 
-        /* Monthly Harvest Table - Mobile Friendly (Horizontal Scroll) */
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Monthly Harvest Table - Responsive */
         .harvest-table-container {
             background: #FFF8E1;
-            border-radius: 16px;
-            padding: 16px;
-            margin-top: 16px;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
             border: 2px solid #FF9800;
             overflow-x: auto;
         }
@@ -282,25 +337,26 @@
             border-collapse: collapse;
             background: white;
             border-radius: 12px;
+            overflow: hidden;
         }
 
         .monthly-harvest-table th {
             background: #FF9800;
             color: white;
-            padding: 8px 4px;
+            padding: 10px 6px;
             font-size: 11px;
             font-weight: 600;
             text-align: center;
         }
 
         .monthly-harvest-table td {
-            padding: 6px 4px;
+            padding: 8px 4px;
             text-align: center;
             border: 1px solid #e0e0e0;
         }
 
         .monthly-harvest-table input {
-            width: 70px;
+            width: 75px;
             padding: 8px 4px;
             text-align: center;
             border: 1px solid #ddd;
@@ -310,12 +366,12 @@
 
         .avg-yield-section {
             background: #E3F2FD;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
         }
 
         .avg-yield-section .input-group {
@@ -325,39 +381,68 @@
         .footer {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 15px;
+            padding: 16px;
             text-align: center;
             color: #666;
-            font-size: 10px;
+            font-size: 11px;
             margin-top: 20px;
         }
 
+        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 20px;
             left: 20px;
             right: 20px;
+            max-width: 400px;
+            margin: 0 auto;
             background: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 14px 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transform: translateY(100px);
             transition: transform 0.3s;
             z-index: 1000;
             text-align: center;
+            font-weight: 500;
         }
 
         .toast.show { transform: translateY(0); }
         .toast.success { border-left: 4px solid #4CAF50; }
         .toast.error { border-left: 4px solid #f44336; }
 
-        /* Mobile Responsive */
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s ease infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .stat-card { padding: 12px; }
+            .stat-value { font-size: 24px; }
+            .stat-icon { font-size: 24px; }
+            .zone-btn { min-width: 65px; padding: 10px; font-size: 12px; }
+            .monthly-harvest-table input { width: 55px; font-size: 10px; padding: 6px 2px; }
+            .smart-grid { gap: 12px; }
+            .form-section { padding: 16px; }
+        }
+
         @media (max-width: 480px) {
-            .stats-grid { gap: 8px; }
-            .stat-card { padding: 10px; }
-            .stat-value { font-size: 18px; }
-            .zone-btn { min-width: 60px; font-size: 11px; padding: 8px; }
-            .monthly-harvest-table input { width: 55px; font-size: 11px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .title-section h1 { font-size: 20px; }
+            .icon-badge { width: 45px; height: 45px; font-size: 22px; }
         }
     </style>
 </head>
@@ -367,31 +452,37 @@
             <div class="title-section">
                 <div class="icon-badge"><i class="fas fa-leaf"></i></div>
                 <h1>Hydroponic Data Tracker</h1>
-                <span class="beta-badge">BETA 1.0</span>
+                <span class="beta-badge">BETA 2.0</span>
             </div>
-            <div class="subtitle"><i class="fas fa-microchip"></i> Smart Data Capture Tool | Mobile Friendly</div>
+            <div class="subtitle"><i class="fas fa-microchip"></i> Smart Data Capture Tool | Real-Time Analytics</div>
         </div>
 
+        <!-- Dynamic Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card" onclick="showGreenhouseDetail()">
                 <div class="stat-icon">🌱</div>
                 <div class="stat-label">GREENHOUSES</div>
                 <div class="stat-value" id="totalGH">0</div>
+                <div class="stat-trend"><i class="fas fa-plus-circle"></i> Click to view</div>
             </div>
             <div class="stat-card" onclick="showAreaDetail()">
                 <div class="stat-icon">📊</div>
                 <div class="stat-label">TOTAL AREA</div>
-                <div class="stat-value" id="totalAreaStat">0</div>
+                <div class="stat-value" id="totalAreaStat">0.00</div>
+                <div class="stat-unit">m²</div>
+                <div class="stat-trend"><i class="fas fa-chart-line"></i> Total cultivation</div>
             </div>
             <div class="stat-card" onclick="showCropDetail()">
                 <div class="stat-icon">🌾</div>
                 <div class="stat-label">CROP VARIETIES</div>
                 <div class="stat-value" id="totalVarieties">0</div>
+                <div class="stat-trend"><i class="fas fa-seedling"></i> Unique crops</div>
             </div>
             <div class="stat-card" onclick="showGrowerDetail()">
                 <div class="stat-icon">👨‍🌾</div>
                 <div class="stat-label">ACTIVE GROWERS</div>
                 <div class="stat-value" id="growerCount">0</div>
+                <div class="stat-trend"><i class="fas fa-users"></i> Registered growers</div>
             </div>
         </div>
 
@@ -399,10 +490,10 @@
         <div class="form-section">
             <div class="section-title"><i class="fas fa-map-marker-alt"></i><span>Select Zone</span></div>
             <div class="zone-buttons" id="zoneButtons">
-                <button class="zone-btn" data-zone="E1">📍 E1</button>
-                <button class="zone-btn" data-zone="E2">📍 E2</button>
-                <button class="zone-btn" data-zone="E3">📍 E3</button>
-                <button class="zone-btn" data-zone="E4">📍 E4</button>
+                <button class="zone-btn" data-zone="E1">📍 Zone E1</button>
+                <button class="zone-btn" data-zone="E2">📍 Zone E2</button>
+                <button class="zone-btn" data-zone="E3">📍 Zone E3</button>
+                <button class="zone-btn" data-zone="E4">📍 Zone E4</button>
             </div>
         </div>
 
@@ -412,7 +503,7 @@
             <div class="smart-grid">
                 <div class="input-group">
                     <label><i class="fas fa-user"></i> Grower Name *</label>
-                    <input type="text" id="growerName" placeholder="Enter grower name">
+                    <input type="text" id="growerName" placeholder="Enter grower name" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label><i class="fas fa-map-marker-alt"></i> Locality</label>
@@ -434,20 +525,29 @@
         <div class="form-section">
             <div class="section-title">
                 <i class="fas fa-greenhouse"></i><span>Greenhouse Details</span>
-                <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add</button>
+                <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;">
+                    <i class="fas fa-plus"></i> Add Greenhouse
+                </button>
             </div>
             <div id="greenhousesContainer"></div>
         </div>
 
-        <button class="btn-submit" onclick="submitData()"><i class="fas fa-cloud-upload-alt"></i> Submit Data</button>
+        <button class="btn-submit" onclick="submitData()">
+            <i class="fas fa-cloud-upload-alt"></i> Submit Data
+        </button>
 
-        <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026</div>
+        <div class="footer">
+            <i class="fas fa-leaf"></i> Hydroponic Data Tracker - All Rights Reserved 2026
+        </div>
     </div>
 
-    <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+        <span id="toastMessage"></span>
+    </div>
 
     <script>
-        // ==================== LOCALITIES FROM EXCEL (ZONE E1, E2, E3, E4) ====================
+        // ==================== LOCALITIES DATA ====================
         const zoneE1Localities = [
             "Alma", "Bagatelle Dam", "Bar Le Duc", "Beau Bois", "Bell Village", "Belle Rive",
             "Bonne Veine", "Camp Auguste", "Circonstance", "Cote D'Or", "Dagotiere", "Gentilly",
@@ -507,7 +607,7 @@
         
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';
         
-        // ==================== LOCALITY FUNCTIONS ====================
+        // ==================== UI FUNCTIONS ====================
         function updateLocalitiesByZone(zone) {
             const localityList = document.getElementById('localityList');
             let localities = [];
@@ -564,7 +664,7 @@
         }
         
         function getConversionNote(cropType) {
-            const conversions = { "English Cucumber": "3 units per kg", "Cauliflower": "2 units per kg", "Cabbage": "2 units per kg", "Melon": "1.5 units per kg", "Lettuce": "5 heads per kg" };
+            const conversions = { "English Cucumber": "3 units per kg (1 cucumber ≈ 350g)", "Cauliflower": "2 units per kg (1 cauliflower ≈ 500g)", "Cabbage": "2 units per kg (1 cabbage ≈ 500g)", "Melon": "1.5 units per kg (1 melon ≈ 667g)", "Lettuce": "5 heads per kg (1 head ≈ 200g)" };
             return conversions[cropType] || "Yield measured in kilograms (kg)";
         }
         
@@ -572,22 +672,24 @@
         function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
             const displayUnit = getDisplayUnit(cropType);
             let tableHtml = `<div class="harvest-table-container">
-                <div style="font-weight:700; margin-bottom:12px;">📊 MONTHLY HARVEST YIELD (${displayUnit.toUpperCase()})</div>
+                <div style="font-weight:700; margin-bottom:15px; color:#E65100;">
+                    <i class="fas fa-chart-line"></i> 📊 MONTHLY HARVEST YIELD (${displayUnit.toUpperCase()})
+                </div>
                 <table class="monthly-harvest-table">
                     <thead><tr>${months.map(m => `<th>${m.substring(0,3)}</th>`).join('')}</tr></thead>
                     <tbody><tr>`;
             for (let month of months) {
                 const savedValue = (existingData && existingData[month]) ? existingData[month].yield : '';
-                tableHtml += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${savedValue}" step="${displayUnit === 'units' ? '1' : '0.01'}" placeholder="${displayUnit}"></td>`;
+                tableHtml += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${savedValue}" step="${displayUnit === 'units' ? '1' : '0.01'}" placeholder="${displayUnit}" style="width:70px;"></td>`;
             }
             tableHtml += `</tr></tbody>
-                </table>
+                <table>
                 <div class="avg-yield-section">
-                    <div class="input-group"><label>Avg Yield/Week (${displayUnit})</label><input type="number" class="avg-weekly-yield" step="0.01" placeholder="per week"></div>
-                    <div class="input-group"><label>Avg Yield/Month (${displayUnit})</label><input type="number" class="avg-monthly-yield" step="0.01" placeholder="per month"></div>
-                    <div class="input-group"><label>Months Harvesting</label><input type="number" class="harvest-months" step="1" min="0" max="12" placeholder="Months"></div>
+                    <div class="input-group"><label><i class="fas fa-chart-line"></i> Avg Yield/Week (${displayUnit})</label><input type="number" class="avg-weekly-yield" step="0.01" placeholder="per week"></div>
+                    <div class="input-group"><label><i class="fas fa-chart-bar"></i> Avg Yield/Month (${displayUnit})</label><input type="number" class="avg-monthly-yield" step="0.01" placeholder="per month"></div>
+                    <div class="input-group"><label><i class="fas fa-clock"></i> Months Harvesting</label><input type="number" class="harvest-months" step="1" min="0" max="12" placeholder="Months"></div>
                 </div>
-                <div style="background:#E3F2FD; padding:8px; border-radius:8px; font-size:11px; margin-top:10px;">
+                <div style="background:#E3F2FD; padding:10px; border-radius:12px; font-size:11px; margin-top:12px;">
                     <i class="fas fa-info-circle"></i> ${getConversionNote(cropType)}
                 </div>
             </div>`;
@@ -684,18 +786,18 @@
                 <div class="card-header">
                     <div class="greenhouse-badge"><i class="fas fa-seedling"></i> Greenhouse ${currentId}</div>
                     <div class="card-actions">
-                        <button class="smart-btn smart-btn-secondary" onclick="duplicateGreenhouse(${currentId})"><i class="fas fa-copy"></i> Copy</button>
-                        <button class="smart-btn smart-btn-danger" onclick="removeGreenhouse(${currentId})"><i class="fas fa-trash"></i> Del</button>
+                        <button class="smart-btn smart-btn-secondary" onclick="duplicateGreenhouse(${currentId})"><i class="fas fa-copy"></i> Duplicate</button>
+                        <button class="smart-btn smart-btn-danger" onclick="removeGreenhouse(${currentId})"><i class="fas fa-trash"></i> Remove</button>
                     </div>
                 </div>
                 <div class="smart-grid">
-                    <div class="input-group"><label>Area (m²)</label><input type="number" class="gh-area" step="0.01" value="${data?.area || ''}" oninput="updateStats()"></div>
-                    <div class="input-group"><label>Crop</label><select class="gh-crop" onchange="toggleTomatoType(this)">${getCropOptionsHTML(data?.cropType || '')}</select></div>
-                    <div class="input-group"><label>Variety</label><input type="text" class="gh-variety" value="${data?.variety || ''}" oninput="updateStats()"></div>
-                    <div class="input-group"><label>Crop Stage</label><select class="gh-stage" onchange="toggleHarvestSection(this)">${getCropStageOptionsHTML(data?.cropStage || '')}</select></div>
-                    <div class="input-group"><label>Date Transplanted</label><input type="date" class="gh-transplant" value="${data?.transplantDate || ''}"></div>
-                    <div class="input-group"><label>Substrate</label><select class="gh-substrate">${getSubstrateOptionsHTML(data?.substrateType || '')}</select></div>
-                    <div class="input-group tomato-type-group" style="display: ${showTomatoType ? 'block' : 'none'};"><label>Tomato Type</label><select class="gh-tomatotype">${getTomatoTypeOptionsHTML(data?.tomatoType || '')}</select></div>
+                    <div class="input-group"><label><i class="fas fa-chart-pie"></i> Area (m²)</label><input type="number" class="gh-area" step="0.01" value="${data?.area || ''}" oninput="updateStats()"></div>
+                    <div class="input-group"><label><i class="fas fa-seedling"></i> Crop Cultivated</label><select class="gh-crop" onchange="toggleTomatoType(this)">${getCropOptionsHTML(data?.cropType || '')}</select></div>
+                    <div class="input-group"><label><i class="fas fa-tag"></i> Variety</label><input type="text" class="gh-variety" value="${data?.variety || ''}" oninput="updateStats()"></div>
+                    <div class="input-group"><label><i class="fas fa-chart-simple"></i> Crop Stage</label><select class="gh-stage" onchange="toggleHarvestSection(this)">${getCropStageOptionsHTML(data?.cropStage || '')}</select></div>
+                    <div class="input-group"><label><i class="fas fa-calendar-alt"></i> Date Transplanted</label><input type="date" class="gh-transplant" value="${data?.transplantDate || ''}"></div>
+                    <div class="input-group"><label><i class="fas fa-water"></i> Substrate Type</label><select class="gh-substrate">${getSubstrateOptionsHTML(data?.substrateType || '')}</select></div>
+                    <div class="input-group tomato-type-group" style="display: ${showTomatoType ? 'block' : 'none'};"><label><i class="fas fa-tomato"></i> Tomato Type</label><select class="gh-tomatotype">${getTomatoTypeOptionsHTML(data?.tomatoType || '')}</select></div>
                 </div>`;
             
             container.appendChild(card);
@@ -740,7 +842,7 @@
         function showGreenhouseDetail() {
             const count = document.getElementById('totalGH').innerText;
             const cards = document.querySelectorAll('.greenhouse-card');
-            let msg = `Total Greenhouses: ${count}\n\n`;
+            let msg = `🌱 GREENHOUSE DETAILS\n\nTotal: ${count}\n\n`;
             cards.forEach((card, i) => {
                 const crop = card.querySelector('.gh-crop')?.value || "Not set";
                 const area = card.querySelector('.gh-area')?.value || "0";
@@ -751,7 +853,7 @@
         
         function showAreaDetail() {
             const total = document.getElementById('totalAreaStat').innerText;
-            alert(`Total Cultivation Area: ${total} m²`);
+            alert(`📊 AREA DETAILS\n\nTotal Cultivation Area: ${total} m²`);
         }
         
         function showCropDetail() {
@@ -761,18 +863,19 @@
                 const crop = card.querySelector('.gh-crop')?.value;
                 if (crop && crop !== "") crops.add(crop);
             });
-            alert(`Crops Grown:\n${Array.from(crops).map((c, i) => `${i+1}. ${c}`).join('\n') || "None"}`);
+            alert(`🌾 CROP VARIETIES\n\nTotal: ${crops.size}\n\nCrops Grown:\n${Array.from(crops).map((c, i) => `${i+1}. ${c}`).join('\n') || "None"}`);
         }
         
         function showGrowerDetail() {
-            const name = document.getElementById('growerName').value.trim();
-            alert(`Current Grower: ${name || "Not entered"}`);
+            const name = document.getElementById('growerName').value.trim() || "Not entered";
+            const count = document.getElementById('growerCount').innerText;
+            alert(`👨‍🌾 GROWER DETAILS\n\nCurrent Grower: ${name}\nTotal Active Growers: ${count}`);
         }
         
         // ==================== SUBMIT FUNCTION ====================
         window.submitData = async function() {
             const growerName = document.getElementById('growerName').value.trim();
-            if (!growerName) { showToast('Enter grower name', true); return; }
+            if (!growerName) { showToast('Please enter grower name', true); return; }
             
             const greenhouses = [];
             const greenhouseCards = document.querySelectorAll('.greenhouse-card');
