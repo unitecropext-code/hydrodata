@@ -24,7 +24,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             border: 1px solid #c8e6c9;
         }
-        .title-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .title-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 8px; }
         .icon-badge {
             background: linear-gradient(135deg, #1b5e20, #2e7d32);
             width: 55px;
@@ -36,6 +36,7 @@
             font-size: 28px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
+        .icon-badge i { color: white; }
         .title-section h1 {
             font-size: 24px;
             font-weight: 800;
@@ -43,12 +44,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .badge-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .badge-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .beta-badge { 
             background: #ff9800; 
             color: white; 
@@ -68,39 +64,83 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .version-btn:hover {
-            background: #1b5e20;
-            transform: translateY(-1px);
-        }
-        .subtitle {
+        .version-btn:hover { background: #1b5e20; transform: translateY(-1px); }
+        
+        /* Tagline (Smart Data Capture) – directly below title */
+        .tagline {
+            font-size: 14px;
             color: #2c3e50;
-            font-size: 13px;
-            margin-top: 8px;
+            margin: 8px 0 12px 0;
+            padding-left: 4px;
+            border-left: 3px solid #2e7d32;
+        }
+        .tagline i { color: #2e7d32; margin-right: 6px; }
+
+        /* Centered vegetable icons row */
+        .veg-icons-wrapper {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            justify-content: center;
+            margin: 12px 0 6px 0;
         }
         .veg-icons {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 20px;
             background: #e8f5e9;
-            padding: 4px 12px;
-            border-radius: 40px;
+            padding: 8px 20px;
+            border-radius: 60px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .veg-icons i {
-            font-size: 16px;
+            font-size: 20px;
             color: #2e7d32;
         }
         .veg-icons span {
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 600;
             color: #1b5e20;
-            margin-left: 4px;
+            margin-left: 6px;
+        }
+        .veg-icon-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* Form sections – white with light olive borders */
+        /* Zone buttons – centred & responsive */
+        .zone-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .zone-btn {
+            min-width: 100px;
+            padding: 12px 20px;
+            border: 2px solid #c8e6c9;
+            background: white;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.2s;
+            color: #1b5e20;
+        }
+        .zone-btn.active {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            border-color: #1b5e20;
+        }
+        @media (max-width: 550px) {
+            .zone-btn { min-width: 70px; padding: 10px 12px; font-size: 12px; }
+            .veg-icons { gap: 12px; padding: 6px 12px; }
+            .veg-icon-item { font-size: 12px; }
+        }
+
+        /* All other styles remain identical to the working version */
         .form-section {
             background: white;
             border-radius: 24px;
@@ -123,7 +163,6 @@
         }
         .section-title i { color: #2e7d32; }
 
-        /* Input groups */
         .input-group label {
             display: block;
             margin-bottom: 8px;
@@ -147,28 +186,6 @@
             box-shadow: 0 0 0 3px rgba(102,187,106,0.2);
         }
 
-        /* Zone buttons */
-        .zone-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
-        .zone-btn {
-            flex: 1;
-            min-width: 80px;
-            padding: 12px;
-            border: 2px solid #c8e6c9;
-            background: white;
-            border-radius: 14px;
-            cursor: pointer;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.2s;
-            color: #1b5e20;
-        }
-        .zone-btn.active {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            color: white;
-            border-color: #1b5e20;
-        }
-
-        /* Greenhouse cards – white with olive border */
         .greenhouse-card {
             background: white;
             border-radius: 20px;
@@ -214,7 +231,6 @@
         .smart-btn-secondary { background: #ff9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
 
-        /* Submit button */
         .btn-submit {
             background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
@@ -230,7 +246,6 @@
         }
         .btn-submit:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-2px); }
 
-        /* --- MONTHLY HARVEST SECTION – OLIVE GREEN BACKGROUND --- */
         .harvest-table-container {
             background: #e8f5e9;
             border-radius: 20px;
@@ -253,7 +268,6 @@
             gap: 15px;
         }
 
-        /* Footer */
         .footer {
             background: rgba(255,255,255,0.9);
             border-radius: 20px;
@@ -287,9 +301,7 @@
 
         @media (max-width: 768px) {
             .monthly-harvest-table input { width: 60px; }
-            .zone-btn { padding: 8px; font-size: 12px; }
-            .badge-group { margin-top: 6px; }
-            .veg-icons { margin-top: 6px; }
+            .smart-grid { gap: 12px; }
         }
     </style>
 </head>
@@ -304,23 +316,29 @@
                 <button class="version-btn" onclick="showVersionAlert()">BETA VERSION 2.0</button>
             </div>
         </div>
-        <div class="subtitle">
-            <span><i class="fas fa-microchip"></i> Smart Data Capture • Real‑time insights</span>
+        <!-- Tagline directly below title -->
+        <div class="tagline">
+            <i class="fas fa-microchip"></i> Smart Data Capture • Real‑time insights
+        </div>
+        <!-- Vegetable icons centred below tagline -->
+        <div class="veg-icons-wrapper">
             <div class="veg-icons">
-                <i class="fas fa-tomato"></i><span>Tomato</span>
-                <i class="fas fa-pepper-hot"></i><span>Bell Pepper</span>
-                <i class="fas fa-cucumber"></i><span>Cucumber</span>
-                <i class="fas fa-leaf"></i><span>Lettuce</span>
+                <div class="veg-icon-item"><i class="fas fa-tomato"></i><span>Tomato</span></div>
+                <div class="veg-icon-item"><i class="fas fa-pepper-hot"></i><span>Bell Pepper</span></div>
+                <div class="veg-icon-item"><i class="fas fa-cucumber"></i><span>Cucumber</span></div>
+                <div class="veg-icon-item"><i class="fas fa-leaf"></i><span>Lettuce</span></div>
             </div>
         </div>
     </div>
 
-    <!-- Zone Selection -->
+    <!-- Zone Selection - Centered buttons -->
     <div class="form-section">
         <div class="section-title"><i class="fas fa-map-marker-alt"></i> Select Zone</div>
         <div class="zone-buttons" id="zoneButtons">
-            <button class="zone-btn" data-zone="E1">📍 E1</button><button class="zone-btn" data-zone="E2">📍 E2</button>
-            <button class="zone-btn" data-zone="E3">📍 E3</button><button class="zone-btn" data-zone="E4">📍 E4</button>
+            <button class="zone-btn" data-zone="E1">📍 E1</button>
+            <button class="zone-btn" data-zone="E2">📍 E2</button>
+            <button class="zone-btn" data-zone="E3">📍 E3</button>
+            <button class="zone-btn" data-zone="E4">📍 E4</button>
         </div>
     </div>
 
@@ -411,7 +429,6 @@
         if (growerName) activeGrowersSet.add(growerName);
     }
     function setGrower(name) { document.getElementById('growerName').value = name; updateSessionInfo(); showToast(`Grower set to ${name}`); }
-    
     function showVersionAlert() {
         showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements");
     }
@@ -433,7 +450,7 @@
             for (let month of group) {
                 const saved = (existingData && existingData[month]) ? existingData[month].yield : '';
                 html += `<th style="background:#2e7d32; color:white; padding:8px;">${month.substring(0,3)}</th>`;
-                html += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></td>`;
+                html += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></tr>`;
             }
             html += `</tr>`;
         }
@@ -451,7 +468,6 @@
         return html;
     }
     
-    // ==================== Toggle Harvest Section ====================
     window.toggleHarvestSection = function(selectElement) {
         const card = selectElement.closest('.greenhouse-card');
         const id = card.id.split('-')[1];
@@ -476,18 +492,9 @@
             const avgWeekly = card.querySelector('.avg-weekly-yield');
             const avgMonthly = card.querySelector('.avg-monthly-yield');
             const harvestMonths = card.querySelector('.harvest-months');
-            if (avgWeekly) avgWeekly.addEventListener('change', function() {
-                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
-                window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value)||0;
-            });
-            if (avgMonthly) avgMonthly.addEventListener('change', function() {
-                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
-                window.monthlyHarvestData[id].avgMonthlyYield = parseFloat(this.value)||0;
-            });
-            if (harvestMonths) harvestMonths.addEventListener('change', function() {
-                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
-                window.monthlyHarvestData[id].harvestMonthsCount = parseFloat(this.value)||0;
-            });
+            if (avgWeekly) avgWeekly.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value)||0; });
+            if (avgMonthly) avgMonthly.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].avgMonthlyYield = parseFloat(this.value)||0; });
+            if (harvestMonths) harvestMonths.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].harvestMonthsCount = parseFloat(this.value)||0; });
         } else {
             if (existingSection) existingSection.remove();
             if (window.monthlyHarvestData[id]) delete window.monthlyHarvestData[id];
