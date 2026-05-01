@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- Colour scheme: dark green background + pale green, white, olive accents --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -45,28 +44,12 @@
             -webkit-text-fill-color: transparent;
         }
         .badge-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .beta-badge { 
-            background: #ff9800; 
-            color: white; 
-            padding: 4px 12px; 
-            border-radius: 20px; 
-            font-size: 11px; 
-            font-weight: 600; 
-        }
+        .beta-badge { background: #ff9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .version-btn {
-            background: #2e7d32;
-            color: white;
-            border: none;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
+            background: #2e7d32; color: white; border: none; padding: 4px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s;
         }
         .version-btn:hover { background: #1b5e20; transform: translateY(-1px); }
-        
-        /* Tagline (Smart Data Capture) – directly below title */
         .tagline {
             font-size: 14px;
             color: #2c3e50;
@@ -75,8 +58,6 @@
             border-left: 3px solid #2e7d32;
         }
         .tagline i { color: #2e7d32; margin-right: 6px; }
-
-        /* Centered vegetable icons row */
         .veg-icons-wrapper {
             display: flex;
             justify-content: center;
@@ -92,21 +73,9 @@
             flex-wrap: wrap;
             justify-content: center;
         }
-        .veg-icons i {
-            font-size: 20px;
-            color: #2e7d32;
-        }
-        .veg-icons span {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1b5e20;
-            margin-left: 6px;
-        }
-        .veg-icon-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .veg-icons i { font-size: 20px; color: #2e7d32; }
+        .veg-icons span { font-size: 13px; font-weight: 600; color: #1b5e20; margin-left: 6px; }
+        .veg-icon-item { display: inline-flex; align-items: center; gap: 6px; }
 
         /* Zone buttons – centred & responsive */
         .zone-buttons {
@@ -140,7 +109,6 @@
             .veg-icon-item { font-size: 12px; }
         }
 
-        /* All other styles remain identical to the working version */
         .form-section {
             background: white;
             border-radius: 24px;
@@ -246,6 +214,7 @@
         }
         .btn-submit:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-2px); }
 
+        /* Monthly harvest table – 3 months per row */
         .harvest-table-container {
             background: #e8f5e9;
             border-radius: 20px;
@@ -254,10 +223,31 @@
             border: 2px solid #a5d6a7;
             overflow-x: auto;
         }
-        .monthly-harvest-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; }
-        .monthly-harvest-table th, .monthly-harvest-table td { border: 1px solid #c8e6c9; padding: 10px 6px; text-align: center; }
-        .monthly-harvest-table th { background: #2e7d32; color: white; font-size: 13px; font-weight: 600; }
-        .monthly-harvest-table input { width: 90px; padding: 8px; text-align: center; border: 1px solid #c8e6c9; border-radius: 8px; background: #fff; }
+        .monthly-harvest-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+        }
+        .monthly-harvest-table th, .monthly-harvest-table td {
+            border: 1px solid #c8e6c9;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .monthly-harvest-table th {
+            background: #2e7d32;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .monthly-harvest-table input {
+            width: 90px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #c8e6c9;
+            border-radius: 8px;
+            background: #fff;
+        }
         .avg-yield-section {
             background: #f1f8e9;
             border-radius: 16px;
@@ -316,11 +306,7 @@
                 <button class="version-btn" onclick="showVersionAlert()">BETA VERSION 2.0</button>
             </div>
         </div>
-        <!-- Tagline directly below title -->
-        <div class="tagline">
-            <i class="fas fa-microchip"></i> Smart Data Capture • Real‑time insights
-        </div>
-        <!-- Vegetable icons centred below tagline -->
+        <div class="tagline"><i class="fas fa-microchip"></i> Smart Data Capture • Real‑time insights</div>
         <div class="veg-icons-wrapper">
             <div class="veg-icons">
                 <div class="veg-icon-item"><i class="fas fa-tomato"></i><span>Tomato</span></div>
@@ -331,7 +317,7 @@
         </div>
     </div>
 
-    <!-- Zone Selection - Centered buttons -->
+    <!-- Zone Selection -->
     <div class="form-section">
         <div class="section-title"><i class="fas fa-map-marker-alt"></i> Select Zone</div>
         <div class="zone-buttons" id="zoneButtons">
@@ -353,7 +339,7 @@
         </div>
     </div>
 
-    <!-- Greenhouse Details (with Add button) -->
+    <!-- Greenhouse Details -->
     <div class="form-section">
         <div class="section-title">
             <i class="fas fa-greenhouse"></i> Greenhouse Details
@@ -368,7 +354,7 @@
 <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
 
 <script>
-    // ==================== LOCALITIES & CONSTANTS ====================
+    // ==================== LOCALITIES FROM EXCEL (Zone E1-E4) ====================
     const zoneE1Localities = ["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"];
     const zoneE2Localities = ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"];
     const zoneE3Localities = ["Argy","Beau Bois","Beau Rivage","Belle Mare","Belle Vue Allendy","Bois d'Oiseaux","Bramsthan","Bras d'Eau","Camp Garreau","Camp Ithier","Camp Marcelin","Camp Poorun","Camp Raffia","Camp Ranoo","Centre de Flacq","Constance","Grande Retraite","Hermitage","Isidore Rose","Kashinath","La Porte Providence","Laventure","Mare Choisy","Mare du Puits","Mare la Chaux","Mare Providence","Mare Tapsy","Morc Constance","Nehru Nagar","Palmar","Petite Retraite","Plaine de Gersigny","Pont Blanc","Poste de Flacq","Quatre Cocos","Riche Mare","Sept Croisées","St Rémy","Trou d'Eau Douce","Victoria"];
@@ -428,12 +414,11 @@
         const growerName = document.getElementById('growerName').value.trim();
         if (growerName) activeGrowersSet.add(growerName);
     }
-    function setGrower(name) { document.getElementById('growerName').value = name; updateSessionInfo(); showToast(`Grower set to ${name}`); }
     function showVersionAlert() {
         showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements");
     }
     
-    // ==================== Monthly Harvest Table ====================
+    // ==================== Monthly Harvest Table (3 months per row) ====================
     function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
         const displayUnit = getDisplayUnit(cropType);
         const rowGroups = [
@@ -450,7 +435,7 @@
             for (let month of group) {
                 const saved = (existingData && existingData[month]) ? existingData[month].yield : '';
                 html += `<th style="background:#2e7d32; color:white; padding:8px;">${month.substring(0,3)}</th>`;
-                html += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></tr>`;
+                html += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></td>`;
             }
             html += `</tr>`;
         }
@@ -468,6 +453,7 @@
         return html;
     }
     
+    // ==================== Toggle Harvest Section ====================
     window.toggleHarvestSection = function(selectElement) {
         const card = selectElement.closest('.greenhouse-card');
         const id = card.id.split('-')[1];
