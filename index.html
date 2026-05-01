@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- Professional green theme (same as before) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -27,29 +26,18 @@
         .title-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .icon-badge {
             background: linear-gradient(135deg, #1b5e20, #2e7d32);
-            width: 55px;
-            height: 55px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
+            width: 55px; height: 55px; border-radius: 18px;
+            display: flex; align-items: center; justify-content: center; font-size: 28px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         .icon-badge i { color: white; }
         .title-section h1 {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 24px; font-weight: 800;
             background: linear-gradient(135deg, #1b5e20, #2e7d32);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .badge-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .badge-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .beta-badge { background: #ff9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .version-btn {
             background: #2e7d32; color: white; border: none; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
@@ -68,18 +56,13 @@
         .veg-icons span { font-size: 12px; font-weight: 500; color: #1b5e20; margin-left: 4px; }
 
         .form-section {
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            border: 1px solid #dcedc8;
+            background: white; border-radius: 24px; padding: 24px; margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #dcedc8;
         }
         .section-title {
             font-size: 18px; font-weight: 700; color: #1b5e20; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 10px;
-            padding-bottom: 12px; border-bottom: 2px solid #c8e6c9;
-            flex-wrap: wrap;
+            display: flex; align-items: center; gap: 10px; padding-bottom: 12px;
+            border-bottom: 2px solid #c8e6c9; flex-wrap: wrap;
         }
         .section-title i { color: #2e7d32; }
 
@@ -88,8 +71,7 @@
         }
         .input-group label i { color: #2e7d32; margin-right: 6px; }
         .input-group input, .input-group select {
-            width: 100%; padding: 12px 15px;
-            border: 2px solid #dcedc8; border-radius: 12px;
+            width: 100%; padding: 12px 15px; border: 2px solid #dcedc8; border-radius: 12px;
             font-size: 14px; background: white; transition: 0.2s;
         }
         .input-group input:focus, .input-group select:focus {
@@ -98,14 +80,12 @@
 
         .zone-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
         .zone-btn {
-            flex: 1; min-width: 80px; padding: 12px;
-            border: 2px solid #c8e6c9; background: white; border-radius: 14px;
-            cursor: pointer; font-weight: 600; text-align: center; transition: all 0.2s;
+            flex: 1; min-width: 80px; padding: 12px; border: 2px solid #c8e6c9; background: white;
+            border-radius: 14px; cursor: pointer; font-weight: 600; text-align: center; transition: all 0.2s;
             color: #1b5e20;
         }
         .zone-btn.active {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            color: white; border-color: #1b5e20;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; border-color: #1b5e20;
         }
 
         .greenhouse-card {
@@ -118,24 +98,23 @@
         }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
         .greenhouse-badge {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            color: white; padding: 6px 14px; border-radius: 30px; font-weight: 600; font-size: 13px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; padding: 6px 14px;
+            border-radius: 30px; font-weight: 600; font-size: 13px;
         }
         .card-actions { display: flex; gap: 10px; }
         .smart-btn {
-            padding: 8px 14px; border: none; border-radius: 30px;
-            cursor: pointer; font-weight: 500; font-size: 12px;
-            display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+            padding: 8px 14px; border: none; border-radius: 30px; cursor: pointer;
+            font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;
+            transition: 0.2s;
         }
         .smart-btn-primary { background: #2e7d32; color: white; }
         .smart-btn-secondary { background: #ff9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
 
         .btn-submit {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            color: white; padding: 16px; font-size: 16px; font-weight: 700;
-            border: none; border-radius: 50px; width: 100%; margin-top: 10px;
-            cursor: pointer; transition: 0.2s;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; padding: 16px;
+            font-size: 16px; font-weight: 700; border: none; border-radius: 50px; width: 100%;
+            margin-top: 10px; cursor: pointer; transition: 0.2s;
         }
         .btn-submit:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-2px); }
 
@@ -146,7 +125,7 @@
         .monthly-harvest-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; }
         .monthly-harvest-table th, .monthly-harvest-table td { border: 1px solid #c8e6c9; padding: 10px 6px; text-align: center; }
         .monthly-harvest-table th { background: #2e7d32; color: white; font-size: 13px; font-weight: 600; }
-        .monthly-harvest-table input { width: 90px; padding: 8px; text-align: center; border: 1px solid #c8e6c9; border-radius: 8px; background: #fff; }
+        .monthly-harvest-table input { width: 90px; padding: 8px; text-align: center; border: 1px solid #c8e6c9; border-radius: 8px; }
         .avg-yield-section {
             background: #f1f8e9; border-radius: 16px; padding: 16px; margin-top: 16px;
             display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 15px;
@@ -197,7 +176,6 @@
         </div>
     </div>
 
-    <!-- Zone Selection -->
     <div class="form-section">
         <div class="section-title"><i class="fas fa-map-marker-alt"></i> Select Zone</div>
         <div class="zone-buttons" id="zoneButtons">
@@ -206,7 +184,6 @@
         </div>
     </div>
 
-    <!-- Grower Information -->
     <div class="form-section">
         <div class="section-title"><i class="fas fa-user-friends"></i> Grower Information</div>
         <div class="smart-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
@@ -217,7 +194,6 @@
         </div>
     </div>
 
-    <!-- Greenhouse Details -->
     <div class="form-section">
         <div class="section-title">
             <i class="fas fa-greenhouse"></i> <span>Greenhouse Details</span>
@@ -232,7 +208,7 @@
 <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
 
 <script>
-    // ==================== LOCALITIES & CONSTANTS ====================
+    // ==================== LOCALITIES (same as before) ====================
     const zoneE1Localities = ["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"];
     const zoneE2Localities = ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"];
     const zoneE3Localities = ["Argy","Beau Bois","Beau Rivage","Belle Mare","Belle Vue Allendy","Bois d'Oiseaux","Bramsthan","Bras d'Eau","Camp Garreau","Camp Ithier","Camp Marcelin","Camp Poorun","Camp Raffia","Camp Ranoo","Centre de Flacq","Constance","Grande Retraite","Hermitage","Isidore Rose","Kashinath","La Porte Providence","Laventure","Mare Choisy","Mare du Puits","Mare la Chaux","Mare Providence","Mare Tapsy","Morc Constance","Nehru Nagar","Palmar","Petite Retraite","Plaine de Gersigny","Pont Blanc","Poste de Flacq","Quatre Cocos","Riche Mare","Sept Croisées","St Rémy","Trou d'Eau Douce","Victoria"];
@@ -250,7 +226,7 @@
     let activeGrowersSet = new Set();
     window.monthlyHarvestData = {};
     const SCRIPT_URL = '
-https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';  //
+https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';  // <-- REPLACE THIS
     
     // ==================== Helper Functions ====================
     function updateLocalitiesByZone(zone) {
@@ -294,10 +270,7 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
         if (growerName) activeGrowersSet.add(growerName);
     }
     function setGrower(name) { document.getElementById('growerName').value = name; updateSessionInfo(); showToast(`Grower set to ${name}`); }
-    
-    function showVersionAlert() {
-        showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements");
-    }
+    function showVersionAlert() { showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements"); }
     
     // ==================== Monthly Harvest Table ====================
     function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
@@ -334,7 +307,6 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
         return html;
     }
     
-    // ==================== Toggle Harvest Section ====================
     window.toggleHarvestSection = function(selectElement) {
         const card = selectElement.closest('.greenhouse-card');
         const id = card.id.split('-')[1];
@@ -359,18 +331,9 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
             const avgWeekly = card.querySelector('.avg-weekly-yield');
             const avgMonthly = card.querySelector('.avg-monthly-yield');
             const harvestMonths = card.querySelector('.harvest-months');
-            if (avgWeekly) avgWeekly.addEventListener('change', function() {
-                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
-                window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value)||0;
-            });
-            if (avgMonthly) avgMonthly.addEventListener('change', function() {
-                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
-                window.monthlyHarvestData[id].avgMonthlyYield = parseFloat(this.value)||0;
-            });
-            if (harvestMonths) harvestMonths.addEventListener('change', function() {
-                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
-                window.monthlyHarvestData[id].harvestMonthsCount = parseFloat(this.value)||0;
-            });
+            if (avgWeekly) avgWeekly.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value)||0; });
+            if (avgMonthly) avgMonthly.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].avgMonthlyYield = parseFloat(this.value)||0; });
+            if (harvestMonths) harvestMonths.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].harvestMonthsCount = parseFloat(this.value)||0; });
         } else {
             if (existingSection) existingSection.remove();
             if (window.monthlyHarvestData[id]) delete window.monthlyHarvestData[id];
@@ -391,9 +354,10 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
     
     // ==================== Greenhouse Management ====================
     window.addGreenhouse = function(data = null) {
+        console.log("addGreenhouse called");
         const container = document.getElementById('greenhousesContainer');
         if (!container) {
-            console.error("Container not found");
+            console.error("greenhousesContainer not found!");
             return;
         }
         const id = greenhouseCounter++;
@@ -425,6 +389,7 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
             setTimeout(()=>{ let stageSel = div.querySelector('.gh-stage'); if(stageSel) window.toggleHarvestSection(stageSel); },100);
         }
         updateSessionInfo();
+        console.log("Greenhouse card added, id=" + id);
     };
     
     window.removeGreenhouse = function(id) {
@@ -536,9 +501,10 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
     
     // ==================== Initialization ====================
     window.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM fully loaded");
         initZoneButtons();
         updateLocalitiesByZone('E2');
-        // Create the first greenhouse card
+        // Create initial greenhouse card
         window.addGreenhouse();
         updateSessionInfo();
     });
