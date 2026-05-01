@@ -36,9 +36,6 @@
             font-size: 28px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .icon-badge i {
-            color: white;  /* Leaf icon colour changed to white */
-        }
         .title-section h1 {
             font-size: 24px;
             font-weight: 800;
@@ -438,7 +435,7 @@
                 html += `<th style="background:#2e7d32; color:white; padding:8px;">${month.substring(0,3)}</th>`;
                 html += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></td>`;
             }
-            html += `<tr>`;
+            html += `</tr>`;
         }
         html += `</tbody>
             </table>
