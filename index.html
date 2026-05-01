@@ -36,6 +36,7 @@
             font-size: 28px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
+        .icon-badge i { color: white; }
         .title-section h1 {
             font-size: 24px;
             font-weight: 800;
@@ -335,10 +336,10 @@
         </div>
     </div>
 
-    <!-- Greenhouse Details (with Add button) -->
+    <!-- Greenhouse Details (with Add button) - Greenhouse icon added -->
     <div class="form-section">
         <div class="section-title">
-            <i class="fas fa-greenhouse"></i> Greenhouse Details
+            <i class="fas fa-greenhouse"></i> <span>Greenhouse Details</span>
             <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add Greenhouse</button>
         </div>
         <div id="greenhousesContainer"></div>
@@ -359,7 +360,8 @@
     const cropOptions = ["Cabbage","Cauliflower","English Cucumber","Lettuce","Melon","Sweet Pepper","Shallot","Greens","Tomato","Okra","Chillies","Eggplant"];
     const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce", "Melon"];
     const tomatoTypeOptions = ["Cooking","Salad","Cherry"];
-    const substrateOptions = ["Cocopeat","Aggregates","Woodchips","NFT","DFT","Aquaponics"];
+    // Production System Type options (formerly Substrate)
+    const productionSystemOptions = ["Cocopeat", "Aggregates", "Woodchips", "NFT", "DFT", "Aquaponics"];
     const cropStageOptions = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     
@@ -367,7 +369,8 @@
     let greenhouseCounter = 1;
     let activeGrowersSet = new Set();
     window.monthlyHarvestData = {};
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';  // <-- REPLACE WITH YOUR ACTUAL URL
+    const SCRIPT_URL = '
+https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';  // <-- REPLACE WITH YOUR ACTUAL URL
     
     // ==================== Helper Functions ====================
     function updateLocalitiesByZone(zone) {
@@ -503,7 +506,8 @@
     // ==================== Greenhouse Management ====================
     function getCropOptionsHTML(sel) { let html='<option value="">Select Crop</option>'; cropOptions.forEach(c=>html+=`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`); return html; }
     function getTomatoTypeOptionsHTML(sel) { let html='<option value="">Select Tomato Type</option>'; tomatoTypeOptions.forEach(t=>html+=`<option value="${t}" ${sel===t?'selected':''}>${t}</option>`); return html; }
-    function getSubstrateOptionsHTML(sel) { let html='<option value="">Select Substrate</option>'; substrateOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
+    // Updated: label changed to "Production System Type"
+    function getProductionSystemOptionsHTML(sel) { let html='<option value="">Select Production System</option>'; productionSystemOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
     function getCropStageOptionsHTML(sel) { let html='<option value="">Select Stage</option>'; cropStageOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
     
     window.addGreenhouse = function(data = null) {
@@ -527,7 +531,7 @@
                 <div class="input-group"><label>Variety</label><input type="text" class="gh-variety" value="${data?.variety||''}" oninput="updateSessionInfo()"></div>
                 <div class="input-group"><label>Crop Stage</label><select class="gh-stage" onchange="toggleHarvestSection(this)">${getCropStageOptionsHTML(data?.cropStage||'')}</select></div>
                 <div class="input-group"><label>Date Transplanted</label><input type="date" class="gh-transplant" value="${data?.transplantDate||''}"></div>
-                <div class="input-group"><label>Substrate</label><select class="gh-substrate">${getSubstrateOptionsHTML(data?.substrateType||'')}</select></div>
+                <div class="input-group"><label>Production System Type</label><select class="gh-substrate">${getProductionSystemOptionsHTML(data?.substrateType||'')}</select></div>
                 <div class="input-group tomato-type-group" style="display:${showTomato?'block':'none'}"><label>Tomato Type</label><select class="gh-tomatotype">${getTomatoTypeOptionsHTML(data?.tomatoType||'')}</select></div>
             </div>
         `;
