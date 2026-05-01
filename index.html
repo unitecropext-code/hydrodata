@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- Professional green theme --- */
+        /* --- Colour scheme: dark green background + pale green, white, olive accents --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -17,126 +17,272 @@
         }
         .container { max-width: 1200px; margin: 0 auto; }
         .modern-header {
-            background: white; border-radius: 24px; padding: 20px 24px; margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 1px solid #c8e6c9;
+            background: white;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 1px solid #c8e6c9;
         }
         .title-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .icon-badge {
-            background: linear-gradient(135deg, #1b5e20, #2e7d32); width: 55px; height: 55px;
-            border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px;
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            width: 55px;
+            height: 55px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .icon-badge i { color: white; }
+        .icon-badge i {
+            color: white;  /* Leaf icon colour changed to white */
+        }
         .title-section h1 {
-            font-size: 24px; font-weight: 800;
+            font-size: 24px;
+            font-weight: 800;
             background: linear-gradient(135deg, #1b5e20, #2e7d32);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .badge-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .beta-badge { background: #ff9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .version-btn {
-            background: #2e7d32; color: white; border: none; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
-            cursor: pointer; transition: 0.2s;
+        .badge-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        .version-btn:hover { background: #1b5e20; transform: translateY(-1px); }
+        .beta-badge { 
+            background: #ff9800; 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 11px; 
+            font-weight: 600; 
+        }
+        .version-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .version-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-1px);
+        }
         .subtitle {
-            color: #2c3e50; font-size: 13px; margin-top: 8px;
-            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            color: #2c3e50;
+            font-size: 13px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         .veg-icons {
-            display: inline-flex; align-items: center; gap: 10px;
-            background: #e8f5e9; padding: 4px 12px; border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #e8f5e9;
+            padding: 4px 12px;
+            border-radius: 40px;
         }
-        .veg-icons i { font-size: 16px; color: #2e7d32; }
-        .veg-icons span { font-size: 12px; font-weight: 500; color: #1b5e20; margin-left: 4px; }
+        .veg-icons i {
+            font-size: 16px;
+            color: #2e7d32;
+        }
+        .veg-icons span {
+            font-size: 12px;
+            font-weight: 500;
+            color: #1b5e20;
+            margin-left: 4px;
+        }
 
+        /* Form sections – white with light olive borders */
         .form-section {
-            background: white; border-radius: 24px; padding: 24px; margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #dcedc8;
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #dcedc8;
         }
         .section-title {
-            font-size: 18px; font-weight: 700; color: #1b5e20; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 10px; padding-bottom: 12px;
-            border-bottom: 2px solid #c8e6c9; flex-wrap: wrap;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1b5e20;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #c8e6c9;
+            flex-wrap: wrap;
         }
         .section-title i { color: #2e7d32; }
 
+        /* Input groups */
         .input-group label {
-            display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; font-size: 13px;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 13px;
         }
         .input-group label i { color: #2e7d32; margin-right: 6px; }
         .input-group input, .input-group select {
-            width: 100%; padding: 12px 15px; border: 2px solid #dcedc8; border-radius: 12px;
-            font-size: 14px; background: white; transition: 0.2s;
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dcedc8;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+            transition: 0.2s;
         }
         .input-group input:focus, .input-group select:focus {
-            border-color: #66bb6a; outline: none; box-shadow: 0 0 0 3px rgba(102,187,106,0.2);
+            border-color: #66bb6a;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102,187,106,0.2);
         }
 
+        /* Zone buttons */
         .zone-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
         .zone-btn {
-            flex: 1; min-width: 80px; padding: 12px; border: 2px solid #c8e6c9; background: white;
-            border-radius: 14px; cursor: pointer; font-weight: 600; text-align: center; transition: all 0.2s;
+            flex: 1;
+            min-width: 80px;
+            padding: 12px;
+            border: 2px solid #c8e6c9;
+            background: white;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
             color: #1b5e20;
         }
         .zone-btn.active {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; border-color: #1b5e20;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            border-color: #1b5e20;
         }
 
+        /* Greenhouse cards – white with olive border */
         .greenhouse-card {
-            background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px;
-            border: 1px solid #c8e6c9; position: relative; transition: 0.2s;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #c8e6c9;
+            position: relative;
+            transition: 0.2s;
         }
         .greenhouse-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%;
-            background: linear-gradient(135deg, #2e7d32, #66bb6a); border-radius: 20px 0 0 20px;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, #2e7d32, #66bb6a);
+            border-radius: 20px 0 0 20px;
         }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
         .greenhouse-badge {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; padding: 6px 14px;
-            border-radius: 30px; font-weight: 600; font-size: 13px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
         }
         .card-actions { display: flex; gap: 10px; }
         .smart-btn {
-            padding: 8px 14px; border: none; border-radius: 30px; cursor: pointer;
-            font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             transition: 0.2s;
         }
         .smart-btn-primary { background: #2e7d32; color: white; }
         .smart-btn-secondary { background: #ff9800; color: white; }
         .smart-btn-danger { background: #f44336; color: white; }
 
+        /* Submit button */
         .btn-submit {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; padding: 16px;
-            font-size: 16px; font-weight: 700; border: none; border-radius: 50px; width: 100%;
-            margin-top: 10px; cursor: pointer; transition: 0.2s;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: 0.2s;
         }
         .btn-submit:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-2px); }
 
+        /* --- MONTHLY HARVEST SECTION – OLIVE GREEN BACKGROUND --- */
         .harvest-table-container {
-            background: #e8f5e9; border-radius: 20px; padding: 20px; margin-top: 20px;
-            border: 2px solid #a5d6a7; overflow-x: auto;
+            background: #e8f5e9;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #a5d6a7;
+            overflow-x: auto;
         }
         .monthly-harvest-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; }
         .monthly-harvest-table th, .monthly-harvest-table td { border: 1px solid #c8e6c9; padding: 10px 6px; text-align: center; }
         .monthly-harvest-table th { background: #2e7d32; color: white; font-size: 13px; font-weight: 600; }
-        .monthly-harvest-table input { width: 90px; padding: 8px; text-align: center; border: 1px solid #c8e6c9; border-radius: 8px; }
+        .monthly-harvest-table input { width: 90px; padding: 8px; text-align: center; border: 1px solid #c8e6c9; border-radius: 8px; background: #fff; }
         .avg-yield-section {
-            background: #f1f8e9; border-radius: 16px; padding: 16px; margin-top: 16px;
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 15px;
+            background: #f1f8e9;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+            gap: 15px;
         }
 
+        /* Footer */
         .footer {
-            background: rgba(255,255,255,0.9); border-radius: 20px; padding: 16px;
-            text-align: center; color: #1b5e20; font-size: 11px; margin-top: 20px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 16px;
+            text-align: center;
+            color: #1b5e20;
+            font-size: 11px;
+            margin-top: 20px;
             border: 1px solid #c8e6c9;
         }
         .toast {
-            position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 400px; margin: 0 auto;
-            background: white; padding: 14px 20px; border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translateY(100px); transition: transform 0.3s;
-            z-index: 1000; text-align: center; font-weight: 500;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 14px 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            transition: transform 0.3s;
+            z-index: 1000;
+            text-align: center;
+            font-weight: 500;
         }
         .toast.show { transform: translateY(0); }
         .toast.success { border-left: 4px solid #4caf50; }
@@ -192,10 +338,10 @@
         </div>
     </div>
 
-    <!-- Greenhouse Details -->
+    <!-- Greenhouse Details (with Add button) -->
     <div class="form-section">
         <div class="section-title">
-            <i class="fas fa-greenhouse"></i> <span>Greenhouse Details</span>
+            <i class="fas fa-greenhouse"></i> Greenhouse Details
             <button class="smart-btn smart-btn-primary" onclick="addGreenhouse()" style="margin-left: auto;"><i class="fas fa-plus"></i> Add Greenhouse</button>
         </div>
         <div id="greenhousesContainer"></div>
@@ -207,7 +353,7 @@
 <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
 
 <script>
-    // ==================== LOCALITIES (Zone-specific) ====================
+    // ==================== LOCALITIES & CONSTANTS ====================
     const zoneE1Localities = ["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"];
     const zoneE2Localities = ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"];
     const zoneE3Localities = ["Argy","Beau Bois","Beau Rivage","Belle Mare","Belle Vue Allendy","Bois d'Oiseaux","Bramsthan","Bras d'Eau","Camp Garreau","Camp Ithier","Camp Marcelin","Camp Poorun","Camp Raffia","Camp Ranoo","Centre de Flacq","Constance","Grande Retraite","Hermitage","Isidore Rose","Kashinath","La Porte Providence","Laventure","Mare Choisy","Mare du Puits","Mare la Chaux","Mare Providence","Mare Tapsy","Morc Constance","Nehru Nagar","Palmar","Petite Retraite","Plaine de Gersigny","Pont Blanc","Poste de Flacq","Quatre Cocos","Riche Mare","Sept Croisées","St Rémy","Trou d'Eau Douce","Victoria"];
@@ -216,7 +362,7 @@
     const cropOptions = ["Cabbage","Cauliflower","English Cucumber","Lettuce","Melon","Sweet Pepper","Shallot","Greens","Tomato","Okra","Chillies","Eggplant"];
     const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce", "Melon"];
     const tomatoTypeOptions = ["Cooking","Salad","Cherry"];
-    const productionSystemOptions = ["Cocopeat", "Aggregates", "Woodchips", "NFT", "DFT", "Aquaponics"];
+    const substrateOptions = ["Cocopeat","Aggregates","Woodchips","NFT","DFT","Aquaponics"];
     const cropStageOptions = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     
@@ -224,8 +370,7 @@
     let greenhouseCounter = 1;
     let activeGrowersSet = new Set();
     window.monthlyHarvestData = {};
-    const SCRIPT_URL = '
-https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0GEwoDcmqLEQ1pAzaURY1W_lKXF_mA/exec';  // <-- Replace with your actual URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFDMwFR0BJh3u9RE-gfHMAvtVQP61LCfsMl8kNc45c16SJg17KEAfRs2LvWW1jG4fAvw/exec';  // <-- REPLACE WITH YOUR ACTUAL URL
     
     // ==================== Helper Functions ====================
     function updateLocalitiesByZone(zone) {
@@ -269,7 +414,10 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
         if (growerName) activeGrowersSet.add(growerName);
     }
     function setGrower(name) { document.getElementById('growerName').value = name; updateSessionInfo(); showToast(`Grower set to ${name}`); }
-    function showVersionAlert() { showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements"); }
+    
+    function showVersionAlert() {
+        showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements");
+    }
     
     // ==================== Monthly Harvest Table ====================
     function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
@@ -290,7 +438,7 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
                 html += `<th style="background:#2e7d32; color:white; padding:8px;">${month.substring(0,3)}</th>`;
                 html += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></td>`;
             }
-            html += `</tr>`;
+            html += `<tr>`;
         }
         html += `</tbody>
             </table>
@@ -306,6 +454,7 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
         return html;
     }
     
+    // ==================== Toggle Harvest Section ====================
     window.toggleHarvestSection = function(selectElement) {
         const card = selectElement.closest('.greenhouse-card');
         const id = card.id.split('-')[1];
@@ -330,9 +479,18 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
             const avgWeekly = card.querySelector('.avg-weekly-yield');
             const avgMonthly = card.querySelector('.avg-monthly-yield');
             const harvestMonths = card.querySelector('.harvest-months');
-            if (avgWeekly) avgWeekly.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value)||0; });
-            if (avgMonthly) avgMonthly.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].avgMonthlyYield = parseFloat(this.value)||0; });
-            if (harvestMonths) harvestMonths.addEventListener('change', function() { if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {}; window.monthlyHarvestData[id].harvestMonthsCount = parseFloat(this.value)||0; });
+            if (avgWeekly) avgWeekly.addEventListener('change', function() {
+                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
+                window.monthlyHarvestData[id].avgWeeklyYield = parseFloat(this.value)||0;
+            });
+            if (avgMonthly) avgMonthly.addEventListener('change', function() {
+                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
+                window.monthlyHarvestData[id].avgMonthlyYield = parseFloat(this.value)||0;
+            });
+            if (harvestMonths) harvestMonths.addEventListener('change', function() {
+                if (!window.monthlyHarvestData[id]) window.monthlyHarvestData[id] = {};
+                window.monthlyHarvestData[id].harvestMonthsCount = parseFloat(this.value)||0;
+            });
         } else {
             if (existingSection) existingSection.remove();
             if (window.monthlyHarvestData[id]) delete window.monthlyHarvestData[id];
@@ -345,20 +503,14 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
         if (tomatoGroup) tomatoGroup.style.display = selectElement.value === 'Tomato' ? 'block' : 'none';
     };
     
-    // ==================== HTML Generators ====================
+    // ==================== Greenhouse Management ====================
     function getCropOptionsHTML(sel) { let html='<option value="">Select Crop</option>'; cropOptions.forEach(c=>html+=`<option value="${c}" ${sel===c?'selected':''}>${c}</option>`); return html; }
     function getTomatoTypeOptionsHTML(sel) { let html='<option value="">Select Tomato Type</option>'; tomatoTypeOptions.forEach(t=>html+=`<option value="${t}" ${sel===t?'selected':''}>${t}</option>`); return html; }
-    function getProductionSystemOptionsHTML(sel) { let html='<option value="">Select Production System</option>'; productionSystemOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
+    function getSubstrateOptionsHTML(sel) { let html='<option value="">Select Substrate</option>'; substrateOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
     function getCropStageOptionsHTML(sel) { let html='<option value="">Select Stage</option>'; cropStageOptions.forEach(s=>html+=`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`); return html; }
     
-    // ==================== Greenhouse Management ====================
     window.addGreenhouse = function(data = null) {
-        console.log("addGreenhouse called");
         const container = document.getElementById('greenhousesContainer');
-        if (!container) {
-            console.error("greenhousesContainer not found!");
-            return;
-        }
         const id = greenhouseCounter++;
         const showTomato = data?.cropType === 'Tomato';
         const div = document.createElement('div');
@@ -378,7 +530,7 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
                 <div class="input-group"><label>Variety</label><input type="text" class="gh-variety" value="${data?.variety||''}" oninput="updateSessionInfo()"></div>
                 <div class="input-group"><label>Crop Stage</label><select class="gh-stage" onchange="toggleHarvestSection(this)">${getCropStageOptionsHTML(data?.cropStage||'')}</select></div>
                 <div class="input-group"><label>Date Transplanted</label><input type="date" class="gh-transplant" value="${data?.transplantDate||''}"></div>
-                <div class="input-group"><label>Production System Type</label><select class="gh-substrate">${getProductionSystemOptionsHTML(data?.substrateType||'')}</select></div>
+                <div class="input-group"><label>Substrate</label><select class="gh-substrate">${getSubstrateOptionsHTML(data?.substrateType||'')}</select></div>
                 <div class="input-group tomato-type-group" style="display:${showTomato?'block':'none'}"><label>Tomato Type</label><select class="gh-tomatotype">${getTomatoTypeOptionsHTML(data?.tomatoType||'')}</select></div>
             </div>
         `;
@@ -388,7 +540,6 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
             setTimeout(()=>{ let stageSel = div.querySelector('.gh-stage'); if(stageSel) window.toggleHarvestSection(stageSel); },100);
         }
         updateSessionInfo();
-        console.log("Greenhouse card added, id=" + id);
     };
     
     window.removeGreenhouse = function(id) {
@@ -500,10 +651,8 @@ https://script.google.com/macros/s/AKfycby5Mh8pLykT-83iQ9H9xnA4TqIYjyJ7Qc9VfJUO0
     
     // ==================== Initialization ====================
     window.addEventListener('DOMContentLoaded', () => {
-        console.log("DOMContentLoaded fired");
         initZoneButtons();
         updateLocalitiesByZone('E2');
-        // Create the first greenhouse card
         window.addGreenhouse();
         updateSessionInfo();
     });
