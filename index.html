@@ -59,6 +59,8 @@
             border-left: 3px solid #2e7d32;
         }
         .tagline i { color: #2e7d32; margin-right: 6px; }
+        
+        /* Vegetable icons row – six real crops (emoji) */
         .veg-icons-wrapper {
             display: flex;
             justify-content: center;
@@ -67,16 +69,29 @@
         .veg-icons {
             display: inline-flex;
             align-items: center;
-            gap: 20px;
+            gap: 24px;
             background: #e8f5e9;
-            padding: 8px 20px;
+            padding: 8px 24px;
             border-radius: 60px;
             flex-wrap: wrap;
             justify-content: center;
         }
-        .veg-icons i { font-size: 20px; color: #2e7d32; }
-        .veg-icons span { font-size: 13px; font-weight: 600; color: #1b5e20; margin-left: 6px; }
-        .veg-icon-item { display: inline-flex; align-items: center; gap: 6px; }
+        .veg-icon-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1b5e20;
+        }
+        .veg-icon-item span {
+            font-size: 14px;
+        }
+        @media (max-width: 550px) {
+            .veg-icons { gap: 16px; padding: 6px 16px; }
+            .veg-icon-item { font-size: 14px; }
+            .veg-icon-item span { font-size: 12px; }
+        }
 
         /* Crop Overview Cards (live area & yield from grower data) */
         .crop-overview {
@@ -174,8 +189,6 @@
         }
         @media (max-width: 550px) {
             .zone-btn { min-width: 70px; padding: 10px 12px; font-size: 12px; }
-            .veg-icons { gap: 12px; padding: 6px 12px; }
-            .veg-icon-item { font-size: 12px; }
         }
 
         .form-section {
@@ -283,7 +296,7 @@
         }
         .btn-submit:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-2px); }
 
-        /* Monthly harvest table – 3 months per row */
+        /* Monthly harvest table – 3 months per row (already implemented) */
         .harvest-table-container {
             background: #e8f5e9;
             border-radius: 20px;
@@ -376,12 +389,16 @@
             </div>
         </div>
         <div class="tagline"><i class="fas fa-microchip"></i> Smart Data Capture • Real‑time insights</div>
+
+        <!-- Vegetable Icons Row – Six Real Crops (Emoji) -->
         <div class="veg-icons-wrapper">
             <div class="veg-icons">
-                <div class="veg-icon-item"><i class="fas fa-tomato"></i><span>Tomato</span></div>
-                <div class="veg-icon-item"><i class="fas fa-pepper-hot"></i><span>Bell Pepper</span></div>
-                <div class="veg-icon-item"><i class="fas fa-cucumber"></i><span>Cucumber</span></div>
-                <div class="veg-icon-item"><i class="fas fa-leaf"></i><span>Lettuce</span></div>
+                <div class="veg-icon-item">🍅<span>Tomato</span></div>
+                <div class="veg-icon-item">🌶️<span>Bell Pepper</span></div>
+                <div class="veg-icon-item">🥒<span>Cucumber</span></div>
+                <div class="veg-icon-item">🥬<span>Lettuce</span></div>
+                <div class="veg-icon-item">🍆<span>Eggplant</span></div>
+                <div class="veg-icon-item">🍈<span>Melon</span></div>
             </div>
         </div>
     </div>
@@ -392,7 +409,7 @@
         <div class="crop-cards" id="cropOverviewContainer">
             <!-- Tomato Card -->
             <div class="crop-stat-card">
-                <h4><i class="fas fa-tomato"></i> Tomato</h4>
+                <h4>🍅 Tomato</h4>
                 <div class="crop-area" id="tomatoAreaValue">0 <span class="crop-unit">m²</span></div>
                 <div class="crop-yield">📊 Reported weekly yield: <strong id="tomatoYield">0 kg</strong></div>
                 <div class="crop-yield">⭐ Avg yield per m²: <strong id="tomatoAvgYield">0.0 kg/m²</strong></div>
@@ -401,7 +418,7 @@
             </div>
             <!-- Sweet Pepper Card -->
             <div class="crop-stat-card">
-                <h4><i class="fas fa-pepper-hot"></i> Sweet Pepper</h4>
+                <h4>🌶️ Sweet Pepper</h4>
                 <div class="crop-area" id="pepperAreaValue">0 <span class="crop-unit">m²</span></div>
                 <div class="crop-yield">📊 Reported weekly yield: <strong id="pepperYield">0 kg</strong></div>
                 <div class="crop-yield">⭐ Avg yield per m²: <strong id="pepperAvgYield">0.0 kg/m²</strong></div>
@@ -410,7 +427,7 @@
             </div>
             <!-- English Cucumber Card -->
             <div class="crop-stat-card">
-                <h4><i class="fas fa-cucumber"></i> English Cucumber</h4>
+                <h4>🥒 English Cucumber</h4>
                 <div class="crop-area" id="cucumberAreaValue">0 <span class="crop-unit">m²</span></div>
                 <div class="crop-yield">📊 Reported weekly yield: <strong id="cucumberYield">0 units</strong></div>
                 <div class="crop-yield">⭐ Avg yield per m²: <strong id="cucumberAvgYield">0.0 units/m²</strong></div>
@@ -418,7 +435,6 @@
                 <div class="bar-container"><div class="bar-fill" id="cucumberBar" style="width:0%"></div></div>
             </div>
         </div>
-        <!-- REMOVED the footnote line that said "* Estimated yields based on 2 kg/m²/week..." -->
     </div>
 
     <!-- Zone Selection -->
@@ -616,7 +632,7 @@
             <div style="font-weight:700; margin-bottom:15px; color:#2e7d32;"><i class="fas fa-chart-line"></i> 📊 MONTHLY HARVEST YIELD (${displayUnit.toUpperCase()})</div>
             <table class="monthly-harvest-table">`;
         for (let group of rowGroups) {
-            html += `</table>`;
+            html += `<tr>`;
             for (let month of group) {
                 const saved = (existingData && existingData[month]) ? existingData[month].yield : '';
                 html += `<th style="background:#2e7d32; color:white; padding:8px;">${month.substring(0,3)}</th>`;
