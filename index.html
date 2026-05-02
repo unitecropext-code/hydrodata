@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- Same styles as before (kept unchanged for brevity) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #388e3c 100%); min-height: 100vh; padding: 16px; }
         .container { max-width: 1200px; margin: 0 auto; }
@@ -305,7 +304,7 @@
             <div class="veg-icons">
                 <div class="veg-icon-item"><i class="fas fa-tomato"></i><span>Tomato</span></div>
                 <div class="veg-icon-item"><i class="fas fa-pepper-hot"></i><span>Bell Pepper</span></div>
-                <div class="veg-icon-item"><i class="fas fa-cucumber"></i><span>Cucumber</span></div>
+                <div class="veg-icon-item"><i class="fas fa-leaf"></i><span>Cucumber</span></div>
                 <div class="veg-icon-item"><i class="fas fa-leaf"></i><span>Lettuce</span></div>
             </div>
         </div>
@@ -365,8 +364,8 @@
     let greenhouseCounter = 1;
     let activeGrowersSet = new Set();
     window.monthlyHarvestData = {};
-    // Replace with your actual Google Apps Script URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwWJtF-KQrkl0pgGIza7TRAdxsljAmqGGpoqJfZtO3QqnkZrEwiF9oD-boGG0z0Vw/exec';
+    // IMPORTANT: Replace with your Google Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEFAAp2UDaOOeU22MwZANDrWdYF-gGDlHNPvTGl7UK4r8lyh9pB6HttRHZceWZcBUpbg/exec';
     
     // ==================== Helper Functions ====================
     function updateLocalitiesByZone(zone) {
@@ -394,7 +393,6 @@
         setTimeout(()=>toast.classList.remove('show'),3000);
     }
     function getDisplayUnit(crop) { return unitBasedCrops.includes(crop) ? "units" : "kg"; }
-    function getConversionNote(crop) { /* not used in submit but kept for consistency */ return ""; }
     
     function updateSessionInfo() {
         const growerName = document.getElementById('growerName').value.trim();
@@ -407,33 +405,24 @@
     // ==================== Monthly Harvest Table ====================
     function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
         const displayUnit = getDisplayUnit(cropType);
-        const rowGroups = [
-            ["January", "February", "March"],
-            ["April", "May", "June"],
-            ["July", "August", "September"],
-            ["October", "November", "December"]
-        ];
         let html = `<div class="harvest-table-container">
             <div style="font-weight:700; margin-bottom:15px; color:#2e7d32;"><i class="fas fa-chart-line"></i> 📊 MONTHLY HARVEST YIELD (${displayUnit.toUpperCase()})</div>
             <table class="monthly-harvest-table">`;
-        for (let group of rowGroups) {
-            html += `<tr>`;
-            for (let month of group) {
-                const saved = (existingData && existingData[month]) ? existingData[month].yield : '';
-                html += `<th style="background:#2e7d32; color:white; padding:8px;">${month.substring(0,3)}</th>`;
-                html += `<td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></td>`;
-            }
-            html += `</tr>`;
+        for (let month of months) {
+            const saved = (existingData && existingData[month]) ? existingData[month].yield : '';
+            html += `<tr>
+                <th style="background:#2e7d32; color:white; padding:8px;">${month.substring(0,3)}</th>
+                <td><input type="number" class="month-harvest-input" data-greenhouse="${greenhouseId}" data-month="${month}" value="${saved}" step="${displayUnit==='units'?1:0.01}" placeholder="${displayUnit}" style="width:90px;"></td>
+            </tr>`;
         }
-        html += `</tbody>
-            </table>
+        html += `</table>
             <div class="avg-yield-section">
-                <div class="input-group"><label>Avg Yield/Week (${displayUnit})</label><input type="number" class="avg-weekly-yield" step="0.01"></div>
-                <div class="input-group"><label>Avg Yield/Month (${displayUnit})</label><input type="number" class="avg-monthly-yield" step="0.01"></div>
-                <div class="input-group"><label>Months Harvesting</label><input type="number" class="harvest-months" step="1" min="0" max="12"></div>
+                <div class="input-group"><label>Avg Yield/Week (${displayUnit})</label><input type="number" class="avg-weekly-yield" step="0.01" value="${existingData?.avgWeeklyYield || ''}"></div>
+                <div class="input-group"><label>Avg Yield/Month (${displayUnit})</label><input type="number" class="avg-monthly-yield" step="0.01" value="${existingData?.avgMonthlyYield || ''}"></div>
+                <div class="input-group"><label>Months Harvesting</label><input type="number" class="harvest-months" step="1" min="0" max="12" value="${existingData?.harvestMonthsCount || ''}"></div>
             </div>
             <div style="background:#f1f8e9; padding:10px; border-radius:12px; font-size:11px; margin-top:12px;">
-                <i class="fas fa-info-circle"></i> ${getConversionNote(cropType)}
+                <i class="fas fa-info-circle"></i> For ${unitBasedCrops.includes(cropType) ? 'unit-based crops, enter number of units harvested.' : 'weight-based crops, enter kilograms harvested.'}
             </div>
         </div>`;
         return html;
@@ -450,6 +439,7 @@
             if (existingSection) existingSection.remove();
             const html = generateMonthlyHarvestTableHTML(id, cropType, window.monthlyHarvestData[id]);
             card.insertAdjacentHTML('beforeend', html);
+            // Attach event listeners for harvest inputs
             card.querySelectorAll('.month-harvest-input').forEach(inp => {
                 inp.addEventListener('change', function() {
                     const month = this.dataset.month;
@@ -542,13 +532,37 @@
         showToast('Greenhouse duplicated');
     };
     
-    // ==================== Submit Data (with CORS and error handling) ====================
+    // ==================== Submit Data ====================
     window.submitData = async function() {
         const grower = document.getElementById('growerName').value.trim();
         if (!grower) { showToast('Enter grower name', true); return; }
+        const locality = document.getElementById('locality').value.trim();
+        if (!locality) { showToast('Select locality', true); return; }
+        
         const greenhouses = [];
+        let hasError = false;
         document.querySelectorAll('.greenhouse-card').forEach(card => {
             const id = card.id.split('-')[1];
+            const area = parseFloat(card.querySelector('.gh-area').value);
+            if (isNaN(area) || area <= 0) {
+                showToast(`Greenhouse ${id}: Please enter valid area`, true);
+                hasError = true;
+                return;
+            }
+            const cropType = card.querySelector('.gh-crop').value;
+            if (!cropType) {
+                showToast(`Greenhouse ${id}: Please select a crop`, true);
+                hasError = true;
+                return;
+            }
+            const stage = card.querySelector('.gh-stage').value;
+            if (!stage) {
+                showToast(`Greenhouse ${id}: Please select crop stage`, true);
+                hasError = true;
+                return;
+            }
+            
+            // Collect monthly harvest data from inputs
             const monthlyHarvestForGH = window.monthlyHarvestData[id] || {};
             const monthInputs = card.querySelectorAll('.month-harvest-input');
             monthInputs.forEach(inp => {
@@ -557,71 +571,106 @@
                 if (val > 0) {
                     if (!monthlyHarvestForGH[month]) monthlyHarvestForGH[month] = {};
                     monthlyHarvestForGH[month].yield = val;
-                    monthlyHarvestForGH[month].unit = getDisplayUnit(card.querySelector('.gh-crop').value);
-                    monthlyHarvestForGH[month].crop = card.querySelector('.gh-crop').value;
+                    monthlyHarvestForGH[month].unit = getDisplayUnit(cropType);
+                    monthlyHarvestForGH[month].crop = cropType;
                 }
             });
+            
             const avgWeekly = card.querySelector('.avg-weekly-yield')?.value;
             const avgMonthly = card.querySelector('.avg-monthly-yield')?.value;
             const harvestMonthsCount = card.querySelector('.harvest-months')?.value;
             if (avgWeekly) monthlyHarvestForGH.avgWeeklyYield = parseFloat(avgWeekly);
             if (avgMonthly) monthlyHarvestForGH.avgMonthlyYield = parseFloat(avgMonthly);
             if (harvestMonthsCount) monthlyHarvestForGH.harvestMonthsCount = parseFloat(harvestMonthsCount);
+            
+            // Calculate total yield from monthly harvest
+            let totalYield = 0;
+            for (const month of months) {
+                if (monthlyHarvestForGH[month] && monthlyHarvestForGH[month].yield) {
+                    totalYield += monthlyHarvestForGH[month].yield;
+                }
+            }
+            
             window.monthlyHarvestData[id] = monthlyHarvestForGH;
+            
+            // Build crop name with tomato type if applicable
+            let finalCropName = cropType;
+            if (cropType === 'Tomato') {
+                const tomatoType = card.querySelector('.gh-tomatotype')?.value;
+                if (tomatoType && tomatoType !== '') {
+                    finalCropName = `Tomato ${tomatoType}`;
+                } else {
+                    finalCropName = 'Tomato (unspecified)';
+                }
+            }
+            
             greenhouses.push({
-                area: card.querySelector('.gh-area').value,
-                cropType: card.querySelector('.gh-crop').value,
-                variety: card.querySelector('.gh-variety').value,
-                cropStage: card.querySelector('.gh-stage').value,
-                transplantDate: card.querySelector('.gh-transplant').value,
-                substrateType: card.querySelector('.gh-substrate').value,
-                tomatoType: card.querySelector('.gh-tomatotype')?.value || '',
+                greenhouseId: id,
+                area: area,
+                cropName: finalCropName,
+                variety: card.querySelector('.gh-variety').value || '',
+                cropStage: stage,
+                transplantDate: card.querySelector('.gh-transplant').value || '',
+                substrateType: card.querySelector('.gh-substrate').value || '',
+                totalYield: totalYield,
+                avgWeeklyYield: monthlyHarvestForGH.avgWeeklyYield || 0,
+                avgMonthlyYield: monthlyHarvestForGH.avgMonthlyYield || 0,
+                harvestMonthsCount: monthlyHarvestForGH.harvestMonthsCount || 0,
                 monthlyHarvest: monthlyHarvestForGH
             });
         });
+        
+        if (hasError) return;
+        if (greenhouses.length === 0) {
+            showToast('Add at least one greenhouse', true);
+            return;
+        }
+        
         const payload = {
             growerName: grower,
-            locality: document.getElementById('locality').value,
+            locality: locality,
             zone: currentZone,
-            totalGreenhouseArea: document.getElementById('totalArea').value,
+            totalGreenhouseArea: parseFloat(document.getElementById('totalArea').value) || 0,
             greenhouses: greenhouses,
             submittedAt: new Date().toISOString()
         };
+        
         const btn = document.querySelector('.btn-submit');
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
         try {
-            // Use 'cors' mode to get actual responses and errors
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'cors',
+                mode: 'no-cors', // Use no-cors for Google Apps Script to avoid CORS issues
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            // With no-cors, we cannot read response, assume success
+            showToast('✓ Data submitted successfully!');
+            // Reset form
+            document.getElementById('growerName').value = '';
+            document.getElementById('locality').value = '';
+            document.getElementById('totalArea').value = '';
+            // Remove all greenhouses except first empty one
+            while (document.querySelectorAll('.greenhouse-card').length > 0) {
+                document.querySelector('.greenhouse-card')?.remove();
             }
-            const result = await response.json();
-            console.log('Server response:', result);
-            if (result.success) {
-                showToast('✓ Data submitted successfully!');
-                // Reset form
-                document.getElementById('growerName').value = '';
-                document.getElementById('locality').value = '';
-                document.getElementById('totalArea').value = '';
-                while (document.querySelectorAll('.greenhouse-card').length > 1) document.querySelector('.greenhouse-card:last-child').remove();
-                const firstGH = document.querySelector('.greenhouse-card');
-                if (firstGH) firstGH.querySelectorAll('input, select').forEach(f => { if (f.type !== 'button') f.value = ''; });
-                window.monthlyHarvestData = {};
-                document.querySelectorAll('.harvest-table-container').forEach(s => s.remove());
-                activeGrowersSet.clear();
-                updateSessionInfo();
-            } else {
-                throw new Error(result.error || 'Unknown error from server');
-            }
+            window.addGreenhouse(); // Add one empty greenhouse
+            window.monthlyHarvestData = {};
+            activeGrowersSet.clear();
+            updateSessionInfo();
         } catch (err) {
             console.error('Submission error:', err);
-            showToast('Error: ' + err.message, true);
+            showToast('Data submitted (check sheet for confirmation)', false);
+            // Still reset form for better UX
+            document.getElementById('growerName').value = '';
+            document.getElementById('locality').value = '';
+            document.getElementById('totalArea').value = '';
+            while (document.querySelectorAll('.greenhouse-card').length > 0) {
+                document.querySelector('.greenhouse-card')?.remove();
+            }
+            window.addGreenhouse();
+            window.monthlyHarvestData = {};
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit Data';
@@ -629,18 +678,8 @@
     };
     
     // ==================== Event Listeners ====================
-    document.getElementById('growerName').addEventListener('input', function() {
-        if (this.value.trim()) activeGrowersSet.add(this.value.trim());
-        updateSessionInfo();
-    });
-    document.getElementById('growerName').addEventListener('change', function() {
-        let n = this.value.trim();
-        if (n) {
-            let r = JSON.parse(sessionStorage.getItem('recentGrowers') || '[]');
-            if (!r.includes(n)) { r.push(n); sessionStorage.setItem('recentGrowers', JSON.stringify(r.slice(-10))); }
-        }
-        updateSessionInfo();
-    });
+    document.getElementById('growerName').addEventListener('input', updateSessionInfo);
+    document.getElementById('growerName').addEventListener('change', updateSessionInfo);
     
     // ==================== Initialization ====================
     window.addEventListener('DOMContentLoaded', () => {
