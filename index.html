@@ -7,13 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* --- Same styles as before (kept unchanged for brevity) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #388e3c 100%);
-            min-height: 100vh;
-            padding: 16px;
-        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #388e3c 100%); min-height: 100vh; padding: 16px; }
         .container { max-width: 1200px; margin: 0 auto; }
         .modern-header {
             background: white;
@@ -77,7 +73,6 @@
         .veg-icons span { font-size: 13px; font-weight: 600; color: #1b5e20; margin-left: 6px; }
         .veg-icon-item { display: inline-flex; align-items: center; gap: 6px; }
 
-        /* Zone buttons – centred & responsive */
         .zone-buttons {
             display: flex;
             justify-content: center;
@@ -214,7 +209,6 @@
         }
         .btn-submit:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-2px); }
 
-        /* Monthly harvest table – 3 months per row */
         .harvest-table-container {
             background: #e8f5e9;
             border-radius: 20px;
@@ -354,7 +348,7 @@
 <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage"></span></div>
 
 <script>
-    // ==================== LOCALITIES FROM EXCEL (Zone E1-E4) ====================
+    // ==================== LOCALITIES ====================
     const zoneE1Localities = ["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"];
     const zoneE2Localities = ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"];
     const zoneE3Localities = ["Argy","Beau Bois","Beau Rivage","Belle Mare","Belle Vue Allendy","Bois d'Oiseaux","Bramsthan","Bras d'Eau","Camp Garreau","Camp Ithier","Camp Marcelin","Camp Poorun","Camp Raffia","Camp Ranoo","Centre de Flacq","Constance","Grande Retraite","Hermitage","Isidore Rose","Kashinath","La Porte Providence","Laventure","Mare Choisy","Mare du Puits","Mare la Chaux","Mare Providence","Mare Tapsy","Morc Constance","Nehru Nagar","Palmar","Petite Retraite","Plaine de Gersigny","Pont Blanc","Poste de Flacq","Quatre Cocos","Riche Mare","Sept Croisées","St Rémy","Trou d'Eau Douce","Victoria"];
@@ -371,8 +365,8 @@
     let greenhouseCounter = 1;
     let activeGrowersSet = new Set();
     window.monthlyHarvestData = {};
-    const SCRIPT_URL = '
-https://script.google.com/macros/s/AKfycbx9lxIqhIg-c3vf7iks8AFx7u6SXPwRkCjUlpgOc4_zESGlPn6tGNDoFDfmpKzNd5lRdg/exec';  // <-- REPLACE WITH YOUR ACTUAL URL
+    // Replace with your actual Google Apps Script URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwWJtF-KQrkl0pgGIza7TRAdxsljAmqGGpoqJfZtO3QqnkZrEwiF9oD-boGG0z0Vw/exec';
     
     // ==================== Helper Functions ====================
     function updateLocalitiesByZone(zone) {
@@ -400,16 +394,7 @@ https://script.google.com/macros/s/AKfycbx9lxIqhIg-c3vf7iks8AFx7u6SXPwRkCjUlpgOc
         setTimeout(()=>toast.classList.remove('show'),3000);
     }
     function getDisplayUnit(crop) { return unitBasedCrops.includes(crop) ? "units" : "kg"; }
-    function getConversionNote(crop) {
-        const notes = {
-            "English Cucumber": "1 unit ≈ 350‑500 g (approx. 2‑3 units per kg)",
-            "Cabbage": "1 unit ≈ 1000 g (1 kg) → 1 unit per kg",
-            "Cauliflower": "1 unit ≈ 500‑750 g (approx. 1.5‑2 units per kg)",
-            "Lettuce": "1 unit ≈ 400‑600 g (approx. 2‑2.5 units per kg)",
-            "Melon": "1 unit ≈ 1000‑1500 g (approx. 0.7‑1 unit per kg)"
-        };
-        return notes[crop] || "Yield measured in kilograms (kg)";
-    }
+    function getConversionNote(crop) { /* not used in submit but kept for consistency */ return ""; }
     
     function updateSessionInfo() {
         const growerName = document.getElementById('growerName').value.trim();
@@ -419,7 +404,7 @@ https://script.google.com/macros/s/AKfycbx9lxIqhIg-c3vf7iks8AFx7u6SXPwRkCjUlpgOc
         showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements");
     }
     
-    // ==================== Monthly Harvest Table (3 months per row) ====================
+    // ==================== Monthly Harvest Table ====================
     function generateMonthlyHarvestTableHTML(greenhouseId, cropType, existingData = null) {
         const displayUnit = getDisplayUnit(cropType);
         const rowGroups = [
@@ -557,7 +542,7 @@ https://script.google.com/macros/s/AKfycbx9lxIqhIg-c3vf7iks8AFx7u6SXPwRkCjUlpgOc
         showToast('Greenhouse duplicated');
     };
     
-    // ==================== Submit Data ====================
+    // ==================== Submit Data (with CORS and error handling) ====================
     window.submitData = async function() {
         const grower = document.getElementById('growerName').value.trim();
         if (!grower) { showToast('Enter grower name', true); return; }
@@ -606,19 +591,36 @@ https://script.google.com/macros/s/AKfycbx9lxIqhIg-c3vf7iks8AFx7u6SXPwRkCjUlpgOc
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
         try {
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            showToast('✓ Data submitted successfully!');
-            document.getElementById('growerName').value = '';
-            document.getElementById('locality').value = '';
-            document.getElementById('totalArea').value = '';
-            while (document.querySelectorAll('.greenhouse-card').length > 1) document.querySelector('.greenhouse-card:last-child').remove();
-            const firstGH = document.querySelector('.greenhouse-card');
-            if (firstGH) firstGH.querySelectorAll('input, select').forEach(f => { if (f.type !== 'button') f.value = ''; });
-            window.monthlyHarvestData = {};
-            document.querySelectorAll('.harvest-table-container').forEach(s => s.remove());
-            activeGrowersSet.clear();
-            updateSessionInfo();
+            // Use 'cors' mode to get actual responses and errors
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const result = await response.json();
+            console.log('Server response:', result);
+            if (result.success) {
+                showToast('✓ Data submitted successfully!');
+                // Reset form
+                document.getElementById('growerName').value = '';
+                document.getElementById('locality').value = '';
+                document.getElementById('totalArea').value = '';
+                while (document.querySelectorAll('.greenhouse-card').length > 1) document.querySelector('.greenhouse-card:last-child').remove();
+                const firstGH = document.querySelector('.greenhouse-card');
+                if (firstGH) firstGH.querySelectorAll('input, select').forEach(f => { if (f.type !== 'button') f.value = ''; });
+                window.monthlyHarvestData = {};
+                document.querySelectorAll('.harvest-table-container').forEach(s => s.remove());
+                activeGrowersSet.clear();
+                updateSessionInfo();
+            } else {
+                throw new Error(result.error || 'Unknown error from server');
+            }
         } catch (err) {
+            console.error('Submission error:', err);
             showToast('Error: ' + err.message, true);
         } finally {
             btn.disabled = false;
