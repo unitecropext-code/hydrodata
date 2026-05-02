@@ -84,16 +84,14 @@
             font-weight: 600;
             color: #1b5e20;
         }
-        .veg-icon-item span {
-            font-size: 14px;
-        }
+        .veg-icon-item span { font-size: 14px; }
         @media (max-width: 550px) {
             .veg-icons { gap: 16px; padding: 6px 16px; }
             .veg-icon-item { font-size: 14px; }
             .veg-icon-item span { font-size: 12px; }
         }
 
-        /* Crop Overview Cards (live area & yield from grower data) */
+        /* Crop Overview Cards (live area & yield from grower data) - always visible */
         .crop-overview {
             background: white;
             border-radius: 24px;
@@ -131,22 +129,10 @@
             align-items: center;
             gap: 8px;
         }
-        .crop-area {
-            font-size: 28px;
-            font-weight: 800;
-            color: #1b5e20;
-        }
-        .crop-yield {
-            font-size: 14px;
-            color: #2c3e50;
-            margin-top: 6px;
-        }
+        .crop-area { font-size: 28px; font-weight: 800; color: #1b5e20; }
+        .crop-yield { font-size: 14px; color: #2c3e50; margin-top: 6px; }
         .crop-unit { font-size: 12px; color: #5c6bc0; }
-        .crop-note {
-            font-size: 11px;
-            color: #f57c00;
-            margin-top: 4px;
-        }
+        .crop-note { font-size: 11px; color: #f57c00; margin-top: 4px; }
         .bar-container {
             background: #e0e0e0;
             border-radius: 12px;
@@ -296,7 +282,7 @@
         }
         .btn-submit:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-2px); }
 
-        /* Monthly harvest table – 3 months per row (already implemented) */
+        /* Monthly harvest table – 3 months per row */
         .harvest-table-container {
             background: #e8f5e9;
             border-radius: 20px;
@@ -316,20 +302,8 @@
             padding: 10px 6px;
             text-align: center;
         }
-        .monthly-harvest-table th {
-            background: #2e7d32;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .monthly-harvest-table input {
-            width: 90px;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #c8e6c9;
-            border-radius: 8px;
-            background: #fff;
-        }
+        .monthly-harvest-table th { background: #2e7d32; color: white; font-size: 13px; font-weight: 600; }
+        .monthly-harvest-table input { width: 90px; padding: 8px; text-align: center; border: 1px solid #c8e6c9; border-radius: 8px; background: #fff; }
         .avg-yield-section {
             background: #f1f8e9;
             border-radius: 16px;
@@ -403,7 +377,7 @@
         </div>
     </div>
 
-    <!-- === LIVE CROP OVERVIEW (using grower-reported yields) === -->
+    <!-- === LIVE CROP OVERVIEW (always visible, robust to errors) === -->
     <div class="crop-overview">
         <div class="overview-title"><i class="fas fa-chart-line"></i> Live Crop Overview</div>
         <div class="crop-cards" id="cropOverviewContainer">
@@ -538,85 +512,98 @@
         showToast("Beta Version 2.0 – Improved monthly harvest tracking & UI enhancements");
     }
     
-    // ==================== Live Crop Overview (using grower-reported yields) ====================
+    // ==================== Robust Crop Overview (always updates, no hidden errors) ====================
     function updateCropOverview() {
-        const cards = document.querySelectorAll('.greenhouse-card');
-        // Initialize stats for target crops
-        const cropStats = {
-            "Tomato": { totalArea: 0, sumYieldKg: 0, countReported: 0 },
-            "Sweet Pepper": { totalArea: 0, sumYieldKg: 0, countReported: 0 },
-            "English Cucumber": { totalArea: 0, sumYieldUnits: 0, countReported: 0 }
+        // Make sure all required DOM elements exist
+        const elements = {
+            tomatoArea: document.getElementById('tomatoAreaValue'),
+            tomatoYield: document.getElementById('tomatoYield'),
+            tomatoAvgYield: document.getElementById('tomatoAvgYield'),
+            tomatoNote: document.getElementById('tomatoNote'),
+            tomatoBar: document.getElementById('tomatoBar'),
+            pepperArea: document.getElementById('pepperAreaValue'),
+            pepperYield: document.getElementById('pepperYield'),
+            pepperAvgYield: document.getElementById('pepperAvgYield'),
+            pepperNote: document.getElementById('pepperNote'),
+            pepperBar: document.getElementById('pepperBar'),
+            cucumberArea: document.getElementById('cucumberAreaValue'),
+            cucumberYield: document.getElementById('cucumberYield'),
+            cucumberAvgYield: document.getElementById('cucumberAvgYield'),
+            cucumberNote: document.getElementById('cucumberNote'),
+            cucumberBar: document.getElementById('cucumberBar'),
+            totalAreaInput: document.getElementById('totalArea')
         };
+        // If any essential element is missing, exit gracefully
+        if (!elements.tomatoArea) return;
+        
+        const cards = document.querySelectorAll('.greenhouse-card');
+        let tomatoArea = 0, pepperArea = 0, cucumberArea = 0;
+        let tomatoYieldKg = 0, pepperYieldKg = 0, cucumberYieldUnits = 0;
+        let tomatoCount = 0, pepperCount = 0, cucumberCount = 0;
         
         cards.forEach(card => {
             const crop = card.querySelector('.gh-crop')?.value;
             const area = parseFloat(card.querySelector('.gh-area')?.value) || 0;
             if (!crop || area === 0) return;
             
-            // For tomato, sweet pepper, cucumber
-            if (crop === "Tomato" || crop === "Sweet Pepper") {
-                cropStats[crop].totalArea += area;
-                // Get avg weekly yield from the harvest section (if any)
-                const weeklyYieldInput = card.querySelector('.avg-weekly-yield');
-                if (weeklyYieldInput && weeklyYieldInput.value && parseFloat(weeklyYieldInput.value) > 0) {
-                    const yieldVal = parseFloat(weeklyYieldInput.value);
-                    cropStats[crop].sumYieldKg += yieldVal;
-                    cropStats[crop].countReported++;
+            if (crop === "Tomato") {
+                tomatoArea += area;
+                const weeklyYield = card.querySelector('.avg-weekly-yield');
+                if (weeklyYield && weeklyYield.value && parseFloat(weeklyYield.value) > 0) {
+                    tomatoYieldKg += parseFloat(weeklyYield.value);
+                    tomatoCount++;
+                }
+            } else if (crop === "Sweet Pepper") {
+                pepperArea += area;
+                const weeklyYield = card.querySelector('.avg-weekly-yield');
+                if (weeklyYield && weeklyYield.value && parseFloat(weeklyYield.value) > 0) {
+                    pepperYieldKg += parseFloat(weeklyYield.value);
+                    pepperCount++;
                 }
             } else if (crop === "English Cucumber") {
-                cropStats["English Cucumber"].totalArea += area;
-                const weeklyYieldInput = card.querySelector('.avg-weekly-yield');
-                if (weeklyYieldInput && weeklyYieldInput.value && parseFloat(weeklyYieldInput.value) > 0) {
-                    let yieldVal = parseFloat(weeklyYieldInput.value);
-                    // For cucumber, the weekly yield is in kg, but we need to convert to units for display later
-                    cropStats["English Cucumber"].sumYieldUnits += yieldVal * 3; // convert kg to units (3 units/kg)
-                    cropStats["English Cucumber"].countReported++;
+                cucumberArea += area;
+                const weeklyYield = card.querySelector('.avg-weekly-yield');
+                if (weeklyYield && weeklyYield.value && parseFloat(weeklyYield.value) > 0) {
+                    // convert kg to units (3 units/kg)
+                    cucumberYieldUnits += parseFloat(weeklyYield.value) * 3;
+                    cucumberCount++;
                 }
             }
         });
         
-        // Tomato
-        const tomatoArea = cropStats.Tomato.totalArea;
-        const tomatoYieldKg = cropStats.Tomato.sumYieldKg;
-        const tomatoAvgYield = tomatoArea > 0 && cropStats.Tomato.countReported > 0 ? (tomatoYieldKg / tomatoArea).toFixed(1) : 0;
-        document.getElementById('tomatoAreaValue').innerHTML = `${tomatoArea.toFixed(1)} <span class="crop-unit">m²</span>`;
-        document.getElementById('tomatoYield').innerHTML = `${tomatoYieldKg.toFixed(1)} kg`;
-        document.getElementById('tomatoAvgYield').innerHTML = `${tomatoAvgYield} kg/m²`;
-        const tomatoNote = document.getElementById('tomatoNote');
-        if (cropStats.Tomato.countReported === 0 && tomatoArea > 0) tomatoNote.innerText = "⚠️ No yield data entered – add Avg Yield/Week in Harvest stage";
-        else tomatoNote.innerText = "";
+        // Update Tomato card
+        elements.tomatoArea.innerHTML = `${tomatoArea.toFixed(1)} <span class="crop-unit">m²</span>`;
+        elements.tomatoYield.innerHTML = `${tomatoYieldKg.toFixed(1)} kg`;
+        const tomatoAvg = (tomatoArea > 0 && tomatoCount > 0) ? (tomatoYieldKg / tomatoArea).toFixed(1) : '0.0';
+        elements.tomatoAvgYield.innerHTML = `${tomatoAvg} kg/m²`;
+        if (tomatoCount === 0 && tomatoArea > 0) elements.tomatoNote.innerText = "⚠️ No yield data – add Avg Yield/Week in Harvest stage";
+        else elements.tomatoNote.innerText = "";
         
         // Sweet Pepper
-        const pepperArea = cropStats["Sweet Pepper"].totalArea;
-        const pepperYieldKg = cropStats["Sweet Pepper"].sumYieldKg;
-        const pepperAvgYield = pepperArea > 0 && cropStats["Sweet Pepper"].countReported > 0 ? (pepperYieldKg / pepperArea).toFixed(1) : 0;
-        document.getElementById('pepperAreaValue').innerHTML = `${pepperArea.toFixed(1)} <span class="crop-unit">m²</span>`;
-        document.getElementById('pepperYield').innerHTML = `${pepperYieldKg.toFixed(1)} kg`;
-        document.getElementById('pepperAvgYield').innerHTML = `${pepperAvgYield} kg/m²`;
-        const pepperNote = document.getElementById('pepperNote');
-        if (cropStats["Sweet Pepper"].countReported === 0 && pepperArea > 0) pepperNote.innerText = "⚠️ No yield data entered – add Avg Yield/Week in Harvest stage";
-        else pepperNote.innerText = "";
+        elements.pepperArea.innerHTML = `${pepperArea.toFixed(1)} <span class="crop-unit">m²</span>`;
+        elements.pepperYield.innerHTML = `${pepperYieldKg.toFixed(1)} kg`;
+        const pepperAvg = (pepperArea > 0 && pepperCount > 0) ? (pepperYieldKg / pepperArea).toFixed(1) : '0.0';
+        elements.pepperAvgYield.innerHTML = `${pepperAvg} kg/m²`;
+        if (pepperCount === 0 && pepperArea > 0) elements.pepperNote.innerText = "⚠️ No yield data – add Avg Yield/Week in Harvest stage";
+        else elements.pepperNote.innerText = "";
         
-        // English Cucumber (yield in units)
-        const cucumberArea = cropStats["English Cucumber"].totalArea;
-        const cucumberYieldUnits = cropStats["English Cucumber"].sumYieldUnits;
-        const cucumberAvgYield = cucumberArea > 0 && cropStats["English Cucumber"].countReported > 0 ? (cucumberYieldUnits / cucumberArea).toFixed(1) : 0;
-        document.getElementById('cucumberAreaValue').innerHTML = `${cucumberArea.toFixed(1)} <span class="crop-unit">m²</span>`;
-        document.getElementById('cucumberYield').innerHTML = `${cucumberYieldUnits.toFixed(0)} units`;
-        document.getElementById('cucumberAvgYield').innerHTML = `${cucumberAvgYield} units/m²`;
-        const cucumberNote = document.getElementById('cucumberNote');
-        if (cropStats["English Cucumber"].countReported === 0 && cucumberArea > 0) cucumberNote.innerText = "⚠️ No yield data entered – add Avg Yield/Week in Harvest stage";
-        else cucumberNote.innerText = "";
+        // Cucumber
+        elements.cucumberArea.innerHTML = `${cucumberArea.toFixed(1)} <span class="crop-unit">m²</span>`;
+        elements.cucumberYield.innerHTML = `${cucumberYieldUnits.toFixed(0)} units`;
+        const cucumberAvg = (cucumberArea > 0 && cucumberCount > 0) ? (cucumberYieldUnits / cucumberArea).toFixed(1) : '0.0';
+        elements.cucumberAvgYield.innerHTML = `${cucumberAvg} units/m²`;
+        if (cucumberCount === 0 && cucumberArea > 0) elements.cucumberNote.innerText = "⚠️ No yield data – add Avg Yield/Week in Harvest stage";
+        else elements.cucumberNote.innerText = "";
         
-        // Bar chart based on total area of these three crops
+        // Bar chart max area
         const maxArea = Math.max(tomatoArea, pepperArea, cucumberArea, 1);
-        document.getElementById('tomatoBar').style.width = `${(tomatoArea / maxArea) * 100}%`;
-        document.getElementById('pepperBar').style.width = `${(pepperArea / maxArea) * 100}%`;
-        document.getElementById('cucumberBar').style.width = `${(cucumberArea / maxArea) * 100}%`;
+        elements.tomatoBar.style.width = `${(tomatoArea / maxArea) * 100}%`;
+        elements.pepperBar.style.width = `${(pepperArea / maxArea) * 100}%`;
+        elements.cucumberBar.style.width = `${(cucumberArea / maxArea) * 100}%`;
         
-        // Update total area field in grower info
-        const totalAllArea = cards.reduce((sum, card) => sum + (parseFloat(card.querySelector('.gh-area')?.value) || 0), 0);
-        document.getElementById('totalArea').value = totalAllArea.toFixed(2);
+        // Update total area input
+        const totalAllArea = Array.from(cards).reduce((sum, card) => sum + (parseFloat(card.querySelector('.gh-area')?.value) || 0), 0);
+        if (elements.totalAreaInput) elements.totalAreaInput.value = totalAllArea.toFixed(2);
     }
     
     // ==================== Monthly Harvest Table (3 months per row) ====================
