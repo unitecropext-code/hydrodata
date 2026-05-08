@@ -255,6 +255,20 @@
             font-weight: 500;
             background: #fffef7;
         }
+        .unit-toggle {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            justify-content: center;
+        }
+        .unit-toggle label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
         .insights-panel {
             background: linear-gradient(110deg, #eef7e9, #e2f0db);
             border-radius: 24px;
@@ -320,6 +334,16 @@
             color: #d9534f;
             margin-left: 4px;
         }
+        .realtime-tag {
+            display: inline-block;
+            background: #d9f0cd;
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1c5a1c;
+            margin-left: 12px;
+        }
         @media (max-width: 480px) {
             .glass-card { padding: 14px 16px; }
             .section-title { font-size: 1.1rem; margin-bottom: 14px; }
@@ -332,13 +356,20 @@
 </head>
 <body>
 <div class="container">
+    <!-- Header / Harvest Pro with Real Time Insights text -->
     <div class="glass-card">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
             <div style="display: flex; gap: 10px; align-items: center;">
                 <div style="background: #1f5a22; width: 44px; height: 44px; border-radius: 20px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-leaf" style="font-size: 24px; color: white;"></i></div>
-                <div><h1 style="font-size: 1.4rem; font-weight: 800; background: linear-gradient(130deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Hydroponic Data Tracker</h1><p style="font-size: 0.7rem;"><i class="fas fa-chart-simple"></i> GREEN EDITION | Harvest Pro| Real Time Insights </p></div>
+                <div>
+                    <h1 style="font-size: 1.4rem; font-weight: 800; background: linear-gradient(130deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Hydroponic Data Tracker</h1>
+                    <p style="font-size: 0.7rem; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                        <i class="fas fa-chart-simple"></i> GREEN EDITION | Harvest Pro
+                        <span class="realtime-tag"><i class="fas fa-chart-line"></i> Real Time Insights</span>
+                    </p>
+                </div>
             </div>
-            <span style="background: #d9f0cd; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem;"><i class="fas fa-microchip"></i> v3.0</span>
+            <span style="background: #d9f0cd; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem;"><i class="fas fa-microchip"></i> BETA VERSION 3.1</span>
         </div>
         <div style="margin-top: 12px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; background: #e2face; border-radius: 60px; padding: 6px 16px;">
             <span><i class="fas fa-tomato"></i> 🍅 Tomato</span> <span><i class="fas fa-pepper-hot"></i> 🌶️ Pepper</span> <span><i class="fas fa-leaf"></i> 🥒 Cucumber</span> <span><i class="fas fa-leaf"></i> 🥬 Lettuce</span>
@@ -388,6 +419,8 @@
 <script>
     // ---------- CONSTANTS ----------
     const cropIconMap = { "Tomato": "🍅", "Sweet Pepper": "🫑", "English Cucumber": "🥒", "Lettuce": "🥬", "Cabbage": "🥬", "Cauliflower": "🥦", "Melon": "🍈", "Shallot": "🧅", "Greens": "🌿", "Okra": "🌱", "Chillies": "🌶️", "Eggplant": "🍆" };
+    const weightBasedCrops = ["Tomato", "Sweet Pepper", "Melon", "Shallot", "Greens", "Okra", "Chillies", "Eggplant"];
+    const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce"];
     const localityMap = {
         E1: ["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"],
         E2: ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"],
@@ -395,7 +428,6 @@
         E4: ["Balance John","Beau Champ","Beau Vallon","Bel Air Rivière Sèche","Belle Rive","Belle Rose","Bois Marchand","Camp Beau Bois","Camp de Masque Pavé","Camp Jackerie","Caroline","Cent Gaulettes","Clavet","Clémencia","Deep River","Deux Frères","Ecroignard","Ernest Florent","Grand River South East","Ilot","Kewal Nagar","La Laura","La Lucie Roy","La Nourrice","Laventure","Lesur","L'Etoile","Mare aux Goyaves","Mare Carrée","Mare Triton","Marie Jeanne","Morc Roy","Morc Sohawon","Olivia","Pellegrin","Petit Bois","Petite Cabane","Plaine Bananes","Pointe aux Feuilles","Pont Lardier","Quatre Soeurs","Sebastopol","Trois Ilots"]
     };
     const cropOptionsList = ["Tomato","Sweet Pepper","English Cucumber","Lettuce","Cabbage","Cauliflower","Melon","Shallot","Greens","Okra","Chillies","Eggplant"];
-    const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce", "Melon"];
     const productionSystems = ["Cocopeat","Aggregates","Woodchips","NFT","DFT","Aquaponics"];
     const cropStages = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const tomatoTypes = ["Cooking","Salad","Cherry"];
@@ -443,98 +475,93 @@
         showToast(`Zone ${zone} activated · locality list updated`);
     }
 
-    function getYieldUnit(crop) { return unitBasedCrops.includes(crop) ? "units (crates)" : "kg"; }
-
-    // Helper: get current harvest details from active form (weekly + months count + monthly grid)
-    function getActiveHarvestDetails() {
-        const weeklyEl = document.getElementById('weeklyYieldCrates');
-        const monthsSinceEl = document.getElementById('harvestMonthsSinceStart');
-        const weekly = weeklyEl ? parseFloat(weeklyEl.value) : 0;
-        const monthsCount = monthsSinceEl ? parseFloat(monthsSinceEl.value) : 0;
-        let monthlyHarvest = {};
-        document.querySelectorAll('.month-harvest-input').forEach(inp => {
-            monthlyHarvest[inp.dataset.month] = parseFloat(inp.value) || 0;
-        });
-        return { weeklyYieldOrCrates: weekly, harvestMonthsCount: monthsCount, monthlyHarvest };
-    }
-
-    // NEW: Build harvest details section with mandatory first fields (weekly/crates + harvesting months) then monthly grid
-    function buildHarvestDetailsUI(container, cropType) {
+    function buildHarvestDetailsUI(container, cropType, existingWeeklyValue = 0, existingUnit = "kg", existingMonths = 0) {
         if (!cropType) return;
-        const unit = getYieldUnit(cropType);
-        const weeklyLabel = unit === "kg" ? "Average Yield/Week (kg)" : "Number of Crates Harvested per Week";
-        const existingSection = container.querySelector('#dynamicHarvestSection');
-        if (existingSection) existingSection.remove();
-        
+        const isWeightCrop = weightBasedCrops.includes(cropType);
+        const isUnitCrop = unitBasedCrops.includes(cropType);
+        let weeklyHtml = '';
+        if (isWeightCrop) {
+            weeklyHtml = `
+                <div class="harvest-detail-card">
+                    <label><i class="fas fa-chart-line"></i> Average Yield/Week <span class="required-star"></span></label>
+                    <input type="number" step="0.01" id="weeklyYieldValue" class="weekly-crate-input" placeholder="Enter value" value="${existingWeeklyValue}">
+                    <div class="unit-toggle" id="weeklyUnitToggle">
+                        <label><input type="radio" name="weeklyUnit" value="kg" ${existingUnit === 'kg' ? 'checked' : ''}> kg/week</label>
+                        <label><input type="radio" name="weeklyUnit" value="crates" ${existingUnit === 'crates' ? 'checked' : ''}> crates/week</label>
+                    </div>
+                </div>
+            `;
+        } else if (isUnitCrop) {
+            weeklyHtml = `
+                <div class="harvest-detail-card">
+                    <label><i class="fas fa-chart-line"></i> Average Yield/Week (units/week) <span class="required-star"></span></label>
+                    <input type="number" step="0.01" id="weeklyYieldValue" class="weekly-crate-input" placeholder="units per week" value="${existingWeeklyValue}">
+                </div>
+            `;
+        } else {
+            weeklyHtml = `
+                <div class="harvest-detail-card">
+                    <label><i class="fas fa-chart-line"></i> Average Yield/Week (kg/week) <span class="required-star"></span></label>
+                    <input type="number" step="0.01" id="weeklyYieldValue" class="weekly-crate-input" placeholder="kg/week" value="${existingWeeklyValue}">
+                </div>
+            `;
+        }
         const harvestHtml = `
             <div id="dynamicHarvestSection" class="harvest-section">
                 <div class="harvest-title"><i class="fas fa-clipboard-list"></i> 📋 Harvest Details Section</div>
                 <div class="harvest-details-row">
-                    <div class="harvest-detail-card">
-                        <label><i class="fas fa-chart-line"></i> ${weeklyLabel} <span class="required-star"></span></label>
-                        <input type="number" step="0.01" id="weeklyYieldCrates" class="weekly-crate-input" placeholder="Enter ${unit === 'kg' ? 'kg/week' : 'crates/week'}" value="">
-                    </div>
+                    ${weeklyHtml}
                     <div class="harvest-detail-card">
                         <label><i class="fas fa-calendar-week"></i> Harvesting Months (Since Harvest started till date) <span class="required-star"></span></label>
-                        <input type="number" step="1" min="1" id="harvestMonthsSinceStart" class="harvest-months-since" placeholder="e.g., 3 months" value="">
+                        <input type="number" step="1" min="1" id="harvestMonthsSinceStart" class="harvest-months-since" placeholder="e.g., 3 months" value="${existingMonths}">
                     </div>
                 </div>
-                <div class="harvest-title" style="margin-top: 8px;"><i class="fas fa-calendar-alt"></i> 📅 Monthly Harvest (${unit})</div>
+                <div class="harvest-title" style="margin-top: 8px;"><i class="fas fa-calendar-alt"></i> 📅 Monthly Harvest (units or kg)</div>
                 <div class="month-grid" id="monthGridContainer"></div>
             </div>
         `;
+        const existingSec = container.querySelector('#dynamicHarvestSection');
+        if (existingSec) existingSec.remove();
         container.insertAdjacentHTML('beforeend', harvestHtml);
         const monthGridContainer = container.querySelector('#monthGridContainer');
         let monthsHtml = '';
+        const unitForMonthly = (isWeightCrop ? (existingUnit === 'crates' ? 'crates' : 'kg') : (isUnitCrop ? 'units' : 'kg'));
         monthsList.forEach(month => {
             monthsHtml += `<div class="month-card">
                 <span class="month-name">${month.substring(0,3)}</span>
-                <input type="number" class="month-harvest-input" data-month="${month}" value="" step="${unit === 'kg' ? 0.01 : 1}" placeholder="${unit}">
+                <input type="number" class="month-harvest-input" data-month="${month}" value="" step="0.01" placeholder="${unitForMonthly}">
             </div>`;
         });
         monthGridContainer.innerHTML = monthsHtml;
-    }
-    
-    // Update label & steps when crop changes (while harvesting stage active)
-    function updateHarvestUIBasedOnCrop(container, cropType) {
-        const section = container.querySelector('#dynamicHarvestSection');
-        if (!section) return;
-        const unit = getYieldUnit(cropType);
-        const weeklyLabel = unit === "kg" ? "Average Yield/Week (kg)" : "Number of Crates Harvested per Week";
-        const labelContainer = section.querySelector('.harvest-detail-card:first-child label');
-        if (labelContainer) {
-            labelContainer.innerHTML = `<i class="fas fa-chart-line"></i> ${weeklyLabel} <span class="required-star"></span>`;
-        }
-        const weeklyInput = document.getElementById('weeklyYieldCrates');
-        if (weeklyInput) weeklyInput.placeholder = unit === 'kg' ? 'kg/week' : 'crates/week';
-        // update month grid step & placeholder
-        const monthInputs = section.querySelectorAll('.month-harvest-input');
-        monthInputs.forEach(inp => {
-            inp.step = unit === 'kg' ? 0.01 : 1;
-            inp.placeholder = unit;
-        });
-        const monthlyTitle = section.querySelector('.harvest-title:last-of-type');
-        if (monthlyTitle) monthlyTitle.innerHTML = `<i class="fas fa-calendar-alt"></i> 📅 Monthly Harvest (${unit})`;
+        attachListenersToForm();
     }
 
-    // generate crop select etc
-    function getCropSelectHTML(selectedVal) {
-        let opts = '<option value="">Select Crop</option>';
-        cropOptionsList.forEach(crop => {
-            const icon = cropIconMap[crop] || "🌿";
-            opts += `<option value="${crop}" ${selectedVal === crop ? 'selected' : ''}>${icon} ${crop}</option>`;
+    function updateHarvestUIBasedOnCrop(container, cropType) {
+        if (!cropType) return;
+        const existingWeeklyInput = document.getElementById('weeklyYieldValue');
+        const existingMonthsInput = document.getElementById('harvestMonthsSinceStart');
+        const existingWeeklyVal = existingWeeklyInput ? parseFloat(existingWeeklyInput.value) || 0 : 0;
+        let existingUnit = "kg";
+        if (weightBasedCrops.includes(cropType)) {
+            const selectedRadio = document.querySelector('input[name="weeklyUnit"]:checked');
+            existingUnit = selectedRadio ? selectedRadio.value : "kg";
+        }
+        const existingMonths = existingMonthsInput ? parseFloat(existingMonthsInput.value) || 0 : 0;
+        buildHarvestDetailsUI(container, cropType, existingWeeklyVal, existingUnit, existingMonths);
+    }
+
+    function getActiveHarvestDetails() {
+        const weeklyValEl = document.getElementById('weeklyYieldValue');
+        const weeklyVal = weeklyValEl ? parseFloat(weeklyValEl.value) || 0 : 0;
+        let weeklyUnit = "kg";
+        const unitRadio = document.querySelector('input[name="weeklyUnit"]:checked');
+        if (unitRadio) weeklyUnit = unitRadio.value;
+        const monthsCount = document.getElementById('harvestMonthsSinceStart') ? parseFloat(document.getElementById('harvestMonthsSinceStart').value) || 0 : 0;
+        let monthlyHarvest = {};
+        document.querySelectorAll('.month-harvest-input').forEach(inp => {
+            monthlyHarvest[inp.dataset.month] = parseFloat(inp.value) || 0;
         });
-        return opts;
-    }
-    function getProductionSystemHTML(selectedVal) {
-        let opts = '<option value="">Select Production System</option>';
-        productionSystems.forEach(ps => { opts += `<option value="${ps}" ${selectedVal === ps ? 'selected' : ''}>${ps}</option>`; });
-        return opts;
-    }
-    function getCropStageHTML(selectedVal) {
-        let opts = '<option value="">Select Stage</option>';
-        cropStages.forEach(stage => { opts += `<option value="${stage}" ${selectedVal === stage ? 'selected' : ''}>${stage}</option>`; });
-        return opts;
+        return { weeklyYieldOrCrates: weeklyVal, weeklyUnit, harvestMonthsCount: monthsCount, monthlyHarvest };
     }
 
     function collectActiveFormData() {
@@ -545,16 +572,16 @@
         const transplant = document.getElementById('gh_transplant')?.value || '';
         const prodSystem = document.getElementById('gh_prod_system')?.value || '';
         const tomatoType = document.getElementById('gh_tomato_type')?.value || '';
-        let harvestDetails = { weeklyYieldOrCrates: 0, harvestMonthsCount: 0, monthlyHarvest: {} };
+        let harvestDetails = { weeklyYieldOrCrates: 0, weeklyUnit: "kg", harvestMonthsCount: 0, monthlyHarvest: {} };
         if (stage === 'Harvesting') harvestDetails = getActiveHarvestDetails();
-        return { area, crop, variety, stage, transplantDate: transplant, prodSystem, tomatoType, weeklyYieldOrCrates: harvestDetails.weeklyYieldOrCrates, harvestMonthsCount: harvestDetails.harvestMonthsCount, monthlyHarvest: harvestDetails.monthlyHarvest };
+        return { area, crop, variety, stage, transplantDate: transplant, prodSystem, tomatoType, weeklyYieldOrCrates: harvestDetails.weeklyYieldOrCrates, weeklyUnit: harvestDetails.weeklyUnit, harvestMonthsCount: harvestDetails.harvestMonthsCount, monthlyHarvest: harvestDetails.monthlyHarvest };
     }
 
     function validateHarvestMandatory(ghData, stage, cropName) {
         if (stage === 'Harvesting') {
             const weeklyVal = ghData.weeklyYieldOrCrates;
             const monthsVal = ghData.harvestMonthsCount;
-            if (!weeklyVal || weeklyVal <= 0) { showToast(`❌ Harvest details required: Weekly Yield/Crates for ${cropName || 'crop'}`, true); return false; }
+            if (!weeklyVal || weeklyVal <= 0) { showToast(`❌ Harvest details required: Weekly yield for ${cropName || 'crop'}`, true); return false; }
             if (!monthsVal || monthsVal <= 0) { showToast(`❌ Harvest details required: Harvesting Months count for ${cropName || 'crop'}`, true); return false; }
         }
         return true;
@@ -584,7 +611,7 @@
             const stage = stageSelect?.value;
             if (stage === 'Harvesting' && crop) {
                 if (!activeContainer.querySelector('#dynamicHarvestSection')) {
-                    buildHarvestDetailsUI(activeContainer, crop);
+                    buildHarvestDetailsUI(activeContainer, crop, 0, "kg", 0);
                 } else {
                     updateHarvestUIBasedOnCrop(activeContainer, crop);
                 }
@@ -596,23 +623,37 @@
         if (cropSelect) {
             cropSelect.addEventListener('change', () => {
                 tomatoDiv.style.display = cropSelect.value === 'Tomato' ? 'block' : 'none';
-                if (stageSelect?.value === 'Harvesting' && cropSelect.value) {
-                    if (activeContainer.querySelector('#dynamicHarvestSection')) updateHarvestUIBasedOnCrop(activeContainer, cropSelect.value);
-                    else buildHarvestDetailsUI(activeContainer, cropSelect.value);
-                }
+                updateHarvestUIPresence();
             });
         }
         if (stageSelect) {
-            stageSelect.addEventListener('change', () => {
-                const crop = cropSelect?.value;
-                if (stageSelect.value === 'Harvesting' && crop) {
-                    if (!activeContainer.querySelector('#dynamicHarvestSection')) buildHarvestDetailsUI(activeContainer, crop);
-                    else updateHarvestUIBasedOnCrop(activeContainer, crop);
-                } else {
-                    activeContainer.querySelector('#dynamicHarvestSection')?.remove();
-                }
-            });
+            stageSelect.addEventListener('change', updateHarvestUIPresence);
         }
+        attachListenersToForm();
+    }
+
+    function getCropSelectHTML(selectedVal) {
+        let opts = '<option value="">Select Crop</option>';
+        cropOptionsList.forEach(crop => {
+            const icon = cropIconMap[crop] || "🌿";
+            opts += `<option value="${crop}" ${selectedVal === crop ? 'selected' : ''}>${icon} ${crop}</option>`;
+        });
+        return opts;
+    }
+    function getProductionSystemHTML(selectedVal) {
+        let opts = '<option value="">Select Production System</option>';
+        productionSystems.forEach(ps => { opts += `<option value="${ps}" ${selectedVal === ps ? 'selected' : ''}>${ps}</option>`; });
+        return opts;
+    }
+    function getCropStageHTML(selectedVal) {
+        let opts = '<option value="">Select Stage</option>';
+        cropStages.forEach(stage => { opts += `<option value="${stage}" ${selectedVal === stage ? 'selected' : ''}>${stage}</option>`; });
+        return opts;
+    }
+
+    function attachListenersToForm() {
+        const areaField = document.getElementById('gh_area');
+        if (areaField) areaField.addEventListener('input', () => {});
     }
 
     function saveCurrentAndReset() {
@@ -621,7 +662,6 @@
         if (!currentData.area || parseFloat(currentData.area) <= 0) { showToast("Enter valid area (m²)", true); return; }
         if (!currentData.stage) { showToast("Select crop stage", true); return; }
         if (!validateHarvestMandatory(currentData, currentData.stage, currentData.crop)) return;
-        
         savedGreenhouses.push({ ...currentData, savedId: Date.now() + Math.random() });
         updateSavedListDisplay();
         currentGreenhouseIndex++;
@@ -630,11 +670,15 @@
     }
 
     function updateSavedListDisplay() {
-        if (savedGreenhouses.length === 0) { savedListDiv.innerHTML = '<div style="padding: 8px; color: #5a6e5a; font-size:0.8rem;">No greenhouses saved yet. Fill form above and click "Add Greenhouse".</div>'; return; }
+        if (savedGreenhouses.length === 0) { savedListDiv.innerHTML = '<div style="padding: 8px; color: #5a6e5a; font-size:0.8rem;">No greenhouses saved yet. Fill the form above and click "Add Greenhouse".</div>'; return; }
         let html = '<div style="font-weight:600; margin-bottom: 8px;"><i class="fas fa-list"></i> Saved Greenhouses</div>';
         savedGreenhouses.forEach((gh, idx) => {
-            const harvestInfo = gh.stage === 'Harvesting' ? ` | Weekly: ${gh.weeklyYieldOrCrates} | Months: ${gh.harvestMonthsCount}` : '';
-            html += `<div class="saved-item"><span><strong>#${idx+1}</strong> ${gh.crop} | ${gh.area} m² | ${gh.stage}${harvestInfo}</span>
+            let weeklyDisplay = '';
+            if (gh.stage === 'Harvesting') {
+                const unitLabel = gh.weeklyUnit ? (gh.weeklyUnit === 'crates' ? 'crates' : 'kg') : 'kg';
+                weeklyDisplay = ` | Weekly: ${gh.weeklyYieldOrCrates} ${unitLabel}/week | Months: ${gh.harvestMonthsCount}`;
+            }
+            html += `<div class="saved-item"><span><strong>#${idx+1}</strong> ${gh.crop} | ${gh.area} m² | ${gh.stage}${weeklyDisplay}</span>
                      <button class="smart-icon-btn danger" onclick="removeSavedGreenhouse(${idx})"><i class="fas fa-trash"></i> Remove</button></div>`;
         });
         savedListDiv.innerHTML = html;
@@ -660,7 +704,6 @@
             allGreenhouses.push(currentFormData);
         }
         if (allGreenhouses.length === 0) { showToast("No greenhouses to submit. Add at least one.", true); return; }
-        
         let rows = [];
         let idCounter = 1;
         for (let gh of allGreenhouses) {
@@ -668,11 +711,13 @@
             let tomatoExtra = '';
             if (gh.crop === 'Tomato' && gh.tomatoType) { tomatoExtra = gh.tomatoType; finalCrop = `Tomato ${tomatoExtra}`; }
             const monthlyVals = monthsList.map(m => gh.monthlyHarvest?.[m] || 0);
-            const unit = getYieldUnit(gh.crop);
+            let unitForSubmission = "kg";
+            if (unitBasedCrops.includes(gh.crop)) unitForSubmission = "units";
+            else if (weightBasedCrops.includes(gh.crop) && gh.weeklyUnit) unitForSubmission = gh.weeklyUnit === 'crates' ? 'crates' : 'kg';
             rows.push([
                 grower, locality, currentZone, totalAreaGlobal, idCounter++, finalCrop, gh.variety || '', gh.stage,
-                parseFloat(gh.area) || 0, gh.transplantDate || '', gh.weeklyYieldOrCrates || 0, 0, // avgMonthlyYield 0 placeholder
-                gh.harvestMonthsCount || 0, gh.prodSystem || '', tomatoExtra, ...monthlyVals, unit
+                parseFloat(gh.area) || 0, gh.transplantDate || '', gh.weeklyYieldOrCrates || 0, unitForSubmission,
+                gh.harvestMonthsCount || 0, gh.prodSystem || '', tomatoExtra, ...monthlyVals
             ]);
         }
         let totalAreaSum = rows.reduce((sum, r) => sum + (parseFloat(r[8]) || 0), 0);
@@ -685,10 +730,10 @@
             }
         }
         let cropVarietyList = rows.map(r => `${cropIconMap[r[5].split(' ')[0]]||'🌿'} ${r[5]} (${r[6] || 'no variety'})`).join(' · ');
-        insightContent.innerHTML = `<div style="font-weight:800;"><i class="fas fa-chart-line"></i> 🌿 Real-Time Insights</div>
+        insightContent.innerHTML = `<div style="font-weight:800;"><i class="fas fa-chart-line"></i> 🌿 Submission Summary</div>
             <div class="insight-line"><i class="fas fa-seedling"></i> ${rows.length} Greenhouses</div>
             <div class="insight-line"><i class="fas fa-arrows-alt"></i> ${totalAreaSum.toFixed(1)} m² total</div>
-            <div class="insight-line"><i class="fas fa-weight-hanging"></i> ${totalYieldSum.toFixed(1)} estimated annual yield (kg/units)</div>
+            <div class="insight-line"><i class="fas fa-weight-hanging"></i> ${totalYieldSum.toFixed(1)} estimated annual yield</div>
             <div class="insight-line"><i class="fas fa-list-ul"></i> Crops: ${cropVarietyList}</div>`;
         insightsContainer.style.display = 'block';
         const submitBtnElem = document.getElementById('finalSubmitDataBtn');
