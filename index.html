@@ -3,153 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hydroponic Data Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Hydroponic Tracker</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #1b4d1f, #0e3a12); padding: 20px; }
-    .card { background: rgba(255,255,255,0.95); border-radius: 28px; padding: 24px; max-width: 500px; margin: 60px auto; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
-    .input-field { margin-bottom: 16px; }
-    .input-field label { font-weight: 600; font-size: 0.8rem; color: #235b1e; display: block; margin-bottom: 5px; }
-    .input-field input { width: 100%; padding: 12px; border-radius: 30px; border: 2px solid #deecce; font-size: 0.9rem; }
-    button { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; font-weight: bold; padding: 12px; border-radius: 50px; width: 100%; cursor: pointer; font-size: 1rem; }
-    .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1f3120; color: white; padding: 12px; border-radius: 50px; text-align: center; transform: translateY(100px); transition: 0.25s; z-index: 999; }
-    .toast.show { transform: translateY(0); }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #1b4d1f; padding: 20px; }
+    .login-card, .app-card { max-width: 500px; margin: 60px auto; background: white; border-radius: 28px; padding: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+    input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 30px; border: 1px solid #ccc; font-size: 16px; }
+    button { background: #2e8b57; color: white; font-weight: bold; cursor: pointer; border: none; }
+    button:disabled { opacity: 0.6; }
+    .error { color: #c0392b; margin-top: 10px; text-align: center; }
     .hidden { display: none; }
-    .app-main { max-width: 1400px; margin: 0 auto; }
-    .glass-card { background: rgba(255,255,255,0.97); border-radius: 28px; padding: 18px 20px; margin-bottom: 20px; box-shadow: 0 15px 30px -8px rgba(0,0,0,0.2); }
-    .section-title { font-size: 1.25rem; font-weight: 700; color: #1c5a1c; border-left: 5px solid #2e8b57; padding-left: 14px; margin-bottom: 18px; }
-    .grid-2col { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
-    .zone-pill { background: #ecf7e6; border: none; padding: 10px 18px; border-radius: 50px; font-weight: 600; cursor: pointer; color: #1a551a; }
-    .zone-pill.active { background: linear-gradient(110deg, #236b2a, #198a2e); color: white; }
-    .btn-lg { background: linear-gradient(95deg, #1f682a, #156f1a); width: 100%; }
-    .btn-secondary { background: #e9ecef; color: #1f5a22; width: 100%; }
-    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    hr { margin: 20px 0; }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-<!-- LOGIN CARD -->
-<div id="loginCard" class="card">
-  <div style="text-align:center; margin-bottom:24px;">
-    <div style="background:#1f5a22; width:44px; height:44px; border-radius:20px; display:inline-flex; align-items:center; justify-content:center;"><i class="fas fa-leaf" style="font-size:24px; color:white;"></i></div>
-    <h2 style="color:#1c5a1c;">Hydroponic Tracker</h2>
-    <p>Sign in with your credentials</p>
+<div id="loginDiv" class="login-card">
+  <div style="text-align:center; margin-bottom:20px;">
+    <div style="background:#1f5a22; width:50px; height:50px; border-radius:25px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px;">
+      <span style="color:white; font-size:26px;">🌱</span>
+    </div>
+    <h2>Hydroponic Data Tracker</h2>
+    <p>Sign in to continue</p>
   </div>
-  <div class="input-field"><label>Username</label><input type="text" id="loginUsername" autocomplete="off"></div>
-  <div class="input-field"><label>Password</label><input type="password" id="loginPassword" autocomplete="off"></div>
+  <input type="text" id="username" placeholder="Username" autocomplete="off">
+  <input type="password" id="password" placeholder="Password" autocomplete="off">
   <button id="loginBtn">Login</button>
-  <div id="loginError" style="color:#c0392b; margin-top:12px; text-align:center;"></div>
+  <div id="loginError" class="error"></div>
 </div>
 
-<!-- MAIN APP (hidden until login) -->
-<div id="appContainer" class="hidden">
-  <div class="app-main">
-    <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center;">
-      <div><h1 style="font-size:1.4rem;">🌱 Hydroponic Data Tracker</h1><p>Welcome, <span id="displayUser"></span></p></div>
-      <button id="logoutBtn" class="zone-pill" style="background:#e2e8f0;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-    <!-- Zone selection -->
-    <div class="glass-card">
-      <div class="section-title"><i class="fas fa-map-marked-alt"></i> Growing Zone</div>
-      <div class="zone-btn-group" id="zoneButtonsGroup">
-        <button class="zone-pill" data-zone="E1">E1</button><button class="zone-pill" data-zone="E2">E2</button><button class="zone-pill" data-zone="E3">E3</button><button class="zone-pill" data-zone="E4">E4</button>
-      </div>
-      <div id="zoneDisplay" style="text-align:center; margin-top:10px; background:#e0f2d9; padding:5px 14px; border-radius:40px;">Zone: E2</div>
-    </div>
-    <!-- Grower Profile -->
-    <div class="glass-card">
-      <div class="section-title"><i class="fas fa-user-check"></i> Grower Profile</div>
-      <div class="grid-2col">
-        <div><label>Grower Name</label><input type="text" id="growerNameInput" readonly style="background:#f0f0f0;"></div>
-        <div><label>Locality</label><select id="localitySelect"></select></div>
-        <div><label>Total Area (m²)</label><input type="number" id="totalAreaMain" step="0.01"></div>
-      </div>
-      <button id="accessTrackerBtn" class="btn-lg">Access Greenhouse Tracker</button>
-    </div>
-    <!-- Greenhouse Dashboard (hidden initially) -->
-    <div id="greenhouseDashboard" class="hidden">
-      <div class="glass-card">
-        <div class="section-title"><i class="fas fa-greenhouse"></i> Greenhouse Details</div>
-        <div id="activeGreenhouseContainer"></div>
-        <button id="addGreenhouseBtn" class="btn-secondary" style="margin-bottom:10px;">+ Add Greenhouse</button>
-        <div id="savedGreenhousesList"></div>
-        <button id="submitDataBtn" class="btn-lg" style="margin-top:10px;">Submit All Data</button>
-        <div id="insightsPanel" class="hidden" style="margin-top:15px; background:#eef7e9; padding:12px; border-radius:20px;"></div>
-      </div>
-    </div>
+<div id="appDiv" class="app-card hidden">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2>🌱 Dashboard</h2>
+    <button id="logoutBtn" style="width:auto; background:#aaa;">Logout</button>
   </div>
+  <p>Welcome, <strong id="userName"></strong>!</p>
+  <hr>
+  <p>✅ Login successful. Your tracker UI will appear here.</p>
+  <button id="demoBtn" style="background:#2e8b57;">Test Data Submission</button>
+  <div id="demoResult" style="margin-top:12px; font-size:0.9rem;"></div>
 </div>
-
-<div id="toast" class="toast"></div>
 
 <script>
-  // ---------- Helper functions ----------
-  function showToast(msg, isErr = false) {
-    const toast = document.getElementById('toast');
-    toast.innerText = msg;
-    toast.style.background = isErr ? '#aa2e2e' : '#1c5c22';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-  }
-
-  // ---------- Authentication ----------
   let authToken = null;
   let currentUser = null;
 
   function showApp() {
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('appContainer').classList.remove('hidden');
-    document.getElementById('displayUser').innerText = currentUser;
-    document.getElementById('growerNameInput').value = currentUser;
-    // Load localities for default zone E2
-    updateLocalityDropdown('E2');
-    setZone('E2');
-    // Reset greenhouse UI
-    resetGreenhouseUI();
+    document.getElementById('loginDiv').style.display = 'none';
+    document.getElementById('appDiv').classList.remove('hidden');
+    document.getElementById('userName').innerText = currentUser;
   }
 
   function hideApp() {
-    document.getElementById('loginCard').style.display = 'block';
-    document.getElementById('appContainer').classList.add('hidden');
-    document.getElementById('loginUsername').value = '';
-    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginDiv').style.display = 'block';
+    document.getElementById('appDiv').classList.add('hidden');
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
     document.getElementById('loginError').innerText = '';
   }
 
   function login() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value;
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
     if (!username || !password) {
-      showToast('Enter username and password', true);
+      document.getElementById('loginError').innerText = 'Enter username and password';
       return;
     }
     const btn = document.getElementById('loginBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Logging...';
+    btn.innerHTML = '<span class="spinner"></span> Logging in...';
     google.script.run
       .withSuccessHandler(function(res) {
-        console.log('Login response:', res);
         if (res.success) {
           authToken = res.token;
           currentUser = res.username;
           localStorage.setItem('hydroToken', authToken);
           localStorage.setItem('hydroUser', currentUser);
-          showToast(`Welcome, ${currentUser}`);
           showApp();
         } else {
           document.getElementById('loginError').innerText = res.message;
-          showToast(res.message, true);
         }
         btn.disabled = false;
         btn.innerHTML = 'Login';
       })
       .withFailureHandler(function(err) {
-        console.error('Login error:', err);
-        showToast('Server error: ' + err.message, true);
-        document.getElementById('loginError').innerText = 'Connection failed. Check console.';
+        document.getElementById('loginError').innerText = 'Server error: ' + err.message;
         btn.disabled = false;
         btn.innerHTML = 'Login';
       })
@@ -162,213 +101,60 @@
     authToken = null;
     currentUser = null;
     hideApp();
-    showToast('Logged out');
   }
 
   function checkSession() {
     const token = localStorage.getItem('hydroToken');
     const user = localStorage.getItem('hydroUser');
-    console.log('checkSession - token:', token, 'user:', user);
     if (token && user) {
       google.script.run
         .withSuccessHandler(function(res) {
-          console.log('verifySession result:', res);
           if (res.valid) {
             authToken = token;
             currentUser = user;
             showApp();
           } else {
-            console.log('Session invalid, logging out');
             logout();
           }
         })
-        .withFailureHandler(function(err) {
-          console.error('verifySession error:', err);
-          logout();
-        })
+        .withFailureHandler(() => logout())
         .verifySession(token);
     } else {
       hideApp();
     }
   }
 
-  // ---------- Tracker UI (simplified but complete) ----------
-  let currentZone = 'E2';
-  let currentGreenhouseIndex = 1;
-  let savedGreenhouses = [];
-
-  const localityMap = {
-    E1: ["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"],
-    E2: ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"],
-    E3: ["Argy","Beau Bois","Beau Rivage","Belle Mare","Belle Vue Allendy","Bois d'Oiseaux","Bramsthan","Bras d'Eau","Camp Garreau","Camp Ithier","Camp Marcelin","Camp Poorun","Camp Raffia","Camp Ranoo","Centre de Flacq","Constance","Grande Retraite","Hermitage","Isidore Rose","Kashinath","La Porte Providence","Laventure","Mare Choisy","Mare du Puits","Mare la Chaux","Mare Providence","Mare Tapsy","Morc Constance","Nehru Nagar","Palmar","Petite Retraite","Plaine de Gersigny","Pont Blanc","Poste de Flacq","Quatre Cocos","Riche Mare","Sept Croisées","St Rémy","Trou d'Eau Douce","Victoria"],
-    E4: ["Balance John","Beau Champ","Beau Vallon","Bel Air Rivière Sèche","Belle Rive","Belle Rose","Bois Marchand","Camp Beau Bois","Camp de Masque Pavé","Camp Jackerie","Caroline","Cent Gaulettes","Clavet","Clémencia","Deep River","Deux Frères","Ecroignard","Ernest Florent","Grand River South East","Ilot","Kewal Nagar","La Laura","La Lucie Roy","La Nourrice","Laventure","Lesur","L'Etoile","Mare aux Goyaves","Mare Carrée","Mare Triton","Marie Jeanne","Morc Roy","Morc Sohawon","Olivia","Pellegrin","Petit Bois","Petite Cabane","Plaine Bananes","Pointe aux Feuilles","Pont Lardier","Quatre Soeurs","Sebastopol","Trois Ilots"]
-  };
-  const cropOptions = ["Tomato","Sweet Pepper","English Cucumber","Lettuce","Cabbage","Cauliflower","Melon","Shallot","Greens","Okra","Chillies","Eggplant"];
-  const cropStages = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
-  const monthsList = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-  function updateLocalityDropdown(zone) {
-    const locs = localityMap[zone] || [];
-    const select = document.getElementById('localitySelect');
-    select.innerHTML = '<option value="">-- Select Locality --</option>';
-    locs.forEach(l => { const opt = document.createElement('option'); opt.value = l; opt.textContent = l; select.appendChild(opt); });
-    select.value = '';
-  }
-
-  function setZone(zone) {
-    currentZone = zone;
-    document.getElementById('zoneDisplay').innerText = `Zone: ${zone}`;
-    updateLocalityDropdown(zone);
-    document.querySelectorAll('.zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === zone));
-  }
-
-  function renderBlankGreenhouseForm() {
-    const container = document.getElementById('activeGreenhouseContainer');
-    container.innerHTML = `
-      <div style="margin-bottom:10px;"><strong>Greenhouse ${currentGreenhouseIndex}</strong></div>
-      <div class="grid-2col">
-        <div><label>Area (m²) *</label><input type="number" id="gh_area" step="0.01"></div>
-        <div><label>Crop *</label><select id="gh_crop">${cropOptions.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
-        <div><label>Variety</label><input type="text" id="gh_variety"></div>
-        <div><label>Crop Stage *</label><select id="gh_stage">${cropStages.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
-        <div><label>Transplant Date</label><input type="date" id="gh_transplant"></div>
-        <div><label>Production System</label><select id="gh_prod"><option value="Cocopeat">Cocopeat</option><option value="Aggregates">Aggregates</option></select></div>
-      </div>
-      <div id="harvestSection" style="display:none; margin-top:15px; border-top:1px solid #ccc; padding-top:10px;">
-        <label>Weekly Yield (kg/units)</label><input type="number" id="weeklyYield" step="0.01">
-        <label>Months of Harvest</label><input type="number" id="harvestMonths" step="0.5">
-        <div class="month-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px;"></div>
-      </div>
-    `;
-    const stageSelect = document.getElementById('gh_stage');
-    const harvestDiv = document.getElementById('harvestSection');
-    stageSelect.addEventListener('change', () => {
-      harvestDiv.style.display = stageSelect.value === 'Harvesting' ? 'block' : 'none';
-      if (stageSelect.value === 'Harvesting') {
-        const grid = harvestDiv.querySelector('.month-grid');
-        grid.innerHTML = monthsList.map(m => `<div><label>${m}</label><input type="number" class="month-input" data-month="${m}" step="0.01" value="0"></div>`).join('');
-      }
-    });
-  }
-
-  function collectCurrentGreenhouse() {
-    const area = document.getElementById('gh_area')?.value;
-    const crop = document.getElementById('gh_crop')?.value;
-    const variety = document.getElementById('gh_variety')?.value;
-    const stage = document.getElementById('gh_stage')?.value;
-    const transplant = document.getElementById('gh_transplant')?.value;
-    const prod = document.getElementById('gh_prod')?.value;
-    let harvest = {};
-    if (stage === 'Harvesting') {
-      const weekly = parseFloat(document.getElementById('weeklyYield')?.value) || 0;
-      const months = parseFloat(document.getElementById('harvestMonths')?.value) || 0;
-      const monthly = {};
-      document.querySelectorAll('.month-input').forEach(inp => { monthly[inp.dataset.month] = parseFloat(inp.value) || 0; });
-      harvest = { weeklyYield: weekly, harvestMonths: months, monthlyHarvest: monthly };
-    }
-    return { area, crop, variety, stage, transplant, prod, harvest };
-  }
-
-  function saveGreenhouse() {
-    const data = collectCurrentGreenhouse();
-    if (!data.crop || !data.area || parseFloat(data.area) <= 0 || !data.stage) {
-      showToast('Please fill crop, area and stage', true);
+  // Demo submission using google.script.run
+  function testSubmit() {
+    if (!authToken) {
+      document.getElementById('demoResult').innerHTML = '<span style="color:red;">Not logged in</span>';
       return;
     }
-    savedGreenhouses.push(data);
-    updateSavedList();
-    currentGreenhouseIndex++;
-    renderBlankGreenhouseForm();
-    showToast('Greenhouse saved');
-  }
-
-  function updateSavedList() {
-    const container = document.getElementById('savedGreenhousesList');
-    if (savedGreenhouses.length === 0) {
-      container.innerHTML = '<div>No greenhouses saved</div>';
-      return;
-    }
-    let html = '<div style="font-weight:600;">Saved Greenhouses</div>';
-    savedGreenhouses.forEach((gh, idx) => {
-      html += `<div style="background:#f8faf5; border-radius:18px; padding:8px; margin-bottom:6px; display:flex; justify-content:space-between;">
-        <span>#${idx+1} ${gh.crop} | ${gh.area}m² | ${gh.stage}</span>
-        <button onclick="removeGreenhouse(${idx})" style="background:#ffdedb; border:none; padding:4px 10px; border-radius:30px;">Remove</button>
-      </div>`;
-    });
-    container.innerHTML = html;
-  }
-  window.removeGreenhouse = (idx) => { savedGreenhouses.splice(idx,1); updateSavedList(); showToast('Removed'); };
-
-  function resetGreenhouseUI() {
-    currentGreenhouseIndex = 1;
-    savedGreenhouses = [];
-    renderBlankGreenhouseForm();
-    updateSavedList();
-    document.getElementById('greenhouseDashboard').classList.add('hidden');
-  }
-
-  function submitAllData() {
-    if (!authToken) { showToast('Session expired, please login again', true); logout(); return; }
-    const grower = document.getElementById('growerNameInput').value;
-    const locality = document.getElementById('localitySelect').value;
-    if (!grower || !locality) { showToast('Grower name and locality required', true); return; }
-    let allGH = [...savedGreenhouses];
-    const current = collectCurrentGreenhouse();
-    if (current.crop && current.area && parseFloat(current.area) > 0 && current.stage) {
-      allGH.push(current);
-    }
-    if (allGH.length === 0) { showToast('No greenhouses to submit', true); return; }
-    const rows = allGH.map((gh, idx) => {
-      const monthly = gh.harvest?.monthlyHarvest || {};
-      const monthlyVals = monthsList.map(m => monthly[m] || 0);
-      return [
-        new Date().toISOString(), grower, locality, currentZone,
-        parseFloat(document.getElementById('totalAreaMain').value) || 0,
-        `GH ${idx+1}`, gh.crop, gh.variety || '', gh.stage, parseFloat(gh.area) || 0,
-        gh.transplant || '', gh.harvest?.weeklyYield || 0, 'kg',
-        gh.harvest?.harvestMonths || 0, gh.prod || '', '', ...monthlyVals
-      ];
-    });
-    const btn = document.getElementById('submitDataBtn');
+    const testRows = [[new Date().toISOString(), currentUser, 'Test Locality', 'E2', 100, 'GH1', 'Tomato', 'Test Variety', 'Harvesting', 50, '2025-01-01', 100, 'kg', 2, 'Cocopeat', 'Cooking', 0,0,0,0,0,0,0,0,0,0,0,0]];
+    const btn = document.getElementById('demoBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Submitting...';
     google.script.run
-      .withSuccessHandler(res => {
+      .withSuccessHandler(function(res) {
         if (res.success) {
-          showToast(res.message);
-          savedGreenhouses = [];
-          currentGreenhouseIndex = 1;
-          renderBlankGreenhouseForm();
-          updateSavedList();
-          document.getElementById('insightsPanel').classList.remove('hidden');
-          document.getElementById('insightsPanel').innerHTML = `<div>✅ ${res.message}</div>`;
+          document.getElementById('demoResult').innerHTML = '<span style="color:green;">✅ ' + res.message + '</span>';
         } else {
-          showToast(res.message, true);
+          document.getElementById('demoResult').innerHTML = '<span style="color:red;">❌ ' + res.message + '</span>';
         }
         btn.disabled = false;
-        btn.innerHTML = 'Submit All Data';
+        btn.innerHTML = 'Test Data Submission';
       })
-      .withFailureHandler(err => {
-        showToast('Submission failed: ' + err.message, true);
+      .withFailureHandler(function(err) {
+        document.getElementById('demoResult').innerHTML = '<span style="color:red;">Error: ' + err.message + '</span>';
         btn.disabled = false;
-        btn.innerHTML = 'Submit All Data';
+        btn.innerHTML = 'Test Data Submission';
       })
-      .submitData(authToken, rows);
+      .submitData(authToken, testRows);
   }
 
-  // ---------- Event listeners ----------
-  document.getElementById('loginBtn').addEventListener('click', login);
-  document.getElementById('logoutBtn').addEventListener('click', logout);
-  document.getElementById('accessTrackerBtn').addEventListener('click', () => {
-    document.getElementById('greenhouseDashboard').classList.remove('hidden');
-  });
-  document.getElementById('addGreenhouseBtn').addEventListener('click', saveGreenhouse);
-  document.getElementById('submitDataBtn').addEventListener('click', submitAllData);
-  document.querySelectorAll('.zone-pill').forEach(btn => {
-    btn.addEventListener('click', () => setZone(btn.dataset.zone));
-  });
-
-  // Initialize
+  document.getElementById('loginBtn').onclick = login;
+  document.getElementById('logoutBtn').onclick = logout;
+  document.getElementById('demoBtn').onclick = testSubmit;
   window.addEventListener('DOMContentLoaded', checkSession);
 </script>
 </body>
