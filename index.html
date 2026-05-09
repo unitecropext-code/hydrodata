@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === SAME STYLES AS BEFORE (unchanged) === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #1b4d1f, #0e3a12); min-height: 100vh; padding: 16px 12px; }
         .container { max-width: 1400px; margin: 0 auto; }
@@ -192,14 +191,14 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzThkXWStG8C1rgUEM4aK4XuI-VhbkpCqz9aI3t7pfcD6tRv-o4qnO6toXeGn46CPY-Wg/exec';  // ⚠️ REPLACE WITH YOUR URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyDptqKBwm19-mJ1uai2Cwl3hL8wkttk10ysQHC0WuoQvRsc_JWBxK-tob_D_C1FuBEWw/exec';  // ⚠️ REPLACE WITH YOUR URL
 
     // ======================== GLOBAL STATE ========================
     let isLoggedIn = false;
     let currentZone = "E2";
     let currentGreenhouseIndex = 1;
     let savedGreenhouses = [];
-    let hasExistingData = false;      // NEW: track if user has any submissions
+    let hasExistingData = false;
 
     // DOM elements
     const loginOverlay = document.getElementById('loginOverlay');
@@ -262,24 +261,19 @@
     // ----------------------- SET PROFILE EDITABILITY -----------------------
     function setProfileEditable(isNewUser) {
         if (isNewUser) {
-            // New user: all fields editable
             growerNameInput.readOnly = false;
             localitySelect.disabled = false;
             totalAreaMain.readOnly = false;
             editAreaBtn.style.display = 'none';
-            // Clear any existing values
             growerNameInput.value = '';
             localitySelect.innerHTML = '<option value="">-- Select Locality --</option>';
             totalAreaMain.value = '';
-            // Also hide previous submissions section
             prevSubSection.style.display = 'none';
         } else {
-            // Existing user: fields readonly/disabled, show update button for total area
             growerNameInput.readOnly = true;
             localitySelect.disabled = true;
             totalAreaMain.readOnly = true;
-            editAreaBtn.style.display = 'flex'; // show button
-            // total area value will be loaded from profile
+            editAreaBtn.style.display = 'flex';
         }
     }
 
@@ -296,7 +290,6 @@
             hasExistingData = hasData;
 
             if (hasData) {
-                // Build readable table (subset of columns)
                 const headers = data.headers;
                 const displayCols = [0,1,2,3,4,5,6,8,9,11,12,13];
                 const displayNames = headers.filter((_,idx) => displayCols.includes(idx)).map(h => h || "?");
@@ -436,20 +429,17 @@
                 loginOverlay.style.display = 'none';
                 mainApp.style.display = 'block';
                 showToast(`✅ Welcome ${username}!`);
-                
-                // Determine if user has existing data
+
                 const hasData = await loadUserPreviousData();
+
                 if (hasData) {
-                    // Existing user: load profile and set fields to readonly
                     await loadGrowerProfile();
                     setProfileEditable(false);
-                    // Also fill locality from most recent submission (if any) - we already have rows in prev data
-                    // We can extract from the first row returned by getUserData
                     try {
                         const userDataResp = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
                         const userData = await userDataResp.json();
                         if (userData.rows && userData.rows.length > 0) {
-                            const mostRecent = userData.rows[0]; // first row (latest timestamp)
+                            const mostRecent = userData.rows[0];
                             const localityFromHistory = mostRecent[2] || '';
                             const zoneFromHistory = mostRecent[3] || 'E2';
                             if (zoneFromHistory !== currentZone) setZone(zoneFromHistory);
@@ -475,13 +465,12 @@
                         }
                     } catch(e) { console.warn(e); }
                 } else {
-                    // New user: make all fields editable
                     setProfileEditable(true);
-                    // Also set zone to default (E2) and load empty locality dropdown
                     setZone('E2');
                     localitySelect.disabled = false;
-                    growerNameInput.value = username; // keep username but allow edit? Actually grower name should be the same as login, but we allow edit? We'll keep it editable but prefill.
-                    // For new user, we might want to prefill grower name with username, but they can change it.
+                    growerNameInput.value = username;
+                    totalAreaMain.value = '';
+                    showToast("Please fill in your locality and total greenhouse area.");
                 }
                 return true;
             } else {
@@ -512,7 +501,7 @@
         showToast("Logged out successfully.");
     };
 
-    // ======================== CROP & HARVEST HELPERS (unchanged from original) ========================
+    // ======================== CROP & HARVEST HELPERS (unchanged) ========================
     const cropIconMap = { "Tomato": "🍅", "Sweet Pepper": "🫑", "English Cucumber": "🥒", "Lettuce": "🥬", "Cabbage": "🥬", "Cauliflower": "🥦", "Melon": "🍈", "Shallot": "🧅", "Greens": "🌿", "Okra": "🌱", "Chillies": "🌶️", "Eggplant": "🍆" };
     const weightBasedCrops = ["Tomato", "Sweet Pepper", "Melon", "Shallot", "Greens", "Okra", "Chillies", "Eggplant"];
     const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce"];
@@ -644,7 +633,6 @@
     }
     window.removeSavedGreenhouse = function(index) { savedGreenhouses.splice(index,1); updateSavedListDisplay(); showToast("Greenhouse removed"); };
 
-    // Helper: update total area in profile sheet (for new users on first submission)
     async function updateGrowerTotalAreaOnServer(username, newArea) {
         if (!username || !newArea || newArea <= 0) return false;
         try {
@@ -663,7 +651,6 @@
         let locality = localitySelect.value;
         let totalAreaGlobal = parseFloat(totalAreaMain.value) || 0;
         
-        // Validation for new user: they must fill all fields
         if (!grower) { showToast("Please enter your Grower Name", true); return; }
         if (!locality) { showToast("Please select a Locality", true); return; }
         if (!totalAreaGlobal || totalAreaGlobal <= 0) { showToast("Please enter Total Greenhouse Area (m²)", true); return; }
@@ -677,12 +664,8 @@
         }
         if (allGreenhouses.length === 0) { showToast("No greenhouses to submit. Add at least one.", true); return; }
 
-        // For new user (hasExistingData === false), store the total area in profile sheet before submission
         if (!hasExistingData) {
-            const profileUpdated = await updateGrowerTotalAreaOnServer(grower, totalAreaGlobal);
-            if (!profileUpdated) {
-                showToast("Warning: Could not save total area profile, but data will still be submitted.", false);
-            }
+            await updateGrowerTotalAreaOnServer(grower, totalAreaGlobal);
         }
 
         let rows = []; let idCounter = 1;
@@ -711,13 +694,10 @@
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: mauritiusTimestamp, rows }) });
             showToast(`✅ Data submitted! ${rows.length} greenhouse(s) logged.`);
             savedGreenhouses = []; currentGreenhouseIndex = 1; renderBlankActiveForm(); updateSavedListDisplay();
-            // After submission, reload previous data (now user has data) and set profile to readonly
             const hasDataNow = await loadUserPreviousData();
             if (hasDataNow) {
                 setProfileEditable(false);
-                // Also reload profile to get the stored total area (if any)
                 await loadGrowerProfile();
-                // Reload locality from most recent submission
                 const userDataResp = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(grower)}`);
                 const userData = await userDataResp.json();
                 if (userData.rows && userData.rows.length > 0) {
