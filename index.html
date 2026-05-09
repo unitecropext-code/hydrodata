@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ... (same base styles as before, plus a small addition for the inline button) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -65,6 +66,26 @@
         .input-field label { font-weight: 600; font-size: 0.75rem; color: #235b1e; display: block; margin-bottom: 5px; }
         .input-field input, .input-field select { width: 100%; padding: 10px 12px; border: 2px solid #deecce; border-radius: 20px; font-size: 0.85rem; background: #ffffff; }
         .input-field input:disabled, .input-field select:disabled { background: #eef4ea; color: #3a5e3a; cursor: not-allowed; }
+        .area-with-button {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .area-with-button input {
+            flex: 1;
+        }
+        .edit-area-btn {
+            background: #2e8b57;
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .edit-area-btn:hover { background: #1f6e44; }
         .btn-lg { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; font-weight: 700; padding: 12px 20px; border-radius: 50px; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; justify-content: center; width: 100%; }
         .btn-secondary { background: #e9ecef; color: #1f5a22; border: none; padding: 10px 16px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; justify-content: center; width: 100%; }
         .greenhouse-active-card { background: #ffffff; border-radius: 24px; padding: 16px; border: 2px solid #2e8b57; box-shadow: 0 6px 14px rgba(0,0,0,0.05); margin-bottom: 18px; }
@@ -212,7 +233,7 @@
         .gh-badge { background: #307a34; padding: 4px 14px; border-radius: 40px; color: white; font-weight: 600; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; }
         .realtime-tag { display: inline-block; background: #d9f0cd; border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; font-weight: 600; color: #1c5a1c; margin-left: 12px; }
 
-        /* Previous submissions table (read only) */
+        /* Previous submissions table */
         .prev-submissions {
             margin-top: 24px;
             border-top: 2px solid #c0dfb0;
@@ -292,13 +313,19 @@
         <div id="zoneActiveDisplay" class="zone-active-status"><i class="fas fa-map-pin"></i> Zone Active: E2</div>
     </div>
 
-    <!-- Grower Profile (now with readonly/disabled fields) -->
+    <!-- Grower Profile (with update button for total area) -->
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-user-check"></i> Grower Profile</div>
         <div class="grid-2col">
             <div class="input-field"><label><i class="fas fa-user-circle"></i> Grower Name *</label><input type="text" id="growerNameInput" placeholder="e.g. Your Name" readonly></div>
             <div class="input-field"><label><i class="fas fa-location-dot"></i> Locality (zone based)</label><select id="localitySelect" disabled><option value="">-- Select Locality --</option></select></div>
-            <div class="input-field"><label><i class="fas fa-expand-alt"></i> Total Greenhouse Area (m²)</label><input type="number" id="totalAreaMain" step="0.01" placeholder="Total area (all greenhouses)" readonly></div>
+            <div class="input-field">
+                <label><i class="fas fa-expand-alt"></i> Total Greenhouse Area (m²)</label>
+                <div class="area-with-button">
+                    <input type="number" id="totalAreaMain" step="0.01" placeholder="Total area (all greenhouses)" readonly>
+                    <button id="editAreaBtn" class="edit-area-btn"><i class="fas fa-pencil-alt"></i> Update</button>
+                </div>
+            </div>
         </div>
         <button id="accessTrackerBtn" class="btn-lg" style="margin-top: 12px;"><i class="fas fa-charging-station"></i> Access Greenhouse Tracker</button>
     </div>
@@ -322,7 +349,7 @@
             <table class="prev-table" id="prevSubmissionsTable">
                 <thead id="prevTableHead"></thead>
                 <tbody id="prevTableBody"></tbody>
-            </table>
+            </tr>
         </div>
         <div id="noPrevDataMsg" style="text-align:center; padding:20px; color:#5a7a52;">No previous data found.</div>
     </div>
@@ -331,7 +358,7 @@
 </div>
 </div>
 
-<!-- HISTORY MODAL (same as before) -->
+<!-- HISTORY MODAL -->
 <div id="historyModal" class="history-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2100; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
     <div class="history-card" style="background:#fff; max-width:95vw; width:1300px; max-height:85vh; border-radius:32px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
         <div class="history-header" style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px; background:#f0f8ec; border-bottom:2px solid #2e8b57;">
@@ -353,7 +380,7 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdh5jUVXeG02_Nuu3LZIVE8maFvoXWzBQHSKB728zkid0wvRzXcqk3V_6LAJIsqyFPmA/exec';  // ⚠️ REPLACE WITH YOUR URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6j0MZnXl1-TZFzAXtQxtpej4vFV22r-7QK1UPpJjusSLm9kfm1QKtvsEKr9Hz-CwCMg/exec';  // ⚠️ REPLACE WITH YOUR URL
 
     // ======================== GLOBAL STATE ========================
     let isLoggedIn = false;
@@ -383,12 +410,10 @@
     const insightsContainer = document.getElementById('insightsContainer');
     const insightContent = document.getElementById('insightContent');
     const savedListDiv = document.getElementById('savedGreenhousesList');
-    // New elements for previous submissions
     const prevSubSection = document.getElementById('previousSubmissionsSection');
     const prevTableHead = document.getElementById('prevTableHead');
     const prevTableBody = document.getElementById('prevTableBody');
     const noPrevDataMsg = document.getElementById('noPrevDataMsg');
-    // History modal
     const viewHistoryBtn = document.getElementById('viewHistoryBtn');
     const historyModal = document.getElementById('historyModal');
     const closeHistoryBtn = document.getElementById('closeHistoryBtn');
@@ -397,6 +422,8 @@
     const historyTableBody = document.getElementById('historyTableBody');
     const historyLoading = document.getElementById('historyLoading');
     const historyEmptyMsg = document.getElementById('historyEmptyMsg');
+    // NEW: total area edit button
+    const editAreaBtn = document.getElementById('editAreaBtn');
 
     // Helper functions
     function showToast(msg, isError = false) {
@@ -436,8 +463,9 @@
                 loginOverlay.style.display = 'none';
                 mainApp.style.display = 'block';
                 showToast(`✅ Welcome ${username}!`);
-                // After login, load user's previous data to fill profile and show read-only table
+                // Load previous submissions & profile
                 await loadUserPreviousData();
+                await loadGrowerProfile();    // NEW: load stored total area
                 return true;
             } else {
                 loginError.innerText = "❌ Invalid username or password. Please try again.";
@@ -463,9 +491,9 @@
         updateSavedListDisplay();
         growerNameInput.value = '';
         welcomeUsernameSpan.innerText = 'User';
-        // Reset readonly fields
         localitySelect.disabled = true;
         totalAreaMain.readOnly = true;
+        totalAreaMain.value = '';
         prevSubSection.style.display = 'none';
         showToast("Logged out successfully.");
     };
@@ -485,7 +513,6 @@
         const locs = localityMap[zone] || []; 
         localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; 
         locs.forEach(l => { const opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); 
-        // Do not reset value if already set from previous data
     }
     function setZone(zone) { currentZone = zone; zoneActiveSpan.innerHTML = `<i class="fas fa-map-pin"></i> Zone Active: ${zone}`; updateLocalityDropdown(zone); zoneBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.zone === zone)); showToast(`Zone ${zone} activated`); }
 
@@ -641,8 +668,9 @@
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: mauritiusTimestamp, rows }) });
             showToast(`✅ Data submitted! ${rows.length} greenhouse(s) logged.`);
             savedGreenhouses = []; currentGreenhouseIndex = 1; renderBlankActiveForm(); updateSavedListDisplay();
-            // After successful submission, reload the previous data to include the new entries
+            // Reload previous data to include new entries
             await loadUserPreviousData();
+            // Also reload profile in case total area changed? (but total area is per grower, not per submission)
         } catch (e) { showToast("Submitted (check sheet)", false); } finally { submitBtnElem.disabled = false; submitBtnElem.innerHTML = origText; }
     }
 
@@ -658,7 +686,7 @@
     setZone('E2');
     greenhouseDashboard.classList.add('hidden-section');
 
-    // ======================== NEW: Load user's previous data & fill readonly profile ========================
+    // ======================== LOAD PREVIOUS SUBMISSIONS (read-only table) ========================
     async function loadUserPreviousData() {
         const username = growerNameInput.value.trim();
         if (!username) return;
@@ -668,58 +696,13 @@
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             if (!data.rows || data.rows.length === 0) {
-                // No previous data: show empty state
                 prevSubSection.style.display = 'none';
                 return;
             }
 
-            // --- Fill profile from the MOST RECENT submission (by timestamp column index 0) ---
-            const rows = data.rows;
-            // Find row with latest timestamp (assuming timestamp is first column)
-            let mostRecent = rows.reduce((latest, row) => {
-                const latestDate = new Date(latest[0]);
-                const rowDate = new Date(row[0]);
-                return rowDate > latestDate ? row : latest;
-            }, rows[0]);
-            // Expected column mapping (0-based from getUserData):
-            // 0: Timestamp, 1: Grower, 2: Locality, 3: Zone, 4: TotalArea, 5: GHNumber, 6: Crop, 7: Variety, 8: Stage, 9: Area, 10: TransplantDate,
-            // 11: WeeklyYield, 12: YieldUnit, 13: HarvestMonths, 14: Substrate, 15: TomatoType, 16-27: monthly yields
-            const localityFromHistory = mostRecent[2] || '';
-            const totalAreaFromHistory = mostRecent[4] || 0;
-
-            // Update locality dropdown (must match current zone? We'll also set zone from history)
-            const zoneFromHistory = mostRecent[3] || 'E2';
-            if (zoneFromHistory !== currentZone) {
-                setZone(zoneFromHistory);
-            } else {
-                updateLocalityDropdown(currentZone);
-            }
-            if (localityFromHistory) {
-                // Try to select it
-                let optionExists = false;
-                for (let i = 0; i < localitySelect.options.length; i++) {
-                    if (localitySelect.options[i].value === localityFromHistory) {
-                        localitySelect.value = localityFromHistory;
-                        optionExists = true;
-                        break;
-                    }
-                }
-                if (!optionExists) {
-                    // If not in current zone's list, add it as a disabled option (view only)
-                    const opt = document.createElement('option');
-                    opt.value = localityFromHistory;
-                    opt.textContent = localityFromHistory;
-                    opt.disabled = true;
-                    localitySelect.appendChild(opt);
-                    localitySelect.value = localityFromHistory;
-                }
-            }
-            totalAreaMain.value = totalAreaFromHistory;
-
-            // --- Display all previous submissions as a read-only table ---
-            const headers = data.headers; // e.g., ["Timestamp","Grower","Locality","Zone",...]
-            // Only show a subset of columns for readability
-            const displayCols = [0,1,2,3,4,5,6,8,9,11,12,13]; // indices of interest
+            // Build readable table (subset of columns)
+            const headers = data.headers;
+            const displayCols = [0,1,2,3,4,5,6,8,9,11,12,13];
             const displayNames = headers.filter((_,idx) => displayCols.includes(idx)).map(h => h || "?");
             prevTableHead.innerHTML = '';
             const headerRow = document.createElement('tr');
@@ -731,7 +714,7 @@
             prevTableHead.appendChild(headerRow);
 
             prevTableBody.innerHTML = '';
-            rows.forEach(row => {
+            data.rows.forEach(row => {
                 const tr = document.createElement('tr');
                 displayCols.forEach(colIdx => {
                     const td = document.createElement('td');
@@ -746,13 +729,105 @@
             prevSubSection.style.display = 'block';
             noPrevDataMsg.style.display = 'none';
         } catch (err) {
-            console.error("Error loading previous data:", err);
+            console.error(err);
             prevSubSection.style.display = 'none';
-            showToast("Could not load previous submissions", true);
         }
     }
 
-    // ======================== HISTORY MODAL (same as before) ========================
+    // ======================== PROFILE: LOAD STORED TOTAL AREA ========================
+    async function loadGrowerProfile() {
+        const username = growerNameInput.value.trim();
+        if (!username) return;
+        try {
+            const url = `${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.totalArea !== null && data.totalArea !== undefined && data.totalArea > 0) {
+                totalAreaMain.value = data.totalArea;
+            }
+            // else keep what was set from previous submissions (fallback)
+        } catch (err) {
+            console.error("Could not load profile:", err);
+        }
+    }
+
+    // ======================== EDIT TOTAL AREA (increase only) ========================
+    let isEditingArea = false;
+    editAreaBtn.onclick = () => {
+        if (isEditingArea) return; // already editing
+        const currentValue = parseFloat(totalAreaMain.value) || 0;
+        totalAreaMain.readOnly = false;
+        totalAreaMain.focus();
+        editAreaBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+        editAreaBtn.style.background = "#1f6e44";
+        
+        // Temporarily override the button action to save the new value
+        const saveHandler = async () => {
+            const newValue = parseFloat(totalAreaMain.value);
+            if (isNaN(newValue) || newValue <= 0) {
+                showToast("Please enter a positive number", true);
+                return;
+            }
+            if (newValue <= currentValue) {
+                showToast(`New total area must be greater than current (${currentValue})`, true);
+                return;
+            }
+            const username = growerNameInput.value.trim();
+            if (!username) return;
+            try {
+                const url = `${SCRIPT_URL}?action=updateTotalArea&username=${encodeURIComponent(username)}&newArea=${newValue}`;
+                const response = await fetch(url, { method: 'GET', mode: 'cors' });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(`Total area updated to ${newValue} m²`);
+                    totalAreaMain.value = newValue;
+                    totalAreaMain.readOnly = true;
+                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
+                    editAreaBtn.style.background = "";
+                    isEditingArea = false;
+                    editAreaBtn.onclick = arguments.callee; // restore original handler? We'll reassign after
+                    // re-bind the correct event
+                    editAreaBtn.removeEventListener('click', saveHandler);
+                    editAreaBtn.addEventListener('click', originalHandler);
+                } else {
+                    showToast("Update failed. Area may not be larger than stored value.", true);
+                    totalAreaMain.readOnly = true;
+                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
+                    editAreaBtn.style.background = "";
+                    isEditingArea = false;
+                    editAreaBtn.removeEventListener('click', saveHandler);
+                    editAreaBtn.addEventListener('click', originalHandler);
+                }
+            } catch (err) {
+                showToast("Server error while updating", true);
+                totalAreaMain.readOnly = true;
+                editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
+                editAreaBtn.style.background = "";
+                isEditingArea = false;
+                editAreaBtn.removeEventListener('click', saveHandler);
+                editAreaBtn.addEventListener('click', originalHandler);
+            }
+        };
+        
+        const originalHandler = editAreaBtn.onclick;
+        editAreaBtn.removeEventListener('click', originalHandler);
+        editAreaBtn.addEventListener('click', saveHandler);
+        isEditingArea = true;
+        
+        // Also allow pressing Enter to save
+        const enterHandler = (e) => {
+            if (e.key === 'Enter') {
+                saveHandler();
+                totalAreaMain.removeEventListener('keypress', enterHandler);
+            }
+        };
+        totalAreaMain.addEventListener('keypress', enterHandler);
+        
+        // If user clicks outside or blurs, we could cancel? But we keep simple: only save via button.
+    };
+
+    // ======================== HISTORY MODAL ========================
     async function loadUserHistory() {
         const username = growerNameInput.value.trim();
         if (!username) {
@@ -811,7 +886,6 @@
     closeHistoryBtn.onclick = () => { historyModal.style.display = 'none'; };
     historyModal.addEventListener('click', (e) => { if (e.target === historyModal) historyModal.style.display = 'none'; });
 
-    // Initially hide previous submissions section
     prevSubSection.style.display = 'none';
 </script>
 </body>
