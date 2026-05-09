@@ -7,44 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ... (same base styles as before, plus a small addition for the inline button) ... */
+        /* === SAME STYLES AS BEFORE (unchanged) === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 10% 30%, #1b4d1f, #0e3a12);
-            min-height: 100vh;
-            padding: 16px 12px;
-        }
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #1b4d1f, #0e3a12); min-height: 100vh; padding: 16px 12px; }
         .container { max-width: 1400px; margin: 0 auto; }
-        .glass-card {
-            background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(2px);
-            border-radius: 28px;
-            padding: 18px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 15px 30px -8px rgba(0,0,0,0.2);
-            border: 1px solid #cfebc7;
-        }
-        .login-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            backdrop-filter: blur(6px);
-        }
-        .login-card {
-            background: white;
-            max-width: 420px;
-            width: 90%;
-            border-radius: 32px;
-            padding: 28px 24px;
-            text-align: center;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.3);
-        }
+        .glass-card { background: rgba(255,255,255,0.97); backdrop-filter: blur(2px); border-radius: 28px; padding: 18px 20px; margin-bottom: 20px; box-shadow: 0 15px 30px -8px rgba(0,0,0,0.2); border: 1px solid #cfebc7; }
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(6px); }
+        .login-card { background: white; max-width: 420px; width: 90%; border-radius: 32px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 35px rgba(0,0,0,0.3); }
         .login-header { font-size: 1.8rem; font-weight: 800; background: linear-gradient(130deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
         .input-group { margin-bottom: 18px; text-align: left; }
         .input-group label { font-weight: 600; display: block; margin-bottom: 6px; color: #1c5a1c; }
@@ -54,7 +23,6 @@
         .logout-btn, .history-btn { background: #f0f3ef; border: 1px solid #c0dfb0; padding: 6px 16px; border-radius: 40px; font-weight: 600; cursor: pointer; margin-left: 12px; }
         .history-btn { background: #e3f2df; border-color: #2e8b57; color: #1c5a1c; }
         .welcome-banner { background: linear-gradient(110deg, #e9f7e3, #d4ebcd); border-radius: 28px; padding: 20px 24px; margin-bottom: 20px; text-align: center; font-size: 1.8rem; font-weight: 800; color: #1c5a1c; border-left: 8px solid #2e8b57; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        .welcome-banner i { margin-right: 12px; color: #2e8b57; }
         .section-title { font-size: 1.25rem; font-weight: 700; color: #1c5a1c; display: flex; align-items: center; gap: 10px; margin-bottom: 18px; border-left: 5px solid #2e8b57; padding-left: 14px; }
         .zone-btn-group { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 8px 0 4px; }
         .zone-pill { background: #ecf7e6; border: none; padding: 10px 18px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.2s; color: #1a551a; display: inline-flex; align-items: center; gap: 6px; }
@@ -66,209 +34,53 @@
         .input-field label { font-weight: 600; font-size: 0.75rem; color: #235b1e; display: block; margin-bottom: 5px; }
         .input-field input, .input-field select { width: 100%; padding: 10px 12px; border: 2px solid #deecce; border-radius: 20px; font-size: 0.85rem; background: #ffffff; }
         .input-field input:disabled, .input-field select:disabled { background: #eef4ea; color: #3a5e3a; cursor: not-allowed; }
-        .area-with-button {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .area-with-button input {
-            flex: 1;
-        }
-        .edit-area-btn {
-            background: #2e8b57;
-            border: none;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
+        .area-with-button { display: flex; gap: 8px; align-items: center; }
+        .area-with-button input { flex: 1; }
+        .edit-area-btn { background: #2e8b57; border: none; color: white; padding: 8px 14px; border-radius: 40px; cursor: pointer; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
         .edit-area-btn:hover { background: #1f6e44; }
         .btn-lg { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; font-weight: 700; padding: 12px 20px; border-radius: 50px; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; justify-content: center; width: 100%; }
         .btn-secondary { background: #e9ecef; color: #1f5a22; border: none; padding: 10px 16px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; justify-content: center; width: 100%; }
         .greenhouse-active-card { background: #ffffff; border-radius: 24px; padding: 16px; border: 2px solid #2e8b57; box-shadow: 0 6px 14px rgba(0,0,0,0.05); margin-bottom: 18px; }
         .saved-item { background: #f8faf5; border-radius: 18px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
-        .harvest-card {
-            background: #ffffff;
-            border-radius: 24px;
-            margin-top: 24px;
-            padding: 20px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-            border: 1px solid #d4e8ca;
-            transition: all 0.2s ease;
-        }
-        .harvest-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #1c5a1c;
-            margin-bottom: 20px;
-            border-bottom: 2px dashed #c0dfb0;
-            padding-bottom: 8px;
-        }
-        .harvest-stats-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            margin-bottom: 28px;
-        }
-        .harvest-stat-card {
-            flex: 1;
-            min-width: 220px;
-            background: #f9fef7;
-            border-radius: 20px;
-            padding: 18px 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border: 1px solid #d9e8d0;
-            transition: transform 0.1s ease;
-        }
-        .harvest-stat-card:hover { transform: translateY(-2px); background: #f5fcf0; }
-        .harvest-stat-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #2c6e2c;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .weekly-input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-        .weekly-input-wrapper input {
-            flex: 2;
-            padding: 12px 12px;
-            border-radius: 30px;
-            border: 1.5px solid #cae0bc;
-            font-size: 1rem;
-            font-weight: 500;
-            text-align: center;
-            background: white;
-        }
-        .unit-group {
-            display: flex;
-            gap: 12px;
-            background: #ecf3e8;
-            padding: 4px 10px;
-            border-radius: 50px;
-        }
-        .unit-group label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 4px 12px;
-            border-radius: 40px;
-            transition: 0.1s;
-        }
+        .harvest-card { background: #ffffff; border-radius: 24px; margin-top: 24px; padding: 20px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #d4e8ca; }
+        .harvest-header { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; color: #1c5a1c; margin-bottom: 20px; border-bottom: 2px dashed #c0dfb0; padding-bottom: 8px; }
+        .harvest-stats-row { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 28px; }
+        .harvest-stat-card { flex: 1; min-width: 220px; background: #f9fef7; border-radius: 20px; padding: 18px 16px; border: 1px solid #d9e8d0; }
+        .weekly-input-wrapper { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+        .weekly-input-wrapper input { flex: 2; padding: 12px; border-radius: 30px; border: 1.5px solid #cae0bc; text-align: center; }
+        .unit-group { display: flex; gap: 12px; background: #ecf3e8; padding: 4px 10px; border-radius: 50px; }
+        .unit-group label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer; padding: 4px 12px; border-radius: 40px; }
         .unit-group input[type="radio"] { margin: 0; accent-color: #2e8b57; }
-        .unit-group label:has(input:checked) {
-            background: #2e8b57;
-            color: white;
-        }
-        .harvest-months-input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 30px;
-            border: 1.5px solid #cae0bc;
-            font-size: 1rem;
-            text-align: center;
-        }
-        .month-grid-title {
-            font-weight: 600;
-            margin: 20px 0 12px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #1f6522;
-        }
-        .month-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        @media (min-width: 480px) { .month-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 640px) { .month-grid { grid-template-columns: repeat(4, 1fr); } }
-        .month-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 8px 6px;
-            text-align: center;
-            border: 1px solid #d5e8ca;
-            transition: all 0.1s;
-        }
-        .month-name {
-            font-weight: 700;
-            font-size: 0.8rem;
-            color: #2d6a2d;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .month-card input {
-            width: 100%;
-            padding: 10px 4px;
-            border-radius: 30px;
-            border: 1px solid #c0dfb0;
-            text-align: center;
-            font-size: 0.8rem;
-            font-weight: 500;
-            background: #fffef7;
-        }
+        .unit-group label:has(input:checked) { background: #2e8b57; color: white; }
+        .harvest-months-input { width: 100%; padding: 12px; border-radius: 30px; border: 1.5px solid #cae0bc; text-align: center; }
+        .month-grid-title { font-weight: 600; margin: 20px 0 12px 0; display: flex; align-items: center; gap: 10px; color: #1f6522; }
+        .month-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+        @media (min-width:480px) { .month-grid { grid-template-columns: repeat(3,1fr); } }
+        @media (min-width:640px) { .month-grid { grid-template-columns: repeat(4,1fr); } }
+        .month-card { background: #ffffff; border-radius: 20px; padding: 8px 6px; text-align: center; border: 1px solid #d5e8ca; }
+        .month-name { font-weight: 700; font-size: 0.8rem; color: #2d6a2d; margin-bottom: 8px; display: block; }
+        .month-card input { width: 100%; padding: 10px 4px; border-radius: 30px; border: 1px solid #c0dfb0; text-align: center; font-size: 0.8rem; }
         .toast-msg { position: fixed; bottom: 20px; left: 16px; right: 16px; max-width: 350px; margin: 0 auto; background: #1f3120; color: white; padding: 10px 16px; border-radius: 50px; z-index: 1100; transform: translateY(100px); transition: transform 0.25s; backdrop-filter: blur(8px); font-size: 0.85rem; text-align: center; }
         .toast-msg.show { transform: translateY(0); }
         .hidden-section { display: none; }
         .footer-note { text-align: center; font-size: 10px; color: #cbe5c0; margin-top: 10px; }
         .gh-badge { background: #307a34; padding: 4px 14px; border-radius: 40px; color: white; font-weight: 600; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; }
         .realtime-tag { display: inline-block; background: #d9f0cd; border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; font-weight: 600; color: #1c5a1c; margin-left: 12px; }
-
-        /* Previous submissions table */
-        .prev-submissions {
-            margin-top: 24px;
-            border-top: 2px solid #c0dfb0;
-            padding-top: 20px;
-        }
-        .prev-submissions h4 {
-            font-size: 1.1rem;
-            color: #1c5a1c;
-            margin-bottom: 12px;
-        }
-        .prev-table-wrapper {
-            overflow-x: auto;
-            border-radius: 20px;
-            border: 1px solid #d4e8ca;
-            background: #fff;
-        }
-        .prev-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.7rem;
-        }
-        .prev-table th, .prev-table td {
-            border: 1px solid #deecce;
-            padding: 6px 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-        .prev-table th {
-            background: #ecf7e6;
-            color: #1a551a;
-            font-weight: 700;
-        }
-        @media (max-width: 640px) {
-            .prev-table { font-size: 0.65rem; }
-        }
+        .prev-submissions { margin-top: 24px; border-top: 2px solid #c0dfb0; padding-top: 20px; }
+        .prev-table-wrapper { overflow-x: auto; border-radius: 20px; border: 1px solid #d4e8ca; background: #fff; }
+        .prev-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+        .prev-table th, .prev-table td { border: 1px solid #deecce; padding: 6px 8px; text-align: left; vertical-align: top; }
+        .prev-table th { background: #ecf7e6; color: #1a551a; font-weight: 700; }
+        @media (max-width: 640px) { .prev-table { font-size: 0.65rem; } }
+        .history-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2100; justify-content:center; align-items:center; backdrop-filter:blur(4px); }
+        .history-card { background:#fff; max-width:95vw; width:1300px; max-height:85vh; border-radius:32px; overflow:hidden; display:flex; flex-direction:column; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; background:#f0f8ec; border-bottom:2px solid #2e8b57; }
+        .history-header h3 { font-weight:800; color:#1c5a1c; }
+        .close-history { background:none; border:none; font-size:28px; cursor:pointer; color:#5a7a52; }
+        .history-table-wrapper { overflow-x:auto; padding:20px; flex:1; }
+        .history-table { width:100%; border-collapse:collapse; font-size:0.75rem; }
+        .history-table th, .history-table td { border:1px solid #cde2c2; padding:8px 6px; text-align:left; }
+        .history-table th { background:#d9f0cd; color:#154e1a; font-weight:700; }
     </style>
 </head>
 <body>
@@ -313,17 +125,17 @@
         <div id="zoneActiveDisplay" class="zone-active-status"><i class="fas fa-map-pin"></i> Zone Active: E2</div>
     </div>
 
-    <!-- Grower Profile (with update button for total area) -->
+    <!-- Grower Profile (dynamic editability) -->
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-user-check"></i> Grower Profile</div>
         <div class="grid-2col">
-            <div class="input-field"><label><i class="fas fa-user-circle"></i> Grower Name *</label><input type="text" id="growerNameInput" placeholder="e.g. Your Name" readonly></div>
-            <div class="input-field"><label><i class="fas fa-location-dot"></i> Locality (zone based)</label><select id="localitySelect" disabled><option value="">-- Select Locality --</option></select></div>
+            <div class="input-field"><label><i class="fas fa-user-circle"></i> Grower Name *</label><input type="text" id="growerNameInput" placeholder="e.g. Your Name"></div>
+            <div class="input-field"><label><i class="fas fa-location-dot"></i> Locality (zone based)</label><select id="localitySelect"><option value="">-- Select Locality --</option></select></div>
             <div class="input-field">
                 <label><i class="fas fa-expand-alt"></i> Total Greenhouse Area (m²)</label>
                 <div class="area-with-button">
-                    <input type="number" id="totalAreaMain" step="0.01" placeholder="Total area (all greenhouses)" readonly>
-                    <button id="editAreaBtn" class="edit-area-btn"><i class="fas fa-pencil-alt"></i> Update</button>
+                    <input type="number" id="totalAreaMain" step="0.01" placeholder="Total area (all greenhouses)">
+                    <button id="editAreaBtn" class="edit-area-btn" style="display: none;"><i class="fas fa-pencil-alt"></i> Update</button>
                 </div>
             </div>
         </div>
@@ -349,7 +161,7 @@
             <table class="prev-table" id="prevSubmissionsTable">
                 <thead id="prevTableHead"></thead>
                 <tbody id="prevTableBody"></tbody>
-            </tr>
+            </table>
         </div>
         <div id="noPrevDataMsg" style="text-align:center; padding:20px; color:#5a7a52;">No previous data found.</div>
     </div>
@@ -359,13 +171,13 @@
 </div>
 
 <!-- HISTORY MODAL -->
-<div id="historyModal" class="history-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2100; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
-    <div class="history-card" style="background:#fff; max-width:95vw; width:1300px; max-height:85vh; border-radius:32px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
-        <div class="history-header" style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px; background:#f0f8ec; border-bottom:2px solid #2e8b57;">
-            <h3 style="font-weight:800; color:#1c5a1c;"><i class="fas fa-history"></i> My Detailed History</h3>
-            <button class="close-history" id="closeHistoryBtn" style="background:none; border:none; font-size:28px; cursor:pointer; color:#5a7a52;">&times;</button>
+<div id="historyModal" class="history-modal">
+    <div class="history-card">
+        <div class="history-header">
+            <h3><i class="fas fa-history"></i> My Detailed History</h3>
+            <button class="close-history" id="closeHistoryBtn">&times;</button>
         </div>
-        <div class="history-table-wrapper" style="overflow-x:auto; padding:20px; flex:1;">
+        <div class="history-table-wrapper">
             <div id="historyLoading" style="text-align:center; padding:2rem;"><i class="fas fa-spinner fa-pulse"></i> Loading your data...</div>
             <table id="historyTable" style="width:100%; border-collapse:collapse; font-size:0.75rem; display: none;">
                 <thead id="historyTableHead"></thead>
@@ -380,13 +192,14 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6j0MZnXl1-TZFzAXtQxtpej4vFV22r-7QK1UPpJjusSLm9kfm1QKtvsEKr9Hz-CwCMg/exec';  // ⚠️ REPLACE WITH YOUR URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzThkXWStG8C1rgUEM4aK4XuI-VhbkpCqz9aI3t7pfcD6tRv-o4qnO6toXeGn46CPY-Wg/exec';  // ⚠️ REPLACE WITH YOUR URL
 
     // ======================== GLOBAL STATE ========================
     let isLoggedIn = false;
     let currentZone = "E2";
     let currentGreenhouseIndex = 1;
     let savedGreenhouses = [];
+    let hasExistingData = false;      // NEW: track if user has any submissions
 
     // DOM elements
     const loginOverlay = document.getElementById('loginOverlay');
@@ -422,7 +235,6 @@
     const historyTableBody = document.getElementById('historyTableBody');
     const historyLoading = document.getElementById('historyLoading');
     const historyEmptyMsg = document.getElementById('historyEmptyMsg');
-    // NEW: total area edit button
     const editAreaBtn = document.getElementById('editAreaBtn');
 
     // Helper functions
@@ -447,6 +259,167 @@
         return `${dateTimeObj.year}-${dateTimeObj.month}-${dateTimeObj.day} ${dateTimeObj.hour}:${dateTimeObj.minute}:${dateTimeObj.second}`;
     }
 
+    // ----------------------- SET PROFILE EDITABILITY -----------------------
+    function setProfileEditable(isNewUser) {
+        if (isNewUser) {
+            // New user: all fields editable
+            growerNameInput.readOnly = false;
+            localitySelect.disabled = false;
+            totalAreaMain.readOnly = false;
+            editAreaBtn.style.display = 'none';
+            // Clear any existing values
+            growerNameInput.value = '';
+            localitySelect.innerHTML = '<option value="">-- Select Locality --</option>';
+            totalAreaMain.value = '';
+            // Also hide previous submissions section
+            prevSubSection.style.display = 'none';
+        } else {
+            // Existing user: fields readonly/disabled, show update button for total area
+            growerNameInput.readOnly = true;
+            localitySelect.disabled = true;
+            totalAreaMain.readOnly = true;
+            editAreaBtn.style.display = 'flex'; // show button
+            // total area value will be loaded from profile
+        }
+    }
+
+    // ----------------------- LOAD PREVIOUS SUBMISSIONS & DETERMINE IF NEW USER -----------------------
+    async function loadUserPreviousData() {
+        const username = growerNameInput.value.trim();
+        if (!username) return false;
+        try {
+            const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            const hasData = data.rows && data.rows.length > 0;
+            hasExistingData = hasData;
+
+            if (hasData) {
+                // Build readable table (subset of columns)
+                const headers = data.headers;
+                const displayCols = [0,1,2,3,4,5,6,8,9,11,12,13];
+                const displayNames = headers.filter((_,idx) => displayCols.includes(idx)).map(h => h || "?");
+                prevTableHead.innerHTML = '';
+                const headerRow = document.createElement('tr');
+                displayNames.forEach(name => {
+                    const th = document.createElement('th');
+                    th.textContent = name;
+                    headerRow.appendChild(th);
+                });
+                prevTableHead.appendChild(headerRow);
+
+                prevTableBody.innerHTML = '';
+                data.rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    displayCols.forEach(colIdx => {
+                        const td = document.createElement('td');
+                        let val = row[colIdx];
+                        if (typeof val === 'number' && !isNaN(val)) td.textContent = val.toFixed(2);
+                        else td.textContent = val !== undefined ? val : '';
+                        tr.appendChild(td);
+                    });
+                    prevTableBody.appendChild(tr);
+                });
+                prevSubSection.style.display = 'block';
+                noPrevDataMsg.style.display = 'none';
+            } else {
+                prevSubSection.style.display = 'none';
+            }
+            return hasData;
+        } catch (err) {
+            console.error("Error loading previous data:", err);
+            prevSubSection.style.display = 'none';
+            return false;
+        }
+    }
+
+    // ----------------------- PROFILE: LOAD STORED TOTAL AREA (only for existing users) -----------------------
+    async function loadGrowerProfile() {
+        const username = growerNameInput.value.trim();
+        if (!username) return;
+        try {
+            const url = `${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.totalArea !== null && data.totalArea !== undefined && data.totalArea > 0) {
+                totalAreaMain.value = data.totalArea;
+            }
+        } catch (err) {
+            console.error("Could not load profile:", err);
+        }
+    }
+
+    // ----------------------- UPDATE TOTAL AREA (existing users only) -----------------------
+    let isEditingArea = false;
+    editAreaBtn.onclick = () => {
+        if (isEditingArea) return;
+        const currentValue = parseFloat(totalAreaMain.value) || 0;
+        totalAreaMain.readOnly = false;
+        totalAreaMain.focus();
+        editAreaBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+        editAreaBtn.style.background = "#1f6e44";
+        
+        const saveHandler = async () => {
+            const newValue = parseFloat(totalAreaMain.value);
+            if (isNaN(newValue) || newValue <= 0) {
+                showToast("Please enter a positive number", true);
+                return;
+            }
+            if (newValue <= currentValue) {
+                showToast(`New total area must be greater than current (${currentValue})`, true);
+                return;
+            }
+            const username = growerNameInput.value.trim();
+            if (!username) return;
+            try {
+                const url = `${SCRIPT_URL}?action=updateTotalArea&username=${encodeURIComponent(username)}&newArea=${newValue}`;
+                const response = await fetch(url, { method: 'GET', mode: 'cors' });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(`Total area updated to ${newValue} m²`);
+                    totalAreaMain.value = newValue;
+                    totalAreaMain.readOnly = true;
+                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
+                    editAreaBtn.style.background = "";
+                    isEditingArea = false;
+                    editAreaBtn.removeEventListener('click', saveHandler);
+                    editAreaBtn.addEventListener('click', originalHandler);
+                } else {
+                    showToast("Update failed. Area may not be larger than stored value.", true);
+                    totalAreaMain.readOnly = true;
+                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
+                    editAreaBtn.style.background = "";
+                    isEditingArea = false;
+                    editAreaBtn.removeEventListener('click', saveHandler);
+                    editAreaBtn.addEventListener('click', originalHandler);
+                }
+            } catch (err) {
+                showToast("Server error while updating", true);
+                totalAreaMain.readOnly = true;
+                editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
+                editAreaBtn.style.background = "";
+                isEditingArea = false;
+                editAreaBtn.removeEventListener('click', saveHandler);
+                editAreaBtn.addEventListener('click', originalHandler);
+            }
+        };
+        
+        const originalHandler = editAreaBtn.onclick;
+        editAreaBtn.removeEventListener('click', originalHandler);
+        editAreaBtn.addEventListener('click', saveHandler);
+        isEditingArea = true;
+        
+        const enterHandler = (e) => {
+            if (e.key === 'Enter') {
+                saveHandler();
+                totalAreaMain.removeEventListener('keypress', enterHandler);
+            }
+        };
+        totalAreaMain.addEventListener('keypress', enterHandler);
+    };
+
     // ----------------------- LOGIN -----------------------
     async function performLogin(username, password) {
         if (!username || !password) { loginError.innerText = "❌ Please enter both username and password."; return false; }
@@ -463,9 +436,53 @@
                 loginOverlay.style.display = 'none';
                 mainApp.style.display = 'block';
                 showToast(`✅ Welcome ${username}!`);
-                // Load previous submissions & profile
-                await loadUserPreviousData();
-                await loadGrowerProfile();    // NEW: load stored total area
+                
+                // Determine if user has existing data
+                const hasData = await loadUserPreviousData();
+                if (hasData) {
+                    // Existing user: load profile and set fields to readonly
+                    await loadGrowerProfile();
+                    setProfileEditable(false);
+                    // Also fill locality from most recent submission (if any) - we already have rows in prev data
+                    // We can extract from the first row returned by getUserData
+                    try {
+                        const userDataResp = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
+                        const userData = await userDataResp.json();
+                        if (userData.rows && userData.rows.length > 0) {
+                            const mostRecent = userData.rows[0]; // first row (latest timestamp)
+                            const localityFromHistory = mostRecent[2] || '';
+                            const zoneFromHistory = mostRecent[3] || 'E2';
+                            if (zoneFromHistory !== currentZone) setZone(zoneFromHistory);
+                            else updateLocalityDropdown(currentZone);
+                            if (localityFromHistory) {
+                                let optionExists = false;
+                                for (let i = 0; i < localitySelect.options.length; i++) {
+                                    if (localitySelect.options[i].value === localityFromHistory) {
+                                        localitySelect.value = localityFromHistory;
+                                        optionExists = true;
+                                        break;
+                                    }
+                                }
+                                if (!optionExists) {
+                                    const opt = document.createElement('option');
+                                    opt.value = localityFromHistory;
+                                    opt.textContent = localityFromHistory;
+                                    opt.disabled = true;
+                                    localitySelect.appendChild(opt);
+                                    localitySelect.value = localityFromHistory;
+                                }
+                            }
+                        }
+                    } catch(e) { console.warn(e); }
+                } else {
+                    // New user: make all fields editable
+                    setProfileEditable(true);
+                    // Also set zone to default (E2) and load empty locality dropdown
+                    setZone('E2');
+                    localitySelect.disabled = false;
+                    growerNameInput.value = username; // keep username but allow edit? Actually grower name should be the same as login, but we allow edit? We'll keep it editable but prefill.
+                    // For new user, we might want to prefill grower name with username, but they can change it.
+                }
                 return true;
             } else {
                 loginError.innerText = "❌ Invalid username or password. Please try again.";
@@ -491,14 +508,11 @@
         updateSavedListDisplay();
         growerNameInput.value = '';
         welcomeUsernameSpan.innerText = 'User';
-        localitySelect.disabled = true;
-        totalAreaMain.readOnly = true;
-        totalAreaMain.value = '';
         prevSubSection.style.display = 'none';
         showToast("Logged out successfully.");
     };
 
-    // ======================== CROP & HARVEST HELPERS (unchanged) ========================
+    // ======================== CROP & HARVEST HELPERS (unchanged from original) ========================
     const cropIconMap = { "Tomato": "🍅", "Sweet Pepper": "🫑", "English Cucumber": "🥒", "Lettuce": "🥬", "Cabbage": "🥬", "Cauliflower": "🥦", "Melon": "🍈", "Shallot": "🧅", "Greens": "🌿", "Okra": "🌱", "Chillies": "🌶️", "Eggplant": "🍆" };
     const weightBasedCrops = ["Tomato", "Sweet Pepper", "Melon", "Shallot", "Greens", "Okra", "Chillies", "Eggplant"];
     const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce"];
@@ -516,7 +530,6 @@
     }
     function setZone(zone) { currentZone = zone; zoneActiveSpan.innerHTML = `<i class="fas fa-map-pin"></i> Zone Active: ${zone}`; updateLocalityDropdown(zone); zoneBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.zone === zone)); showToast(`Zone ${zone} activated`); }
 
-    // ---------- HARVEST UI (unchanged) ----------
     function buildHarvestDetailsUI(container, cropType, existingWeeklyValue = 0, existingUnit = "kg", existingMonths = 0) { 
         if (!cropType) return;
         const isWeightCrop = weightBasedCrops.includes(cropType);
@@ -631,17 +644,47 @@
     }
     window.removeSavedGreenhouse = function(index) { savedGreenhouses.splice(index,1); updateSavedListDisplay(); showToast("Greenhouse removed"); };
 
+    // Helper: update total area in profile sheet (for new users on first submission)
+    async function updateGrowerTotalAreaOnServer(username, newArea) {
+        if (!username || !newArea || newArea <= 0) return false;
+        try {
+            const url = `${SCRIPT_URL}?action=updateTotalArea&username=${encodeURIComponent(username)}&newArea=${newArea}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            const result = await response.json();
+            return result.success === true;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
     async function submitAllData() {
-        const grower = growerNameInput.value.trim();
-        const locality = localitySelect.value;
-        if (!grower) { showToast("Enter grower name", true); return; }
-        if (!locality) { showToast("Select locality", true); return; }
-        const totalAreaGlobal = parseFloat(totalAreaMain.value) || 0;
+        let grower = growerNameInput.value.trim();
+        let locality = localitySelect.value;
+        let totalAreaGlobal = parseFloat(totalAreaMain.value) || 0;
+        
+        // Validation for new user: they must fill all fields
+        if (!grower) { showToast("Please enter your Grower Name", true); return; }
+        if (!locality) { showToast("Please select a Locality", true); return; }
+        if (!totalAreaGlobal || totalAreaGlobal <= 0) { showToast("Please enter Total Greenhouse Area (m²)", true); return; }
+
         let allGreenhouses = [...savedGreenhouses];
         const currentFormData = collectActiveFormData();
         const currentCropValid = currentFormData.crop && currentFormData.area && parseFloat(currentFormData.area) > 0 && currentFormData.stage;
-        if (currentCropValid) { if (!validateHarvestMandatory(currentFormData, currentFormData.stage, currentFormData.crop)) return; allGreenhouses.push(currentFormData); }
+        if (currentCropValid) { 
+            if (!validateHarvestMandatory(currentFormData, currentFormData.stage, currentFormData.crop)) return; 
+            allGreenhouses.push(currentFormData); 
+        }
         if (allGreenhouses.length === 0) { showToast("No greenhouses to submit. Add at least one.", true); return; }
+
+        // For new user (hasExistingData === false), store the total area in profile sheet before submission
+        if (!hasExistingData) {
+            const profileUpdated = await updateGrowerTotalAreaOnServer(grower, totalAreaGlobal);
+            if (!profileUpdated) {
+                showToast("Warning: Could not save total area profile, but data will still be submitted.", false);
+            }
+        }
+
         let rows = []; let idCounter = 1;
         for (let gh of allGreenhouses) {
             let finalCrop = gh.crop;
@@ -668,15 +711,48 @@
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: mauritiusTimestamp, rows }) });
             showToast(`✅ Data submitted! ${rows.length} greenhouse(s) logged.`);
             savedGreenhouses = []; currentGreenhouseIndex = 1; renderBlankActiveForm(); updateSavedListDisplay();
-            // Reload previous data to include new entries
-            await loadUserPreviousData();
-            // Also reload profile in case total area changed? (but total area is per grower, not per submission)
+            // After submission, reload previous data (now user has data) and set profile to readonly
+            const hasDataNow = await loadUserPreviousData();
+            if (hasDataNow) {
+                setProfileEditable(false);
+                // Also reload profile to get the stored total area (if any)
+                await loadGrowerProfile();
+                // Reload locality from most recent submission
+                const userDataResp = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(grower)}`);
+                const userData = await userDataResp.json();
+                if (userData.rows && userData.rows.length > 0) {
+                    const mostRecent = userData.rows[0];
+                    const localityFromHistory = mostRecent[2] || '';
+                    const zoneFromHistory = mostRecent[3] || currentZone;
+                    if (zoneFromHistory !== currentZone) setZone(zoneFromHistory);
+                    else updateLocalityDropdown(currentZone);
+                    if (localityFromHistory) {
+                        let optionExists = false;
+                        for (let i = 0; i < localitySelect.options.length; i++) {
+                            if (localitySelect.options[i].value === localityFromHistory) {
+                                localitySelect.value = localityFromHistory;
+                                optionExists = true;
+                                break;
+                            }
+                        }
+                        if (!optionExists) {
+                            const opt = document.createElement('option');
+                            opt.value = localityFromHistory;
+                            opt.textContent = localityFromHistory;
+                            opt.disabled = true;
+                            localitySelect.appendChild(opt);
+                            localitySelect.value = localityFromHistory;
+                        }
+                    }
+                }
+            }
         } catch (e) { showToast("Submitted (check sheet)", false); } finally { submitBtnElem.disabled = false; submitBtnElem.innerHTML = origText; }
     }
 
     accessBtn.onclick = () => {
-        if (!growerNameInput.value.trim()) { showToast("Please enter Grower Name first", true); return; }
+        if (!growerNameInput.value.trim()) { showToast("Please enter your Grower Name first", true); return; }
         if (!localitySelect.value) { showToast("Please select a Locality", true); return; }
+        if (!totalAreaMain.value || parseFloat(totalAreaMain.value) <= 0) { showToast("Please enter Total Greenhouse Area (m²)", true); return; }
         greenhouseDashboard.classList.remove('hidden-section');
         renderBlankActiveForm(); updateSavedListDisplay(); showToast("Tracker active · Harvest details mandatory for Harvesting stage");
     };
@@ -685,147 +761,6 @@
     zoneBtns.forEach(btn => btn.addEventListener('click', () => setZone(btn.dataset.zone)));
     setZone('E2');
     greenhouseDashboard.classList.add('hidden-section');
-
-    // ======================== LOAD PREVIOUS SUBMISSIONS (read-only table) ========================
-    async function loadUserPreviousData() {
-        const username = growerNameInput.value.trim();
-        if (!username) return;
-        try {
-            const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
-            const response = await fetch(url, { method: 'GET', mode: 'cors' });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            if (!data.rows || data.rows.length === 0) {
-                prevSubSection.style.display = 'none';
-                return;
-            }
-
-            // Build readable table (subset of columns)
-            const headers = data.headers;
-            const displayCols = [0,1,2,3,4,5,6,8,9,11,12,13];
-            const displayNames = headers.filter((_,idx) => displayCols.includes(idx)).map(h => h || "?");
-            prevTableHead.innerHTML = '';
-            const headerRow = document.createElement('tr');
-            displayNames.forEach(name => {
-                const th = document.createElement('th');
-                th.textContent = name;
-                headerRow.appendChild(th);
-            });
-            prevTableHead.appendChild(headerRow);
-
-            prevTableBody.innerHTML = '';
-            data.rows.forEach(row => {
-                const tr = document.createElement('tr');
-                displayCols.forEach(colIdx => {
-                    const td = document.createElement('td');
-                    let val = row[colIdx];
-                    if (typeof val === 'number' && !isNaN(val)) td.textContent = val.toFixed(2);
-                    else td.textContent = val !== undefined ? val : '';
-                    tr.appendChild(td);
-                });
-                prevTableBody.appendChild(tr);
-            });
-
-            prevSubSection.style.display = 'block';
-            noPrevDataMsg.style.display = 'none';
-        } catch (err) {
-            console.error(err);
-            prevSubSection.style.display = 'none';
-        }
-    }
-
-    // ======================== PROFILE: LOAD STORED TOTAL AREA ========================
-    async function loadGrowerProfile() {
-        const username = growerNameInput.value.trim();
-        if (!username) return;
-        try {
-            const url = `${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`;
-            const response = await fetch(url, { method: 'GET', mode: 'cors' });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            if (data.totalArea !== null && data.totalArea !== undefined && data.totalArea > 0) {
-                totalAreaMain.value = data.totalArea;
-            }
-            // else keep what was set from previous submissions (fallback)
-        } catch (err) {
-            console.error("Could not load profile:", err);
-        }
-    }
-
-    // ======================== EDIT TOTAL AREA (increase only) ========================
-    let isEditingArea = false;
-    editAreaBtn.onclick = () => {
-        if (isEditingArea) return; // already editing
-        const currentValue = parseFloat(totalAreaMain.value) || 0;
-        totalAreaMain.readOnly = false;
-        totalAreaMain.focus();
-        editAreaBtn.innerHTML = '<i class="fas fa-save"></i> Save';
-        editAreaBtn.style.background = "#1f6e44";
-        
-        // Temporarily override the button action to save the new value
-        const saveHandler = async () => {
-            const newValue = parseFloat(totalAreaMain.value);
-            if (isNaN(newValue) || newValue <= 0) {
-                showToast("Please enter a positive number", true);
-                return;
-            }
-            if (newValue <= currentValue) {
-                showToast(`New total area must be greater than current (${currentValue})`, true);
-                return;
-            }
-            const username = growerNameInput.value.trim();
-            if (!username) return;
-            try {
-                const url = `${SCRIPT_URL}?action=updateTotalArea&username=${encodeURIComponent(username)}&newArea=${newValue}`;
-                const response = await fetch(url, { method: 'GET', mode: 'cors' });
-                const result = await response.json();
-                if (result.success) {
-                    showToast(`Total area updated to ${newValue} m²`);
-                    totalAreaMain.value = newValue;
-                    totalAreaMain.readOnly = true;
-                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
-                    editAreaBtn.style.background = "";
-                    isEditingArea = false;
-                    editAreaBtn.onclick = arguments.callee; // restore original handler? We'll reassign after
-                    // re-bind the correct event
-                    editAreaBtn.removeEventListener('click', saveHandler);
-                    editAreaBtn.addEventListener('click', originalHandler);
-                } else {
-                    showToast("Update failed. Area may not be larger than stored value.", true);
-                    totalAreaMain.readOnly = true;
-                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
-                    editAreaBtn.style.background = "";
-                    isEditingArea = false;
-                    editAreaBtn.removeEventListener('click', saveHandler);
-                    editAreaBtn.addEventListener('click', originalHandler);
-                }
-            } catch (err) {
-                showToast("Server error while updating", true);
-                totalAreaMain.readOnly = true;
-                editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
-                editAreaBtn.style.background = "";
-                isEditingArea = false;
-                editAreaBtn.removeEventListener('click', saveHandler);
-                editAreaBtn.addEventListener('click', originalHandler);
-            }
-        };
-        
-        const originalHandler = editAreaBtn.onclick;
-        editAreaBtn.removeEventListener('click', originalHandler);
-        editAreaBtn.addEventListener('click', saveHandler);
-        isEditingArea = true;
-        
-        // Also allow pressing Enter to save
-        const enterHandler = (e) => {
-            if (e.key === 'Enter') {
-                saveHandler();
-                totalAreaMain.removeEventListener('keypress', enterHandler);
-            }
-        };
-        totalAreaMain.addEventListener('keypress', enterHandler);
-        
-        // If user clicks outside or blurs, we could cancel? But we keep simple: only save via button.
-    };
 
     // ======================== HISTORY MODAL ========================
     async function loadUserHistory() {
@@ -885,8 +820,6 @@
     viewHistoryBtn.onclick = loadUserHistory;
     closeHistoryBtn.onclick = () => { historyModal.style.display = 'none'; };
     historyModal.addEventListener('click', (e) => { if (e.target === historyModal) historyModal.style.display = 'none'; });
-
-    prevSubSection.style.display = 'none';
 </script>
 </body>
 </html>
