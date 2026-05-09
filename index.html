@@ -24,7 +24,6 @@
             box-shadow: 0 15px 30px -8px rgba(0,0,0,0.2);
             border: 1px solid #cfebc7;
         }
-        /* Login modal */
         .login-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -51,7 +50,8 @@
         .input-group input { width: 100%; padding: 12px 14px; border: 2px solid #deecce; border-radius: 40px; font-size: 0.9rem; }
         .login-btn { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; width: 100%; padding: 12px; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .login-error { color: #d9534f; margin-top: 12px; font-size: 0.85rem; }
-        .logout-btn { background: #f0f3ef; border: 1px solid #c0dfb0; padding: 6px 16px; border-radius: 40px; font-weight: 600; cursor: pointer; margin-left: 12px; }
+        .logout-btn, .history-btn { background: #f0f3ef; border: 1px solid #c0dfb0; padding: 6px 16px; border-radius: 40px; font-weight: 600; cursor: pointer; margin-left: 12px; }
+        .history-btn { background: #e3f2df; border-color: #2e8b57; color: #1c5a1c; }
         .welcome-banner { background: linear-gradient(110deg, #e9f7e3, #d4ebcd); border-radius: 28px; padding: 20px 24px; margin-bottom: 20px; text-align: center; font-size: 1.8rem; font-weight: 800; color: #1c5a1c; border-left: 8px solid #2e8b57; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
         .welcome-banner i { margin-right: 12px; color: #2e8b57; }
         .section-title { font-size: 1.25rem; font-weight: 700; color: #1c5a1c; display: flex; align-items: center; gap: 10px; margin-bottom: 18px; border-left: 5px solid #2e8b57; padding-left: 14px; }
@@ -64,12 +64,11 @@
         .input-field { margin-bottom: 4px; }
         .input-field label { font-weight: 600; font-size: 0.75rem; color: #235b1e; display: block; margin-bottom: 5px; }
         .input-field input, .input-field select { width: 100%; padding: 10px 12px; border: 2px solid #deecce; border-radius: 20px; font-size: 0.85rem; background: #ffffff; }
-        .btn-lg { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; font-weight: 700; padding: 12px 20px; border-radius: 50px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; justify-content: center; width: 100%; }
+        .input-field input:disabled, .input-field select:disabled { background: #eef4ea; color: #3a5e3a; cursor: not-allowed; }
+        .btn-lg { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; font-weight: 700; padding: 12px 20px; border-radius: 50px; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; justify-content: center; width: 100%; }
         .btn-secondary { background: #e9ecef; color: #1f5a22; border: none; padding: 10px 16px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; justify-content: center; width: 100%; }
         .greenhouse-active-card { background: #ffffff; border-radius: 24px; padding: 16px; border: 2px solid #2e8b57; box-shadow: 0 6px 14px rgba(0,0,0,0.05); margin-bottom: 18px; }
         .saved-item { background: #f8faf5; border-radius: 18px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
-        
-        /* === REFINED HARVEST SECTION === */
         .harvest-card {
             background: #ffffff;
             border-radius: 24px;
@@ -212,7 +211,43 @@
         .footer-note { text-align: center; font-size: 10px; color: #cbe5c0; margin-top: 10px; }
         .gh-badge { background: #307a34; padding: 4px 14px; border-radius: 40px; color: white; font-weight: 600; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; }
         .realtime-tag { display: inline-block; background: #d9f0cd; border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; font-weight: 600; color: #1c5a1c; margin-left: 12px; }
-        @media (max-width: 480px) { .welcome-banner { font-size: 1.2rem; padding: 14px 16px; } .harvest-stat-card { min-width: 100%; } }
+
+        /* Previous submissions table (read only) */
+        .prev-submissions {
+            margin-top: 24px;
+            border-top: 2px solid #c0dfb0;
+            padding-top: 20px;
+        }
+        .prev-submissions h4 {
+            font-size: 1.1rem;
+            color: #1c5a1c;
+            margin-bottom: 12px;
+        }
+        .prev-table-wrapper {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid #d4e8ca;
+            background: #fff;
+        }
+        .prev-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+        .prev-table th, .prev-table td {
+            border: 1px solid #deecce;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .prev-table th {
+            background: #ecf7e6;
+            color: #1a551a;
+            font-weight: 700;
+        }
+        @media (max-width: 640px) {
+            .prev-table { font-size: 0.65rem; }
+        }
     </style>
 </head>
 <body>
@@ -238,7 +273,10 @@
                 <div style="background: #1f5a22; width: 44px; height: 44px; border-radius: 20px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-leaf" style="font-size: 24px; color: white;"></i></div>
                 <div><h1 style="font-size: 1.4rem; font-weight: 800; background: linear-gradient(130deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Hydroponic Data Tracker</h1><p style="font-size: 0.7rem;"><i class="fas fa-chart-simple"></i> GREEN EDITION | Harvest Pro <span class="realtime-tag"><i class="fas fa-chart-line"></i> Real Time Insights</span></p></div>
             </div>
-            <div><button id="logoutButton" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
+            <div>
+                <button id="viewHistoryBtn" class="history-btn"><i class="fas fa-table-list"></i> 📋 My Data History</button>
+                <button id="logoutButton" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
         </div>
     </div>
 
@@ -254,37 +292,68 @@
         <div id="zoneActiveDisplay" class="zone-active-status"><i class="fas fa-map-pin"></i> Zone Active: E2</div>
     </div>
 
-    <!-- Grower Profile -->
+    <!-- Grower Profile (now with readonly/disabled fields) -->
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-user-check"></i> Grower Profile</div>
         <div class="grid-2col">
-            <div class="input-field"><label><i class="fas fa-user-circle"></i> Grower Name *</label><input type="text" id="growerNameInput" placeholder="e.g. Your Name"></div>
-            <div class="input-field"><label><i class="fas fa-location-dot"></i> Locality (zone based)</label><select id="localitySelect"><option value="">-- Select Locality --</option></select></div>
-            <div class="input-field"><label><i class="fas fa-expand-alt"></i> Total Greenhouse Area (m²)</label><input type="number" id="totalAreaMain" step="0.01" placeholder="Total area (all greenhouses)"></div>
+            <div class="input-field"><label><i class="fas fa-user-circle"></i> Grower Name *</label><input type="text" id="growerNameInput" placeholder="e.g. Your Name" readonly></div>
+            <div class="input-field"><label><i class="fas fa-location-dot"></i> Locality (zone based)</label><select id="localitySelect" disabled><option value="">-- Select Locality --</option></select></div>
+            <div class="input-field"><label><i class="fas fa-expand-alt"></i> Total Greenhouse Area (m²)</label><input type="number" id="totalAreaMain" step="0.01" placeholder="Total area (all greenhouses)" readonly></div>
         </div>
         <button id="accessTrackerBtn" class="btn-lg" style="margin-top: 12px;"><i class="fas fa-charging-station"></i> Access Greenhouse Tracker</button>
     </div>
 
-    <!-- Greenhouse Details -->
+    <!-- Greenhouse Details (for NEW submissions) -->
     <div id="greenhouseDashboard" class="hidden-section">
         <div class="glass-card">
-            <div class="section-title"><i class="fas fa-greenhouse"></i> Greenhouse Details</div>
+            <div class="section-title"><i class="fas fa-greenhouse"></i> Add New Greenhouse Data</div>
             <div id="activeGreenhouseContainer" class="greenhouse-active-card"></div>
             <button id="addGreenhouseBtn" class="btn-secondary" style="margin-bottom: 18px;"><i class="fas fa-save"></i> + Add Greenhouse (save current & start new)</button>
             <div id="savedGreenhousesList" style="margin-top: 6px;"></div>
-            <button id="finalSubmitDataBtn" class="btn-lg" style="margin-top: 20px; background: #1f672a;"><i class="fas fa-cloud-upload-alt"></i> Submit Data</button>
+            <button id="finalSubmitDataBtn" class="btn-lg" style="margin-top: 20px; background: #1f672a;"><i class="fas fa-cloud-upload-alt"></i> Submit New Data</button>
             <div id="insightsContainer" class="insights-panel" style="display: none; margin-top: 18px;"><div id="insightContent"></div></div>
         </div>
     </div>
+
+    <!-- PREVIOUS SUBMISSIONS (READ ONLY) -->
+    <div id="previousSubmissionsSection" class="glass-card prev-submissions" style="display: none;">
+        <div class="section-title"><i class="fas fa-clock-rotate-left"></i> 📜 Previous Submissions (View Only)</div>
+        <div class="prev-table-wrapper">
+            <table class="prev-table" id="prevSubmissionsTable">
+                <thead id="prevTableHead"></thead>
+                <tbody id="prevTableBody"></tbody>
+            </table>
+        </div>
+        <div id="noPrevDataMsg" style="text-align:center; padding:20px; color:#5a7a52;">No previous data found.</div>
+    </div>
+
     <div class="footer-note"><i class="fas fa-leaf"></i> Hydroponic Data Tracker – All Rights Reserved 2026</div>
 </div>
+</div>
+
+<!-- HISTORY MODAL (same as before) -->
+<div id="historyModal" class="history-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2100; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
+    <div class="history-card" style="background:#fff; max-width:95vw; width:1300px; max-height:85vh; border-radius:32px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+        <div class="history-header" style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px; background:#f0f8ec; border-bottom:2px solid #2e8b57;">
+            <h3 style="font-weight:800; color:#1c5a1c;"><i class="fas fa-history"></i> My Detailed History</h3>
+            <button class="close-history" id="closeHistoryBtn" style="background:none; border:none; font-size:28px; cursor:pointer; color:#5a7a52;">&times;</button>
+        </div>
+        <div class="history-table-wrapper" style="overflow-x:auto; padding:20px; flex:1;">
+            <div id="historyLoading" style="text-align:center; padding:2rem;"><i class="fas fa-spinner fa-pulse"></i> Loading your data...</div>
+            <table id="historyTable" style="width:100%; border-collapse:collapse; font-size:0.75rem; display: none;">
+                <thead id="historyTableHead"></thead>
+                <tbody id="historyTableBody"></tbody>
+            </table>
+            <div id="historyEmptyMsg" style="display:none; text-align:center; padding:2rem; color:#5a7a52;">No previous submissions found.</div>
+        </div>
+    </div>
 </div>
 
 <div id="globalToast" class="toast-msg"><i class="fas fa-check-circle"></i> <span id="toastText"></span></div>
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyli0MrssqM-FpWc0QuTHWVpUEUat4hxeR5aQgpzcoenHi-WmkjkF4hSw22cWwC-3_3MA/exec';  // ⚠️ REPLACE WITH YOUR URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdh5jUVXeG02_Nuu3LZIVE8maFvoXWzBQHSKB728zkid0wvRzXcqk3V_6LAJIsqyFPmA/exec';  // ⚠️ REPLACE WITH YOUR URL
 
     // ======================== GLOBAL STATE ========================
     let isLoggedIn = false;
@@ -314,6 +383,20 @@
     const insightsContainer = document.getElementById('insightsContainer');
     const insightContent = document.getElementById('insightContent');
     const savedListDiv = document.getElementById('savedGreenhousesList');
+    // New elements for previous submissions
+    const prevSubSection = document.getElementById('previousSubmissionsSection');
+    const prevTableHead = document.getElementById('prevTableHead');
+    const prevTableBody = document.getElementById('prevTableBody');
+    const noPrevDataMsg = document.getElementById('noPrevDataMsg');
+    // History modal
+    const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+    const historyModal = document.getElementById('historyModal');
+    const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+    const historyTable = document.getElementById('historyTable');
+    const historyTableHead = document.getElementById('historyTableHead');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const historyLoading = document.getElementById('historyLoading');
+    const historyEmptyMsg = document.getElementById('historyEmptyMsg');
 
     // Helper functions
     function showToast(msg, isError = false) {
@@ -324,19 +407,12 @@
         setTimeout(() => toast.classList.remove('show'), 2800);
     }
 
-    // ----------------------- MAURITIAN TIMESTAMP -----------------------
     function getMauritiusTimestamp() {
         const now = new Date();
-        // Convert to Mauritius time (Indian/Mauritius, UTC+4)
         const formatter = new Intl.DateTimeFormat('fr-CA', {
             timeZone: 'Indian/Mauritius',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
         });
         const parts = formatter.formatToParts(now);
         const dateTimeObj = {};
@@ -344,7 +420,7 @@
         return `${dateTimeObj.year}-${dateTimeObj.month}-${dateTimeObj.day} ${dateTimeObj.hour}:${dateTimeObj.minute}:${dateTimeObj.second}`;
     }
 
-    // ----------------------- LOGIN LOGIC -----------------------
+    // ----------------------- LOGIN -----------------------
     async function performLogin(username, password) {
         if (!username || !password) { loginError.innerText = "❌ Please enter both username and password."; return false; }
         loginError.innerText = "";
@@ -360,6 +436,8 @@
                 loginOverlay.style.display = 'none';
                 mainApp.style.display = 'block';
                 showToast(`✅ Welcome ${username}!`);
+                // After login, load user's previous data to fill profile and show read-only table
+                await loadUserPreviousData();
                 return true;
             } else {
                 loginError.innerText = "❌ Invalid username or password. Please try again.";
@@ -367,7 +445,7 @@
             }
         } catch (err) {
             console.error(err);
-            loginError.innerText = "⚠️ Network error: Could not reach server. Check your internet connection and Apps Script deployment.";
+            loginError.innerText = "⚠️ Network error: Could not reach server.";
             return false;
         }
     }
@@ -385,10 +463,14 @@
         updateSavedListDisplay();
         growerNameInput.value = '';
         welcomeUsernameSpan.innerText = 'User';
+        // Reset readonly fields
+        localitySelect.disabled = true;
+        totalAreaMain.readOnly = true;
+        prevSubSection.style.display = 'none';
         showToast("Logged out successfully.");
     };
 
-    // ======================== CROP & HARVEST HELPERS ========================
+    // ======================== CROP & HARVEST HELPERS (unchanged) ========================
     const cropIconMap = { "Tomato": "🍅", "Sweet Pepper": "🫑", "English Cucumber": "🥒", "Lettuce": "🥬", "Cabbage": "🥬", "Cauliflower": "🥦", "Melon": "🍈", "Shallot": "🧅", "Greens": "🌿", "Okra": "🌱", "Chillies": "🌶️", "Eggplant": "🍆" };
     const weightBasedCrops = ["Tomato", "Sweet Pepper", "Melon", "Shallot", "Greens", "Okra", "Chillies", "Eggplant"];
     const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce"];
@@ -399,46 +481,28 @@
     const tomatoTypes = ["Cooking","Salad","Cherry"];
     const monthsList = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-    function updateLocalityDropdown(zone) { const locs = localityMap[zone] || []; localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; locs.forEach(l => { const opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); localitySelect.value = ""; }
+    function updateLocalityDropdown(zone) { 
+        const locs = localityMap[zone] || []; 
+        localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; 
+        locs.forEach(l => { const opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); 
+        // Do not reset value if already set from previous data
+    }
     function setZone(zone) { currentZone = zone; zoneActiveSpan.innerHTML = `<i class="fas fa-map-pin"></i> Zone Active: ${zone}`; updateLocalityDropdown(zone); zoneBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.zone === zone)); showToast(`Zone ${zone} activated`); }
 
-    // ---------- REFINED HARVEST SECTION UI ----------
-    function buildHarvestDetailsUI(container, cropType, existingWeeklyValue = 0, existingUnit = "kg", existingMonths = 0) {
+    // ---------- HARVEST UI (unchanged) ----------
+    function buildHarvestDetailsUI(container, cropType, existingWeeklyValue = 0, existingUnit = "kg", existingMonths = 0) { 
         if (!cropType) return;
         const isWeightCrop = weightBasedCrops.includes(cropType);
         const isUnitCrop = unitBasedCrops.includes(cropType);
         let weeklyHtml = '';
         if (isWeightCrop) {
-            weeklyHtml = `
-                <div class="harvest-stat-card">
-                    <div class="harvest-stat-label"><i class="fas fa-chart-line"></i> Average Yield / Week</div>
-                    <div class="weekly-input-wrapper">
-                        <input type="number" step="0.01" id="weeklyYieldValue" placeholder="e.g., 250" value="${existingWeeklyValue}">
-                        <div class="unit-group" id="weeklyUnitGroup">
-                            <label><input type="radio" name="weeklyUnit" value="kg" ${existingUnit === 'kg' ? 'checked' : ''}> kg/week</label>
-                            <label><input type="radio" name="weeklyUnit" value="crates" ${existingUnit === 'crates' ? 'checked' : ''}> crates/week</label>
-                        </div>
-                    </div>
-                </div>`;
+            weeklyHtml = `<div class="harvest-stat-card"><div class="harvest-stat-label"><i class="fas fa-chart-line"></i> Average Yield / Week</div><div class="weekly-input-wrapper"><input type="number" step="0.01" id="weeklyYieldValue" placeholder="e.g., 250" value="${existingWeeklyValue}"><div class="unit-group" id="weeklyUnitGroup"><label><input type="radio" name="weeklyUnit" value="kg" ${existingUnit === 'kg' ? 'checked' : ''}> kg/week</label><label><input type="radio" name="weeklyUnit" value="crates" ${existingUnit === 'crates' ? 'checked' : ''}> crates/week</label></div></div></div>`;
         } else if (isUnitCrop) {
             weeklyHtml = `<div class="harvest-stat-card"><div class="harvest-stat-label"><i class="fas fa-chart-line"></i> Average Yield / Week (units)</div><input type="number" step="0.01" id="weeklyYieldValue" class="harvest-months-input" placeholder="units per week" value="${existingWeeklyValue}"></div>`;
         } else {
             weeklyHtml = `<div class="harvest-stat-card"><div class="harvest-stat-label"><i class="fas fa-chart-line"></i> Average Yield / Week (kg)</div><input type="number" step="0.01" id="weeklyYieldValue" class="harvest-months-input" placeholder="kg/week" value="${existingWeeklyValue}"></div>`;
         }
-        const harvestHtml = `
-            <div id="dynamicHarvestSection" class="harvest-card">
-                <div class="harvest-header"><i class="fas fa-clipboard-list"></i> 📋 Harvest Details</div>
-                <div class="harvest-stats-row">
-                    ${weeklyHtml}
-                    <div class="harvest-stat-card">
-                        <div class="harvest-stat-label"><i class="fas fa-calendar-week"></i> Harvesting Months (since start)</div>
-                        <input type="number" step="1" min="1" id="harvestMonthsSinceStart" class="harvest-months-input" placeholder="e.g., 3 months" value="${existingMonths}">
-                        <div style="font-size:0.7rem; margin-top:6px; color:#5a7a52;"><i class="fas fa-info-circle"></i> Number of months from first harvest till today</div>
-                    </div>
-                </div>
-                <div class="month-grid-title"><i class="fas fa-calendar-alt"></i> 📅 Monthly Harvest (kg / units / crates)</div>
-                <div class="month-grid" id="monthGridContainer"></div>
-            </div>`;
+        const harvestHtml = `<div id="dynamicHarvestSection" class="harvest-card"><div class="harvest-header"><i class="fas fa-clipboard-list"></i> 📋 Harvest Details</div><div class="harvest-stats-row">${weeklyHtml}<div class="harvest-stat-card"><div class="harvest-stat-label"><i class="fas fa-calendar-week"></i> Harvesting Months (since start)</div><input type="number" step="1" min="1" id="harvestMonthsSinceStart" class="harvest-months-input" placeholder="e.g., 3 months" value="${existingMonths}"><div style="font-size:0.7rem; margin-top:6px; color:#5a7a52;"><i class="fas fa-info-circle"></i> Number of months from first harvest till today</div></div></div><div class="month-grid-title"><i class="fas fa-calendar-alt"></i> 📅 Monthly Harvest (kg / units / crates)</div><div class="month-grid" id="monthGridContainer"></div></div>`;
         const existingSec = container.querySelector('#dynamicHarvestSection');
         if (existingSec) existingSec.remove();
         container.insertAdjacentHTML('beforeend', harvestHtml);
@@ -448,7 +512,7 @@
         monthGridContainer.innerHTML = monthsHtml;
     }
 
-    function getActiveHarvestDetails() {
+    function getActiveHarvestDetails() { 
         const weeklyValEl = document.getElementById('weeklyYieldValue');
         const weeklyVal = weeklyValEl ? parseFloat(weeklyValEl.value) || 0 : 0;
         let weeklyUnit = "kg";
@@ -484,7 +548,7 @@
     }
 
     function renderBlankActiveForm() {
-        const html = `<div style="display: flex; justify-content: space-between; margin-bottom: 12px;"><div class="gh-badge"><i class="fas fa-seedling"></i> Greenhouse ${currentGreenhouseIndex}</div></div>
+        const html = `<div style="display: flex; justify-content: space-between; margin-bottom: 12px;"><div class="gh-badge"><i class="fas fa-seedling"></i> New Greenhouse ${currentGreenhouseIndex}</div></div>
             <div class="grid-2col">
                 <div class="input-field"><label>📐 Area (m²) *</label><input type="number" step="0.01" id="gh_area" value=""></div>
                 <div class="input-field"><label>🌱 Crop *</label><select id="gh_crop"><option value="">Select Crop</option>${cropOptionsList.map(c => `<option value="${c}">${cropIconMap[c]||'🌿'} ${c}</option>`).join('')}</select></div>
@@ -529,8 +593,8 @@
     }
 
     function updateSavedListDisplay() {
-        if (savedGreenhouses.length === 0) { savedListDiv.innerHTML = '<div style="padding: 8px; color: #5a6e5a; font-size:0.8rem;">No greenhouses saved yet. Fill the form above and click "Add Greenhouse".</div>'; return; }
-        let html = '<div style="font-weight:600; margin-bottom: 8px;"><i class="fas fa-list"></i> Saved Greenhouses</div>';
+        if (savedGreenhouses.length === 0) { savedListDiv.innerHTML = '<div style="padding: 8px; color: #5a6e5a; font-size:0.8rem;">No new greenhouses added yet. Fill the form above and click "Add Greenhouse".</div>'; return; }
+        let html = '<div style="font-weight:600; margin-bottom: 8px;"><i class="fas fa-list"></i> New Greenhouses (to be submitted)</div>';
         savedGreenhouses.forEach((gh, idx) => {
             let weeklyDisplay = (gh.stage === 'Harvesting') ? ` | Weekly: ${gh.weeklyYieldOrCrates} ${gh.weeklyUnit || 'kg'}/week | Months: ${gh.harvestMonthsCount}` : '';
             html += `<div class="saved-item"><span><strong>#${idx+1}</strong> ${gh.crop} | ${gh.area} m² | ${gh.stage}${weeklyDisplay}</span>
@@ -577,6 +641,8 @@
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: mauritiusTimestamp, rows }) });
             showToast(`✅ Data submitted! ${rows.length} greenhouse(s) logged.`);
             savedGreenhouses = []; currentGreenhouseIndex = 1; renderBlankActiveForm(); updateSavedListDisplay();
+            // After successful submission, reload the previous data to include the new entries
+            await loadUserPreviousData();
         } catch (e) { showToast("Submitted (check sheet)", false); } finally { submitBtnElem.disabled = false; submitBtnElem.innerHTML = origText; }
     }
 
@@ -591,6 +657,162 @@
     zoneBtns.forEach(btn => btn.addEventListener('click', () => setZone(btn.dataset.zone)));
     setZone('E2');
     greenhouseDashboard.classList.add('hidden-section');
+
+    // ======================== NEW: Load user's previous data & fill readonly profile ========================
+    async function loadUserPreviousData() {
+        const username = growerNameInput.value.trim();
+        if (!username) return;
+        try {
+            const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (!data.rows || data.rows.length === 0) {
+                // No previous data: show empty state
+                prevSubSection.style.display = 'none';
+                return;
+            }
+
+            // --- Fill profile from the MOST RECENT submission (by timestamp column index 0) ---
+            const rows = data.rows;
+            // Find row with latest timestamp (assuming timestamp is first column)
+            let mostRecent = rows.reduce((latest, row) => {
+                const latestDate = new Date(latest[0]);
+                const rowDate = new Date(row[0]);
+                return rowDate > latestDate ? row : latest;
+            }, rows[0]);
+            // Expected column mapping (0-based from getUserData):
+            // 0: Timestamp, 1: Grower, 2: Locality, 3: Zone, 4: TotalArea, 5: GHNumber, 6: Crop, 7: Variety, 8: Stage, 9: Area, 10: TransplantDate,
+            // 11: WeeklyYield, 12: YieldUnit, 13: HarvestMonths, 14: Substrate, 15: TomatoType, 16-27: monthly yields
+            const localityFromHistory = mostRecent[2] || '';
+            const totalAreaFromHistory = mostRecent[4] || 0;
+
+            // Update locality dropdown (must match current zone? We'll also set zone from history)
+            const zoneFromHistory = mostRecent[3] || 'E2';
+            if (zoneFromHistory !== currentZone) {
+                setZone(zoneFromHistory);
+            } else {
+                updateLocalityDropdown(currentZone);
+            }
+            if (localityFromHistory) {
+                // Try to select it
+                let optionExists = false;
+                for (let i = 0; i < localitySelect.options.length; i++) {
+                    if (localitySelect.options[i].value === localityFromHistory) {
+                        localitySelect.value = localityFromHistory;
+                        optionExists = true;
+                        break;
+                    }
+                }
+                if (!optionExists) {
+                    // If not in current zone's list, add it as a disabled option (view only)
+                    const opt = document.createElement('option');
+                    opt.value = localityFromHistory;
+                    opt.textContent = localityFromHistory;
+                    opt.disabled = true;
+                    localitySelect.appendChild(opt);
+                    localitySelect.value = localityFromHistory;
+                }
+            }
+            totalAreaMain.value = totalAreaFromHistory;
+
+            // --- Display all previous submissions as a read-only table ---
+            const headers = data.headers; // e.g., ["Timestamp","Grower","Locality","Zone",...]
+            // Only show a subset of columns for readability
+            const displayCols = [0,1,2,3,4,5,6,8,9,11,12,13]; // indices of interest
+            const displayNames = headers.filter((_,idx) => displayCols.includes(idx)).map(h => h || "?");
+            prevTableHead.innerHTML = '';
+            const headerRow = document.createElement('tr');
+            displayNames.forEach(name => {
+                const th = document.createElement('th');
+                th.textContent = name;
+                headerRow.appendChild(th);
+            });
+            prevTableHead.appendChild(headerRow);
+
+            prevTableBody.innerHTML = '';
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                displayCols.forEach(colIdx => {
+                    const td = document.createElement('td');
+                    let val = row[colIdx];
+                    if (typeof val === 'number' && !isNaN(val)) td.textContent = val.toFixed(2);
+                    else td.textContent = val !== undefined ? val : '';
+                    tr.appendChild(td);
+                });
+                prevTableBody.appendChild(tr);
+            });
+
+            prevSubSection.style.display = 'block';
+            noPrevDataMsg.style.display = 'none';
+        } catch (err) {
+            console.error("Error loading previous data:", err);
+            prevSubSection.style.display = 'none';
+            showToast("Could not load previous submissions", true);
+        }
+    }
+
+    // ======================== HISTORY MODAL (same as before) ========================
+    async function loadUserHistory() {
+        const username = growerNameInput.value.trim();
+        if (!username) {
+            showToast("No grower name found", true);
+            return;
+        }
+        historyModal.style.display = 'flex';
+        historyTable.style.display = 'none';
+        historyEmptyMsg.style.display = 'none';
+        historyLoading.style.display = 'block';
+        historyTableHead.innerHTML = '';
+        historyTableBody.innerHTML = '';
+
+        try {
+            const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            historyLoading.style.display = 'none';
+
+            if (!data.rows || data.rows.length === 0) {
+                historyEmptyMsg.style.display = 'block';
+                return;
+            }
+
+            const headers = data.headers;
+            const theadRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                theadRow.appendChild(th);
+            });
+            historyTableHead.appendChild(theadRow);
+
+            data.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    if (typeof cell === 'number' && !isNaN(cell)) td.textContent = cell.toFixed(2);
+                    else td.textContent = cell !== undefined ? cell : '';
+                    tr.appendChild(td);
+                });
+                historyTableBody.appendChild(tr);
+            });
+            historyTable.style.display = 'table';
+        } catch (err) {
+            console.error(err);
+            historyLoading.style.display = 'none';
+            historyEmptyMsg.style.display = 'block';
+            historyEmptyMsg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading data.';
+            showToast("Could not fetch history", true);
+        }
+    }
+
+    viewHistoryBtn.onclick = loadUserHistory;
+    closeHistoryBtn.onclick = () => { historyModal.style.display = 'none'; };
+    historyModal.addEventListener('click', (e) => { if (e.target === historyModal) historyModal.style.display = 'none'; });
+
+    // Initially hide previous submissions section
+    prevSubSection.style.display = 'none';
 </script>
 </body>
 </html>
