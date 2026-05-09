@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* (Same styles as before, with minor additions for the update modal) */
+        /* ========== BASE STYLES (unchanged, but verified) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #1b4d1f, #0e3a12); min-height: 100vh; padding: 16px 12px; }
         .container { max-width: 1400px; margin: 0 auto; }
@@ -83,7 +83,6 @@
         .history-table { width:100%; border-collapse:collapse; font-size:0.75rem; }
         .history-table th, .history-table td { border:1px solid #cde2c2; padding:8px 6px; text-align:left; }
         .history-table th { background:#d9f0cd; color:#154e1a; font-weight:700; }
-        /* Update harvest modal */
         .update-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2200; justify-content:center; align-items:center; }
         .update-card { background:white; max-width: 800px; width: 95%; max-height: 90vh; border-radius: 32px; overflow-y: auto; padding: 24px; }
         .update-card h3 { color: #1c5a1c; margin-bottom: 16px; }
@@ -215,7 +214,7 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCCYZSvQhb5JXFW1woR7XcFnrc5n5nvcQE8ZR1nkTueQAtKjj3SElkwGESrPIXgs0Dpg/exec';  // ⚠️ REPLACE WITH YOUR URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWnw1ORMN_w1sKymJh4zR6Eb6Us5I0a3rcdWxXi5ObJn3D8NAEtL9eFlhAiXTaxO_GAQ/exec';  // ⚠️ REPLACE WITH YOUR URL
 
     // ======================== GLOBAL STATE ========================
     let isLoggedIn = false;
@@ -223,10 +222,9 @@
     let currentGreenhouseIndex = 1;
     let savedGreenhouses = [];
     let hasExistingData = false;
-    let currentUpdateRow = null;      // stores the timestamp of the row being updated
-    let currentUpdateMonthly = [];     // stores current monthly values
+    let currentUpdateRow = null;
 
-    // DOM elements (most same as before)
+    // DOM elements
     const loginOverlay = document.getElementById('loginOverlay');
     const mainApp = document.getElementById('mainApp');
     const loginBtn = document.getElementById('loginButton');
@@ -261,7 +259,6 @@
     const historyLoading = document.getElementById('historyLoading');
     const historyEmptyMsg = document.getElementById('historyEmptyMsg');
     const editAreaBtn = document.getElementById('editAreaBtn');
-    // Update modal elements
     const updateModal = document.getElementById('updateHarvestModal');
     const updateInfoDiv = document.getElementById('updateHarvestInfo');
     const monthlyFieldsDiv = document.getElementById('monthlyHarvestFields');
@@ -290,6 +287,30 @@
         return `${dateTimeObj.year}-${dateTimeObj.month}-${dateTimeObj.day} ${dateTimeObj.hour}:${dateTimeObj.minute}:${dateTimeObj.second}`;
     }
 
+    // ----------------------- FETCH LOCALITIES FROM SERVER -----------------------
+    async function fetchLocalities(zone) {
+        try {
+            const url = `${SCRIPT_URL}?action=getLocalities&zone=${encodeURIComponent(zone)}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            const data = await response.json();
+            return data.localities || [];
+        } catch (err) {
+            console.error("Error fetching localities:", err);
+            return [];
+        }
+    }
+
+    async function updateLocalityDropdown(zone) {
+        const localities = await fetchLocalities(zone);
+        localitySelect.innerHTML = '<option value="">-- Select Locality --</option>';
+        localities.forEach(loc => {
+            const opt = document.createElement('option');
+            opt.value = loc;
+            opt.textContent = loc;
+            localitySelect.appendChild(opt);
+        });
+    }
+
     // ----------------------- SET PROFILE EDITABILITY -----------------------
     function setProfileEditable(isNewUser) {
         if (isNewUser) {
@@ -298,7 +319,6 @@
             totalAreaMain.readOnly = false;
             editAreaBtn.style.display = 'none';
             growerNameInput.value = '';
-            localitySelect.innerHTML = '<option value="">-- Select Locality --</option>';
             totalAreaMain.value = '';
             prevSubSection.style.display = 'none';
         } else {
@@ -323,10 +343,10 @@
 
             if (hasData) {
                 const headers = data.headers;
-                // Define columns to display: add an "Actions" column at the end
-                const displayCols = [0,1,2,3,4,5,6,8,9,11,12,13]; // indexes as before
+                // Columns to display: Timestamp, Grower, Locality, Zone, TotalArea, GHNumber, Crop, Variety, Stage, Area, TransplantDate, WeeklyYield, YieldUnit, HarvestMonths
+                const displayCols = [0,1,2,3,4,5,6,8,9,10,11,12,13];
                 const displayNames = headers.filter((_,idx) => displayCols.includes(idx)).map(h => h || "?");
-                displayNames.push("Actions"); // extra column for update button
+                displayNames.push("Actions");
                 prevTableHead.innerHTML = '';
                 const headerRow = document.createElement('tr');
                 displayNames.forEach(name => {
@@ -337,9 +357,9 @@
                 prevTableHead.appendChild(headerRow);
 
                 prevTableBody.innerHTML = '';
-                data.rows.forEach((row, idx) => {
+                data.rows.forEach((row) => {
                     const tr = document.createElement('tr');
-                    // Display data cells
+                    // Data cells
                     displayCols.forEach(colIdx => {
                         const td = document.createElement('td');
                         let val = row[colIdx];
@@ -349,16 +369,13 @@
                     });
                     // Actions cell
                     const actionTd = document.createElement('td');
-                    const stage = row[7]; // Stage column index (0-based: 0=timestamp,1=grower,2=locality,3=zone,4=totalArea,5=ghNumber,6=crop,7=variety?, wait need to align)
-                    // Let's find stage index properly. From the original submission: row structure: [timestamp, grower, locality, zone, totalArea, ghNumber, crop, variety, stage, area, transplantDate, weeklyYield, yieldUnit, harvestMonths, prodSystem, tomatoType, ...monthly]
-                    // After fetch, the headers match that order.
-                    // Stage is at index 8 (0-based) because headers: 0=Timestamp,1=Grower,2=Locality,3=Zone,4=TotalArea,5=GHNumber,6=Crop,7=Variety,8=Stage,9=Area,10=TransplantDate,11=WeeklyYield,12=YieldUnit,13=HarvestMonths,14=ProdSystem,15=TomatoType,16=Jan...
+                    // Stage is at index 8 (0-based) in the fetched row array
                     const stageValue = row[8];
                     if (stageValue === "Harvesting") {
                         const updateBtn = document.createElement('button');
                         updateBtn.textContent = "✏️ Update Harvest";
                         updateBtn.className = "btn-small";
-                        updateBtn.onclick = () => openUpdateModal(row);
+                        updateBtn.onclick = (function(r) { return function() { openUpdateModal(r); }; })(row);
                         actionTd.appendChild(updateBtn);
                     } else {
                         actionTd.textContent = "—";
@@ -381,9 +398,7 @@
 
     // ----------------------- OPEN UPDATE MODAL -----------------------
     function openUpdateModal(row) {
-        // row is the full array of values from the sheet
         currentUpdateRow = row;
-        // Extract info: Crop, Area, TransplantDate, and monthly values (from index 16 to 27)
         const crop = row[6];
         const area = row[9];
         const transplantDate = row[10];
@@ -393,12 +408,7 @@
             let val = row[16 + i];
             monthlyValues.push(val !== undefined && val !== "" ? parseFloat(val) : 0);
         }
-        currentUpdateMonthly = [...monthlyValues];
-
-        // Build info HTML
         updateInfoDiv.innerHTML = `<strong>Crop:</strong> ${crop} &nbsp;|&nbsp; <strong>Area:</strong> ${area} m² &nbsp;|&nbsp; <strong>Transplanted:</strong> ${transplantDate || "N/A"}`;
-        
-        // Build monthly input fields
         monthlyFieldsDiv.innerHTML = '';
         monthsList.forEach((month, idx) => {
             const div = document.createElement('div');
@@ -410,7 +420,6 @@
         updateModal.style.display = 'flex';
     }
 
-    // ----------------------- SAVE UPDATED HARVEST -----------------------
     async function saveHarvestUpdate() {
         if (!currentUpdateRow) return;
         const newMonthly = [];
@@ -419,7 +428,7 @@
             const val = parseFloat(input.value) || 0;
             newMonthly.push(val);
         }
-        const timestamp = currentUpdateRow[0]; // first column is timestamp
+        const timestamp = currentUpdateRow[0];
         const username = growerNameInput.value.trim();
         try {
             const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}`;
@@ -428,8 +437,7 @@
             if (result.success) {
                 showToast("Harvest data updated successfully!");
                 updateModal.style.display = 'none';
-                // Reload the previous submissions table to reflect changes
-                await loadUserPreviousData();
+                await loadUserPreviousData(); // Refresh the table
             } else {
                 showToast("Update failed: " + (result.error || "Unknown error"), true);
             }
@@ -442,10 +450,41 @@
     cancelUpdateBtn.onclick = () => { updateModal.style.display = 'none'; };
     saveUpdateBtn.onclick = saveHarvestUpdate;
 
-    // ----------------------- PROFILE & LOGIN (unchanged except integrating loadUserPreviousData) -----------------------
+    // ----------------------- GET MOST RECENT TOTAL AREA (fallback) -----------------------
+    async function getMostRecentTotalArea(username) {
+        try {
+            const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.rows && data.rows.length > 0) {
+                const mostRecent = data.rows[0];
+                const totalArea = mostRecent[4];
+                return parseFloat(totalArea) || 0;
+            }
+            return null;
+        } catch (err) {
+            console.error("Error fetching most recent total area:", err);
+            return null;
+        }
+    }
+
+    async function updateGrowerTotalAreaOnServer(username, newArea) {
+        if (!username || !newArea || newArea <= 0) return false;
+        try {
+            const url = `${SCRIPT_URL}?action=updateTotalArea&username=${encodeURIComponent(username)}&newArea=${newArea}`;
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            const result = await response.json();
+            return result.success === true;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
     async function loadGrowerProfile() {
         const username = growerNameInput.value.trim();
-        if (!username) return;
+        if (!username) return null;
         try {
             const url = `${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`;
             const response = await fetch(url, { method: 'GET', mode: 'cors' });
@@ -453,80 +492,24 @@
             const data = await response.json();
             if (data.totalArea !== null && data.totalArea !== undefined && data.totalArea > 0) {
                 totalAreaMain.value = data.totalArea;
+                return data.totalArea;
+            } else {
+                // No profile found – try to get from most recent submission
+                const recentArea = await getMostRecentTotalArea(username);
+                if (recentArea !== null && recentArea > 0) {
+                    totalAreaMain.value = recentArea;
+                    await updateGrowerTotalAreaOnServer(username, recentArea);
+                    return recentArea;
+                }
+                return null;
             }
         } catch (err) {
             console.error("Could not load profile:", err);
+            return null;
         }
     }
 
-    let isEditingArea = false;
-    editAreaBtn.onclick = () => {
-        if (isEditingArea) return;
-        const currentValue = parseFloat(totalAreaMain.value) || 0;
-        totalAreaMain.readOnly = false;
-        totalAreaMain.focus();
-        editAreaBtn.innerHTML = '<i class="fas fa-save"></i> Save';
-        editAreaBtn.style.background = "#1f6e44";
-        
-        const saveHandler = async () => {
-            const newValue = parseFloat(totalAreaMain.value);
-            if (isNaN(newValue) || newValue <= 0) {
-                showToast("Please enter a positive number", true);
-                return;
-            }
-            if (newValue <= currentValue) {
-                showToast(`New total area must be greater than current (${currentValue})`, true);
-                return;
-            }
-            const username = growerNameInput.value.trim();
-            if (!username) return;
-            try {
-                const url = `${SCRIPT_URL}?action=updateTotalArea&username=${encodeURIComponent(username)}&newArea=${newValue}`;
-                const response = await fetch(url, { method: 'GET', mode: 'cors' });
-                const result = await response.json();
-                if (result.success) {
-                    showToast(`Total area updated to ${newValue} m²`);
-                    totalAreaMain.value = newValue;
-                    totalAreaMain.readOnly = true;
-                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
-                    editAreaBtn.style.background = "";
-                    isEditingArea = false;
-                    editAreaBtn.removeEventListener('click', saveHandler);
-                    editAreaBtn.addEventListener('click', originalHandler);
-                } else {
-                    showToast("Update failed. Area may not be larger than stored value.", true);
-                    totalAreaMain.readOnly = true;
-                    editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
-                    editAreaBtn.style.background = "";
-                    isEditingArea = false;
-                    editAreaBtn.removeEventListener('click', saveHandler);
-                    editAreaBtn.addEventListener('click', originalHandler);
-                }
-            } catch (err) {
-                showToast("Server error while updating", true);
-                totalAreaMain.readOnly = true;
-                editAreaBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Update';
-                editAreaBtn.style.background = "";
-                isEditingArea = false;
-                editAreaBtn.removeEventListener('click', saveHandler);
-                editAreaBtn.addEventListener('click', originalHandler);
-            }
-        };
-        
-        const originalHandler = editAreaBtn.onclick;
-        editAreaBtn.removeEventListener('click', originalHandler);
-        editAreaBtn.addEventListener('click', saveHandler);
-        isEditingArea = true;
-        
-        const enterHandler = (e) => {
-            if (e.key === 'Enter') {
-                saveHandler();
-                totalAreaMain.removeEventListener('keypress', enterHandler);
-            }
-        };
-        totalAreaMain.addEventListener('keypress', enterHandler);
-    };
-
+    // ----------------------- LOGIN -----------------------
     async function performLogin(username, password) {
         if (!username || !password) { loginError.innerText = "❌ Please enter both username and password."; return false; }
         loginError.innerText = "";
@@ -546,8 +529,10 @@
                 const hasData = await loadUserPreviousData();
 
                 if (hasData) {
+                    // Load total area (with fallback to most recent submission)
                     await loadGrowerProfile();
                     setProfileEditable(false);
+                    // Fill locality and zone from most recent submission
                     try {
                         const userDataResp = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
                         const userData = await userDataResp.json();
@@ -555,8 +540,8 @@
                             const mostRecent = userData.rows[0];
                             const localityFromHistory = mostRecent[2] || '';
                             const zoneFromHistory = mostRecent[3] || 'E2';
-                            if (zoneFromHistory !== currentZone) setZone(zoneFromHistory);
-                            else updateLocalityDropdown(currentZone);
+                            if (zoneFromHistory !== currentZone) await setZone(zoneFromHistory);
+                            else await updateLocalityDropdown(currentZone);
                             if (localityFromHistory) {
                                 let optionExists = false;
                                 for (let i = 0; i < localitySelect.options.length; i++) {
@@ -579,7 +564,7 @@
                     } catch(e) { console.warn(e); }
                 } else {
                     setProfileEditable(true);
-                    setZone('E2');
+                    await setZone('E2');
                     localitySelect.disabled = false;
                     growerNameInput.value = username;
                     totalAreaMain.value = '';
@@ -615,23 +600,23 @@
         showToast("Logged out successfully.");
     };
 
-    // ======================== CROP & HARVEST HELPERS (unchanged from original) ========================
+    // ======================== CROP & HARVEST HELPERS ========================
     const cropIconMap = { "Tomato": "🍅", "Sweet Pepper": "🫑", "English Cucumber": "🥒", "Lettuce": "🥬", "Cabbage": "🥬", "Cauliflower": "🥦", "Melon": "🍈", "Shallot": "🧅", "Greens": "🌿", "Okra": "🌱", "Chillies": "🌶️", "Eggplant": "🍆" };
     const weightBasedCrops = ["Tomato", "Sweet Pepper", "Melon", "Shallot", "Greens", "Okra", "Chillies", "Eggplant"];
     const unitBasedCrops = ["English Cucumber", "Cabbage", "Cauliflower", "Lettuce"];
-    const localityMap = { E1:["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D'Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L'Agrement","L'Assurance","L'Avenir","L'Escalier Br Rd","L'Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"], E2:["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"], E3:["Argy","Beau Bois","Beau Rivage","Belle Mare","Belle Vue Allendy","Bois d'Oiseaux","Bramsthan","Bras d'Eau","Camp Garreau","Camp Ithier","Camp Marcelin","Camp Poorun","Camp Raffia","Camp Ranoo","Centre de Flacq","Constance","Grande Retraite","Hermitage","Isidore Rose","Kashinath","La Porte Providence","Laventure","Mare Choisy","Mare du Puits","Mare la Chaux","Mare Providence","Mare Tapsy","Morc Constance","Nehru Nagar","Palmar","Petite Retraite","Plaine de Gersigny","Pont Blanc","Poste de Flacq","Quatre Cocos","Riche Mare","Sept Croisées","St Rémy","Trou d'Eau Douce","Victoria"], E4:["Balance John","Beau Champ","Beau Vallon","Bel Air Rivière Sèche","Belle Rive","Belle Rose","Bois Marchand","Camp Beau Bois","Camp de Masque Pavé","Camp Jackerie","Caroline","Cent Gaulettes","Clavet","Clémencia","Deep River","Deux Frères","Ecroignard","Ernest Florent","Grand River South East","Ilot","Kewal Nagar","La Laura","La Lucie Roy","La Nourrice","Laventure","Lesur","L'Etoile","Mare aux Goyaves","Mare Carrée","Mare Triton","Marie Jeanne","Morc Roy","Morc Sohawon","Olivia","Pellegrin","Petit Bois","Petite Cabane","Plaine Bananes","Pointe aux Feuilles","Pont Lardier","Quatre Soeurs","Sebastopol","Trois Ilots"] };
     const cropOptionsList = ["Tomato","Sweet Pepper","English Cucumber","Lettuce","Cabbage","Cauliflower","Melon","Shallot","Greens","Okra","Chillies","Eggplant"];
     const productionSystems = ["Cocopeat","Aggregates","Woodchips","NFT","DFT","Aquaponics"];
     const cropStages = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const tomatoTypes = ["Cooking","Salad","Cherry"];
     const monthsList = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-    function updateLocalityDropdown(zone) { 
-        const locs = localityMap[zone] || []; 
-        localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; 
-        locs.forEach(l => { const opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); 
+    async function setZone(zone) {
+        currentZone = zone;
+        zoneActiveSpan.innerHTML = `<i class="fas fa-map-pin"></i> Zone Active: ${zone}`;
+        await updateLocalityDropdown(zone);
+        zoneBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.zone === zone));
+        showToast(`Zone ${zone} activated`);
     }
-    function setZone(zone) { currentZone = zone; zoneActiveSpan.innerHTML = `<i class="fas fa-map-pin"></i> Zone Active: ${zone}`; updateLocalityDropdown(zone); zoneBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.zone === zone)); showToast(`Zone ${zone} activated`); }
 
     function buildHarvestDetailsUI(container, cropType, existingWeeklyValue = 0, existingUnit = "kg", existingMonths = 0) { 
         if (!cropType) return;
@@ -747,19 +732,6 @@
     }
     window.removeSavedGreenhouse = function(index) { savedGreenhouses.splice(index,1); updateSavedListDisplay(); showToast("Greenhouse removed"); };
 
-    async function updateGrowerTotalAreaOnServer(username, newArea) {
-        if (!username || !newArea || newArea <= 0) return false;
-        try {
-            const url = `${SCRIPT_URL}?action=updateTotalArea&username=${encodeURIComponent(username)}&newArea=${newArea}`;
-            const response = await fetch(url, { method: 'GET', mode: 'cors' });
-            const result = await response.json();
-            return result.success === true;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
     async function submitAllData() {
         let grower = growerNameInput.value.trim();
         let locality = localitySelect.value;
@@ -793,12 +765,15 @@
             else if (weightBasedCrops.includes(gh.crop) && gh.weeklyUnit) unitForSubmission = gh.weeklyUnit === 'crates' ? 'crates' : 'kg';
             rows.push([grower, locality, currentZone, totalAreaGlobal, idCounter++, finalCrop, gh.variety || '', gh.stage, parseFloat(gh.area) || 0, gh.transplantDate || '', gh.weeklyYieldOrCrates || 0, unitForSubmission, gh.harvestMonthsCount || 0, gh.prodSystem || '', tomatoExtra, ...monthlyVals]);
         }
+
+        // Calculate summary
         let totalAreaSum = rows.reduce((sum, r) => sum + (parseFloat(r[8]) || 0), 0);
         let totalYieldSum = 0;
         for (let r of rows) if (r[7] === 'Harvesting') for (let i=15; i<=26; i++) totalYieldSum += parseFloat(r[i]) || 0;
         let cropVarietyList = rows.map(r => `${cropIconMap[r[5].split(' ')[0]]||'🌿'} ${r[5]} (${r[6] || 'no variety'})`).join(' · ');
         insightContent.innerHTML = `<div style="font-weight:800;"><i class="fas fa-chart-line"></i> Submission Summary</div><div class="insight-line"><i class="fas fa-seedling"></i> ${rows.length} Greenhouses</div><div class="insight-line"><i class="fas fa-arrows-alt"></i> ${totalAreaSum.toFixed(1)} m² total</div><div class="insight-line"><i class="fas fa-weight-hanging"></i> ${totalYieldSum.toFixed(1)} estimated annual yield</div><div class="insight-line"><i class="fas fa-list-ul"></i> Crops: ${cropVarietyList}</div>`;
         insightsContainer.style.display = 'block';
+
         const submitBtnElem = document.getElementById('finalSubmitDataBtn');
         const origText = submitBtnElem.innerHTML;
         submitBtnElem.disabled = true;
@@ -808,6 +783,8 @@
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ timestamp: mauritiusTimestamp, rows }) });
             showToast(`✅ Data submitted! ${rows.length} greenhouse(s) logged.`);
             savedGreenhouses = []; currentGreenhouseIndex = 1; renderBlankActiveForm(); updateSavedListDisplay();
+            
+            // Reload previous data and refresh profile
             const hasDataNow = await loadUserPreviousData();
             if (hasDataNow) {
                 setProfileEditable(false);
@@ -818,8 +795,8 @@
                     const mostRecent = userData.rows[0];
                     const localityFromHistory = mostRecent[2] || '';
                     const zoneFromHistory = mostRecent[3] || currentZone;
-                    if (zoneFromHistory !== currentZone) setZone(zoneFromHistory);
-                    else updateLocalityDropdown(currentZone);
+                    if (zoneFromHistory !== currentZone) await setZone(zoneFromHistory);
+                    else await updateLocalityDropdown(currentZone);
                     if (localityFromHistory) {
                         let optionExists = false;
                         for (let i = 0; i < localitySelect.options.length; i++) {
@@ -852,11 +829,11 @@
     };
     addBtn.onclick = saveCurrentAndReset;
     submitBtn.onclick = submitAllData;
-    zoneBtns.forEach(btn => btn.addEventListener('click', () => setZone(btn.dataset.zone)));
+    zoneBtns.forEach(btn => btn.addEventListener('click', async () => await setZone(btn.dataset.zone)));
     setZone('E2');
     greenhouseDashboard.classList.add('hidden-section');
 
-    // ======================== HISTORY MODAL (full details) ========================
+    // ======================== HISTORY MODAL ========================
     async function loadUserHistory() {
         const username = growerNameInput.value.trim();
         if (!username) {
@@ -914,7 +891,6 @@
     viewHistoryBtn.onclick = loadUserHistory;
     closeHistoryBtn.onclick = () => { historyModal.style.display = 'none'; };
     historyModal.addEventListener('click', (e) => { if (e.target === historyModal) historyModal.style.display = 'none'; });
-    // Close update modal when clicking outside
     updateModal.addEventListener('click', (e) => { if (e.target === updateModal) updateModal.style.display = 'none'; });
 </script>
 </body>
