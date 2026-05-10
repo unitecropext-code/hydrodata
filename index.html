@@ -61,17 +61,17 @@
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-map-marked-alt"></i> Select Growing Zone</div>
         <div id="zoneButtons"></div>
-        <div id="zoneActiveDisplay" class="zone-active-status" style="margin-top:10px;"><i class="fas fa-map-pin"></i> Zone: E2</div>
+        <div id="zoneActiveDisplay" style="margin-top:10px;"><i class="fas fa-map-pin"></i> Zone: E2</div>
     </div>
 
-    <!-- Real‑time Dashboard (from Dashboard sheet) -->
+    <!-- Real‑time Dashboard -->
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-chart-line"></i> 📊 Real‑Time Dashboard (All Growers)</div>
         <div id="dashboardContainer"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>
         <button id="refreshDashboard" class="btn-secondary" style="margin-top:12px;"><i class="fas fa-sync-alt"></i> Refresh</button>
     </div>
 
-    <!-- Grower Profile (auto-filled) -->
+    <!-- Grower Profile -->
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-user-check"></i> Grower Profile</div>
         <div class="grid-2col">
@@ -82,7 +82,7 @@
         <button id="accessTrackerBtn" class="btn" style="margin-top:12px;"><i class="fas fa-charging-station"></i> Access Greenhouse Tracker</button>
     </div>
 
-    <!-- Greenhouse Entry Section -->
+    <!-- Greenhouse Entry -->
     <div id="greenhouseSection" class="hidden">
         <div class="glass-card">
             <div class="section-title"><i class="fas fa-greenhouse"></i> Add New Greenhouse Data</div>
@@ -93,7 +93,7 @@
         </div>
     </div>
 
-    <!-- Previous Submissions (with Update Harvest) -->
+    <!-- Previous Submissions -->
     <div id="prevSubmissionsSection" class="glass-card" style="display:none;">
         <div class="section-title"><i class="fas fa-history"></i> Your Previous Submissions</div>
         <div class="prev-table-wrapper"><table class="prev-table"><thead id="prevTableHead"></thead><tbody id="prevTableBody"></tbody>}</div>
@@ -125,17 +125,15 @@
 
 <script>
     // ==================== CONFIG ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiTCMCO2ohtm8XRz2XZ_c5oO8Zd4lICvcDoq_bT5Y48aIbgUfLSrxyEOFR-VDj-aBw3A/exec';  // <--- REPLACE THIS
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNJx0TL6A278ktPCIelmhgXpgmpG1MfbaHsxQJkH43mi9eyR-Kll3RzMQl36l85EXKRw/exec';  // <--- REPLACE WITH YOUR DEPLOYED URL
     const ZONE_LOCALITIES = {
         "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"]
-        // You can add other zones (E1,E3,E4) similarly if needed – for now only E2 exists in your file
     };
     const CROP_LIST = ["Tomato","Sweet Pepper","English Cucumber","Lettuce","Cabbage","Cauliflower","Melon","Shallot","Greens","Okra","Chillies","Eggplant"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const WEIGHT_CROPS = ["Tomato","Sweet Pepper","Melon","Shallot","Greens","Okra","Chillies","Eggplant"];
     
-    let currentUser = "";
     let currentZone = "E2";
     let savedGreenhouses = [];
     let existingUser = false;
@@ -166,7 +164,6 @@
     const historyModal = document.getElementById('historyModal');
     const updateModal = document.getElementById('updateModal');
 
-    // Helper: toast
     function toast(msg, isError=false) {
         const t = document.getElementById('toastText');
         t.innerText = msg;
@@ -176,7 +173,7 @@
         setTimeout(() => toastDiv.classList.remove('show'), 2800);
     }
 
-    // ==================== DASHBOARD (from Dashboard sheet) ====================
+    // ==================== DASHBOARD ====================
     async function loadDashboard() {
         dashboardContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading dashboard...';
         try {
@@ -190,7 +187,6 @@
     }
 
     function renderDashboard(stats) {
-        // stats: { areaByStage, areaByCrop, topVarieties }
         let html = `<div class="dashboard-grid">`;
         // stage area
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-seedling"></i> Total Area by Stage</div>`;
@@ -204,9 +200,9 @@
         html += `</div>`;
         // crop area
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-apple-alt"></i> Total Area by Crop</div><div>`;
-        for(let c of stats.areaByCrop) {
-            html += `<span class="crop-tag"><b>${c.crop}</b>: ${c.area.toFixed(1)} m²</span> `;
-        }
+        if(stats.areaByCrop && stats.areaByCrop.length) {
+            for(let c of stats.areaByCrop) html += `<span class="crop-tag"><b>${c.crop}</b>: ${c.area.toFixed(1)} m²</span> `;
+        } else html += `<span>No crop data available.</span>`;
         html += `</div></div>`;
         // top varieties
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-trophy"></i> Top Varieties</div>`;
@@ -327,7 +323,7 @@
         savedListDiv.innerHTML = `<div style="font-weight:600;">📌 Greenhouses to submit:</div>` + savedGreenhouses.map((gh,idx) => `
             <div style="background:#f8faf5; border-radius:18px; padding:8px 12px; margin-bottom:6px; display:flex; justify-content:space-between;">
                 <span><b>#${idx+1}</b> ${gh.crop} | ${gh.area} m² | ${gh.stage}</span>
-                <button onclick="removeSaved(${idx})" style="background:#e74c3c; color:white; border:none; border-radius:40px; padding:2px 12px;">Remove</button>
+                <button onclick="window.removeSaved(${idx})" style="background:#e74c3c; color:white; border:none; border-radius:40px; padding:2px 12px;">Remove</button>
             </div>
         `).join('');
     }
@@ -374,15 +370,16 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ==================== PREVIOUS SUBMISSIONS & UPDATE HARVEST ====================
+    // ==================== PREVIOUS SUBMISSIONS & UPDATE ====================
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
             const data = await res.json();
             if(!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
             const rows = data.rows;
+            // Headers from backend (Sheet1 columns)
             const headers = data.headers;
-            // Show: Timestamp, Zone, Crop, Stage, Area, Variety, WeeklyYield, YieldUnit, HarvestMonths, Actions
+            // Show useful columns: Timestamp, Zone, Crop, Stage, Area, Variety, WeeklyYield, YieldUnit, HarvestMonths
             const displayIdx = [0,3,6,8,9,7,11,12,13];
             const displayNames = ["Timestamp","Zone","Crop","Stage","Area(m²)","Variety","Weekly Yield","Unit","Harvest Months","Actions"];
             prevTableHead.innerHTML = '<tr>' + displayNames.map(n => `<th>${n}</th>`).join('') + '</tr>';
@@ -396,7 +393,8 @@
                     tr.appendChild(td);
                 }
                 let actionTd = document.createElement('td');
-                if(row[8] === "Harvesting") { // Stage column index 8
+                // row[8] is Stage (index 8)
+                if(row[8] === "Harvesting") {
                     let btn = document.createElement('button');
                     btn.textContent = "✏️ Update Harvest";
                     btn.className = "btn-secondary";
@@ -449,18 +447,16 @@
             const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
             const data = await res.json();
             if(!data.success) { document.getElementById('loginError').innerText = "Invalid credentials"; return; }
-            currentUser = username;
             growerName.value = username;
-            // Load user's previous data to check if existing user
+            // Check if existing user
             const userData = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
             const userRows = await userData.json();
             existingUser = (userRows.rows && userRows.rows.length > 0);
-            // Load profile (total area)
+            // Load total area from profile
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
             const prof = await profRes.json();
             if(prof.totalArea) totalAreaInput.value = prof.totalArea;
             else totalAreaInput.value = '';
-            // If existing user, fill locality from last record
             if(existingUser && userRows.rows && userRows.rows.length) {
                 let lastRow = userRows.rows[0];
                 let lastLocality = lastRow[2];
@@ -475,7 +471,6 @@
                 totalAreaInput.readOnly = true;
                 editAreaBtn.style.display = 'inline-block';
             } else {
-                // new user
                 localitySelect.disabled = false;
                 totalAreaInput.readOnly = false;
                 editAreaBtn.style.display = 'none';
@@ -486,7 +481,7 @@
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             toast(`Welcome ${username}!`);
-        } catch(e) { document.getElementById('loginError').innerText = "Network error"; console.error(e); }
+        } catch(e) { document.getElementById('loginError').innerText = "Network error: "+e.message; console.error(e); }
     }
 
     // ==================== EVENT LISTENERS ====================
