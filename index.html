@@ -97,7 +97,7 @@
         .crop-stage-table th, .crop-stage-table td { padding: 0.4rem 0.3rem; font-size: 0.75rem; text-align: left; border-bottom: 1px solid #deecce; }
         button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .modal-container h3 { color: #1c5a1c; margin-bottom: 0.5rem; }
-        .update-harvest-btn { background: #2c6e2c; color: white; border: none; border-radius: 2rem; padding: 4px 12px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
+        .update-harvest-btn { background: #2c6e2c; color: white; border: none; border-radius: 2rem; padding: 5px 14px; font-size: 0.75rem; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .update-harvest-btn:hover { background: #1f5520; transform: translateY(-1px); }
     </style>
 </head>
@@ -183,7 +183,6 @@
                     <tbody id="prevTableBody"></tbody>
                 </table>
             </div>
-            <div id="noPrevMsg" style="text-align:center; padding:1rem;">No previous data found.</div>
         </div>
     </div>
     <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker – Real-time Insights</div>
@@ -206,12 +205,12 @@
     </div>
 </div>
 
-<!-- UPDATE HARVEST MODAL - FIXED WITH CORRECT INDEXING -->
+<!-- UPDATE HARVEST MODAL - fully functional for monthly updates -->
 <div id="updateModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color: #1c5a1c;"><i class="fas fa-calendar-alt"></i> Update Monthly Harvest</h3>
-        <p style="margin-bottom: 0.8rem;">Adjust harvest amounts per month for this greenhouse</p>
-        <div id="updateInfo" style="background: #eef4ea; padding: 0.8rem; border-radius: 1rem; margin-bottom: 1rem;"></div>
+        <p>Adjust the yield for each month (kg or crates).</p>
+        <div id="updateInfo" style="background: #eef4ea; padding: 0.8rem; border-radius: 1rem; margin: 1rem 0;"></div>
         <div id="monthlyInputs" class="update-grid"></div>
         <div style="margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 1rem;">
             <span>Yield Unit:</span>
@@ -229,8 +228,8 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    // IMPORTANT: Replace with your actual Google Apps Script Web App URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxy_d3WbOOd3WEAaVNL9jYMuQhwcc5tyBR7fcnbQt030xrm0RoYYvdeWvbQvHuqOs_Mzw/exec';
+    // REPLACE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-kRUJJuEh7DuoPKSI6SErL8Yj4_cua6Ha8yIwBoGcDp0trJEKpFB6AHAGEMlgx4Cnog/exec';
     const DEBUG = true;
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
     const CROP_LIST = ["Tomato","Sweet Pepper","English Cucumber"];
@@ -324,7 +323,7 @@
         let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">';
         for (let crop of targetCrops) {
             let stagesData = (stats.areaByStageByCrop && stats.areaByStageByCrop[crop]) || {};
-            stageCropHtml += `<div style="flex: 1; min-width: 180px; background: #fafefa; border-radius: 1.2rem; padding: 0.8rem; border: 1px solid #deecce;"><h4 style="margin-bottom: 0.6rem;"><i class="fas fa-chart-bar"></i> ${crop}</h4><table class="crop-stage-table"><thead><table><th>Stage</th><th>Area (m²)</th></tr></thead><tbody>${STAGES.map(s => `<tr><td>${s}</td><td><strong>${(stagesData[s] || 0).toFixed(1)}</strong></td></tr>`).join('')}</tbody>}</table></div>`;
+            stageCropHtml += `<div style="flex: 1; min-width: 180px; background: #fafefa; border-radius: 1.2rem; padding: 0.8rem; border: 1px solid #deecce;"><h4 style="margin-bottom: 0.6rem;"><i class="fas fa-chart-bar"></i> ${crop}</h4><table class="crop-stage-table"><thead><tr><th>Stage</th><th>Area (m²)</th></tr></thead><tbody>${STAGES.map(s => `<tr><td>${s}</td><td><strong>${(stagesData[s] || 0).toFixed(1)}</strong></td></tr>`).join('')}</tbody>}~</div>`;
         }
         stageCropHtml += '</div>';
         stageByCropContainer.innerHTML = stageCropHtml;
@@ -450,7 +449,8 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ========== FIXED: Previous Submissions with correct indexing ==========
+    // ========== PREVIOUS SUBMISSIONS WITH WORKING UPDATE BUTTON ==========
+    // Each row has an UPDATE button that opens modal with correct monthly values (indices 15-26)
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -458,12 +458,11 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
             const rows = data.rows;
-            // Expected columns: index 0:timestamp,1:grower,2:locality,3:zone,4:totalArea,5:crop,6:variety,7:stage,8:area,9:transplant,10:weeklyYield,11:weeklyUnit,12:harvestMonths,13:prodSystem,14:tomatoExtra,15-26:monthly
-            prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area(m²)</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Actions</th></tr>`;
+            prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area(m²)</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Update Monthly Harvest</th></tr>`;
             prevTableBody.innerHTML = '';
             rows.forEach((row, idx) => {
                 const activeMonths = [];
-                // monthly values are indices 15 to 26 (inclusive)
+                // monthly values are indices 15 to 26 (12 values)
                 for (let i = 15; i <= 26; i++) {
                     if (parseFloat(row[i]) > 0) activeMonths.push(MONTHS[i-15].substring(0,3));
                 }
@@ -478,10 +477,11 @@
                     <td>${row[10] || '0'}</td>
                     <td>${row[12] || '0'}</td>
                     <td>${activeMonths.join(', ') || '—'}</td>
-                    <td>${row[7] === "Harvesting" ? `<button class="update-harvest-btn" data-rowidx="${idx}" style="background:#2c6e2c; color:white; border:none; border-radius:2rem; padding:4px 12px; font-size:0.7rem;"><i class="fas fa-edit"></i> Update</button>` : '—'}</td>
+                    <td>${row[7] === "Harvesting" ? `<button class="update-harvest-btn" data-rowidx="${idx}"><i class="fas fa-edit"></i> Update</button>` : '—'}</td>
                 `;
                 prevTableBody.appendChild(tr);
             });
+            // Attach event listeners after DOM update
             document.querySelectorAll('.update-harvest-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const idx = parseInt(btn.getAttribute('data-rowidx'));
@@ -494,17 +494,17 @@
         } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
     }
 
-    // ========== FIXED: openUpdateModal with correct indices (15-26 for months) ==========
+    // ========== OPEN MODAL WITH CORRECT MONTHLY VALUES ==========
     function openUpdateModal(row) {
         if (!row || row.length < 27) {
             console.error("Invalid row data", row);
             toast("Harvest data is incomplete (missing monthly columns)", true);
             return;
         }
-        debugLog("Opening modal for row:", row);
+        debugLog("Opening update modal for row:", row);
         currentUpdateRow = [...row];
         const monthlyVals = [];
-        // monthly data from index 15 to 26 (12 values)
+        // monthly data from index 15 to 26 (12 months)
         for (let i = 15; i <= 26; i++) {
             monthlyVals.push(parseFloat(currentUpdateRow[i]) || 0);
         }
@@ -544,7 +544,7 @@
             const res = await fetch(url);
             const result = await res.json();
             if (result.success) {
-                toast("Harvest updated successfully");
+                toast("Monthly harvest updated successfully");
                 updateModal.style.display = 'none';
                 await loadUserPreviousData(username);
                 await loadDashboard();
@@ -615,7 +615,7 @@
         }
     }
 
-    // Event Listeners
+    // Event listeners
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; greenhouseSection.classList.add('hidden'); toast("Logged out"); };
@@ -652,7 +652,7 @@
 
     // Initialization
     if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxufKZjWY712bkAmOolkJGE33oCO8fcM08lGpYRbfqdfFthw8synOPt-XpalJavIYsqPA/exec') {
-        console.log("Using provided Apps Script URL. Ensure it's correct.");
+        console.log("Using Apps Script URL. Make sure it's correct and deployed as Web App.");
     }
     initZoneButtons();
     greenhouseSection.classList.add('hidden');
