@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Hydroponic Data Tracker | Real Time Insights</title>
+    <title>Hydroponic Data Tracker | Full Record Editor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -254,7 +254,7 @@
             color: #3a6b3a;
             margin-top: 2rem;
         }
-        .update-harvest-btn {
+        .edit-record-btn {
             background: #2c7a2a;
             color: white;
             border: none;
@@ -265,6 +265,9 @@
         }
         .metric-icon { font-size: 1.4rem; margin-right: 0.3rem; vertical-align: middle; }
         .stage-badge { background: #e8f0e4; border-radius: 1rem; padding: 0.2rem 0.5rem; font-size: 0.7rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
+        .form-group input, .form-group select { width: 100%; padding: 0.6rem; border-radius: 1rem; border: 1px solid #cde0c2; }
     </style>
 </head>
 <body>
@@ -284,9 +287,9 @@
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                 <div>
                     <h1 style="font-size: 1.6rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;">
-                        <i class="fas fa-chart-line"></i> Hydroponic Data Tracker | Real Time Insights
+                        <i class="fas fa-chart-line"></i> Hydroponic Data Tracker | Full Record Editor
                     </h1>
-                    <p style="font-size: 0.75rem;"><i class="fas fa-leaf"></i> Smart harvest & crop analytics</p>
+                    <p style="font-size: 0.75rem;"><i class="fas fa-leaf"></i> Edit stage, area (col J), yields & monthly harvest</p>
                 </div>
                 <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
                 <button id="logoutBtn" class="btn-secondary">Logout</button></div>
@@ -321,9 +324,9 @@
             </div>
         </div>
 
-        <!-- Previous Submissions (All Stages) -->
+        <!-- Previous Submissions - All records with Edit button -->
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
-            <div class="stat-title"><i class="fas fa-history"></i> Your Crop Records (All Stages - Update only for Harvesting)</div>
+            <div class="stat-title"><i class="fas fa-history"></i> Your Crop Records (Click "Edit" to modify stage, area, yields)</div>
             <div style="overflow-x: auto;">
                 <table class="data-table" style="min-width: 1100px;">
                     <thead id="prevTableHead"></thead>
@@ -332,18 +335,32 @@
             </div>
         </div>
     </div>
-    <div class="footer"><i class="fas fa-chart-line"></i> Real-time hydroponic analytics | Monthly yield updater</div>
+    <div class="footer"><i class="fas fa-chart-line"></i> Real-time hydroponic analytics | Full record editing</div>
 </div>
 
-<!-- Update Harvest Modal -->
-<div id="updateModal" class="modal-overlay">
+<!-- Enhanced Edit Record Modal (edit stage, area, yields, monthly harvest) -->
+<div id="editRecordModal" class="modal-overlay">
     <div class="modal-container">
-        <h3 style="color:#1c5a1c;"><i class="fas fa-calendar-alt"></i> Update Monthly Harvest</h3>
-        <p>Adjust yields per month — current month editable</p>
-        <div id="updateInfo" style="background:#eef4ea; padding:0.8rem; border-radius:1rem; margin-bottom:1rem;"></div>
-        <div id="monthlyInputs" class="update-grid"></div>
-        <div style="margin:1rem 0; display:flex; gap:1.5rem;"><span><strong>Yield Unit:</strong></span><label><input type="radio" name="modalYieldUnit" value="kg" checked> kg</label><label><input type="radio" name="modalYieldUnit" value="crates"> crates</label></div>
-        <div style="display:flex; gap:1rem; justify-content:flex-end;"><button id="cancelUpdateBtn" class="btn-secondary">Cancel</button><button id="saveUpdateBtn" class="btn">Save Changes</button></div>
+        <h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3>
+        <p>Modify stage, area (col J), weekly yield, monthly distribution, etc.</p>
+        <div id="editRecordInfo" style="background:#eef4ea; padding:0.8rem; border-radius:1rem; margin-bottom:1rem;"></div>
+        <div class="grid-2col">
+            <div class="form-group"><label>Crop (read‑only)</label><input type="text" id="editCrop" readonly></div>
+            <div class="form-group"><label>Stage *</label><select id="editStage"><option>Seedling</option><option>Vegetative</option><option>Flowering</option><option>Fruiting</option><option>Harvesting</option></select></div>
+            <div class="form-group"><label>Area (m²) * [Column J]</label><input type="number" step="0.01" id="editArea"></div>
+            <div class="form-group"><label>Variety</label><input type="text" id="editVariety"></div>
+            <div class="form-group"><label>Weekly Yield</label><input type="number" step="0.01" id="editWeeklyYield"></div>
+            <div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option><option value="units">units</option></select></div>
+            <div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div>
+        </div>
+        <div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;">
+            <h4>Monthly Harvest (kg / crates / units)</h4>
+            <div id="editMonthlyGrid" class="update-grid"></div>
+        </div>
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
+            <button id="cancelEditBtn" class="btn-secondary">Cancel</button>
+            <button id="saveEditBtn" class="btn">Save Changes</button>
+        </div>
     </div>
 </div>
 
@@ -359,7 +376,8 @@
     
     let currentZone = "E2";
     let savedGreenhouses = [];
-    let currentUpdateRowData = null;
+    let currentEditRecord = null;  // stores { row, headers, monthIndices, timestampIdx, ... }
+    let currentEditMonthlyVals = [];
 
     // DOM elements
     const loginOverlay = document.getElementById('loginOverlay');
@@ -373,7 +391,7 @@
     const prevTableBody = document.getElementById('prevTableBody');
     const prevTableHead = document.getElementById('prevTableHead');
     const logoutBtn = document.getElementById('logoutBtn');
-    const updateModal = document.getElementById('updateModal');
+    const editModal = document.getElementById('editRecordModal');
     const loggedInUsernameSpan = document.getElementById('loggedInUsername');
     const refreshProfileBtn = document.getElementById('refreshProfileBtn');
 
@@ -401,7 +419,7 @@
         locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); });
     }
 
-    // Dashboard
+    // Dashboard (simplified, same as before)
     async function loadDashboard() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
@@ -442,7 +460,7 @@
         document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
     }
 
-    // Load ALL previous records (without monthly summary column)
+    // Load ALL previous records with Edit button for every row
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -452,7 +470,7 @@
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
             const stageIdx = getColIndex(['stage']);
             const cropIdx = getColIndex(['crop']);
-            const areaIdx = getColIndex(['area', 'area (m²)']);
+            const areaIdx = getColIndex(['area', 'area (m²)']);   // column J equivalent
             const varietyIdx = getColIndex(['variety']);
             const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']);
             const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']);
@@ -479,8 +497,6 @@
                     let val = monthIndices[i] !== -1 ? parseFloat(row[monthIndices[i]]) || 0 : 0;
                     if (val > 0) activeMonths.push(MONTHS[i].substring(0,3));
                 }
-                const isHarvesting = stageVal.toLowerCase() === "harvesting";
-                const actionButton = isHarvesting ? `<button class="update-harvest-btn" data-row-idx="${displayCount-1}"><i class="fas fa-edit"></i> Update</button>` : '—';
                 const stageDisplay = `<span class="stage-badge"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-seedling'}"></i> ${stageVal}</span>`;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -492,17 +508,19 @@
                     <td>${weeklyUnit}</td>
                     <td>${harvestMonths}</td>
                     <td>${activeMonths.join(', ') || '—'}</td>
-                    <td>${actionButton}</td>
+                    <td><button class="edit-record-btn"><i class="fas fa-edit"></i> Edit Record</button></td>
                 `;
-                if (isHarvesting) {
-                    const btn = tr.querySelector('.update-harvest-btn');
-                    if (btn) {
-                        btn.addEventListener('click', () => {
-                            currentUpdateRowData = { row, headers: data.headers, monthIndices, weeklyUnitIdx, timestampIdx, cropIdx, areaIdx };
-                            openUpdateModalFromRow(row, monthIndices, weeklyUnitIdx, timestampIdx, cropIdx, areaIdx);
-                        });
-                    }
-                }
+                const btn = tr.querySelector('.edit-record-btn');
+                btn.addEventListener('click', () => {
+                    // Store full editing context
+                    currentEditRecord = {
+                        row: row,
+                        headers: data.headers,
+                        stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx,
+                        monthIndices
+                    };
+                    openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices);
+                });
                 prevTableBody.appendChild(tr);
             }
             if (displayCount === 0) prevSubSection.style.display = 'none';
@@ -511,47 +529,95 @@
         } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
     }
 
-    function openUpdateModalFromRow(row, monthIndices, weeklyUnitIdx, timestampIdx, cropIdx, areaIdx) {
-        const cropName = row[cropIdx] || "Crop";
-        const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
-        document.getElementById('updateInfo').innerHTML = `<strong><i class="fas fa-seedling"></i> ${cropName}</strong> &nbsp;| <i class="fas fa-vector-square"></i> ${areaVal.toFixed(1)} m² &nbsp;| <i class="fas fa-calendar"></i> Record: ${timestampIdx !== -1 ? (row[timestampIdx] || '—') : '—'}`;
-        const monthlyVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
-        const grid = document.getElementById('monthlyInputs');
+    function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) {
+        const cropName = row[cropIdx] || "";
+        const currentStage = (row[stageIdx] || "Seedling").toString();
+        const currentArea = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
+        const currentVariety = row[varietyIdx] || "";
+        const currentWeeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
+        const currentUnit = (weeklyUnitIdx !== -1 && row[weeklyUnitIdx]) ? row[weeklyUnitIdx].toString() : "kg";
+        const currentHarvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
+        
+        document.getElementById('editCrop').value = cropName;
+        document.getElementById('editStage').value = currentStage;
+        document.getElementById('editArea').value = currentArea;
+        document.getElementById('editVariety').value = currentVariety;
+        document.getElementById('editWeeklyYield').value = currentWeeklyYield;
+        document.getElementById('editUnit').value = currentUnit;
+        document.getElementById('editHarvestMonths').value = currentHarvestMonths;
+        document.getElementById('editRecordInfo').innerHTML = `<strong>Record timestamp:</strong> ${row[currentEditRecord.timestampIdx] || '—'}`;
+        
+        // Load monthly values
+        currentEditMonthlyVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
+        const grid = document.getElementById('editMonthlyGrid');
         grid.innerHTML = '';
         MONTHS.forEach((month, idx) => {
             const div = document.createElement('div');
             div.className = 'month-card';
-            div.innerHTML = `<span style="font-weight:600;">${month.substring(0,3)}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx].toFixed(2)}">`;
+            div.innerHTML = `<span style="font-weight:600;">${month.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${idx}" value="${currentEditMonthlyVals[idx].toFixed(2)}">`;
             grid.appendChild(div);
         });
-        let currentUnit = (weeklyUnitIdx !== -1 && row[weeklyUnitIdx]) ? row[weeklyUnitIdx].toString().toLowerCase() : 'kg';
-        currentUnit = currentUnit.includes('crate') ? 'crates' : 'kg';
-        document.querySelector('#updateModal input[value="kg"]').checked = (currentUnit === 'kg');
-        document.querySelector('#updateModal input[value="crates"]').checked = (currentUnit === 'crates');
-        updateModal.style.display = 'flex';
+        // Show/hide monthly section based on stage selection
+        const toggleMonthly = () => {
+            const stage = document.getElementById('editStage').value;
+            const monthlySection = document.getElementById('editMonthlySection');
+            if (stage === 'Harvesting') monthlySection.style.display = 'block';
+            else monthlySection.style.display = 'none';
+        };
+        document.getElementById('editStage').onchange = toggleMonthly;
+        toggleMonthly();
+        editModal.style.display = 'flex';
     }
 
-    async function saveHarvestUpdate() {
-        if (!currentUpdateRowData) { toast("No record selected", true); return; }
-        const { row, timestampIdx, weeklyUnitIdx } = currentUpdateRowData;
+    async function saveFullRecordUpdate() {
+        if (!currentEditRecord) { toast("No record selected", true); return; }
+        const { row, timestampIdx, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices } = currentEditRecord;
         if (timestampIdx === -1) { toast("Missing timestamp", true); return; }
         const timestamp = row[timestampIdx];
         if (!timestamp) { toast("Invalid timestamp", true); return; }
+        
+        const newStage = document.getElementById('editStage').value;
+        const newArea = parseFloat(document.getElementById('editArea').value);
+        const newVariety = document.getElementById('editVariety').value;
+        const newWeeklyYield = parseFloat(document.getElementById('editWeeklyYield').value);
+        const newUnit = document.getElementById('editUnit').value;
+        const newHarvestMonths = parseFloat(document.getElementById('editHarvestMonths').value);
         let newMonthly = [];
-        for (let i=0;i<12;i++) {
-            let val = parseFloat(document.getElementById(`upd_month_${i}`).value);
+        for (let i=0; i<12; i++) {
+            let val = parseFloat(document.getElementById(`edit_month_${i}`).value);
             newMonthly.push(isNaN(val) ? 0 : val);
         }
-        const unitRadio = document.querySelector('#updateModal input[name="modalYieldUnit"]:checked');
-        const newUnit = unitRadio ? unitRadio.value : "kg";
+        if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid number", true); return; }
         const username = growerName.value.trim();
+        // Prepare payload for the backend. We'll send all fields to a new `updateFullRecord` action.
+        const payload = {
+            action: 'updateFullRecord',
+            username: username,
+            timestamp: timestamp,
+            stage: newStage,
+            area: newArea,
+            variety: newVariety,
+            weeklyYield: newWeeklyYield,
+            weeklyUnit: newUnit,
+            harvestMonths: newHarvestMonths,
+            monthly: newMonthly
+        };
         try {
-            const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}&unit=${encodeURIComponent(newUnit)}`;
-            const res = await fetch(url);
-            const result = await res.json();
-            if (result.success) { toast("Harvest updated successfully"); updateModal.style.display = 'none'; await loadUserPreviousData(username); await loadDashboard(); }
-            else toast("Update failed: " + (result.error || "unknown"), true);
-        } catch(e) { toast("Network error", true); }
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.success) {
+                toast("Record updated successfully");
+                editModal.style.display = 'none';
+                await loadUserPreviousData(username);
+                await loadDashboard();
+            } else {
+                toast("Update failed: " + (result.error || "unknown"), true);
+            }
+        } catch(e) { toast("Network error: " + e.message, true); }
     }
 
     async function updateProfile() {
@@ -566,7 +632,7 @@
         } catch(e) { toast("Error updating", true); }
     }
 
-    // Greenhouse Form
+    // Greenhouse Form (unchanged, but keep functional)
     function renderActiveForm() {
         const cropOptions = CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -598,7 +664,7 @@
                         <div><label>Harvesting Months (duration)</label><input type="number" step="0.5" id="harvestMonths"></div>
                     </div>
                     <div><label>Unit:</label><label><input type="radio" name="weeklyUnit" value="kg" checked> kg/week</label>${isWeight ? `<label style="margin-left:1rem;"><input type="radio" name="weeklyUnit" value="crates"> crates/week</label>` : ''}</div>
-                    <div style="margin-top:0.8rem;"><label>Monthly Harvest Distribution (kg or crates)</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem;"></div></div>
+                    <div style="margin-top:0.8rem;"><label>Monthly Harvest Distribution</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem;"></div></div>
                 </div>
             `;
             const grid = document.getElementById('monthGrid');
@@ -626,7 +692,6 @@
         }
         return { crop, area, variety, stage, transplantDate, prodSystem, ...harvest };
     }
-
     function saveCurrentGreenhouse() {
         let data = getCurrentFormData();
         if (!data.crop || data.area <= 0) { toast("Crop and area >0 required", true); return; }
@@ -662,7 +727,7 @@
         } catch(e) { toast("Error submitting", true); }
     }
 
-    // === IMPROVED AUTOFILL FOR TOTAL AREA AND LOCALITY ===
+    // Auto-fill profile
     async function autoFillProfileFromPastData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -670,18 +735,13 @@
             if (!data.rows || data.rows.length === 0) return;
             const headers = data.headers.map(h => h.toString().toLowerCase());
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
-            // Locality column
             const localityIdx = getColIndex(['locality']);
-            // Zone column
             const zoneIdx = getColIndex(['zone']);
-            // Total area column - more flexible matching
-            const areaIdx = getColIndex(['total area', 'total greenhouse area', 'total area (m²)', 'total m²', 'greenhouse area', 'area total']);
-            // Use the most recent row (first row)
+            const areaIdx = getColIndex(['total area', 'total greenhouse area', 'total area (m²)']);
             const latestRow = data.rows[0];
             let locality = localityIdx !== -1 ? latestRow[localityIdx] : null;
             let zone = zoneIdx !== -1 ? latestRow[zoneIdx] : null;
             let totalAreaVal = areaIdx !== -1 ? parseFloat(latestRow[areaIdx]) : null;
-            // Also try to get from dedicated profile endpoint
             try {
                 const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
                 const prof = await profRes.json();
@@ -693,22 +753,12 @@
             if (locality) {
                 setTimeout(() => {
                     if (localitySelect.querySelector(`option[value="${locality}"]`)) localitySelect.value = locality;
-                    else toast("Locality not in list, please select manually", false);
                 }, 200);
             }
-            if (totalAreaVal && !isNaN(totalAreaVal) && totalAreaVal > 0) {
-                totalAreaInput.value = totalAreaVal;
-            } else {
-                // Fallback: try to extract from any row's area column
-                for (let row of data.rows) {
-                    let areaCandidate = areaIdx !== -1 ? parseFloat(row[areaIdx]) : 0;
-                    if (areaCandidate > 0) { totalAreaInput.value = areaCandidate; break; }
-                }
-            }
-        } catch(e) { console.warn("Auto-fill failed", e); }
+            if (totalAreaVal && !isNaN(totalAreaVal)) totalAreaInput.value = totalAreaVal;
+        } catch(e) { console.warn(e); }
     }
 
-    // Login with autofill
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         errorDiv.innerText = '';
@@ -722,7 +772,6 @@
             if (!data.success) { errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; }
             loggedInUsernameSpan.innerText = username;
             growerName.value = username;
-            // Autofill from past records
             await autoFillProfileFromPastData(username);
             await loadUserPreviousData(username);
             await loadDashboard();
@@ -740,10 +789,10 @@
     document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
     document.getElementById('submitDataBtn').onclick = submitAllNewData;
     updateAreaBtn.onclick = updateProfile;
-    refreshProfileBtn.onclick = async () => { const user = growerName.value; if(user) { await autoFillProfileFromPastData(user); toast("Profile refreshed from latest record"); } };
-    document.getElementById('cancelUpdateBtn').onclick = () => updateModal.style.display = 'none';
-    document.getElementById('saveUpdateBtn').onclick = saveHarvestUpdate;
-    window.onclick = (e) => { if(e.target === updateModal) updateModal.style.display = 'none'; };
+    refreshProfileBtn.onclick = async () => { const user = growerName.value; if(user) { await autoFillProfileFromPastData(user); toast("Profile refreshed"); } };
+    document.getElementById('cancelEditBtn').onclick = () => editModal.style.display = 'none';
+    document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
+    window.onclick = (e) => { if(e.target === editModal) editModal.style.display = 'none'; };
     initZoneButtons();
     document.getElementById('greenhouseSection').classList.add('hidden');
     loadDashboard();
