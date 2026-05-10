@@ -321,7 +321,7 @@
             </div>
         </div>
 
-        <!-- Previous Submissions: ALL CROP STAGES (Monthly summary column removed) -->
+        <!-- Previous Submissions (All Stages) -->
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
             <div class="stat-title"><i class="fas fa-history"></i> Your Crop Records (All Stages - Update only for Harvesting)</div>
             <div style="overflow-x: auto;">
@@ -401,7 +401,7 @@
         locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); });
     }
 
-    // Dashboard (unchanged)
+    // Dashboard
     async function loadDashboard() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
@@ -436,7 +436,7 @@
         let stageCropHtml = '<div style="display:flex; flex-wrap:wrap; gap:1rem;">';
         for (let crop of targetCrops) {
             let stagesData = (stats.areaByStageByCrop && stats.areaByStageByCrop[crop]) || {};
-            stageCropHtml += `<div style="flex:1; background:#fafefa; border-radius:1.2rem; padding:0.8rem;"><h4><i class="fas fa-chart-bar"></i> ${crop}</h4><table class="crop-stage-table">${STAGES.map(s => `<tr><td>${s}</td><td><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</td></tr>`).join('')}</table></div>`;
+            stageCropHtml += `<div style="flex:1; background:#fafefa; border-radius:1.2rem; padding:0.8rem;"><h4><i class="fas fa-chart-bar"></i> ${crop}</h4><table class="crop-stage-table">${STAGES.map(s => `<tr><td>${s}</td><td><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</td>`).join('')}</table></div>`;
         }
         stageCropHtml += '</div>';
         document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
@@ -461,7 +461,6 @@
             const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
             if (stageIdx === -1 || monthIndices.some(i => i === -1)) { console.warn("Mapping incomplete"); prevSubSection.style.display = 'none'; return false; }
             
-            // Table headers: removed Monthly Summary column
             prevTableHead.innerHTML = `<tr><th>Crop</th><th>Stage</th><th>Area (m²)</th><th>Variety</th><th>Weekly Yield</th><th>Unit</th><th>Harvest Months</th><th>Active Months</th><th>Action</th></tr>`;
             prevTableBody.innerHTML = '';
             let displayCount = 0;
@@ -567,7 +566,7 @@
         } catch(e) { toast("Error updating", true); }
     }
 
-    // Greenhouse Form (interactive)
+    // Greenhouse Form
     function renderActiveForm() {
         const cropOptions = CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -663,7 +662,7 @@
         } catch(e) { toast("Error submitting", true); }
     }
 
-    // === PROFILE AUTOFILL ON LOGIN ===
+    // === IMPROVED AUTOFILL FOR TOTAL AREA AND LOCALITY ===
     async function autoFillProfileFromPastData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -671,14 +670,25 @@
             if (!data.rows || data.rows.length === 0) return;
             const headers = data.headers.map(h => h.toString().toLowerCase());
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
+            // Locality column
             const localityIdx = getColIndex(['locality']);
+            // Zone column
             const zoneIdx = getColIndex(['zone']);
-            const totalAreaIdx = getColIndex(['total area', 'total greenhouse area', 'total area (m²)']);
+            // Total area column - more flexible matching
+            const areaIdx = getColIndex(['total area', 'total greenhouse area', 'total area (m²)', 'total m²', 'greenhouse area', 'area total']);
             // Use the most recent row (first row)
             const latestRow = data.rows[0];
             let locality = localityIdx !== -1 ? latestRow[localityIdx] : null;
             let zone = zoneIdx !== -1 ? latestRow[zoneIdx] : null;
-            let totalArea = totalAreaIdx !== -1 ? parseFloat(latestRow[totalAreaIdx]) : null;
+            let totalAreaVal = areaIdx !== -1 ? parseFloat(latestRow[areaIdx]) : null;
+            // Also try to get from dedicated profile endpoint
+            try {
+                const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
+                const prof = await profRes.json();
+                if (prof.locality) locality = prof.locality;
+                if (prof.zone) zone = prof.zone;
+                if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalAreaVal = parseFloat(prof.totalArea);
+            } catch(e) {}
             if (zone && ZONE_LOCALITIES[zone]) setZone(zone);
             if (locality) {
                 setTimeout(() => {
@@ -686,11 +696,19 @@
                     else toast("Locality not in list, please select manually", false);
                 }, 200);
             }
-            if (totalArea && !isNaN(totalArea)) totalAreaInput.value = totalArea;
+            if (totalAreaVal && !isNaN(totalAreaVal) && totalAreaVal > 0) {
+                totalAreaInput.value = totalAreaVal;
+            } else {
+                // Fallback: try to extract from any row's area column
+                for (let row of data.rows) {
+                    let areaCandidate = areaIdx !== -1 ? parseFloat(row[areaIdx]) : 0;
+                    if (areaCandidate > 0) { totalAreaInput.value = areaCandidate; break; }
+                }
+            }
         } catch(e) { console.warn("Auto-fill failed", e); }
     }
 
-    // Login with enhanced autofill
+    // Login with autofill
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         errorDiv.innerText = '';
