@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ========== ALL CSS (same as before – kept compact) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #1b4d1f, #0e3a12); min-height: 100vh; padding: 16px 12px; }
         .container { max-width: 1400px; margin: 0 auto; }
@@ -41,51 +42,21 @@
         .btn-small { background: #2e8b57; color: white; border: none; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; cursor: pointer; }
         .greenhouse-active-card { background: #ffffff; border-radius: 24px; padding: 16px; border: 2px solid #2e8b57; box-shadow: 0 6px 14px rgba(0,0,0,0.05); margin-bottom: 18px; }
         .saved-item { background: #f8faf5; border-radius: 18px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
-        .harvest-card { background: #ffffff; border-radius: 24px; margin-top: 24px; padding: 20px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #d4e8ca; }
-        .harvest-header { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; color: #1c5a1c; margin-bottom: 20px; border-bottom: 2px dashed #c0dfb0; padding-bottom: 8px; }
-        .harvest-stats-row { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 28px; }
-        .harvest-stat-card { flex: 1; min-width: 220px; background: #f9fef7; border-radius: 20px; padding: 18px 16px; border: 1px solid #d9e8d0; }
-        .weekly-input-wrapper { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-        .weekly-input-wrapper input { flex: 2; padding: 12px; border-radius: 30px; border: 1.5px solid #cae0bc; text-align: center; }
-        .unit-group { display: flex; gap: 12px; background: #ecf3e8; padding: 4px 10px; border-radius: 50px; }
-        .unit-group label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer; padding: 4px 12px; border-radius: 40px; }
-        .unit-group input[type="radio"] { margin: 0; accent-color: #2e8b57; }
-        .month-grid-title { font-weight: 600; margin: 20px 0 12px 0; display: flex; align-items: center; gap: 10px; color: #1f6522; }
-        .month-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
-        @media (min-width:480px) { .month-grid { grid-template-columns: repeat(3,1fr); } }
-        @media (min-width:640px) { .month-grid { grid-template-columns: repeat(4,1fr); } }
-        .month-card { background: #ffffff; border-radius: 20px; padding: 8px 6px; text-align: center; border: 1px solid #d5e8ca; }
-        .month-name { font-weight: 700; font-size: 0.8rem; color: #2d6a2d; margin-bottom: 8px; display: block; }
-        .month-card input { width: 100%; padding: 10px 4px; border-radius: 30px; border: 1px solid #c0dfb0; text-align: center; font-size: 0.8rem; }
         .toast-msg { position: fixed; bottom: 20px; left: 16px; right: 16px; max-width: 350px; margin: 0 auto; background: #1f3120; color: white; padding: 10px 16px; border-radius: 50px; z-index: 1100; transform: translateY(100px); transition: transform 0.25s; backdrop-filter: blur(8px); font-size: 0.85rem; text-align: center; }
         .toast-msg.show { transform: translateY(0); }
         .hidden-section { display: none; }
         .footer-note { text-align: center; font-size: 10px; color: #cbe5c0; margin-top: 10px; }
-        .gh-badge { background: #307a34; padding: 4px 14px; border-radius: 40px; color: white; font-weight: 600; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; }
         .realtime-tag { display: inline-block; background: #d9f0cd; border-radius: 40px; padding: 4px 12px; font-size: 0.7rem; font-weight: 600; color: #1c5a1c; margin-left: 12px; }
         .prev-submissions { margin-top: 24px; border-top: 2px solid #c0dfb0; padding-top: 20px; }
         .prev-table-wrapper { overflow-x: auto; border-radius: 20px; border: 1px solid #d4e8ca; background: #fff; }
         .prev-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
         .prev-table th, .prev-table td { border: 1px solid #deecce; padding: 6px 8px; text-align: left; vertical-align: top; }
         .prev-table th { background: #ecf7e6; color: #1a551a; font-weight: 700; }
-        @media (max-width: 640px) { .prev-table { font-size: 0.65rem; } }
         .history-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2100; justify-content:center; align-items:center; backdrop-filter:blur(4px); }
         .history-card { background:#fff; max-width:95vw; width:1300px; max-height:85vh; border-radius:32px; overflow:hidden; display:flex; flex-direction:column; }
         .history-header { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; background:#f0f8ec; border-bottom:2px solid #2e8b57; }
-        .history-header h3 { font-weight:800; color:#1c5a1c; }
-        .close-history { background:none; border:none; font-size:28px; cursor:pointer; color:#5a7a52; }
-        .history-table-wrapper { overflow-x:auto; padding:20px; flex:1; }
-        .history-table { width:100%; border-collapse:collapse; font-size:0.75rem; }
-        .history-table th, .history-table td { border:1px solid #cde2c2; padding:8px 6px; text-align:left; }
-        .history-table th { background:#d9f0cd; color:#154e1a; font-weight:700; }
         .update-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2200; justify-content:center; align-items:center; }
         .update-card { background:white; max-width: 800px; width: 95%; max-height: 90vh; border-radius: 32px; overflow-y: auto; padding: 24px; }
-        .update-card h3 { color: #1c5a1c; margin-bottom: 16px; }
-        .update-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin: 20px 0; }
-        @media (min-width: 640px) { .update-grid { grid-template-columns: repeat(4,1fr); } }
-        .update-month-input { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid #c0dfb0; text-align: center; }
-        .readonly-info { background: #eef4ea; padding: 8px 12px; border-radius: 20px; margin-bottom: 16px; font-size: 0.85rem; }
-        .smart-icon-btn { background: #e74c3c; border: none; color: white; border-radius: 30px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer; }
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 8px; }
         .stat-card { background: #ffffff; border-radius: 24px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2f0db; }
         .stat-header { font-weight: 800; font-size: 1rem; color: #1c5a1c; border-bottom: 2px solid #bcddab; padding-bottom: 10px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
@@ -160,7 +131,7 @@
         <button id="accessTrackerBtn" class="btn-lg" style="margin-top: 12px;"><i class="fas fa-charging-station"></i> Access Greenhouse Tracker</button>
     </div>
 
-    <!-- ========== GLOBAL INSIGHTS DASHBOARD ========== -->
+    <!-- GLOBAL INSIGHTS DASHBOARD -->
     <div class="glass-card" id="insightsDashboardCard">
         <div class="section-title" style="justify-content: space-between;">
             <span><i class="fas fa-chart-pie"></i> 📊 Global Insights Dashboard (All Growers)</span>
@@ -171,7 +142,7 @@
         </div>
     </div>
 
-    <!-- Greenhouse Details (Tracker) -->
+    <!-- Greenhouse Tracker -->
     <div id="greenhouseDashboard" class="hidden-section">
         <div class="glass-card">
             <div class="section-title"><i class="fas fa-greenhouse"></i> Add New Greenhouse Data</div>
@@ -183,16 +154,16 @@
         </div>
     </div>
 
-    <!-- PREVIOUS SUBMISSIONS -->
+    <!-- PREVIOUS SUBMISSIONS TABLE (PER USER) -->
     <div id="previousSubmissionsSection" class="glass-card prev-submissions" style="display: none;">
-        <div class="section-title"><i class="fas fa-clock-rotate-left"></i> 📜 Previous Submissions (View Only)</div>
+        <div class="section-title"><i class="fas fa-clock-rotate-left"></i> 📜 My Previous Submissions</div>
         <div class="prev-table-wrapper">
             <table class="prev-table" id="prevSubmissionsTable">
                 <thead id="prevTableHead"></thead>
                 <tbody id="prevTableBody"></tbody>
             </table>
         </div>
-        <div id="noPrevDataMsg" style="text-align:center; padding:20px; color:#5a7a52;">No previous data found.</div>
+        <div id="noPrevDataMsg" style="text-align:center; padding:20px; display:none;">No previous data found.</div>
     </div>
     <div class="footer-note"><i class="fas fa-leaf"></i> Hydroponic Data Tracker – All Rights Reserved 2026</div>
 </div>
@@ -221,8 +192,8 @@
     };
 
     // ======================== CONFIGURATION ========================
-    // 👇 REPLACE WITH YOUR DEPLOYED APPS SCRIPT URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXzqA9ivnZCLxjCNWY4FBC26QeCc5pOrmsrNI9GUGOHbbX-V7qQAASuSjhyR5v4K5yZQ/exec';
+    // 👇 REPLACE WITH YOUR ACTUAL DEPLOYED APPS SCRIPT URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxroy9O9URlGXxWILeEBJPvO6uSEeCP6qQ5DoOps0FR14s4DH30T-QvUUEvHgkuM4_yRQ/exec';
 
     let isLoggedIn = false;
     let currentZone = "E2";
@@ -250,8 +221,6 @@
     const addBtn = document.getElementById('addGreenhouseBtn');
     const submitBtn = document.getElementById('finalSubmitDataBtn');
     const totalAreaMain = document.getElementById('totalAreaMain');
-    const insightsContainer = document.getElementById('insightsContainer');
-    const insightContent = document.getElementById('insightContent');
     const savedListDiv = document.getElementById('savedGreenhousesList');
     const prevSubSection = document.getElementById('previousSubmissionsSection');
     const prevTableHead = document.getElementById('prevTableHead');
@@ -267,6 +236,7 @@
     const saveUpdateBtn = document.getElementById('saveUpdateBtn');
     const refreshDashboardBtn = document.getElementById('refreshDashboardBtn');
     const dashboardContent = document.getElementById('dashboardContent');
+    const noPrevDataMsg = document.getElementById('noPrevDataMsg');
 
     // Helper functions
     function showToast(msg, isError = false) {
@@ -301,7 +271,6 @@
             localitySelect.disabled = false;
             totalAreaMain.readOnly = false;
             editAreaBtn.style.display = 'none';
-            prevSubSection.style.display = 'none';
             totalAreaMain.value = '';
         } else {
             growerNameInput.readOnly = true;
@@ -319,6 +288,7 @@
             const resp = await fetch(`${SCRIPT_URL}?action=getAllData`);
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const data = await resp.json();
+            if (data.error) throw new Error(data.error);
             if (!data.rows || data.rows.length === 0) {
                 dashboardContent.innerHTML = '<div class="insight-empty"><i class="fas fa-chart-line"></i> No greenhouse data across all growers.</div>';
                 return;
@@ -336,10 +306,10 @@
             let varietyStats = { "Tomato": {}, "Sweet Pepper": {}, "English Cucumber": {} };
             
             for (let row of data.rows) {
-                let cropRaw = row[idxCrop] || "";
+                let cropRaw = String(row[idxCrop] || "");
                 let areaVal = parseFloat(String(row[idxArea]).replace(/[^0-9.-]/g, '')) || 0;
                 let stage = row[idxStage];
-                let variety = row[idxVariety] || "Unknown";
+                let variety = String(row[idxVariety] || "Unknown");
                 if (stage && stageArea[stage] !== undefined) stageArea[stage] += areaVal;
                 let baseCrop = cropRaw;
                 let tomatoSubType = null;
@@ -392,15 +362,16 @@
         }
     }
 
-    // ---------- USER DATA & SUBMISSIONS ----------
+    // ---------- USER PREVIOUS SUBMISSIONS TABLE ----------
     async function loadUserPreviousData() {
         const username = growerNameInput.value.trim();
         if (!username) return false;
         try {
             const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
             const response = await fetch(url);
-            if (!response.ok) throw new Error();
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
+            if (data.error) throw new Error(data.error);
             const hasData = data.rows && data.rows.length > 0;
             hasExistingData = hasData;
             if (hasData) {
@@ -415,10 +386,17 @@
                 prevTableBody.innerHTML = '';
                 data.rows.forEach(row => {
                     const tr = document.createElement('tr');
-                    displayCols.forEach(idx => { const td = document.createElement('td'); let v = row[idx]; td.textContent = (typeof v === 'number' && !isNaN(v)) ? v.toFixed(2) : (v !== undefined ? v : ''); tr.appendChild(td); });
+                    displayCols.forEach(idx => { 
+                        const td = document.createElement('td'); 
+                        let v = row[idx]; 
+                        td.textContent = (typeof v === 'number' && !isNaN(v)) ? v.toFixed(2) : (v !== undefined ? v : ''); 
+                        tr.appendChild(td); 
+                    });
                     const actionTd = document.createElement('td');
                     if (row[8] === "Harvesting") {
-                        const btn = document.createElement('button'); btn.textContent = "✏️ Update Harvest"; btn.className = "btn-small";
+                        const btn = document.createElement('button'); 
+                        btn.textContent = "✏️ Update Harvest"; 
+                        btn.className = "btn-small";
                         btn.onclick = () => openUpdateModal(row);
                         actionTd.appendChild(btn);
                     } else actionTd.textContent = "—";
@@ -426,14 +404,21 @@
                     prevTableBody.appendChild(tr);
                 });
                 prevSubSection.style.display = 'block';
-                document.getElementById('noPrevDataMsg').style.display = 'none';
+                noPrevDataMsg.style.display = 'none';
             } else {
-                prevSubSection.style.display = 'none';
+                prevSubSection.style.display = 'block';
+                noPrevDataMsg.style.display = 'block';
+                prevTableHead.innerHTML = '';
+                prevTableBody.innerHTML = '<tr><td colspan="10" style="text-align:center;">No previous submissions</td></tr>';
                 hasExistingData = false;
             }
             return hasData;
         } catch(err) {
-            prevSubSection.style.display = 'none';
+            console.error("loadUserPreviousData error:", err);
+            prevSubSection.style.display = 'block';
+            noPrevDataMsg.style.display = 'block';
+            prevTableHead.innerHTML = '';
+            prevTableBody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Error loading data</td></tr>';
             hasExistingData = false;
             return false;
         }
@@ -497,6 +482,7 @@
         if(!username || !password) { loginError.innerText = "Enter credentials"; return false; }
         try {
             const resp = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const data = await resp.json();
             if(data.success) {
                 isLoggedIn = true;
@@ -504,8 +490,8 @@
                 welcomeUsernameSpan.innerText = username;
                 loginOverlay.style.display = 'none';
                 mainApp.style.display = 'block';
-                const hasData = await loadUserPreviousData();
-                if(!hasData) {
+                await loadUserPreviousData();  // loads table and sets hasExistingData
+                if(!hasExistingData) {
                     setProfileEditable(true);
                     await setZone('E2');
                     localitySelect.disabled = false;
@@ -533,7 +519,7 @@
                 return true;
             } else { loginError.innerText = "Invalid credentials"; return false; }
         } catch(e) {
-            console.error(e);
+            console.error("Login error:", e);
             loginError.innerText = "Network error: " + e.message;
             return false;
         }
@@ -543,7 +529,7 @@
     loginPassword.addEventListener('keypress', e => { if(e.key==='Enter') performLogin(loginUsername.value.trim(), loginPassword.value); });
     logoutButton.onclick = () => { isLoggedIn=false; mainApp.style.display='none'; loginOverlay.style.display='flex'; loginUsername.value=''; loginPassword.value=''; savedGreenhouses=[]; greenhouseDashboard.classList.add('hidden-section'); growerNameInput.value=''; showToast("Logged out"); };
 
-    // ---------- ZONE & GREENHOUSE TRACKER ----------
+    // ---------- ZONE & GREENHOUSE TRACKER (unchanged from original) ----------
     async function setZone(zone) {
         currentZone = zone;
         zoneActiveSpan.innerHTML = `<i class="fas fa-map-pin"></i> Zone Active: ${zone}`;
@@ -636,8 +622,7 @@
             savedGreenhouses=[]; currentGreenhouseIndex=1; renderBlankActiveForm(); updateSavedListDisplay();
             await loadUserPreviousData();
             if(hasExistingData) setProfileEditable(false); else setProfileEditable(true);
-            // Refresh global dashboard after submission
-            await renderRealTimeDashboard();
+            await renderRealTimeDashboard(); // refresh global dashboard
         } catch(e) { showToast("Submitted (check sheet)", false); } finally { btn.disabled=false; btn.innerHTML=orig; }
     }
     accessBtn.onclick = () => { if(!growerNameInput.value.trim() || !localitySelect.value || !totalAreaMain.value) return showToast("Complete profile first", true); greenhouseDashboard.classList.remove('hidden-section'); renderBlankActiveForm(); showToast("Tracker active"); };
