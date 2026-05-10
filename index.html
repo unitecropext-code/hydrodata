@@ -455,7 +455,7 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKpare3NshTvjWv6W5gh8TaRm457VpseQbRvT_FOM_dZgpVEReQS-JXx5ngOz4CKWmQQ/exec';  // ✅ REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcN_4H3tzJZv3Fs350IIAGZebh_j2FRrySZ-RxXcnil4N415eN8hbHD2mHdPTyme26Fg/exec';  // ✅ REPLACE WITH YOUR WEB APP URL
     const DEBUG = true;
 
     const ZONE_LOCALITIES = {
@@ -556,7 +556,7 @@
             if (crop === 'Tomato' && stats.topVarieties.tomato && stats.topVarieties.tomato.length) topVariety = stats.topVarieties.tomato[0];
             else if (crop === 'Sweet Pepper' && stats.topVarieties.sweetPepper && stats.topVarieties.sweetPepper.length) topVariety = stats.topVarieties.sweetPepper[0];
             else if (crop === 'English Cucumber' && stats.topVarieties.englishCucumber && stats.topVarieties.englishCucumber.length) topVariety = stats.topVarieties.englishCucumber[0];
-            cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</strong></td></tr>`;
+            cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td><strong>${topVariety.area.toFixed(1)}</strong></td></tr>`;
         }
         cropTable += '</tbody></table>';
         cropAndVarietiesContainer.innerHTML = cropTable;
@@ -597,7 +597,7 @@
         else localitySelect.disabled = false;
     }
 
-    // Greenhouse form
+    // Greenhouse form (simplified but fully functional)
     function renderActiveForm() {
         let cropOptions = CROP_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
         let stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -712,7 +712,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (MOBILE-FIXED) ==========
+    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (UNIVERSAL) ==========
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -720,9 +720,11 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
             const rows = data.rows;
+            window.userRowsForUpdate = rows; // store globally for click handlers
+            
             prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Actions</th></tr>`;
             prevTableBody.innerHTML = '';
-            for (let i=0; i<rows.length; i++) {
+            for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -735,74 +737,22 @@
                     <td>${row[11] || '0'}</td>
                     <td>${row[13] || '0'}</td>
                     <td>${(() => { let active = []; for (let j=16;j<=27;j++) if (parseFloat(row[j])>0) active.push(MONTHS[j-16].substring(0,3)); return active.join(', ') || '—'; })()}</td>
-                    <td><button class="btn-secondary update-harvest-btn" data-index="${i}" style="font-size:0.7rem; padding:6px 12px;"><i class="fas fa-edit"></i> Update</button></td>
+                    <td><button class="btn-secondary update-harvest-btn" data-rowidx="${i}" style="font-size:0.7rem; padding:6px 12px;"><i class="fas fa-edit"></i> Update</button></td>
                 `;
                 prevTableBody.appendChild(tr);
             }
-            prevSubSection.style.display = 'block';
-            return true;
-        } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
-    }
-
-    // Event delegation for update buttons (works on mobile)
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.update-harvest-btn');
-        if (!btn) return;
-        e.preventDefault();
-        const idx = parseInt(btn.getAttribute('data-index'));
-        if (isNaN(idx)) return;
-        // Retrieve the stored rows (we need to keep them in a variable)
-        // Since we lost the rows reference, we must fetch again or store globally.
-        // Better: store rows globally when loaded.
-        if (window.currentUserRows && window.currentUserRows[idx]) {
-            openUpdateModal(window.currentUserRows[idx]);
-        } else {
-            toast("Error: row data missing", true);
-        }
-    });
-
-    // Store rows globally when fetched
-    async function loadAndStoreUserData(username) {
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            if (data.rows && data.rows.length) {
-                window.currentUserRows = data.rows;
-                return true;
-            }
-            return false;
-        } catch(e) { console.error(e); return false; }
-    }
-
-    // Override loadUserPreviousData to also store rows
-    async function loadUserPreviousData(username) {
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
-            window.currentUserRows = data.rows;  // store globally
-            const rows = data.rows;
-            prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Actions</th></tr>`;
-            prevTableBody.innerHTML = '';
-            for (let i=0; i<rows.length; i++) {
-                const row = rows[i];
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${row[0] || ''}</td>
-                    <td>${row[3] || ''}</td>
-                    <td>${row[6] || ''}</td>
-                    <td>${row[8] || ''}</td>
-                    <td>${row[9] ? parseFloat(row[9]).toFixed(2) : '0'}</td>
-                    <td>${row[7] || ''}</td>
-                    <td>${row[11] || '0'}</td>
-                    <td>${row[13] || '0'}</td>
-                    <td>${(() => { let active = []; for (let j=16;j<=27;j++) if (parseFloat(row[j])>0) active.push(MONTHS[j-16].substring(0,3)); return active.join(', ') || '—'; })()}</td>
-                    <td><button class="btn-secondary update-harvest-btn" data-index="${i}" style="font-size:0.7rem; padding:6px 12px;"><i class="fas fa-edit"></i> Update</button></td>
-                `;
-                prevTableBody.appendChild(tr);
-            }
+            // Attach click listeners directly to each button (works on all devices)
+            document.querySelectorAll('.update-harvest-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const idx = parseInt(this.getAttribute('data-rowidx'));
+                    if (window.userRowsForUpdate && window.userRowsForUpdate[idx]) {
+                        openUpdateModal(window.userRowsForUpdate[idx]);
+                    } else {
+                        toast("Error: row data missing", true);
+                    }
+                });
+            });
             prevSubSection.style.display = 'block';
             return true;
         } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
@@ -816,6 +766,7 @@
         }
         debugLog("Opening update modal for row:", row);
         currentUpdateRow = row;
+        // Extract monthly values (columns 16..27)
         const monthlyVals = [];
         for (let i=16; i<=27; i++) monthlyVals.push(parseFloat(row[i]) || 0);
         let currentUnit = (row[12] || "kg").toLowerCase();
@@ -834,6 +785,7 @@
             kgRadio.checked = (currentUnit === 'kg');
             cratesRadio.checked = (currentUnit === 'crates');
         }
+        // Show modal
         updateModal.style.display = 'flex';
     }
 
@@ -947,7 +899,7 @@
             const data = await res.json();
             if (!data.rows || !data.rows.length) { document.getElementById('historyLoading').innerHTML = 'No records'; return; }
             const thead = document.getElementById('historyTableHead');
-            thead.innerHTML = '</table>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+            thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
             const tbody = document.getElementById('historyTableBody');
             tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td style="padding:0.3rem;">${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
             document.getElementById('historyLoading').style.display = 'none';
