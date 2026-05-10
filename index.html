@@ -3,406 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Smart Data Capture for Hydroponic| Real Time Insights</title>
+    <title>Smart Data Capture | Real Time Insights</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 10% 30%, #0e3a12, #072b0a);
-            min-height: 100vh;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        /* Glassmorphism cards */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.97);
-            backdrop-filter: blur(2px);
-            border-radius: 2rem;
-            padding: 1.5rem 1.8rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(200, 230, 180, 0.6);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Login overlay */
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-
-        .login-card {
-            background: white;
-            max-width: 440px;
-            width: 90%;
-            border-radius: 2.5rem;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 30px 50px -20px black;
-            animation: fadeInUp 0.3s ease;
-        }
-
-        .login-header {
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #136b1e, #259132);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1.8rem;
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(95deg, #1f682a, #156f1a);
-            border: none;
-            color: white;
-            font-weight: 700;
-            padding: 0.75rem 1.5rem;
-            border-radius: 3rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            justify-content: center;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn:hover {
-            transform: scale(0.97);
-            background: linear-gradient(95deg, #155d21, #0f5514);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-secondary {
-            background: #eef3ea;
-            color: #1f5a22;
-            border: 1px solid #c0dfb0;
-            padding: 0.6rem 1.2rem;
-            border-radius: 3rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-secondary:hover {
-            background: #e0f0d8;
-            border-color: #2e8b57;
-            transform: translateY(-1px);
-        }
-
-        /* Zone pills */
-        .zone-pill {
-            background: #ecf7e6;
-            border: 1px solid #cde0c2;
-            padding: 0.5rem 1.5rem;
-            border-radius: 3rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin: 0.25rem 0.5rem;
-        }
-
-        .zone-pill.active {
-            background: #198a2e;
-            color: white;
-            border-color: #198a2e;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Dashboard grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-            gap: 1.5rem;
-            margin: 1rem 0;
-        }
-
-        .stat-card {
-            background: #ffffff;
-            border-radius: 1.8rem;
-            padding: 1.2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2efda;
-            transition: all 0.2s;
-        }
-
-        .stat-card:hover {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .stat-title {
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: #1b5e1f;
-            border-left: 5px solid #2e8b57;
-            padding-left: 0.8rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Progress bars */
-        .stage-progress {
-            background: #e4f0dd;
-            border-radius: 2rem;
-            height: 8px;
-            margin: 0.5rem 0;
-            overflow: hidden;
-        }
-
-        .stage-progress-fill {
-            background: #2e8b57;
-            height: 100%;
-            width: 0%;
-            border-radius: 2rem;
-            transition: width 0.5s ease;
-        }
-
-        /* Crop stage row - HORIZONTAL ALIGNMENT FIX */
-        .crop-stage-row {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            gap: 1rem;
-            justify-content: space-between;
-            overflow-x: auto;
-            margin-top: 1rem;
-        }
-
-        .crop-stage-col {
-            flex: 1;
-            min-width: 200px;
-            background: #fafefa;
-            border-radius: 1.5rem;
-            padding: 1rem;
-            border: 1px solid #e2efda;
-        }
-
-        /* Make sure card doesn't force wrap */
-        .stat-card:last-child {
-            width: 100%;
-        }
-
-        /* Form grid */
-        .grid-2col {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.2rem;
-        }
-
-        @media (min-width: 640px) {
-            .grid-2col {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Input fields */
-        .input-field label {
-            font-weight: 600;
-            font-size: 0.75rem;
-            color: #235b1e;
-            display: block;
-            margin-bottom: 0.3rem;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 0.7rem 1rem;
-            border: 2px solid #deecce;
-            border-radius: 2rem;
-            font-size: 0.85rem;
-            transition: 0.2s;
-        }
-
-        input:focus, select:focus {
-            border-color: #2e8b57;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
-        }
-
-        /* Table */
-        .prev-table-wrapper {
-            overflow-x: auto;
-            border-radius: 1.5rem;
-            border: 1px solid #d4e8ca;
-            background: white;
-        }
-
-        .prev-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.75rem;
-        }
-
-        .prev-table th, .prev-table td {
-            border: 1px solid #deecce;
-            padding: 0.6rem 0.5rem;
-            text-align: left;
-        }
-
-        .prev-table th {
-            background: #ecf7e6;
-            color: #1a551a;
-            font-weight: 700;
-        }
-
-        /* Update modal */
-        .update-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .month-card {
-            background: #f9fef7;
-            border-radius: 1.5rem;
-            padding: 0.7rem 0.3rem;
-            text-align: center;
-            border: 1px solid #d5e8ca;
-            transition: 0.2s;
-        }
-
-        .month-card input {
-            width: 90%;
-            text-align: center;
-            margin-top: 0.5rem;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #cbe5c0;
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-top: 1px solid #cbe5c0;
-        }
-
-        /* Welcome badge */
-        .welcome-username {
-            font-weight: 600;
-            background: #eef4ea;
-            padding: 0.3rem 1rem;
-            border-radius: 3rem;
-            font-size: 0.85rem;
-            color: #1c5a1c;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Toast */
-        .toast-msg {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 1rem;
-            right: 1rem;
-            max-width: 380px;
-            margin: 0 auto;
-            background: #1f3120;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 3rem;
-            z-index: 1100;
-            transform: translateY(100px);
-            transition: 0.3s;
-            font-size: 0.85rem;
-            text-align: center;
-            backdrop-filter: blur(8px);
-        }
-
-        .toast-msg.show {
-            transform: translateY(0);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Profile buttons row */
-        .profile-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.2rem;
-            flex-wrap: wrap;
-        }
-
-        .profile-buttons .btn,
-        .profile-buttons .btn-secondary {
-            flex: 1;
-            justify-content: center;
-        }
-
-        /* Header */
-        .header-left {
-            display: flex;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #0e3a12, #072b0a); min-height: 100vh; padding: 1.5rem; display: flex; justify-content: center; align-items: center; }
+        .container { max-width: 1400px; width: 100%; margin: 0 auto; }
+        .glass-card { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(2px); border-radius: 2rem; padding: 1.5rem 1.8rem; margin-bottom: 1.5rem; box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.25); border: 1px solid rgba(200, 230, 180, 0.6); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.3); }
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .login-card { background: white; max-width: 440px; width: 90%; border-radius: 2.5rem; padding: 2rem; text-align: center; box-shadow: 0 30px 50px -20px black; animation: fadeInUp 0.3s ease; }
+        .login-header { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.8rem; }
+        .btn { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 3rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; justify-content: center; font-size: 0.95rem; transition: all 0.2s; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        .btn:hover { transform: scale(0.97); background: linear-gradient(95deg, #155d21, #0f5514); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); }
+        .btn-secondary { background: #eef3ea; color: #1f5a22; border: 1px solid #c0dfb0; padding: 0.6rem 1.2rem; border-radius: 3rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-secondary:hover { background: #e0f0d8; border-color: #2e8b57; transform: translateY(-1px); }
+        .zone-pill { background: #ecf7e6; border: 1px solid #cde0c2; padding: 0.5rem 1.5rem; border-radius: 3rem; font-weight: 600; cursor: pointer; margin: 0.25rem 0.5rem; transition: all 0.2s; }
+        .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 1.5rem; margin: 1rem 0; }
+        .stat-card { background: #ffffff; border-radius: 1.8rem; padding: 1.2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid #e2efda; transition: all 0.2s; }
+        .stat-card:hover { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
+        .stat-title { font-weight: 800; font-size: 1.1rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .stage-progress { background: #e4f0dd; border-radius: 2rem; height: 8px; margin: 0.5rem 0; overflow: hidden; }
+        .stage-progress-fill { background: #2e8b57; height: 100%; width: 0%; border-radius: 2rem; transition: width 0.5s ease; }
+        .crop-stage-row { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 1rem; justify-content: space-between; overflow-x: auto; margin-top: 1rem; }
+        .crop-stage-col { flex: 1; min-width: 200px; background: #fafefa; border-radius: 1.5rem; padding: 1rem; border: 1px solid #e2efda; }
+        .grid-2col { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+        @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
+        input, select { width: 100%; padding: 0.7rem 1rem; border: 2px solid #deecce; border-radius: 2rem; font-size: 0.85rem; transition: 0.2s; }
+        input:focus, select:focus { border-color: #2e8b57; outline: none; box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2); }
+        .prev-table-wrapper { overflow-x: auto; border-radius: 1.5rem; border: 1px solid #d4e8ca; background: white; }
+        .prev-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .prev-table th, .prev-table td { border: 1px solid #deecce; padding: 0.6rem 0.5rem; text-align: left; }
+        .prev-table th { background: #ecf7e6; color: #1a551a; font-weight: 700; }
+        .update-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0; }
+        .month-card { background: #f9fef7; border-radius: 1.5rem; padding: 0.7rem 0.3rem; text-align: center; border: 1px solid #d5e8ca; transition: 0.2s; }
+        .month-card input { width: 90%; text-align: center; margin-top: 0.5rem; }
+        .footer { text-align: center; font-size: 0.7rem; color: #cbe5c0; margin-top: 1.5rem; padding: 1rem; border-top: 1px solid #cbe5c0; }
+        .welcome-username { font-weight: 600; background: #eef4ea; padding: 0.3rem 1rem; border-radius: 3rem; font-size: 0.85rem; color: #1c5a1c; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .toast-msg { position: fixed; bottom: 1.5rem; left: 1rem; right: 1rem; max-width: 380px; margin: 0 auto; background: #1f3120; color: white; padding: 0.8rem 1.5rem; border-radius: 3rem; z-index: 1100; transform: translateY(100px); transition: 0.3s; font-size: 0.85rem; text-align: center; backdrop-filter: blur(8px); }
+        .toast-msg.show { transform: translateY(0); }
+        .hidden { display: none; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .profile-buttons { display: flex; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap; }
+        .profile-buttons .btn, .profile-buttons .btn-secondary { flex: 1; justify-content: center; }
+        .header-left { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.8rem; }
+        .banner-title { display: flex; flex-direction: column; }
+        .banner-title h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(130deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.2rem; }
+        .banner-title p { font-size: 0.8rem; color: #2e6b2e; margin-left: 0.2rem; }
+        .unit-group { display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; }
+        .unit-group label { display: inline-flex; align-items: center; gap: 0.3rem; }
+        .crop-area-item { display: flex; justify-content: space-between; border-bottom: 1px solid #e2efda; padding: 0.5rem 0; }
+        .crop-area-item span:first-child i { margin-right: 0.5rem; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
-        <div class="login-header"><i class="fas fa-microchip"></i> Hydroponic Smart Data Tracker </div>
-        <div class="input-group" style="margin-bottom:1rem;">
-            <label>👤 Username</label>
-            <input type="text" id="loginUsername" placeholder="Enter your username">
-        </div>
-        <div class="input-group" style="margin-bottom:1.5rem;">
-            <label>🔒 Password</label>
-            <input type="password" id="loginPassword" placeholder="Password">
-        </div>
+        <div class="login-header"><i class="fas fa-microchip"></i> Smart Data Capture</div>
+        <div class="input-group" style="margin-bottom:1rem;"><label>👤 Username</label><input type="text" id="loginUsername" placeholder="Enter your username"></div>
+        <div class="input-group" style="margin-bottom:1.5rem;"><label>🔒 Password</label><input type="password" id="loginPassword" placeholder="Password"></div>
         <button id="loginBtn" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
         <div id="loginError" style="color:#d9534f; margin-top: 1rem; font-size:0.85rem;"></div>
         <div id="loginDebug" style="font-size:11px; background:#f5f5f5; margin-top:1rem; padding:0.5rem; border-radius:1rem; display:none;"></div>
@@ -411,12 +73,13 @@
 
 <div id="mainApp" style="display: none;">
 <div class="container">
-    <!-- Header with welcome username -->
+    <!-- Header with Real Time Insights below Smart Data Capture -->
     <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div class="header-left">
-            <h1 style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(130deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                <i class="fas fa-chart-line"></i> Smart Data Capture <span style="font-size: 0.9rem;">| Real Time Insights</span>
-            </h1>
+            <div class="banner-title">
+                <h1><i class="fas fa-chart-line"></i> Smart Data Capture</h1>
+                <p><i class="fas fa-clock"></i> Real Time Insights</p>
+            </div>
             <span id="welcomeUserSpan" class="welcome-username"><i class="fas fa-user-check"></i> Welcome, <span id="loggedInUsername"></span></span>
         </div>
         <div>
@@ -436,9 +99,7 @@
     <div class="glass-card">
         <div class="stat-title"><i class="fas fa-chart-simple"></i> 📈 Live Dashboard · All Growers</div>
         <div id="dashboardContainer"><i class="fas fa-spinner fa-pulse"></i> Loading analytics...</div>
-        <div style="margin-top: 1rem; text-align: right;">
-            <button id="refreshDashboard" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh</button>
-        </div>
+        <div style="margin-top: 1rem; text-align: right;"><button id="refreshDashboard" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh</button></div>
     </div>
 
     <!-- Grower Profile -->
@@ -469,8 +130,7 @@
     <!-- Previous Submissions -->
     <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
         <div class="stat-title"><i class="fas fa-clock-rotate-left"></i> Your Previous Submissions</div>
-        <div class="prev-table-wrapper">
-            <table class="prev-table"><thead id="prevTableHead"></thead><tbody id="prevTableBody"></tbody>}</div>
+        <div class="prev-table-wrapper"><table class="prev-table"><thead id="prevTableHead"></thead><tbody id="prevTableBody"></tbody>}</div>
         <div id="noPrevMsg" style="text-align:center; padding: 1.5rem;">No previous data found.</div>
     </div>
 
@@ -488,13 +148,22 @@
     </div>
 </div>
 
-<!-- Enhanced Update Harvest Modal -->
-<div id="updateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2200; align-items:center; justify-content:center;">
-    <div style="background:white; max-width:900px; width:90%; border-radius:2.5rem; padding:1.8rem; box-shadow: 0 25px 50px -12px black; animation: fadeInUp 0.2s ease;">
-        <h3 style="color:#1c5a1c; font-size:1.8rem;"><i class="fas fa-edit"></i> Update Monthly Harvest</h3>
-        <p style="color:#5a7a52; margin-bottom:1rem;">Adjust the harvest amounts for each month below.</p>
-        <div id="updateInfo" style="background:#eef4ea; padding:1rem; border-radius:1.5rem; margin:1rem 0; border-left:5px solid #2e8b57;"></div>
-        <div id="monthlyInputs" class="update-grid"></div>
+<!-- Redesigned Update Harvest Modal -->
+<div id="updateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2200; align-items:center; justify-content:center;">
+    <div style="background:white; max-width:1000px; width:90%; border-radius:2.5rem; padding:2rem; box-shadow: 0 25px 50px -12px black; animation: fadeInUp 0.2s ease;">
+        <h3 style="color:#1c5a1c; font-size:1.8rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> Update Monthly Harvest</h3>
+        <p style="color:#5a7a52; margin-bottom:1.5rem;">Adjust the harvest amounts for each month below.</p>
+        <div id="updateInfo" style="background:#eef4ea; padding:1rem; border-radius:1.5rem; margin-bottom:1.5rem; border-left:5px solid #2e8b57;"></div>
+        <!-- Monthly grid (months centered) -->
+        <div id="monthlyInputs" class="update-grid" style="grid-template-columns: repeat(4, 1fr); gap: 1rem;"></div>
+        <!-- Unit selection inline horizontal -->
+        <div style="margin: 1rem 0; display: flex; align-items: center; gap: 2rem; justify-content: center;">
+            <span style="font-weight:600;">Yield Unit:</span>
+            <div class="unit-group" style="display: flex; gap: 1.5rem;">
+                <label><input type="radio" name="modalWeeklyUnit" value="kg" checked> kg/week</label>
+                <label><input type="radio" name="modalWeeklyUnit" value="crates"> crates/week</label>
+            </div>
+        </div>
         <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
             <button id="cancelUpdateBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
             <button id="saveUpdateBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button>
@@ -506,7 +175,7 @@
 
 <script>
     // ==================== CONFIG ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyn3g57xpePdYDjXgueRyKDKnqZfksH3oGaSkAvZfmCOPNPg80bEX_p4Ka2Rr7RfUpO6Q/exec';  // <--- REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrTHaba8ZMYK4a2r05tu1GJOAW3GsyLEb288-LebmCbr5LygUoJbhtOEswx6IMnyefKA/exec';  // <--- REPLACE WITH YOUR WEB APP URL
     const DEBUG = true;
 
     const ZONE_LOCALITIES = {
@@ -567,7 +236,7 @@
         }
     }
 
-    // Dashboard: only 3 crops, horizontal stage columns
+    // Dashboard
     async function loadDashboard() {
         dashboardContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Fetching live analytics...';
         try {
@@ -596,27 +265,25 @@
         }
         html += `</div>`;
 
-        // Total area by crop (only 3)
-        html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-apple-alt"></i> Total Area by Crop (3 main)</div><div class="crop-area-list">`;
+        // Combined box: Total Area by Crop (3 main) + Top Varieties inside same card
+        html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-apple-alt"></i> Total Area by Crop & Top Varieties</div>`;
+        html += `<div style="margin-bottom:1rem;"><strong>📊 Area by Crop (3 main)</strong></div>`;
         const targetCrops = ["Tomato", "Sweet Pepper", "English Cucumber"];
         for (let crop of targetCrops) {
             let cropEntry = (stats.areaByCrop || []).find(c => c.crop === crop);
             let area = cropEntry ? cropEntry.area : 0;
-            html += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #e2efda; padding:0.5rem 0;"><span><i class="fas fa-seedling"></i> ${crop}</span><strong>${area.toFixed(1)} m²</strong></div>`;
+            html += `<div class="crop-area-item"><span><i class="fas fa-seedling"></i> ${crop}</span><strong>${area.toFixed(1)} m²</strong></div>`;
         }
-        html += `</div></div>`;
-
-        // Top varieties
-        html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-trophy"></i> Top Varieties</div>`;
-        if (stats.topVarieties?.tomato) html += `<div><i class="fas fa-tomato"></i> 🍅 Tomato: <b>${stats.topVarieties.tomato.variety}</b> (${stats.topVarieties.tomato.area.toFixed(1)} m²)</div>`;
+        html += `<hr style="margin: 0.8rem 0;"><div><strong>🏆 Top Varieties</strong></div>`;
+        if (stats.topVarieties?.tomato) html += `<div class="crop-area-item"><span><i class="fas fa-tomato"></i> Tomato</span><span><b>${stats.topVarieties.tomato.variety}</b> (${stats.topVarieties.tomato.area.toFixed(1)} m²)</span></div>`;
         else html += `<div>🍅 Tomato: No data</div>`;
-        if (stats.topVarieties?.sweetPepper) html += `<div><i class="fas fa-pepper-hot"></i> 🌶️ Sweet Pepper: <b>${stats.topVarieties.sweetPepper.variety}</b> (${stats.topVarieties.sweetPepper.area.toFixed(1)} m²)</div>`;
+        if (stats.topVarieties?.sweetPepper) html += `<div class="crop-area-item"><span><i class="fas fa-pepper-hot"></i> Sweet Pepper</span><span><b>${stats.topVarieties.sweetPepper.variety}</b> (${stats.topVarieties.sweetPepper.area.toFixed(1)} m²)</span></div>`;
         else html += `<div>🌶️ Sweet Pepper: No data</div>`;
-        if (stats.topVarieties?.englishCucumber) html += `<div><i class="fas fa-cucumber"></i> 🥒 English Cucumber: <b>${stats.topVarieties.englishCucumber.variety}</b> (${stats.topVarieties.englishCucumber.area.toFixed(1)} m²)</div>`;
+        if (stats.topVarieties?.englishCucumber) html += `<div class="crop-area-item"><span><i class="fas fa-cucumber"></i> English Cucumber</span><span><b>${stats.topVarieties.englishCucumber.variety}</b> (${stats.topVarieties.englishCucumber.area.toFixed(1)} m²)</span></div>`;
         else html += `<div>🥒 English Cucumber: No data</div>`;
         html += `</div>`;
 
-        // Area by stage for each of the 3 crops (HORIZONTAL FLEX ROW)
+        // Area by stage for each crop (horizontal)
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-chart-line"></i> Area by Stage (Tomato, Sweet Pepper, English Cucumber)</div><div class="crop-stage-row">`;
         for (let crop of targetCrops) {
             let stagesData = (stats.areaByStageByCrop && stats.areaByStageByCrop[crop]) || {};
@@ -654,7 +321,7 @@
         else localitySelect.disabled = false;
     }
 
-    // Greenhouse form
+    // Greenhouse form and saved list management
     function renderActiveForm() {
         let cropOptions = CROP_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
         let stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -677,13 +344,22 @@
         stageSel.addEventListener('change', updateHarvestForm);
         updateHarvestForm();
     }
+
     function updateHarvestForm() {
         const stage = document.getElementById('stageSelect').value;
         const crop = document.getElementById('cropSelect').value;
         const harvestDiv = document.getElementById('harvestDetailsDiv');
         if (stage !== 'Harvesting') { harvestDiv.innerHTML = ''; return; }
         let isWeight = WEIGHT_CROPS.includes(crop);
-        let unitHtml = isWeight ? `<div style="margin-top:8px;"><label><input type="radio" name="weeklyUnit" value="kg" checked> kg/week</label> <label><input type="radio" name="weeklyUnit" value="crates"> crates/week</label></div>` : `<div><input type="hidden" name="weeklyUnit" value="units"></div>`;
+        let unitHtml = `
+            <div style="margin-top:12px;">
+                <label style="font-weight:600;">Yield Unit (weekly):</label>
+                <div class="unit-group" style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
+                    ${isWeight ? `<label><input type="radio" name="weeklyUnit" value="kg" checked> kg/week</label>
+                                <label><input type="radio" name="weeklyUnit" value="crates"> crates/week</label>` : `<label><input type="radio" name="weeklyUnit" value="units" checked> units/week</label>`}
+                </div>
+            </div>
+        `;
         harvestDiv.innerHTML = `
             <div style="border-top:2px solid #c0dfb0; margin-top:1rem; padding-top:1rem;">
                 <h4><i class="fas fa-chart-line"></i> Harvest Details</h4>
@@ -692,13 +368,13 @@
                     <div><label>Harvesting Months (duration)</label><input type="number" step="0.5" id="harvestMonths" placeholder="0"></div>
                 </div>
                 ${unitHtml}
-                <div style="margin-top:12px;"><label>📅 Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px;"></div></div>
+                <div style="margin-top:12px;"><label>📅 Monthly Harvest (kg or units)</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px;"></div></div>
             </div>
         `;
         const grid = document.getElementById('monthGrid');
-        grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join('');
-        if (!isWeight) document.querySelector('input[name="weeklyUnit"]')?.setAttribute('value', 'units');
+        grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span style="font-weight:600;">${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join('');
     }
+
     function getCurrentFormData() {
         let crop = document.getElementById('cropSelect')?.value || '';
         let area = parseFloat(document.getElementById('areaInput')?.value) || 0;
@@ -719,40 +395,46 @@
         }
         return { crop, area, variety, stage, transplantDate, prodSystem, tomatoType, ...harvest };
     }
+
+    function updateSavedListDisplay() {
+        if (savedGreenhouses.length === 0) {
+            savedListDiv.innerHTML = '<div style="padding:12px; color:#5a6e5a;">No greenhouses added. Use the form above to add.</div>';
+            return;
+        }
+        savedListDiv.innerHTML = `<div style="font-weight:600; margin-bottom:12px;"><i class="fas fa-list"></i> Pending submissions (${savedGreenhouses.length}):</div>` +
+            savedGreenhouses.map((gh, idx) => `
+                <div style="background:#f8faf5; border-radius:20px; padding:10px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span><i class="fas fa-seedling"></i> <b>#${idx + 1}</b> ${gh.crop} | ${gh.area} m² | ${gh.stage}</span>
+                    <button onclick="removeSavedItem(${idx})" style="background:#e74c3c; color:white; border:none; border-radius:40px; padding:4px 14px; cursor:pointer;"><i class="fas fa-trash"></i> Remove</button>
+                </div>
+            `).join('');
+    }
+
+    window.removeSavedItem = (idx) => {
+        savedGreenhouses.splice(idx, 1);
+        updateSavedListDisplay();
+        toast("Greenhouse removed");
+    };
+
     function saveCurrentGreenhouse() {
         let data = getCurrentFormData();
         if (!data.crop || data.area <= 0) { toast("Please select crop and area >0", true); return; }
         if (data.stage === 'Harvesting' && (data.weeklyYield <= 0 || data.harvestMonths <= 0)) { toast("Harvest details required", true); return; }
         savedGreenhouses.push({ ...data, id: Date.now() });
-        updateSavedList();
-        renderActiveForm();
-        toast(`Greenhouse saved (${savedGreenhouses.length} total)`);
+        updateSavedListDisplay();
+        renderActiveForm(); // reset form
+        toast(`Greenhouse saved. Total pending: ${savedGreenhouses.length}`);
     }
-    function updateSavedList() {
-        if (savedGreenhouses.length === 0) { savedListDiv.innerHTML = '<div style="padding:12px;">No greenhouses added.</div>'; return; }
-        savedListDiv.innerHTML = `<div style="font-weight:600; margin-bottom:12px;"><i class="fas fa-list"></i> Pending submissions:</div>` + savedGreenhouses.map((gh, idx) => `
-            <div style="background:#f8faf5; border-radius:20px; padding:10px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                <span><i class="fas fa-seedling"></i> <b>#${idx + 1}</b> ${gh.crop} | ${gh.area} m² | ${gh.stage}</span>
-                <button onclick="window.removeSaved(${idx})" style="background:#e74c3c; color:white; border:none; border-radius:40px; padding:4px 14px; cursor:pointer;"><i class="fas fa-trash"></i> Remove</button>
-            </div>
-        `).join('');
-    }
-    window.removeSaved = (idx) => { savedGreenhouses.splice(idx, 1); updateSavedList(); };
+
     async function submitAllNewData() {
         let grower = growerName.value.trim();
         let locality = localitySelect.value;
         let totalArea = parseFloat(totalAreaInput.value) || 0;
         if (!grower || !locality || totalArea <= 0) { toast("Complete profile (Name, Locality, Total Area)", true); return; }
-        let toSubmit = [...savedGreenhouses];
-        let current = getCurrentFormData();
-        if (current.crop && current.area > 0) {
-            if (current.stage === 'Harvesting' && (current.weeklyYield <= 0 || current.harvestMonths <= 0)) { toast("Harvest details missing for current form", true); return; }
-            toSubmit.push(current);
-        }
-        if (toSubmit.length === 0) { toast("No greenhouse data to submit", true); return; }
+        if (savedGreenhouses.length === 0) { toast("No greenhouse data to submit", true); return; }
         let rows = [];
         let ghCounter = 1;
-        for (let gh of toSubmit) {
+        for (let gh of savedGreenhouses) {
             let cropName = gh.crop;
             let tomatoExtra = '';
             if (gh.crop === 'Tomato' && gh.tomatoType) { tomatoExtra = gh.tomatoType; cropName = `Tomato (${gh.tomatoType})`; }
@@ -768,13 +450,13 @@
         btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
         try {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows }) });
-            toast(`✅ ${rows.length} greenhouse(s) submitted`);
+            toast(`✅ ${rows.length} greenhouse(s) submitted successfully!`);
             savedGreenhouses = [];
-            updateSavedList();
+            updateSavedListDisplay();
             renderActiveForm();
             await loadUserPreviousData(grower);
             await loadDashboard();
-        } catch (e) { toast("Submission error", true); }
+        } catch (e) { toast("Submission error: " + e.message, true); }
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
@@ -825,37 +507,51 @@
             return true;
         } catch (e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
     }
+
     function openUpdateModal(row) {
         currentUpdateRow = row;
         const monthlyVals = [];
         for (let i = 0; i < 12; i++) monthlyVals.push(parseFloat(row[16 + i]) || 0);
+        // Determine current unit from row[11] (YieldUnit)
+        let currentUnit = (row[11] || "kg").toLowerCase();
         document.getElementById('updateInfo').innerHTML = `<strong><i class="fas fa-seedling"></i> Crop:</strong> ${row[6]} &nbsp;| <strong><i class="fas fa-arrows-alt"></i> Area:</strong> ${row[9]} m² &nbsp;| <strong><i class="fas fa-calendar"></i> Transplant:</strong> ${row[10] || 'N/A'}`;
         const grid = document.getElementById('monthlyInputs');
         grid.innerHTML = '';
         MONTHS.forEach((m, idx) => {
             let div = document.createElement('div');
             div.className = 'month-card';
-            div.innerHTML = `<span>${m.substring(0, 3)}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}">`;
+            div.innerHTML = `<span style="font-weight:600;">${m.substring(0, 3)}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}" style="margin-top:0.5rem;">`;
             grid.appendChild(div);
         });
+        // Set radio buttons for unit
+        const kgRadio = document.querySelector('#updateModal input[value="kg"]');
+        const cratesRadio = document.querySelector('#updateModal input[value="crates"]');
+        if (kgRadio && cratesRadio) {
+            kgRadio.checked = (currentUnit === 'kg');
+            cratesRadio.checked = (currentUnit === 'crates');
+        }
         updateModal.style.display = 'flex';
     }
+
     async function saveHarvestUpdate() {
         if (!currentUpdateRow) return;
         let newMonthly = [];
         for (let i = 0; i < 12; i++) newMonthly.push(parseFloat(document.getElementById(`upd_month_${i}`).value) || 0);
         let timestamp = currentUpdateRow[0];
         let username = growerName.value.trim();
+        // Get selected unit from modal
+        let selectedUnit = document.querySelector('#updateModal input[name="modalWeeklyUnit"]:checked')?.value || "kg";
         try {
+            // Also update yield unit in the sheet? The backend only updates monthly values. We'll keep unit unchanged.
             const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}`;
             const res = await fetch(url);
             const result = await res.json();
             if (result.success) { toast("Harvest updated"); updateModal.style.display = 'none'; await loadUserPreviousData(username); await loadDashboard(); }
             else toast("Update failed", true);
-        } catch (e) { toast("Error", true); }
+        } catch (e) { toast("Error updating", true); }
     }
 
-    // Login & auto-fill
+    // Login & auto-fill total area
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         const debugDiv = document.getElementById('loginDebug');
@@ -945,7 +641,7 @@
         const data = await res.json();
         if (!data.rows || !data.rows.length) { document.getElementById('historyLoading').innerHTML = 'No records'; return; }
         const thead = document.getElementById('historyTableHead');
-        thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</table>';
+        thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
         const tbody = document.getElementById('historyTableBody');
         tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td>${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
         document.getElementById('historyLoading').style.display = 'none';
