@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Smart Data Capture | Hydroponic Insights</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +17,7 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%);
             min-height: 100vh;
-            padding: 12px;
+            padding: 20px;
         }
 
         .container {
@@ -28,11 +28,16 @@
         .glass-card {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(4px);
-            border-radius: 24px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.15);
+            border-radius: 28px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(70, 130, 50, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.25);
         }
 
         .login-overlay {
@@ -41,39 +46,32 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2000;
-            padding: 16px;
         }
 
         .login-card {
             background: white;
-            max-width: 400px;
-            width: 100%;
+            max-width: 420px;
+            width: 90%;
             border-radius: 2rem;
-            padding: 1.8rem;
+            padding: 2rem;
             text-align: center;
             box-shadow: 0 25px 50px -12px black;
         }
 
         .login-header {
-            font-size: 1.7rem;
+            font-size: 1.9rem;
             font-weight: 800;
             background: linear-gradient(135deg, #136b1e, #259132);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 1.5rem;
-        }
-
-        .btn, .btn-secondary, .zone-pill {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            touch-action: manipulation;
+            margin-bottom: 1.8rem;
         }
 
         .btn {
@@ -81,70 +79,79 @@
             border: none;
             color: white;
             font-weight: 700;
-            padding: 0.8rem 1.2rem;
+            padding: 0.7rem 1.5rem;
             border-radius: 3rem;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 0.6rem;
             font-size: 0.9rem;
+            transition: all 0.2s;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            min-height: 48px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.03);
         }
 
         .btn-secondary {
             background: #eef3ea;
             color: #1f5a22;
             border: 1px solid #b8daa8;
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 1rem;
             border-radius: 2rem;
             font-weight: 600;
-            min-height: 44px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e0f0d6;
+            transform: translateY(-1px);
         }
 
         .zone-pill {
             background: #ecf7e6;
             border: 1px solid #cde0c2;
-            padding: 0.5rem 1rem;
+            padding: 0.3rem 1.2rem;
             border-radius: 2rem;
             font-weight: 600;
+            cursor: pointer;
             font-size: 0.8rem;
+            transition: all 0.2s;
         }
 
         .zone-pill.active {
             background: #198a2e;
             color: white;
             border-color: #198a2e;
+            box-shadow: 0 2px 8px rgba(25,138,46,0.3);
         }
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
             background: white;
             border-radius: 1.5rem;
-            padding: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 1.2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             border: 1px solid #e2efda;
+            transition: all 0.2s;
         }
 
         .stat-title {
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #1b5e1f;
             border-left: 5px solid #2e8b57;
-            padding-left: 0.7rem;
-            margin-bottom: 0.8rem;
+            padding-left: 0.8rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -168,27 +175,32 @@
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             border-radius: 1rem;
             overflow: hidden;
-        }
-
-        .data-table th, .data-table td {
-            padding: 0.6rem 0.4rem;
-            text-align: left;
-            border-bottom: 1px solid #deecce;
         }
 
         .data-table th {
             background: #ecf7e6;
             color: #1a551a;
+            padding: 0.7rem 0.5rem;
+            text-align: left;
             font-weight: 700;
+        }
+
+        .data-table td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #deecce;
+        }
+
+        .data-table tr:hover td {
+            background: #f9fff7;
         }
 
         .badge {
             background: #e9f3e4;
             border-radius: 2rem;
-            padding: 0.2rem 0.7rem;
+            padding: 0.2rem 0.6rem;
             font-size: 0.7rem;
             font-weight: 600;
             color: #2e6b2e;
@@ -196,17 +208,16 @@
 
         input, select {
             width: 100%;
-            padding: 0.7rem;
+            padding: 0.6rem 0.9rem;
             border: 1px solid #cde0c2;
             border-radius: 2rem;
             font-size: 0.85rem;
             background: white;
-            margin-top: 0.2rem;
         }
 
         .grid-2col {
             display: grid;
-            gap: 0.8rem;
+            gap: 1rem;
         }
 
         @media (min-width: 640px) {
@@ -222,12 +233,12 @@
             transform: translateX(-50%) translateY(100px);
             background: #1f3120;
             color: white;
-            padding: 0.7rem 1.2rem;
+            padding: 0.7rem 1.5rem;
             border-radius: 3rem;
             z-index: 1100;
             transition: 0.3s;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             white-space: nowrap;
             pointer-events: none;
         }
@@ -238,6 +249,15 @@
 
         .hidden {
             display: none;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #3a6b3a;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #cde0c2;
         }
 
         .modal-overlay {
@@ -252,75 +272,44 @@
             align-items: center;
             justify-content: center;
             z-index: 2100;
-            padding: 16px;
         }
 
         .modal-container {
             background: white;
-            width: 100%;
-            max-width: 95%;
+            max-width: 950px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 1.5rem;
             max-height: 85vh;
-            border-radius: 1.5rem;
-            padding: 1.2rem;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         .update-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 0.8rem;
             margin: 1rem 0;
-        }
-
-        @media (min-width: 640px) {
-            .update-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
         }
 
         .month-card {
             background: #f9fef7;
             border-radius: 1rem;
-            padding: 0.5rem;
+            padding: 0.6rem;
             text-align: center;
             border: 1px solid #d5e8ca;
         }
 
-        .month-card input {
+        .crop-stage-table {
             width: 100%;
-            padding: 0.4rem;
-            font-size: 0.8rem;
-            text-align: center;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
         }
 
-        .footer {
-            text-align: center;
-            font-size: 0.65rem;
-            color: #3a6b3a;
-            margin-top: 1.5rem;
-            padding-top: 0.8rem;
-            border-top: 1px solid #cde0c2;
-        }
-
-        .header-flex {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-        @media (min-width: 768px) {
-            .header-flex {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-
-        .zone-scroll {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
+        .crop-stage-table th, .crop-stage-table td {
+            padding: 0.4rem 0.3rem;
+            font-size: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #deecce;
         }
     </style>
 </head>
@@ -341,27 +330,27 @@
     <!-- MAIN APP -->
     <div id="mainApp" style="display: none;">
 
+        <!-- Header -->
         <div class="glass-card">
-            <div class="header-flex">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                    <h1 style="font-size: 1.5rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;"><i class="fas fa-chart-line"></i> Smart Data Capture</h1>
-                    <p style="font-size: 0.7rem; color: #3a6b3a;"><i class="fas fa-clock"></i> Real-time hydroponic insights</p>
+                    <h1 style="font-size: 1.6rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;"><i class="fas fa-chart-line"></i> Smart Data Capture</h1>
+                    <p style="font-size: 0.75rem; color: #3a6b3a;"><i class="fas fa-clock"></i> Real-time hydroponic insights</p>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-                    <div class="zone-header" style="display: flex; align-items: center; gap: 0.5rem; background: #f4f9f0; padding: 0.2rem 0.8rem; border-radius: 3rem;">
-                        <i class="fas fa-map-marked-alt"></i>
-                        <div id="zoneButtons" class="zone-scroll"></div>
-                        <span id="zoneActiveDisplay" class="badge"><i class="fas fa-map-pin"></i> E2</span>
-                    </div>
-                    <div>
-                        <span id="welcomeUserSpan" class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
-                        <button id="viewHistoryBtn" class="btn-secondary" style="margin-left: 0.3rem;">History</button>
-                        <button id="logoutBtn" class="btn-secondary">Logout</button>
-                    </div>
+                <div class="zone-header" style="display: flex; align-items: center; gap: 1rem; background: #f4f9f0; padding: 0.3rem 1rem; border-radius: 3rem;">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <div id="zoneButtons" style="display: flex; gap: 0.4rem; flex-wrap: wrap;"></div>
+                    <span id="zoneActiveDisplay" class="badge"><i class="fas fa-map-pin"></i> E2</span>
+                </div>
+                <div>
+                    <span id="welcomeUserSpan" class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
+                    <button id="viewHistoryBtn" class="btn-secondary" style="margin-left: 0.5rem;">History</button>
+                    <button id="logoutBtn" class="btn-secondary">Logout</button>
                 </div>
             </div>
         </div>
 
+        <!-- Grower Profile -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-user-astronaut"></i> Grower Profile</div>
             <div class="grid-2col">
@@ -369,28 +358,34 @@
                 <div><label>Locality</label><select id="localitySelect"></select></div>
                 <div><label>Total Area (m²)</label><input type="number" id="totalArea" step="0.01"></div>
             </div>
-            <div style="display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap;">
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                 <button id="editAreaBtn" class="btn-secondary" style="display: none;">Update Area</button>
                 <button id="accessTrackerBtn" class="btn">Launch Tracker</button>
             </div>
         </div>
 
+        <!-- Enhanced Dashboard -->
         <div class="dashboard-grid">
+            <!-- LEFT: Area by Stage (Visual bars) -->
             <div class="stat-card">
                 <div class="stat-title"><i class="fas fa-chart-simple"></i> Total Area by Stage</div>
                 <div id="areaByStageContainer"></div>
             </div>
+
+            <!-- RIGHT: Table for Crop & Top Varieties -->
             <div class="stat-card">
                 <div class="stat-title"><i class="fas fa-table-list"></i> Total Area by Crop & Top Varieties</div>
-                <div id="cropAndVarietiesContainer" style="overflow-x: auto;"></div>
+                <div id="cropAndVarietiesContainer"></div>
             </div>
         </div>
 
+        <!-- Area by Stage (Tomato, Sweet Pepper, English Cucumber) - Tabular -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-layer-group"></i> Area by Stage (Tomato, Sweet Pepper, English Cucumber)</div>
             <div id="stageByCropContainer" style="overflow-x: auto;"></div>
         </div>
 
+        <!-- Greenhouse Entry Section -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card">
                 <div class="stat-title"><i class="fas fa-plus-circle"></i> Register New Greenhouse</div>
@@ -401,14 +396,16 @@
             </div>
         </div>
 
+        <!-- Previous Submissions -->
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
             <div class="stat-title"><i class="fas fa-history"></i> Your Previous Submissions</div>
             <div style="overflow-x: auto;">
-                <table class="data-table" style="min-width: 700px;">
+                <table class="data-table" style="min-width: 800px;">
                     <thead id="prevTableHead"></thead>
                     <tbody id="prevTableBody"></tbody>
                 </table>
             </div>
+            <div id="noPrevMsg" style="text-align:center; padding:1rem;">No previous data found.</div>
         </div>
     </div>
 
@@ -420,11 +417,11 @@
     <div class="modal-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h3>Complete History</h3>
-            <button id="closeHistoryBtn" style="background: none; border: none; font-size: 2rem; cursor: pointer;">&times;</button>
+            <button id="closeHistoryBtn" style="background: none; border: none; font-size: 1.8rem; cursor: pointer;">&times;</button>
         </div>
         <div id="historyLoading">Loading...</div>
         <div style="overflow-x: auto;">
-            <table id="historyTable" class="data-table" style="display: none; min-width: 800px;">
+            <table id="historyTable" class="data-table" style="display: none; min-width: 1000px;">
                 <thead id="historyTableHead"></thead>
                 <tbody id="historyTableBody"></tbody>
             </table>
@@ -432,19 +429,19 @@
     </div>
 </div>
 
-<!-- Update Harvest Modal -->
+<!-- Update Harvest Modal (pre-filled with existing monthly data) -->
 <div id="updateModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color: #1c5a1c;">Update Monthly Harvest</h3>
-        <p style="margin: 0.5rem 0; font-size: 0.85rem;">Adjust monthly yields (values from previous submission are pre-filled).</p>
-        <div id="updateInfo" style="background: #eef4ea; padding: 0.8rem; border-radius: 1rem; margin-bottom: 1rem; font-size: 0.85rem;"></div>
+        <p style="margin-bottom: 0.8rem;">Adjust harvest amounts per month – existing values (incl. March, April, May) are pre‑filled.</p>
+        <div id="updateInfo" style="background: #eef4ea; padding: 0.8rem; border-radius: 1rem; margin-bottom: 1rem;"></div>
         <div id="monthlyInputs" class="update-grid"></div>
-        <div style="margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <div style="margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 1rem;">
             <span>Yield Unit:</span>
-            <label style="display: inline-flex; align-items: center; gap: 0.3rem;"><input type="radio" name="modalYieldUnit" value="kg" checked> kg</label>
-            <label style="display: inline-flex; align-items: center; gap: 0.3rem;"><input type="radio" name="modalYieldUnit" value="crates"> crates</label>
+            <label><input type="radio" name="modalYieldUnit" value="kg" checked> kg</label>
+            <label><input type="radio" name="modalYieldUnit" value="crates"> crates</label>
         </div>
-        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
             <button id="cancelUpdateBtn" class="btn-secondary">Cancel</button>
             <button id="saveUpdateBtn" class="btn">Save Changes</button>
         </div>
@@ -511,7 +508,7 @@
         if (DEBUG) console.log(msg, data);
     }
 
-    // ======================= DASHBOARD =======================
+    // ======================= DASHBOARD RENDERING =======================
     async function loadDashboard() {
         areaByStageContainer.innerHTML = '<div class="badge"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
         cropAndVarietiesContainer.innerHTML = '<div class="badge"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
@@ -530,6 +527,7 @@
     }
 
     function renderDashboard(stats) {
+        // 1) Area by Stage (progress bars)
         const areaByStage = stats.areaByStageTotal || { Seedling:0, Vegetative:0, Flowering:0, Fruiting:0, Harvesting:0 };
         let maxArea = Math.max(...Object.values(areaByStage).map(v=>v||0),1);
         let stageHtml = '';
@@ -547,6 +545,7 @@
         }
         areaByStageContainer.innerHTML = stageHtml;
 
+        // 2) Table: Total Area by Crop & Top Varieties
         const targetCrops = ["Tomato", "Sweet Pepper", "English Cucumber"];
         let cropTable = '<table class="data-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th></tr></thead><tbody>';
         for (let crop of targetCrops) {
@@ -556,19 +555,23 @@
             if (crop === 'Tomato' && stats.topVarieties.tomato && stats.topVarieties.tomato.length) topVariety = stats.topVarieties.tomato[0];
             else if (crop === 'Sweet Pepper' && stats.topVarieties.sweetPepper && stats.topVarieties.sweetPepper.length) topVariety = stats.topVarieties.sweetPepper[0];
             else if (crop === 'English Cucumber' && stats.topVarieties.englishCucumber && stats.topVarieties.englishCucumber.length) topVariety = stats.topVarieties.englishCucumber[0];
-            cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td><strong>${topVariety.area.toFixed(1)}</strong></td></tr>`;
+            cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
         }
         cropTable += '</tbody></table>';
         cropAndVarietiesContainer.innerHTML = cropTable;
 
-        let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1rem;">';
+        // 3) Area by Stage for Tomato, Sweet Pepper, English Cucumber (TABULAR)
+        let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">';
         for (let crop of targetCrops) {
             let stagesData = (stats.areaByStageByCrop && stats.areaByStageByCrop[crop]) || {};
             stageCropHtml += `
-                <div style="flex: 1; min-width: 160px; background: #fafefa; border-radius: 1rem; padding: 0.8rem; border: 1px solid #deecce;">
-                    <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-chart-bar"></i> ${crop}</h4>
-                    <table style="width:100%; border-collapse: collapse;">
-                        ${STAGES.map(s => `<tr><td style="padding:0.2rem 0;">${s}</td><td style="text-align:right;"><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</td></tr>`).join('')}
+                <div style="flex: 1; min-width: 180px; background: #fafefa; border-radius: 1.2rem; padding: 0.8rem; border: 1px solid #deecce;">
+                    <h4 style="margin-bottom: 0.6rem;"><i class="fas fa-chart-bar"></i> ${crop}</h4>
+                    <table class="crop-stage-table">
+                        <thead><tr><th>Stage</th><th>Area (m²)</th></tr></thead>
+                        <tbody>
+                            ${STAGES.map(s => `<tr><td>${s}</td><td><strong>${(stagesData[s] || 0).toFixed(1)}</strong></td></tr>`).join('')}
+                        </tbody>
                     </table>
                 </div>
             `;
@@ -577,6 +580,7 @@
         stageByCropContainer.innerHTML = stageCropHtml;
     }
 
+    // Zone & locality
     function initZoneButtons() {
         const zones = Object.keys(ZONE_LOCALITIES);
         zoneDiv.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join('');
@@ -635,7 +639,7 @@
                     <div><label>Harvesting Months</label><input type="number" step="0.5" id="harvestMonths"></div>
                 </div>
                 ${unitHtml}
-                <div style="margin-top:0.8rem;"><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:0.5rem; margin-top:0.5rem;"></div></div>
+                <div style="margin-top:0.8rem;"><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-top:0.5rem;"></div></div>
             </div>
         `;
         const grid = document.getElementById('monthGrid');
@@ -662,9 +666,9 @@
     function updateSavedListDisplay() {
         if (savedGreenhouses.length === 0) { savedListDiv.innerHTML = '<div class="badge">No greenhouses added.</div>'; return; }
         savedListDiv.innerHTML = `<div style="font-weight:600;">Pending (${savedGreenhouses.length}):</div>` + savedGreenhouses.map((gh, idx) => `
-            <div style="background:#f8faf5; border-radius:1rem; padding:0.5rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+            <div style="background:#f8faf5; border-radius:1rem; padding:0.5rem; margin-bottom:0.5rem; display:flex; justify-content:space-between;">
                 <span><b>#${idx+1}</b> ${gh.crop} | ${gh.area} m² | ${gh.stage}</span>
-                <button onclick="removeSavedItem(${idx})" style="background:#e74c3c; color:white; border:none; border-radius:2rem; padding:0.3rem 0.8rem;">Remove</button>
+                <button onclick="removeSavedItem(${idx})" style="background:#e74c3c; color:white; border:none; border-radius:1.5rem; padding:0.2rem 0.8rem;">Remove</button>
             </div>
         `).join('');
     }
@@ -712,7 +716,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (UNIVERSAL) ==========
+    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (PRE-FILLED) ==========
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -720,12 +724,9 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
             const rows = data.rows;
-            window.userRowsForUpdate = rows; // store globally for click handlers
-            
-            prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Actions</th></tr>`;
+            prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area(m²)</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Actions</th></tr>`;
             prevTableBody.innerHTML = '';
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
+            for (let row of rows) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row[0] || ''}</td>
@@ -736,22 +737,14 @@
                     <td>${row[7] || ''}</td>
                     <td>${row[11] || '0'}</td>
                     <td>${row[13] || '0'}</td>
-                    <td>${(() => { let active = []; for (let j=16;j<=27;j++) if (parseFloat(row[j])>0) active.push(MONTHS[j-16].substring(0,3)); return active.join(', ') || '—'; })()}</td>
-                    <td><button class="btn-secondary update-harvest-btn" data-rowidx="${i}" style="font-size:0.7rem; padding:6px 12px;"><i class="fas fa-edit"></i> Update</button></td>
+                    <td>${(() => { let active = []; for (let i=16;i<=27;i++) if (parseFloat(row[i])>0) active.push(MONTHS[i-16].substring(0,3)); return active.join(', ') || '—'; })()}</td>
+                    <td>${row[8] === "Harvesting" ? `<button class="btn-secondary update-harvest-btn" style="font-size:0.7rem; padding:2px 8px;"><i class="fas fa-edit"></i> Update</button>` : '—'}</td>
                 `;
                 prevTableBody.appendChild(tr);
             }
-            // Attach click listeners directly to each button (works on all devices)
-            document.querySelectorAll('.update-harvest-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const idx = parseInt(this.getAttribute('data-rowidx'));
-                    if (window.userRowsForUpdate && window.userRowsForUpdate[idx]) {
-                        openUpdateModal(window.userRowsForUpdate[idx]);
-                    } else {
-                        toast("Error: row data missing", true);
-                    }
-                });
+            // Attach event listeners to each update button
+            document.querySelectorAll('.update-harvest-btn').forEach((btn, idx) => {
+                btn.onclick = () => openUpdateModal(rows[idx]);
             });
             prevSubSection.style.display = 'block';
             return true;
@@ -776,7 +769,7 @@
         MONTHS.forEach((m, idx) => {
             let div = document.createElement('div');
             div.className = 'month-card';
-            div.innerHTML = `<span style="font-weight:600;">${m}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}">`;
+            div.innerHTML = `<span>${m}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}">`;
             grid.appendChild(div);
         });
         const kgRadio = document.querySelector('#updateModal input[value="kg"]');
@@ -785,7 +778,6 @@
             kgRadio.checked = (currentUnit === 'kg');
             cratesRadio.checked = (currentUnit === 'crates');
         }
-        // Show modal
         updateModal.style.display = 'flex';
     }
 
@@ -901,7 +893,7 @@
             const thead = document.getElementById('historyTableHead');
             thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
             const tbody = document.getElementById('historyTableBody');
-            tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td style="padding:0.3rem;">${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
+            tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td>${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
             document.getElementById('historyLoading').style.display = 'none';
             document.getElementById('historyTable').style.display = 'table';
         } catch(e) { document.getElementById('historyLoading').innerHTML = 'Error loading history'; }
@@ -910,7 +902,7 @@
     document.getElementById('cancelUpdateBtn').onclick = () => updateModal.style.display = 'none';
     document.getElementById('saveUpdateBtn').onclick = saveHarvestUpdate;
 
-    // Initialize
+    // Initialization
     if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
         document.getElementById('loginError').innerHTML = '⚠️ Please replace YOUR_APPS_SCRIPT_URL with your Web App URL.';
     }
