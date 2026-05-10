@@ -23,9 +23,7 @@
             margin-bottom: 1.5rem;
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(70, 130, 50, 0.25);
-            transition: transform 0.2s ease;
         }
-        /* Login Overlay */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -266,6 +264,7 @@
             cursor: pointer;
         }
         .metric-icon { font-size: 1.4rem; margin-right: 0.3rem; vertical-align: middle; }
+        .stage-badge { background: #e8f0e4; border-radius: 1rem; padding: 0.2rem 0.5rem; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -311,7 +310,7 @@
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer"></div></div>
 
-        <!-- Register New Greenhouse (Interactive) -->
+        <!-- Register New Greenhouse -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card">
                 <div class="stat-title"><i class="fas fa-seedling"></i> Register New Greenhouse</div>
@@ -322,11 +321,11 @@
             </div>
         </div>
 
-        <!-- Harvest Records (with area, weekly yield, monthly summary) -->
+        <!-- Previous Submissions: ALL CROP STAGES -->
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
-            <div class="stat-title"><i class="fas fa-history"></i> Harvest Records (Click Update to edit monthly yields)</div>
+            <div class="stat-title"><i class="fas fa-history"></i> Your Harvest Records (All Stages - Update only for Harvesting)</div>
             <div style="overflow-x: auto;">
-                <table class="data-table" style="min-width: 1000px;">
+                <table class="data-table" style="min-width: 1200px;">
                     <thead id="prevTableHead"></thead>
                     <tbody id="prevTableBody"></tbody>
                 </table>
@@ -444,7 +443,7 @@
         document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
     }
 
-    // Load harvest records with area, weekly yield, monthly summary
+    // Load ALL previous records (all stages), but only show update button for Harvesting stage
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -463,11 +462,14 @@
             const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
             if (stageIdx === -1 || monthIndices.some(i => i === -1)) { console.warn("Mapping incomplete"); prevSubSection.style.display = 'none'; return false; }
             
+            // Table headers: show all relevant info
             prevTableHead.innerHTML = `<tr><th>Crop</th><th>Stage</th><th>Area (m²)</th><th>Variety</th><th>Weekly Yield</th><th>Unit</th><th>Harvest Months</th><th>Active Months</th><th>Monthly Summary (kg/crates)</th><th>Action</th></tr>`;
             prevTableBody.innerHTML = '';
             let displayCount = 0;
             for (let row of data.rows) {
-                if ((row[stageIdx] || "").toLowerCase() !== "harvesting") continue;
+                const stageVal = (row[stageIdx] || "").toString();
+                // skip rows that are not valid
+                if (!row[cropIdx]) continue;
                 displayCount++;
                 const cropVal = row[cropIdx] || "—";
                 const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
@@ -483,10 +485,14 @@
                     if (val > 0) activeMonths.push(MONTHS[i].substring(0,3));
                 }
                 const monthlySummary = monthlyValues.map(v => v.toFixed(1)).join(', ');
+                // Show update button only if stage is Harvesting
+                const isHarvesting = stageVal.toLowerCase() === "harvesting";
+                const actionButton = isHarvesting ? `<button class="update-harvest-btn" data-row-idx="${displayCount-1}"><i class="fas fa-edit"></i> Update</button>` : '—';
+                const stageDisplay = `<span class="stage-badge"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-seedling'}"></i> ${stageVal}</span>`;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${cropVal}</strong></td>
-                    <td><span class="badge"><i class="fas fa-tractor"></i> Harvesting</span></td>
+                    <td>${stageDisplay}</td>
                     <td><i class="fas fa-ruler-combined"></i> ${areaVal.toFixed(1)} m²</td>
                     <td>${varietyVal}</td>
                     <td><i class="fas fa-weight-hanging"></i> ${weeklyYield.toFixed(1)}</td>
@@ -494,13 +500,17 @@
                     <td>${harvestMonths}</td>
                     <td>${activeMonths.join(', ') || '—'}</td>
                     <td style="max-width:200px; overflow-x:auto; white-space:nowrap;">${monthlySummary}</td>
-                    <td><button class="update-harvest-btn"><i class="fas fa-edit"></i> Update</button></td>
+                    <td>${actionButton}</td>
                 `;
-                const btn = tr.querySelector('.update-harvest-btn');
-                btn.addEventListener('click', () => {
-                    currentUpdateRowData = { row, headers: data.headers, monthIndices, weeklyUnitIdx, timestampIdx, cropIdx, areaIdx, weeklyYieldIdx, harvestMonthsIdx };
-                    openUpdateModalFromRow(row, monthIndices, weeklyUnitIdx, timestampIdx, cropIdx, areaIdx);
-                });
+                if (isHarvesting) {
+                    const btn = tr.querySelector('.update-harvest-btn');
+                    if (btn) {
+                        btn.addEventListener('click', () => {
+                            currentUpdateRowData = { row, headers: data.headers, monthIndices, weeklyUnitIdx, timestampIdx, cropIdx, areaIdx, weeklyYieldIdx, harvestMonthsIdx };
+                            openUpdateModalFromRow(row, monthIndices, weeklyUnitIdx, timestampIdx, cropIdx, areaIdx);
+                        });
+                    }
+                }
                 prevTableBody.appendChild(tr);
             }
             if (displayCount === 0) prevSubSection.style.display = 'none';
@@ -564,7 +574,7 @@
         } catch(e) { toast("Error updating", true); }
     }
 
-    // Interactive Greenhouse Form with Production System and Crop Dropdown
+    // Interactive Greenhouse Form
     function renderActiveForm() {
         const cropOptions = CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
