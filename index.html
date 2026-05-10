@@ -43,10 +43,11 @@
 <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
         <div class="login-header"><i class="fas fa-leaf"></i> Hydroponic Tracker</div>
-        <div class="input-group"><label>👤 Username</label><input type="text" id="loginUsername"></div>
-        <div class="input-group"><label>🔒 Password</label><input type="password" id="loginPassword"></div>
+        <div class="input-group"><label>👤 Username</label><input type="text" id="loginUsername" placeholder="Enter username"></div>
+        <div class="input-group"><label>🔒 Password</label><input type="password" id="loginPassword" placeholder="Password"></div>
         <button id="loginBtn" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
         <div id="loginError" style="color:#d9534f; margin-top:12px;"></div>
+        <div id="loginDebug" style="font-size:11px; color:#666; margin-top:16px; text-align:left; background:#f0f0f0; padding:8px; border-radius:12px; display:none;"></div>
     </div>
 </div>
 
@@ -125,7 +126,12 @@
 
 <script>
     // ==================== CONFIG ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNJx0TL6A278ktPCIelmhgXpgmpG1MfbaHsxQJkH43mi9eyR-Kll3RzMQl36l85EXKRw/exec';  // <--- REPLACE WITH YOUR DEPLOYED URL
+    // *** IMPORTANT: Replace with your actual Apps Script URL ***
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNJx0TL6A278ktPCIelmhgXpgmpG1MfbaHsxQJkH43mi9eyR-Kll3RzMQl36l85EXKRw/exec';  // <--- CHANGE THIS
+    
+    // For debugging: show fetch responses in console and on screen
+    const DEBUG = true;
+    
     const ZONE_LOCALITIES = {
         "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"]
     };
@@ -173,16 +179,34 @@
         setTimeout(() => toastDiv.classList.remove('show'), 2800);
     }
 
+    function debugLog(msg, data) {
+        if(!DEBUG) return;
+        console.log(msg, data || '');
+        const debugDiv = document.getElementById('loginDebug');
+        if(debugDiv) {
+            debugDiv.style.display = 'block';
+            debugDiv.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${msg} ${data ? JSON.stringify(data) : ''}</div>`;
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+        }
+    }
+
     // ==================== DASHBOARD ====================
     async function loadDashboard() {
         dashboardContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading dashboard...';
         try {
-            const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
+            const url = `${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`;
+            debugLog("Fetching dashboard from:", url);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const res = await fetch(url, { method: 'GET', signal: controller.signal });
+            clearTimeout(timeoutId);
             const data = await res.json();
+            debugLog("Dashboard response:", data);
             if(data.error) throw new Error(data.error);
             renderDashboard(data);
         } catch(e) {
-            dashboardContainer.innerHTML = `<div style="padding:16px; background:#fef2e8; border-radius:20px;">⚠️ Dashboard error: ${e.message}</div>`;
+            console.error("Dashboard error:", e);
+            dashboardContainer.innerHTML = `<div style="padding:16px; background:#fef2e8; border-radius:20px;">⚠️ Dashboard error: ${e.message}. Check console.</div>`;
         }
     }
 
@@ -191,9 +215,9 @@
         // stage area
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-seedling"></i> Total Area by Stage</div>`;
         const stages = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
-        let maxArea = Math.max(...Object.values(stats.areaByStage).map(v=>v||0),1);
+        let maxArea = Math.max(...Object.values(stats.areaByStage || {}).map(v=>v||0),1);
         for(let s of stages) {
-            let area = stats.areaByStage[s] || 0;
+            let area = (stats.areaByStage && stats.areaByStage[s]) || 0;
             let percent = (area/maxArea)*100;
             html += `<div><div style="display:flex; justify-content:space-between;"><b>${s}</b><span>${area.toFixed(1)} m²</span></div><div class="stage-progress"><div class="stage-progress-fill" style="width:${percent}%;"></div></div></div>`;
         }
@@ -206,9 +230,9 @@
         html += `</div></div>`;
         // top varieties
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-trophy"></i> Top Varieties</div>`;
-        if(stats.topVarieties.tomato) html += `<div><i class="fas fa-tomato"></i> 🍅 Tomato: <b>${stats.topVarieties.tomato.variety}</b> (${stats.topVarieties.tomato.area.toFixed(1)} m²)</div>`;
-        if(stats.topVarieties.sweetPepper) html += `<div><i class="fas fa-pepper-hot"></i> Sweet Pepper: <b>${stats.topVarieties.sweetPepper.variety}</b> (${stats.topVarieties.sweetPepper.area.toFixed(1)} m²)</div>`;
-        if(stats.topVarieties.englishCucumber) html += `<div><i class="fas fa-cucumber"></i> English Cucumber: <b>${stats.topVarieties.englishCucumber.variety}</b> (${stats.topVarieties.englishCucumber.area.toFixed(1)} m²)</div>`;
+        if(stats.topVarieties && stats.topVarieties.tomato) html += `<div><i class="fas fa-tomato"></i> 🍅 Tomato: <b>${stats.topVarieties.tomato.variety}</b> (${stats.topVarieties.tomato.area.toFixed(1)} m²)</div>`;
+        if(stats.topVarieties && stats.topVarieties.sweetPepper) html += `<div><i class="fas fa-pepper-hot"></i> Sweet Pepper: <b>${stats.topVarieties.sweetPepper.variety}</b> (${stats.topVarieties.sweetPepper.area.toFixed(1)} m²)</div>`;
+        if(stats.topVarieties && stats.topVarieties.englishCucumber) html += `<div><i class="fas fa-cucumber"></i> English Cucumber: <b>${stats.topVarieties.englishCucumber.variety}</b> (${stats.topVarieties.englishCucumber.area.toFixed(1)} m²)</div>`;
         html += `</div></div>`;
         dashboardContainer.innerHTML = html;
     }
@@ -373,13 +397,13 @@
     // ==================== PREVIOUS SUBMISSIONS & UPDATE ====================
     async function loadUserPreviousData(username) {
         try {
-            const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
+            const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
+            debugLog("Fetching user data:", url);
+            const res = await fetch(url);
             const data = await res.json();
+            debugLog("User data response:", data);
             if(!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
             const rows = data.rows;
-            // Headers from backend (Sheet1 columns)
-            const headers = data.headers;
-            // Show useful columns: Timestamp, Zone, Crop, Stage, Area, Variety, WeeklyYield, YieldUnit, HarvestMonths
             const displayIdx = [0,3,6,8,9,7,11,12,13];
             const displayNames = ["Timestamp","Zone","Crop","Stage","Area(m²)","Variety","Weekly Yield","Unit","Harvest Months","Actions"];
             prevTableHead.innerHTML = '<tr>' + displayNames.map(n => `<th>${n}</th>`).join('') + '</tr>';
@@ -393,7 +417,6 @@
                     tr.appendChild(td);
                 }
                 let actionTd = document.createElement('td');
-                // row[8] is Stage (index 8)
                 if(row[8] === "Harvesting") {
                     let btn = document.createElement('button');
                     btn.textContent = "✏️ Update Harvest";
@@ -408,7 +431,7 @@
             prevSubSection.style.display = 'block';
             document.getElementById('noPrevMsg').style.display = 'none';
             return true;
-        } catch(e) { prevSubSection.style.display = 'none'; return false; }
+        } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
     }
 
     function openUpdateModal(row) {
@@ -434,29 +457,70 @@
         let timestamp = currentUpdateRow[0];
         let username = growerName.value.trim();
         try {
-            const res = await fetch(`${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}`);
+            const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}`;
+            const res = await fetch(url);
             const result = await res.json();
             if(result.success) { toast("Harvest updated"); updateModal.style.display = 'none'; await loadUserPreviousData(username); await loadDashboard(); }
             else toast("Update failed", true);
         } catch(e) { toast("Error", true); }
     }
 
-    // ==================== LOGIN & PROFILE ====================
+    // ==================== LOGIN & PROFILE (FIXED WITH TIMEOUT & DEBUG) ====================
     async function login(username, password) {
+        const errorDiv = document.getElementById('loginError');
+        const debugDiv = document.getElementById('loginDebug');
+        debugDiv.style.display = 'block';
+        debugDiv.innerHTML = '';
+        errorDiv.innerText = '';
+        
+        if(!username || !password) {
+            errorDiv.innerText = "Please enter username and password";
+            return;
+        }
+        
+        const loginBtn = document.getElementById('loginBtn');
+        const originalText = loginBtn.innerHTML;
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Logging in...';
+        
         try {
-            const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
-            const data = await res.json();
-            if(!data.success) { document.getElementById('loginError').innerText = "Invalid credentials"; return; }
+            const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+            debugLog("Login URL:", url);
+            
+            // Timeout after 15 seconds
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            
+            const response = await fetch(url, { method: 'GET', signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            debugLog("Response status:", response.status);
+            if(!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            debugLog("Login response data:", data);
+            
+            if(data.success !== true) {
+                errorDiv.innerText = "Invalid username or password";
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+                return;
+            }
+            
+            // Login successful
             growerName.value = username;
+            
             // Check if existing user
-            const userData = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
-            const userRows = await userData.json();
+            const userDataResp = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
+            const userRows = await userDataResp.json();
             existingUser = (userRows.rows && userRows.rows.length > 0);
+            
             // Load total area from profile
-            const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
-            const prof = await profRes.json();
+            const profResp = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
+            const prof = await profResp.json();
             if(prof.totalArea) totalAreaInput.value = prof.totalArea;
             else totalAreaInput.value = '';
+            
             if(existingUser && userRows.rows && userRows.rows.length) {
                 let lastRow = userRows.rows[0];
                 let lastLocality = lastRow[2];
@@ -476,16 +540,31 @@
                 editAreaBtn.style.display = 'none';
                 await setZone('E2');
             }
+            
             await loadUserPreviousData(username);
             await loadDashboard();
+            
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             toast(`Welcome ${username}!`);
-        } catch(e) { document.getElementById('loginError').innerText = "Network error: "+e.message; console.error(e); }
+            
+        } catch(err) {
+            console.error("Login error:", err);
+            errorDiv.innerText = `Network error: ${err.message}. Check console and Apps Script URL.`;
+            debugLog("Fetch error:", err);
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = originalText;
+        }
     }
 
     // ==================== EVENT LISTENERS ====================
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
+    // Allow Enter key in password field
+    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
+    });
+    
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; greenhouseSection.classList.add('hidden'); toast("Logged out"); };
     accessTrackerBtn.onclick = () => { if(!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile first", true); else { greenhouseSection.classList.remove('hidden'); renderActiveForm(); toast("Tracker ready"); } };
     addGreenhouseBtn.onclick = saveCurrentGreenhouse;
@@ -515,7 +594,15 @@
     document.getElementById('closeHistoryBtn').onclick = () => historyModal.style.display = 'none';
     document.getElementById('cancelUpdateBtn').onclick = () => updateModal.style.display = 'none';
     document.getElementById('saveUpdateBtn').onclick = saveHarvestUpdate;
-
+    
+    // Show debug info on login screen
+    if(SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
+        document.getElementById('loginDebug').innerHTML = '<span style="color:red;">⚠️ Replace YOUR_APPS_SCRIPT_URL with your actual Apps Script Web App URL.</span>';
+        document.getElementById('loginDebug').style.display = 'block';
+    } else {
+        document.getElementById('loginDebug').innerHTML = `<span>✅ Backend URL set to: ${SCRIPT_URL}</span>`;
+    }
+    
     initZoneButtons();
     greenhouseSection.classList.add('hidden');
     loadDashboard();
