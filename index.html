@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Smart Data Capture | Real Time Insights</title>
+    <title>Smart Data Capture | Real Time Insights|Hydroponic Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -183,7 +183,7 @@
 
 <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
-        <div class="login-header"><i class="fas fa-microchip"></i> Smart Data Capture</div>
+        <div class="login-header"><i class="fas fa-microchip"></i> Hydroponic Smart Data Capture </div>
         <div class="input-group" style="margin-bottom:1rem;"><label>👤 Username</label><input type="text" id="loginUsername" placeholder="Enter your username"></div>
         <div class="input-group" style="margin-bottom:1.5rem;"><label>🔒 Password</label><input type="password" id="loginPassword" placeholder="Password"></div>
         <button id="loginBtn" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
@@ -197,7 +197,7 @@
     <div class="glass-card">
         <div class="header-content">
             <div class="banner-title">
-                <h1><i class="fas fa-chart-line"></i> Smart Data Capture</h1>
+                <h1><i class="fas fa-chart-line"></i> Hydroponic Smart Data Capture</h1>
                 <p><i class="fas fa-clock"></i> Real Time Insights</p>
             </div>
             <div class="zone-header">
@@ -213,7 +213,7 @@
         </div>
     </div>
 
-    <!-- Grower Profile (moved to top, below banner) -->
+    <!-- Grower Profile -->
     <div class="glass-card">
         <div class="stat-title"><i class="fas fa-user-astronaut"></i> Grower Profile</div>
         <div class="grid-2col">
@@ -275,7 +275,7 @@
     </div>
 </div>
 
-<!-- Update Harvest Modal -->
+<!-- Update Harvest Modal (FIXED) -->
 <div id="updateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2200; align-items:center; justify-content:center;">
     <div style="background:white; max-width:1000px; width:90%; border-radius:2.5rem; padding:2rem; box-shadow: 0 25px 50px -12px black;">
         <h3 style="color:#1c5a1c; font-size:1.8rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> Update Monthly Harvest</h3>
@@ -300,7 +300,8 @@
 
 <script>
     // ==================== CONFIG ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoq8VhrcQIcqP8iSks8DxFzS_DZ5I6jgmeYxKVyJtp9jBaCvrYzaublYZdsFhNIDJc/exec';  // <--- REPLACE WITH YOUR WEB APP URL
+    // ⚠️ IMPORTANT: Replace with your actual Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbDu1XmhfF0SXTlbGbNE6L5i-FioBSXIkGL5tRI2iYR1vcewhKbKEldhDjEphq_witqw/execL';  // <--- REPLACE THIS
     const DEBUG = true;
 
     const ZONE_LOCALITIES = {
@@ -369,6 +370,7 @@
         stageByCropContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
         try {
             const url = `${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`;
+            debugLog("Fetching dashboard from:", url);
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 15000);
             const res = await fetch(url, { signal: controller.signal });
@@ -377,7 +379,8 @@
             if (data.error) throw new Error(data.error);
             renderDashboard(data);
         } catch (e) {
-            areaByStageContainer.innerHTML = `<div style="padding:1rem; background:#fff5e6; border-radius:1.5rem;">⚠️ Error: ${e.message}</div>`;
+            console.error("Dashboard error:", e);
+            areaByStageContainer.innerHTML = `<div style="padding:1rem; background:#fff5e6; border-radius:1.5rem;">⚠️ Dashboard error: ${e.message}. Check console and backend URL.</div>`;
             cropAndVarietiesContainer.innerHTML = '';
             stageByCropContainer.innerHTML = '';
         }
@@ -396,7 +399,6 @@
         }
         areaByStageContainer.innerHTML = stageHtml;
 
-        // Crop & Varieties
         const targetCrops = ["Tomato", "Sweet Pepper", "English Cucumber"];
         let cropHtml = '';
         for (let crop of targetCrops) {
@@ -588,7 +590,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ==================== PREVIOUS SUBMISSIONS & UPDATE HARVEST ====================
+    // ==================== PREVIOUS SUBMISSIONS & UPDATE HARVEST (FIXED) ====================
     async function loadUserPreviousData(username) {
         try {
             const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
@@ -637,8 +639,9 @@
     }
 
     function openUpdateModal(row) {
-        if (!row) { toast("Error: row data missing", true); return; }
+        if (!row) { toast("Error: no row data", true); return; }
         currentUpdateRow = row;
+        // Extract monthly values (columns 16 to 27)
         const monthlyVals = [];
         for (let i = 0; i < 12; i++) monthlyVals.push(parseFloat(row[16 + i]) || 0);
         let currentUnit = (row[11] || "kg").toLowerCase();
@@ -651,6 +654,7 @@
             div.innerHTML = `<span style="font-weight:600;">${m.substring(0, 3)}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}" style="margin-top:0.5rem;">`;
             grid.appendChild(div);
         });
+        // Set unit radio buttons
         const kgRadio = document.querySelector('#updateModal input[value="kg"]');
         const cratesRadio = document.querySelector('#updateModal input[value="crates"]');
         if (kgRadio && cratesRadio) {
@@ -658,21 +662,37 @@
             cratesRadio.checked = (currentUnit === 'crates');
         }
         updateModal.style.display = 'flex';
+        debugLog("Update modal opened for row:", { crop: row[6], timestamp: row[0] });
     }
 
     async function saveHarvestUpdate() {
         if (!currentUpdateRow) { toast("No harvest row selected", true); return; }
+        // Collect new monthly values
         let newMonthly = [];
-        for (let i = 0; i < 12; i++) newMonthly.push(parseFloat(document.getElementById(`upd_month_${i}`).value) || 0);
+        for (let i = 0; i < 12; i++) {
+            let val = parseFloat(document.getElementById(`upd_month_${i}`).value);
+            newMonthly.push(isNaN(val) ? 0 : val);
+        }
         let timestamp = currentUpdateRow[0];
         let username = growerName.value.trim();
+        const selectedUnit = document.querySelector('#updateModal input[name="modalWeeklyUnit"]:checked')?.value || "kg";
+        debugLog("Saving harvest update", { username, timestamp, newMonthly, selectedUnit });
         try {
             const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}`;
             const res = await fetch(url);
             const result = await res.json();
-            if (result.success) { toast("Harvest updated"); updateModal.style.display = 'none'; await loadUserPreviousData(username); await loadDashboard(); }
-            else toast("Update failed: " + (result.error || "unknown"), true);
-        } catch (e) { toast("Error: " + e.message, true); }
+            if (result.success) {
+                toast("Harvest updated successfully!");
+                updateModal.style.display = 'none';
+                await loadUserPreviousData(username);
+                await loadDashboard();
+            } else {
+                toast("Update failed: " + (result.error || "unknown error"), true);
+            }
+        } catch (e) {
+            console.error("Update harvest error:", e);
+            toast("Error: " + e.message, true);
+        }
     }
 
     // ==================== LOGIN ====================
@@ -689,6 +709,7 @@
         loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Logging...';
         try {
             const url = `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+            debugLog("Login URL:", url);
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 15000);
             const response = await fetch(url, { signal: controller.signal });
@@ -766,7 +787,7 @@
         const thead = document.getElementById('historyTableHead');
         thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
         const tbody = document.getElementById('historyTableBody');
-        tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td>${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
+        tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td>${(typeof cell === 'number') ? cell.toFixed(2) : cell}<td>`).join('') + '</tr>').join('');
         document.getElementById('historyLoading').style.display = 'none';
         document.getElementById('historyTable').style.display = 'table';
     };
