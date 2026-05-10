@@ -25,7 +25,6 @@
             margin: 0 auto;
         }
 
-        /* Glass card - mobile friendly */
         .glass-card {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(4px);
@@ -36,7 +35,6 @@
             border: 1px solid rgba(70, 130, 50, 0.25);
         }
 
-        /* Login overlay */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -72,7 +70,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Buttons - larger touch area */
         .btn, .btn-secondary, .zone-pill {
             cursor: pointer;
             transition: all 0.2s ease;
@@ -120,7 +117,6 @@
             border-color: #198a2e;
         }
 
-        /* Dashboard grid - mobile: 1 column */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -154,7 +150,6 @@
             gap: 0.5rem;
         }
 
-        /* Progress bars */
         .stage-progress {
             background: #e9f3e4;
             border-radius: 1rem;
@@ -170,7 +165,6 @@
             border-radius: 1rem;
         }
 
-        /* Tables - scrollable on mobile */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -221,7 +215,6 @@
             }
         }
 
-        /* Toast message */
         .toast-msg {
             position: fixed;
             bottom: 20px;
@@ -247,7 +240,6 @@
             display: none;
         }
 
-        /* Modal - mobile friendly */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -311,7 +303,6 @@
             border-top: 1px solid #cde0c2;
         }
 
-        /* Flex wrap for header */
         .header-flex {
             display: flex;
             flex-direction: column;
@@ -350,7 +341,6 @@
     <!-- MAIN APP -->
     <div id="mainApp" style="display: none;">
 
-        <!-- Header -->
         <div class="glass-card">
             <div class="header-flex">
                 <div>
@@ -372,7 +362,6 @@
             </div>
         </div>
 
-        <!-- Grower Profile -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-user-astronaut"></i> Grower Profile</div>
             <div class="grid-2col">
@@ -386,7 +375,6 @@
             </div>
         </div>
 
-        <!-- Enhanced Dashboard -->
         <div class="dashboard-grid">
             <div class="stat-card">
                 <div class="stat-title"><i class="fas fa-chart-simple"></i> Total Area by Stage</div>
@@ -398,13 +386,11 @@
             </div>
         </div>
 
-        <!-- Area by Stage Tabular -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-layer-group"></i> Area by Stage (Tomato, Sweet Pepper, English Cucumber)</div>
             <div id="stageByCropContainer" style="overflow-x: auto;"></div>
         </div>
 
-        <!-- Greenhouse Entry -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card">
                 <div class="stat-title"><i class="fas fa-plus-circle"></i> Register New Greenhouse</div>
@@ -415,7 +401,6 @@
             </div>
         </div>
 
-        <!-- Previous Submissions -->
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
             <div class="stat-title"><i class="fas fa-history"></i> Your Previous Submissions</div>
             <div style="overflow-x: auto;">
@@ -447,7 +432,7 @@
     </div>
 </div>
 
-<!-- Update Harvest Modal (pre-filled) -->
+<!-- Update Harvest Modal -->
 <div id="updateModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color: #1c5a1c;">Update Monthly Harvest</h3>
@@ -470,7 +455,7 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzaNr1qylUYr9g7wmwEsS0BDHvAucYxu_Cd1jlGHRGLW5LmEMngMVPwDpPweaXH2TcBlg/exec';  // ✅ REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKpare3NshTvjWv6W5gh8TaRm457VpseQbRvT_FOM_dZgpVEReQS-JXx5ngOz4CKWmQQ/exec';  // ✅ REPLACE WITH YOUR WEB APP URL
     const DEBUG = true;
 
     const ZONE_LOCALITIES = {
@@ -573,7 +558,7 @@
             else if (crop === 'English Cucumber' && stats.topVarieties.englishCucumber && stats.topVarieties.englishCucumber.length) topVariety = stats.topVarieties.englishCucumber[0];
             cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</strong></td></tr>`;
         }
-        cropTable += '</tbody></td>';
+        cropTable += '</tbody></table>';
         cropAndVarietiesContainer.innerHTML = cropTable;
 
         let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1rem;">';
@@ -592,7 +577,6 @@
         stageByCropContainer.innerHTML = stageCropHtml;
     }
 
-    // Zone and locality
     function initZoneButtons() {
         const zones = Object.keys(ZONE_LOCALITIES);
         zoneDiv.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join('');
@@ -613,7 +597,7 @@
         else localitySelect.disabled = false;
     }
 
-    // Greenhouse form (simplified but functional)
+    // Greenhouse form
     function renderActiveForm() {
         let cropOptions = CROP_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
         let stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -728,7 +712,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (MOBILE FIX) ==========
+    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (MOBILE-FIXED) ==========
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -751,18 +735,74 @@
                     <td>${row[11] || '0'}</td>
                     <td>${row[13] || '0'}</td>
                     <td>${(() => { let active = []; for (let j=16;j<=27;j++) if (parseFloat(row[j])>0) active.push(MONTHS[j-16].substring(0,3)); return active.join(', ') || '—'; })()}</td>
-                    <td>${row[8] === "Harvesting" ? `<button class="btn-secondary update-harvest-btn" data-index="${i}" style="font-size:0.7rem; padding:6px 12px;"><i class="fas fa-edit"></i> Update</button>` : '—'}</td>
+                    <td><button class="btn-secondary update-harvest-btn" data-index="${i}" style="font-size:0.7rem; padding:6px 12px;"><i class="fas fa-edit"></i> Update</button></td>
                 `;
                 prevTableBody.appendChild(tr);
             }
-            // Attach event listeners using data-index to avoid closure issues
-            document.querySelectorAll('.update-harvest-btn').forEach(btn => {
-                const idx = parseInt(btn.getAttribute('data-index'));
-                btn.onclick = (e) => {
-                    e.preventDefault();
-                    openUpdateModal(rows[idx]);
-                };
-            });
+            prevSubSection.style.display = 'block';
+            return true;
+        } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
+    }
+
+    // Event delegation for update buttons (works on mobile)
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.update-harvest-btn');
+        if (!btn) return;
+        e.preventDefault();
+        const idx = parseInt(btn.getAttribute('data-index'));
+        if (isNaN(idx)) return;
+        // Retrieve the stored rows (we need to keep them in a variable)
+        // Since we lost the rows reference, we must fetch again or store globally.
+        // Better: store rows globally when loaded.
+        if (window.currentUserRows && window.currentUserRows[idx]) {
+            openUpdateModal(window.currentUserRows[idx]);
+        } else {
+            toast("Error: row data missing", true);
+        }
+    });
+
+    // Store rows globally when fetched
+    async function loadAndStoreUserData(username) {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (data.rows && data.rows.length) {
+                window.currentUserRows = data.rows;
+                return true;
+            }
+            return false;
+        } catch(e) { console.error(e); return false; }
+    }
+
+    // Override loadUserPreviousData to also store rows
+    async function loadUserPreviousData(username) {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
+            window.currentUserRows = data.rows;  // store globally
+            const rows = data.rows;
+            prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Actions</th></tr>`;
+            prevTableBody.innerHTML = '';
+            for (let i=0; i<rows.length; i++) {
+                const row = rows[i];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row[0] || ''}</td>
+                    <td>${row[3] || ''}</td>
+                    <td>${row[6] || ''}</td>
+                    <td>${row[8] || ''}</td>
+                    <td>${row[9] ? parseFloat(row[9]).toFixed(2) : '0'}</td>
+                    <td>${row[7] || ''}</td>
+                    <td>${row[11] || '0'}</td>
+                    <td>${row[13] || '0'}</td>
+                    <td>${(() => { let active = []; for (let j=16;j<=27;j++) if (parseFloat(row[j])>0) active.push(MONTHS[j-16].substring(0,3)); return active.join(', ') || '—'; })()}</td>
+                    <td><button class="btn-secondary update-harvest-btn" data-index="${i}" style="font-size:0.7rem; padding:6px 12px;"><i class="fas fa-edit"></i> Update</button></td>
+                `;
+                prevTableBody.appendChild(tr);
+            }
             prevSubSection.style.display = 'block';
             return true;
         } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
@@ -794,7 +834,6 @@
             kgRadio.checked = (currentUnit === 'kg');
             cratesRadio.checked = (currentUnit === 'crates');
         }
-        // Force modal to become visible
         updateModal.style.display = 'flex';
     }
 
@@ -908,7 +947,7 @@
             const data = await res.json();
             if (!data.rows || !data.rows.length) { document.getElementById('historyLoading').innerHTML = 'No records'; return; }
             const thead = document.getElementById('historyTableHead');
-            thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+            thead.innerHTML = '</table>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
             const tbody = document.getElementById('historyTableBody');
             tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td style="padding:0.3rem;">${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
             document.getElementById('historyLoading').style.display = 'none';
