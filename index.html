@@ -8,41 +8,119 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #0e3a12, #072b0a); min-height: 100vh; padding: 1.5rem; display: flex; justify-content: center; align-items: center; }
-        .container { max-width: 1400px; width: 100%; margin: 0 auto; }
-        .glass-card { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(2px); border-radius: 2rem; padding: 1.5rem 1.8rem; margin-bottom: 1.5rem; box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.25); border: 1px solid rgba(200, 230, 180, 0.6); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 30%, #0e3a12, #072b0a);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .page-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(200, 230, 180, 0.6);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
         .glass-card:hover { transform: translateY(-2px); box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.3); }
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .login-card { background: white; max-width: 440px; width: 90%; border-radius: 2.5rem; padding: 2rem; text-align: center; box-shadow: 0 30px 50px -20px black; animation: fadeInUp 0.3s ease; }
-        .login-header { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.8rem; }
-        .btn { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 3rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; justify-content: center; font-size: 0.95rem; transition: all 0.2s; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
-        .btn:hover { transform: scale(0.97); background: linear-gradient(95deg, #155d21, #0f5514); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); }
-        .btn-secondary { background: #eef3ea; color: #1f5a22; border: 1px solid #c0dfb0; padding: 0.6rem 1.2rem; border-radius: 3rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .login-card {
+            background: white; max-width: 440px; width: 90%; border-radius: 2.5rem;
+            padding: 2rem; text-align: center; box-shadow: 0 30px 50px -20px black;
+            animation: fadeInUp 0.3s ease;
+        }
+        .login-header {
+            font-size: 2rem; font-weight: 800;
+            background: linear-gradient(135deg, #136b1e, #259132);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1.8rem;
+        }
+        .btn {
+            background: linear-gradient(95deg, #1f682a, #156f1a);
+            border: none; color: white; font-weight: 700;
+            padding: 0.75rem 1.5rem; border-radius: 3rem; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 0.6rem; justify-content: center;
+            font-size: 0.95rem; transition: all 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:hover { transform: scale(0.97); background: linear-gradient(95deg, #155d21, #0f5514); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        .btn-secondary {
+            background: #eef3ea; color: #1f5a22; border: 1px solid #c0dfb0;
+            padding: 0.6rem 1.2rem; border-radius: 3rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+        }
         .btn-secondary:hover { background: #e0f0d8; border-color: #2e8b57; transform: translateY(-1px); }
-        .zone-pill { background: #ecf7e6; border: 1px solid #cde0c2; padding: 0.5rem 1.5rem; border-radius: 3rem; font-weight: 600; cursor: pointer; margin: 0.25rem 0.5rem; transition: all 0.2s; }
-        .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 1.5rem; margin: 1rem 0; }
-        .stat-card { background: #ffffff; border-radius: 1.8rem; padding: 1.2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid #e2efda; transition: all 0.2s; }
-        .stat-card:hover { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
-        .stat-title { font-weight: 800; font-size: 1.1rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .stage-progress { background: #e4f0dd; border-radius: 2rem; height: 8px; margin: 0.5rem 0; overflow: hidden; }
+        .zone-pill {
+            background: #ecf7e6; border: 1px solid #cde0c2; padding: 0.5rem 1.5rem;
+            border-radius: 3rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+        .stat-card {
+            background: #ffffff; border-radius: 1.8rem; padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2efda;
+            transition: all 0.2s;
+        }
+        .stat-title {
+            font-weight: 800; font-size: 1.2rem; color: #1b5e1f;
+            border-left: 5px solid #2e8b57; padding-left: 0.8rem;
+            margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .stage-progress { background: #e4f0dd; border-radius: 2rem; height: 10px; margin: 0.75rem 0; overflow: hidden; }
         .stage-progress-fill { background: #2e8b57; height: 100%; width: 0%; border-radius: 2rem; transition: width 0.5s ease; }
-        .crop-stage-row { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 1rem; justify-content: space-between; overflow-x: auto; margin-top: 1rem; }
+        .crop-stage-row { display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
         .crop-stage-col { flex: 1; min-width: 200px; background: #fafefa; border-radius: 1.5rem; padding: 1rem; border: 1px solid #e2efda; }
         .grid-2col { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
         @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
         input, select { width: 100%; padding: 0.7rem 1rem; border: 2px solid #deecce; border-radius: 2rem; font-size: 0.85rem; transition: 0.2s; }
-        input:focus, select:focus { border-color: #2e8b57; outline: none; box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2); }
+        input:focus, select:focus { border-color: #2e8b57; outline: none; box-shadow: 0 0 0 3px rgba(46,139,87,0.2); }
         .prev-table-wrapper { overflow-x: auto; border-radius: 1.5rem; border: 1px solid #d4e8ca; background: white; }
         .prev-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
         .prev-table th, .prev-table td { border: 1px solid #deecce; padding: 0.6rem 0.5rem; text-align: left; }
         .prev-table th { background: #ecf7e6; color: #1a551a; font-weight: 700; }
         .update-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0; }
-        .month-card { background: #f9fef7; border-radius: 1.5rem; padding: 0.7rem 0.3rem; text-align: center; border: 1px solid #d5e8ca; transition: 0.2s; }
-        .month-card input { width: 90%; text-align: center; margin-top: 0.5rem; }
-        .footer { text-align: center; font-size: 0.7rem; color: #cbe5c0; margin-top: 1.5rem; padding: 1rem; border-top: 1px solid #cbe5c0; }
-        .welcome-username { font-weight: 600; background: #eef4ea; padding: 0.3rem 1rem; border-radius: 3rem; font-size: 0.85rem; color: #1c5a1c; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .toast-msg { position: fixed; bottom: 1.5rem; left: 1rem; right: 1rem; max-width: 380px; margin: 0 auto; background: #1f3120; color: white; padding: 0.8rem 1.5rem; border-radius: 3rem; z-index: 1100; transform: translateY(100px); transition: 0.3s; font-size: 0.85rem; text-align: center; backdrop-filter: blur(8px); }
+        .month-card { background: #f9fef7; border-radius: 1.5rem; padding: 0.8rem 0.3rem; text-align: center; border: 1px solid #d5e8ca; }
+        .month-card span { font-weight: 700; display: block; margin-bottom: 0.5rem; font-size: 0.85rem; }
+        .month-card input { width: 90%; text-align: center; margin-top: 0.3rem; }
+        .footer {
+            text-align: center; font-size: 0.75rem; color: #cbe5c0;
+            padding: 1rem; border-top: 1px solid #cbe5c0;
+            margin-top: 2rem;
+        }
+        .welcome-username {
+            font-weight: 600; background: #eef4ea; padding: 0.3rem 1rem; border-radius: 3rem;
+            font-size: 0.85rem; color: #1c5a1c; display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .toast-msg {
+            position: fixed; bottom: 1.5rem; left: 1rem; right: 1rem; max-width: 380px;
+            margin: 0 auto; background: #1f3120; color: white; padding: 0.8rem 1.5rem;
+            border-radius: 3rem; z-index: 1100; transform: translateY(100px); transition: 0.3s;
+            font-size: 0.85rem; text-align: center; backdrop-filter: blur(8px);
+        }
         .toast-msg.show { transform: translateY(0); }
         .hidden { display: none; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -50,15 +128,21 @@
         .profile-buttons .btn, .profile-buttons .btn-secondary { flex: 1; justify-content: center; }
         .header-left { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.8rem; }
         .banner-title { display: flex; flex-direction: column; }
-        .banner-title h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(130deg, #136b1e, #259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.2rem; }
+        .banner-title h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(130deg,#136b1e,#259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.2rem; }
         .banner-title p { font-size: 0.8rem; color: #2e6b2e; margin-left: 0.2rem; }
-        .unit-group { display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; }
-        .unit-group label { display: inline-flex; align-items: center; gap: 0.3rem; }
+        .unit-group { display: flex; gap: 1.5rem; align-items: center; margin: 0.5rem 0 0 0; }
+        .unit-group label { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
         .crop-area-item { display: flex; justify-content: space-between; border-bottom: 1px solid #e2efda; padding: 0.5rem 0; }
         .crop-area-item span:first-child i { margin-right: 0.5rem; }
+        .zone-scroll { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.75rem; padding-bottom: 0.5rem; }
+        .zone-scroll::-webkit-scrollbar { height: 4px; }
+        .zone-scroll::-webkit-scrollbar-track { background: #e2efda; border-radius: 10px; }
+        .zone-scroll::-webkit-scrollbar-thumb { background: #2e8b57; border-radius: 10px; }
     </style>
 </head>
 <body>
+<div class="page-wrapper">
+<div class="container">
 
 <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
@@ -72,8 +156,7 @@
 </div>
 
 <div id="mainApp" style="display: none;">
-<div class="container">
-    <!-- Header with Real Time Insights below Smart Data Capture -->
+    <!-- Header -->
     <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div class="header-left">
             <div class="banner-title">
@@ -88,10 +171,10 @@
         </div>
     </div>
 
-    <!-- Zone Selection -->
+    <!-- Growing Zone - redesigned compact & scrollable -->
     <div class="glass-card">
         <div class="stat-title"><i class="fas fa-map-marked-alt"></i> Growing Zone</div>
-        <div id="zoneButtons" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+        <div id="zoneButtons" class="zone-scroll"></div>
         <div id="zoneActiveDisplay" style="margin-top: 0.8rem;"><i class="fas fa-map-pin"></i> Active zone: <strong>E2</strong></div>
     </div>
 
@@ -133,9 +216,10 @@
         <div class="prev-table-wrapper"><table class="prev-table"><thead id="prevTableHead"></thead><tbody id="prevTableBody"></tbody>}</div>
         <div id="noPrevMsg" style="text-align:center; padding: 1.5rem;">No previous data found.</div>
     </div>
+</div>
 
-    <!-- Footer -->
-    <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker – All Rights Reserved 2026</div>
+<!-- Footer outside container but inside page-wrapper -->
+<div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker – All Rights Reserved 2026</div>
 </div>
 </div>
 
@@ -148,15 +232,13 @@
     </div>
 </div>
 
-<!-- Redesigned Update Harvest Modal -->
+<!-- Update Harvest Modal - redesigned, no freeze -->
 <div id="updateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2200; align-items:center; justify-content:center;">
-    <div style="background:white; max-width:1000px; width:90%; border-radius:2.5rem; padding:2rem; box-shadow: 0 25px 50px -12px black; animation: fadeInUp 0.2s ease;">
+    <div style="background:white; max-width:1000px; width:90%; border-radius:2.5rem; padding:2rem; box-shadow: 0 25px 50px -12px black;">
         <h3 style="color:#1c5a1c; font-size:1.8rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> Update Monthly Harvest</h3>
-        <p style="color:#5a7a52; margin-bottom:1.5rem;">Adjust the harvest amounts for each month below.</p>
+        <p style="color:#5a7a52; margin-bottom:1.5rem;">Adjust harvest amounts for each month below.</p>
         <div id="updateInfo" style="background:#eef4ea; padding:1rem; border-radius:1.5rem; margin-bottom:1.5rem; border-left:5px solid #2e8b57;"></div>
-        <!-- Monthly grid (months centered) -->
-        <div id="monthlyInputs" class="update-grid" style="grid-template-columns: repeat(4, 1fr); gap: 1rem;"></div>
-        <!-- Unit selection inline horizontal -->
+        <div id="monthlyInputs" class="update-grid"></div>
         <div style="margin: 1rem 0; display: flex; align-items: center; gap: 2rem; justify-content: center;">
             <span style="font-weight:600;">Yield Unit:</span>
             <div class="unit-group" style="display: flex; gap: 1.5rem;">
@@ -164,7 +246,7 @@
                 <label><input type="radio" name="modalWeeklyUnit" value="crates"> crates/week</label>
             </div>
         </div>
-        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
             <button id="cancelUpdateBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
             <button id="saveUpdateBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button>
         </div>
@@ -175,7 +257,7 @@
 
 <script>
     // ==================== CONFIG ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrTHaba8ZMYK4a2r05tu1GJOAW3GsyLEb288-LebmCbr5LygUoJbhtOEswx6IMnyefKA/exec';  // <--- REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR2dcqdTbUtaejiE7niyMwVIE9Nj_TDeJ0qw9SVl-Jb4IrBKj3j2t8PWTXkLHOhSD89w/exec';  // <--- REPLACE WITH YOUR WEB APP URL
     const DEBUG = true;
 
     const ZONE_LOCALITIES = {
@@ -236,7 +318,7 @@
         }
     }
 
-    // Dashboard
+    // ==================== DASHBOARD ====================
     async function loadDashboard() {
         dashboardContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Fetching live analytics...';
         try {
@@ -255,19 +337,18 @@
 
     function renderDashboard(stats) {
         let html = `<div class="dashboard-grid">`;
-        // Total area by stage
+        // Enlarged Area by Stage box
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-chart-pie"></i> Total Area by Stage</div>`;
         let maxArea = Math.max(...Object.values(stats.areaByStageTotal || {}).map(v => v || 0), 1);
         for (let s of STAGES) {
             let area = (stats.areaByStageTotal && stats.areaByStageTotal[s]) || 0;
             let percent = (area / maxArea) * 100;
-            html += `<div><div style="display:flex; justify-content:space-between;"><b>${s}</b><span>${area.toFixed(1)} m²</span></div><div class="stage-progress"><div class="stage-progress-fill" style="width:${percent}%;"></div></div></div>`;
+            html += `<div style="margin-bottom:1rem;"><div style="display:flex; justify-content:space-between; font-size:0.9rem;"><b>${s}</b><span>${area.toFixed(1)} m²</span></div><div class="stage-progress"><div class="stage-progress-fill" style="width:${percent}%;"></div></div></div>`;
         }
         html += `</div>`;
 
-        // Combined box: Total Area by Crop (3 main) + Top Varieties inside same card
+        // Combined box: Total Area by Crop + Top Varieties
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-apple-alt"></i> Total Area by Crop & Top Varieties</div>`;
-        html += `<div style="margin-bottom:1rem;"><strong>📊 Area by Crop (3 main)</strong></div>`;
         const targetCrops = ["Tomato", "Sweet Pepper", "English Cucumber"];
         for (let crop of targetCrops) {
             let cropEntry = (stats.areaByCrop || []).find(c => c.crop === crop);
@@ -298,7 +379,7 @@
         dashboardContainer.innerHTML = html;
     }
 
-    // Zone & locality
+    // ==================== ZONE & LOCALITY ====================
     function initZoneButtons() {
         const zones = Object.keys(ZONE_LOCALITIES);
         zoneDiv.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join('');
@@ -321,7 +402,7 @@
         else localitySelect.disabled = false;
     }
 
-    // Greenhouse form and saved list management
+    // ==================== GREENHOUSE ENTRY ====================
     function renderActiveForm() {
         let cropOptions = CROP_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
         let stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -460,7 +541,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // Previous submissions & update harvest
+    // ==================== PREVIOUS SUBMISSIONS & UPDATE HARVEST ====================
     async function loadUserPreviousData(username) {
         try {
             const url = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
@@ -470,7 +551,7 @@
             const rows = data.rows;
             const displayIdx = [0, 3, 6, 8, 9, 7, 11, 12, 13];
             const displayNames = ["Timestamp", "Zone", "Crop", "Stage", "Area(m²)", "Variety", "Weekly Yield", "Active Months", "Harvest Months", "Actions"];
-            prevTableHead.innerHTML = '<tr>' + displayNames.map(n => `<th>${n}</th>`).join('') + '</tr>';
+            prevTableHead.innerHTML = '<tr>' + displayNames.map(n => `<th>${n}</th>`).join('') + '<tr>';
             prevTableBody.innerHTML = '';
             for (let row of rows) {
                 let tr = document.createElement('tr');
@@ -512,7 +593,6 @@
         currentUpdateRow = row;
         const monthlyVals = [];
         for (let i = 0; i < 12; i++) monthlyVals.push(parseFloat(row[16 + i]) || 0);
-        // Determine current unit from row[11] (YieldUnit)
         let currentUnit = (row[11] || "kg").toLowerCase();
         document.getElementById('updateInfo').innerHTML = `<strong><i class="fas fa-seedling"></i> Crop:</strong> ${row[6]} &nbsp;| <strong><i class="fas fa-arrows-alt"></i> Area:</strong> ${row[9]} m² &nbsp;| <strong><i class="fas fa-calendar"></i> Transplant:</strong> ${row[10] || 'N/A'}`;
         const grid = document.getElementById('monthlyInputs');
@@ -523,7 +603,7 @@
             div.innerHTML = `<span style="font-weight:600;">${m.substring(0, 3)}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}" style="margin-top:0.5rem;">`;
             grid.appendChild(div);
         });
-        // Set radio buttons for unit
+        // Set radio buttons in modal
         const kgRadio = document.querySelector('#updateModal input[value="kg"]');
         const cratesRadio = document.querySelector('#updateModal input[value="crates"]');
         if (kgRadio && cratesRadio) {
@@ -539,19 +619,16 @@
         for (let i = 0; i < 12; i++) newMonthly.push(parseFloat(document.getElementById(`upd_month_${i}`).value) || 0);
         let timestamp = currentUpdateRow[0];
         let username = growerName.value.trim();
-        // Get selected unit from modal
-        let selectedUnit = document.querySelector('#updateModal input[name="modalWeeklyUnit"]:checked')?.value || "kg";
         try {
-            // Also update yield unit in the sheet? The backend only updates monthly values. We'll keep unit unchanged.
             const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}`;
             const res = await fetch(url);
             const result = await res.json();
             if (result.success) { toast("Harvest updated"); updateModal.style.display = 'none'; await loadUserPreviousData(username); await loadDashboard(); }
             else toast("Update failed", true);
-        } catch (e) { toast("Error updating", true); }
+        } catch (e) { toast("Error updating: " + e.message, true); }
     }
 
-    // Login & auto-fill total area
+    // ==================== LOGIN & AUTO-FILL ====================
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         const debugDiv = document.getElementById('loginDebug');
@@ -618,7 +695,7 @@
         }
     }
 
-    // Event listeners
+    // ==================== EVENT BINDINGS ====================
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; greenhouseSection.classList.add('hidden'); toast("Logged out"); };
