@@ -92,11 +92,13 @@
         }
         .update-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin: 1rem 0; }
         .month-card { background: #f9fef7; border-radius: 1rem; padding: 0.6rem; text-align: center; border: 1px solid #d5e8ca; }
-        .month-card input { margin-top: 5px; text-align: center; }
+        .month-card input { margin-top: 5px; text-align: center; width: 80px; margin-left: auto; margin-right: auto; }
         .crop-stage-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
         .crop-stage-table th, .crop-stage-table td { padding: 0.4rem 0.3rem; font-size: 0.75rem; text-align: left; border-bottom: 1px solid #deecce; }
         button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .modal-container h3 { color: #1c5a1c; margin-bottom: 0.5rem; }
+        .update-harvest-btn { background: #2c6e2c; color: white; border: none; border-radius: 2rem; padding: 4px 12px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
+        .update-harvest-btn:hover { background: #1f5520; transform: translateY(-1px); }
     </style>
 </head>
 <body>
@@ -204,7 +206,7 @@
     </div>
 </div>
 
-<!-- UPDATE HARVEST MODAL - FIXED -->
+<!-- UPDATE HARVEST MODAL - FIXED WITH CORRECT INDEXING -->
 <div id="updateModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color: #1c5a1c;"><i class="fas fa-calendar-alt"></i> Update Monthly Harvest</h3>
@@ -227,7 +229,8 @@
 
 <script>
     // ======================== CONFIGURATION ========================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQRDv4uXLzttlW4Ot8mi4iU10cSKGLDjrU2h-deIFRd-eR4Q2ZfU6l5ut07q7mFgOVzA/exec';  // Replace with your actual Web App URL
+    // IMPORTANT: Replace with your actual Google Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxy_d3WbOOd3WEAaVNL9jYMuQhwcc5tyBR7fcnbQt030xrm0RoYYvdeWvbQvHuqOs_Mzw/exec';
     const DEBUG = true;
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
     const CROP_LIST = ["Tomato","Sweet Pepper","English Cucumber"];
@@ -275,9 +278,9 @@
         toastDiv.style.background = isError ? "#c0392b" : "#1c5c22";
         setTimeout(() => toastDiv.classList.remove('show'), 2800);
     }
-
     function debugLog(msg, data) { if (DEBUG) console.log(msg, data); }
 
+    // Dashboard
     async function loadDashboard() {
         areaByStageContainer.innerHTML = '<div class="badge"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
         cropAndVarietiesContainer.innerHTML = '<div class="badge"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
@@ -321,12 +324,13 @@
         let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">';
         for (let crop of targetCrops) {
             let stagesData = (stats.areaByStageByCrop && stats.areaByStageByCrop[crop]) || {};
-            stageCropHtml += `<div style="flex: 1; min-width: 180px; background: #fafefa; border-radius: 1.2rem; padding: 0.8rem; border: 1px solid #deecce;"><h4 style="margin-bottom: 0.6rem;"><i class="fas fa-chart-bar"></i> ${crop}</h4><table class="crop-stage-table"><thead><tr><th>Stage</th><th>Area (m²)</th></tr></thead><tbody>${STAGES.map(s => `<tr><td>${s}</td><td><strong>${(stagesData[s] || 0).toFixed(1)}</strong></td></tr>`).join('')}</tbody></table></div>`;
+            stageCropHtml += `<div style="flex: 1; min-width: 180px; background: #fafefa; border-radius: 1.2rem; padding: 0.8rem; border: 1px solid #deecce;"><h4 style="margin-bottom: 0.6rem;"><i class="fas fa-chart-bar"></i> ${crop}</h4><table class="crop-stage-table"><thead><table><th>Stage</th><th>Area (m²)</th></tr></thead><tbody>${STAGES.map(s => `<tr><td>${s}</td><td><strong>${(stagesData[s] || 0).toFixed(1)}</strong></td></tr>`).join('')}</tbody>}</table></div>`;
         }
         stageCropHtml += '</div>';
         stageByCropContainer.innerHTML = stageCropHtml;
     }
 
+    // Zone & Locality
     function initZoneButtons() {
         const zones = Object.keys(ZONE_LOCALITIES);
         zoneDiv.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join('');
@@ -347,6 +351,7 @@
         else localitySelect.disabled = false;
     }
 
+    // Greenhouse form
     function renderActiveForm() {
         let cropOptions = CROP_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
         let stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -365,20 +370,24 @@
         const cropSel = document.getElementById('cropSelect');
         const stageSel = document.getElementById('stageSelect');
         const tomatoDiv = document.getElementById('tomatoTypeDiv');
-        cropSel.addEventListener('change', () => { tomatoDiv.style.display = cropSel.value === 'Tomato' ? 'block' : 'none'; updateHarvestForm(); });
-        stageSel.addEventListener('change', updateHarvestForm);
-        updateHarvestForm();
+        if(cropSel && stageSel) {
+            cropSel.addEventListener('change', () => { tomatoDiv.style.display = cropSel.value === 'Tomato' ? 'block' : 'none'; updateHarvestForm(); });
+            stageSel.addEventListener('change', updateHarvestForm);
+            updateHarvestForm();
+        }
     }
     function updateHarvestForm() {
         const stage = document.getElementById('stageSelect')?.value;
         const crop = document.getElementById('cropSelect')?.value;
         const harvestDiv = document.getElementById('harvestDetailsDiv');
-        if (stage !== 'Harvesting') { harvestDiv.innerHTML = ''; return; }
+        if (stage !== 'Harvesting') { if(harvestDiv) harvestDiv.innerHTML = ''; return; }
         let isWeight = WEIGHT_CROPS.includes(crop);
         let unitHtml = `<div><label><input type="radio" name="weeklyUnit" value="kg" checked> kg/week</label>${isWeight ? `<label style="margin-left:1rem;"><input type="radio" name="weeklyUnit" value="crates"> crates/week</label>` : ''}</div>`;
-        harvestDiv.innerHTML = `<div style="border-top:1px solid #c0dfb0; margin-top:0.8rem; padding-top:0.8rem;"><h4 style="font-size:0.9rem;">Harvest Details</h4><div class="grid-2col"><div><label>Avg Weekly Yield</label><input type="number" step="0.01" id="weeklyYield"></div><div><label>Harvesting Months</label><input type="number" step="0.5" id="harvestMonths"></div></div>${unitHtml}<div style="margin-top:0.8rem;"><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-top:0.5rem;"></div></div></div>`;
-        const grid = document.getElementById('monthGrid');
-        grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join('');
+        if(harvestDiv) {
+            harvestDiv.innerHTML = `<div style="border-top:1px solid #c0dfb0; margin-top:0.8rem; padding-top:0.8rem;"><h4 style="font-size:0.9rem;">Harvest Details</h4><div class="grid-2col"><div><label>Avg Weekly Yield</label><input type="number" step="0.01" id="weeklyYield"></div><div><label>Harvesting Months</label><input type="number" step="0.5" id="harvestMonths"></div></div>${unitHtml}<div style="margin-top:0.8rem;"><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-top:0.5rem;"></div></div></div>`;
+            const grid = document.getElementById('monthGrid');
+            if(grid) grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join('');
+        }
     }
     function getCurrentFormData() {
         let crop = document.getElementById('cropSelect')?.value || '';
@@ -441,7 +450,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // FIXED: robust modal opening
+    // ========== FIXED: Previous Submissions with correct indexing ==========
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -449,23 +458,27 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
             const rows = data.rows;
+            // Expected columns: index 0:timestamp,1:grower,2:locality,3:zone,4:totalArea,5:crop,6:variety,7:stage,8:area,9:transplant,10:weeklyYield,11:weeklyUnit,12:harvestMonths,13:prodSystem,14:tomatoExtra,15-26:monthly
             prevTableHead.innerHTML = `<tr><th>Timestamp</th><th>Zone</th><th>Crop</th><th>Stage</th><th>Area(m²)</th><th>Variety</th><th>Weekly Yield</th><th>Harvest Months</th><th>Active Months</th><th>Actions</th></tr>`;
             prevTableBody.innerHTML = '';
             rows.forEach((row, idx) => {
-                const tr = document.createElement('tr');
                 const activeMonths = [];
-                for (let i=16; i<=27; i++) if (parseFloat(row[i]) > 0) activeMonths.push(MONTHS[i-16].substring(0,3));
+                // monthly values are indices 15 to 26 (inclusive)
+                for (let i = 15; i <= 26; i++) {
+                    if (parseFloat(row[i]) > 0) activeMonths.push(MONTHS[i-15].substring(0,3));
+                }
+                const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row[0] || ''}</td>
                     <td>${row[3] || ''}</td>
-                    <td>${row[6] || ''}</td>
-                    <td>${row[8] || ''}</td>
-                    <td>${row[9] ? parseFloat(row[9]).toFixed(2) : '0'}</td>
+                    <td>${row[5] || ''}</td>
                     <td>${row[7] || ''}</td>
-                    <td>${row[11] || '0'}</td>
-                    <td>${row[13] || '0'}</td>
+                    <td>${row[8] ? parseFloat(row[8]).toFixed(2) : '0'}</td>
+                    <td>${row[6] || ''}</td>
+                    <td>${row[10] || '0'}</td>
+                    <td>${row[12] || '0'}</td>
                     <td>${activeMonths.join(', ') || '—'}</td>
-                    <td>${row[8] === "Harvesting" ? `<button class="update-harvest-btn" data-rowidx="${idx}" style="background:#2c6e2c; color:white; border:none; border-radius:2rem; padding:4px 12px; font-size:0.7rem;"><i class="fas fa-edit"></i> Update</button>` : '—'}</td>
+                    <td>${row[7] === "Harvesting" ? `<button class="update-harvest-btn" data-rowidx="${idx}" style="background:#2c6e2c; color:white; border:none; border-radius:2rem; padding:4px 12px; font-size:0.7rem;"><i class="fas fa-edit"></i> Update</button>` : '—'}</td>
                 `;
                 prevTableBody.appendChild(tr);
             });
@@ -481,8 +494,9 @@
         } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
     }
 
+    // ========== FIXED: openUpdateModal with correct indices (15-26 for months) ==========
     function openUpdateModal(row) {
-        if (!row || row.length < 28) {
+        if (!row || row.length < 27) {
             console.error("Invalid row data", row);
             toast("Harvest data is incomplete (missing monthly columns)", true);
             return;
@@ -490,9 +504,12 @@
         debugLog("Opening modal for row:", row);
         currentUpdateRow = [...row];
         const monthlyVals = [];
-        for (let i=16; i<=27; i++) monthlyVals.push(parseFloat(currentUpdateRow[i]) || 0);
-        let currentUnit = (currentUpdateRow[12] || "kg").toLowerCase();
-        document.getElementById('updateInfo').innerHTML = `<strong>Crop:</strong> ${currentUpdateRow[6]} &nbsp;| <strong>Area:</strong> ${currentUpdateRow[9]} m² &nbsp;| <strong>Transplant:</strong> ${currentUpdateRow[10] || 'N/A'}`;
+        // monthly data from index 15 to 26 (12 values)
+        for (let i = 15; i <= 26; i++) {
+            monthlyVals.push(parseFloat(currentUpdateRow[i]) || 0);
+        }
+        let currentUnit = (currentUpdateRow[11] || "kg").toLowerCase(); // weeklyUnit at index 11
+        document.getElementById('updateInfo').innerHTML = `<strong>Crop:</strong> ${currentUpdateRow[5]} &nbsp;| <strong>Area:</strong> ${currentUpdateRow[8]} m² &nbsp;| <strong>Transplant:</strong> ${currentUpdateRow[9] || 'N/A'}`;
         const grid = document.getElementById('monthlyInputs');
         if (!grid) { toast("Modal error: missing container", true); return; }
         grid.innerHTML = '';
@@ -538,6 +555,7 @@
         } catch(e) { toast("Error: "+e.message, true); }
     }
 
+    // LOGIN
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         errorDiv.innerText = '';
@@ -597,6 +615,7 @@
         }
     }
 
+    // Event Listeners
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; greenhouseSection.classList.add('hidden'); toast("Logged out"); };
@@ -631,8 +650,9 @@
     document.getElementById('cancelUpdateBtn').onclick = () => updateModal.style.display = 'none';
     document.getElementById('saveUpdateBtn').onclick = saveHarvestUpdate;
 
-    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
-        document.getElementById('loginError').innerHTML = '⚠️ Please replace YOUR_APPS_SCRIPT_URL with your Web App URL.';
+    // Initialization
+    if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxufKZjWY712bkAmOolkJGE33oCO8fcM08lGpYRbfqdfFthw8synOPt-XpalJavIYsqPA/exec') {
+        console.log("Using provided Apps Script URL. Ensure it's correct.");
     }
     initZoneButtons();
     greenhouseSection.classList.add('hidden');
