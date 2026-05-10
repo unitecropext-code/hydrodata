@@ -125,7 +125,6 @@
         }
         .toast-msg.show { transform: translateY(0); }
         .hidden { display: none; }
-        @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
         .profile-buttons { display: flex; gap: 0.8rem; margin-top: 0.8rem; flex-wrap: wrap; }
         .profile-buttons .btn, .profile-buttons .btn-secondary { flex: 1; justify-content: center; }
         .header-content {
@@ -148,8 +147,6 @@
         .banner-title { display: flex; flex-direction: column; }
         .banner-title h1 { font-size: 1.4rem; font-weight: 800; background: linear-gradient(130deg,#136b1e,#259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
         .banner-title p { font-size: 0.7rem; color: #2e6b2e; }
-        .unit-group { display: flex; gap: 1rem; align-items: center; margin: 0.3rem 0; }
-        .crop-area-item { display: flex; justify-content: space-between; border-bottom: 1px solid #e2efda; padding: 0.3rem 0; font-size: 0.8rem; }
         .modal-container {
             background: white;
             max-width: 95vw;
@@ -184,7 +181,6 @@
         <div><input type="password" id="loginPassword" placeholder="Password" style="margin-bottom:1rem;"></div>
         <button id="loginBtn" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
         <div id="loginError" style="color:#d9534f; margin-top:0.8rem; font-size:0.8rem;"></div>
-        <div id="loginDebug" style="background:#f5f5f5; margin-top:0.8rem; padding:0.3rem; border-radius:0.8rem; font-size:0.7rem; display:none;"></div>
     </div>
 </div>
 
@@ -223,7 +219,7 @@
         </div>
     </div>
 
-    <!-- Live Dashboard (condensed) -->
+    <!-- Live Dashboard -->
     <div class="dashboard-grid">
         <div class="stat-card">
             <div class="stat-title">Total Area by Stage</div>
@@ -260,7 +256,6 @@
     </div>
 </div>
 
-<!-- Footer -->
 <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker – All Rights Reserved 2026</div>
 </div>
 </div>
@@ -292,8 +287,8 @@
         <div style="margin:0.8rem 0; display:flex; align-items:center; gap:1rem; justify-content:center;">
             <span>Yield Unit:</span>
             <div class="unit-group">
-                <label><input type="radio" name="modalWeeklyUnit" value="kg" checked> kg/week</label>
-                <label><input type="radio" name="modalWeeklyUnit" value="crates"> crates/week</label>
+                <label><input type="radio" name="modalYieldUnit" value="kg" checked> kg</label>
+                <label><input type="radio" name="modalYieldUnit" value="crates"> crates</label>
             </div>
         </div>
         <div style="display:flex; gap:0.8rem; justify-content:flex-end;">
@@ -306,8 +301,9 @@
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNYHB65PmpC4NbC309I2YF8p10bBfXaFcdV8fl9tc7uy0JxfMA-8YLVgY0TEqjksGOOw/exec';  // <--- REPLACE WITH YOUR WEB APP URL
-    const DEBUG = true;
+    // ======================== CONFIGURATION ========================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYMTEV1EMi3VfcuhrIvocfaxKwa6VM9JsvaIMWSEDpsiDKBwvRu7voeersUYS6twxhpw/exec';  // <--- REPLACE WITH YOUR WEB APP URL
+    const DEBUG = false;
 
     const ZONE_LOCALITIES = {
         "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"]
@@ -320,7 +316,7 @@
     let currentZone = "E2";
     let savedGreenhouses = [];
     let existingUser = false;
-    let currentUpdateRow = null;
+    let currentUpdateRow = null; // stores the full row array for harvest update
 
     // DOM elements
     const loginOverlay = document.getElementById('loginOverlay');
@@ -361,10 +357,6 @@
     function debugLog(msg, data) {
         if (!DEBUG) return;
         console.log(msg, data);
-        const dbg = document.getElementById('loginDebug');
-        if (dbg && dbg.style.display !== 'none') {
-            dbg.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${msg} ${data ? JSON.stringify(data).substring(0,150) : ''}</div>`;
-        }
     }
 
     // Dashboard
@@ -374,7 +366,6 @@
         stageByCropContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
         try {
             const url = `${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`;
-            debugLog("Fetching dashboard", url);
             const res = await fetch(url);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
@@ -398,7 +389,7 @@
         }
         areaByStageContainer.innerHTML = stageHtml;
 
-        // Total Area by Crop (Tomato merged)
+        // Total Area by Crop
         const targetCrops = ["Tomato", "Sweet Pepper", "English Cucumber"];
         let cropHtml = '';
         for (let crop of targetCrops) {
@@ -457,7 +448,7 @@
         else localitySelect.disabled = false;
     }
 
-    // Greenhouse form (shortened for brevity - keep same logic)
+    // Greenhouse form
     function renderActiveForm() {
         let cropOptions = CROP_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
         let stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -480,7 +471,7 @@
         stageSel.addEventListener('change', updateHarvestForm);
         updateHarvestForm();
     }
-    function updateHarvestForm() { /* same as before */ 
+    function updateHarvestForm() {
         const stage = document.getElementById('stageSelect')?.value;
         const crop = document.getElementById('cropSelect')?.value;
         const harvestDiv = document.getElementById('harvestDetailsDiv');
@@ -572,7 +563,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (FIXED) ==========
+    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST ==========
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -580,35 +571,44 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
             const rows = data.rows;
-            const displayIdx = [0,3,6,8,9,7,11,12,13];
-            const displayNames = ["Timestamp","Zone","Crop","Stage","Area(m²)","Variety","Weekly Yield","Active Months","Harvest Months","Actions"];
+            const displayNames = ["Timestamp","Zone","Crop","Stage","Area(m²)","Variety","Weekly Yield","Harvest Months","Monthly Active","Actions"];
             prevTableHead.innerHTML = '<tr>' + displayNames.map(n => `<th>${n}</th>`).join('') + '</tr>';
             prevTableBody.innerHTML = '';
             for (let row of rows) {
-                let tr = document.createElement('tr');
-                for (let idx of displayIdx) {
-                    let td = document.createElement('td');
-                    if (idx === 11 && row[8] === "Harvesting") {
-                        let active = [];
-                        for (let m=0; m<12; m++) if (parseFloat(row[16+m]) > 0) active.push(MONTHS[m].substring(0,3));
-                        td.textContent = active.join(', ') || '—';
-                    } else {
-                        let val = row[idx];
-                        td.textContent = (typeof val === 'number') ? val.toFixed(2) : (val || '');
-                    }
-                    tr.appendChild(td);
-                }
-                let actionTd = document.createElement('td');
+                const tr = document.createElement('tr');
+                // Timestamp
+                let td1 = document.createElement('td'); td1.textContent = row[0] || ''; tr.appendChild(td1);
+                // Zone
+                let td2 = document.createElement('td'); td2.textContent = row[3] || ''; tr.appendChild(td2);
+                // Crop
+                let td3 = document.createElement('td'); td3.textContent = row[6] || ''; tr.appendChild(td3);
+                // Stage
+                let td4 = document.createElement('td'); td4.textContent = row[8] || ''; tr.appendChild(td4);
+                // Area
+                let td5 = document.createElement('td'); td5.textContent = row[9] ? parseFloat(row[9]).toFixed(2) : '0'; tr.appendChild(td5);
+                // Variety
+                let td6 = document.createElement('td'); td6.textContent = row[7] || ''; tr.appendChild(td6);
+                // Weekly Yield
+                let td7 = document.createElement('td'); td7.textContent = row[11] || '0'; tr.appendChild(td7);
+                // Harvest Months
+                let td8 = document.createElement('td'); td8.textContent = row[13] || '0'; tr.appendChild(td8);
+                // Monthly Active (which months have yield >0)
+                let activeMonths = [];
+                for (let i=16; i<=27; i++) if (parseFloat(row[i]) > 0) activeMonths.push(MONTHS[i-16].substring(0,3));
+                let td9 = document.createElement('td'); td9.textContent = activeMonths.join(', ') || '—'; tr.appendChild(td9);
+                // Actions
+                let tdAction = document.createElement('td');
                 if (row[8] === "Harvesting") {
                     let btn = document.createElement('button');
                     btn.innerHTML = '<i class="fas fa-edit"></i> Update Harvest';
                     btn.className = "btn-secondary";
                     btn.style.fontSize = "0.7rem";
                     btn.style.padding = "2px 8px";
+                    // Capture current row in closure
                     btn.onclick = (function(r) { return function() { openUpdateModal(r); }; })(row);
-                    actionTd.appendChild(btn);
-                } else actionTd.textContent = "—";
-                tr.appendChild(actionTd);
+                    tdAction.appendChild(btn);
+                } else tdAction.textContent = "—";
+                tr.appendChild(tdAction);
                 prevTableBody.appendChild(tr);
             }
             prevSubSection.style.display = 'block';
@@ -617,12 +617,17 @@
     }
 
     function openUpdateModal(row) {
-        if (!row) { toast("No row data", true); return; }
-        debugLog("Opening update modal for row:", row[0]);
+        if (!row || row.length < 28) {
+            toast("Invalid harvest data", true);
+            console.error("Row missing columns", row);
+            return;
+        }
+        debugLog("Opening update modal for row:", row);
         currentUpdateRow = row;
+        // monthly values are at indices 16..27
         const monthlyVals = [];
-        for (let i=0; i<12; i++) monthlyVals.push(parseFloat(row[16+i]) || 0);
-        let currentUnit = (row[11] || "kg").toLowerCase();
+        for (let i=16; i<=27; i++) monthlyVals.push(parseFloat(row[i]) || 0);
+        let currentUnit = (row[12] || "kg").toLowerCase();
         document.getElementById('updateInfo').innerHTML = `<strong>Crop:</strong> ${row[6]} &nbsp;| <strong>Area:</strong> ${row[9]} m² &nbsp;| <strong>Transplant:</strong> ${row[10] || 'N/A'}`;
         const grid = document.getElementById('monthlyInputs');
         grid.innerHTML = '';
@@ -644,11 +649,16 @@
     async function saveHarvestUpdate() {
         if (!currentUpdateRow) { toast("No harvest row selected", true); return; }
         let newMonthly = [];
-        for (let i=0; i<12; i++) newMonthly.push(parseFloat(document.getElementById(`upd_month_${i}`).value) || 0);
+        for (let i=0; i<12; i++) {
+            let val = parseFloat(document.getElementById(`upd_month_${i}`).value);
+            newMonthly.push(isNaN(val) ? 0 : val);
+        }
+        let unitRadio = document.querySelector('#updateModal input[name="modalYieldUnit"]:checked');
+        let newUnit = unitRadio ? unitRadio.value : "kg";
         let timestamp = currentUpdateRow[0];
         let username = growerName.value.trim();
         try {
-            const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}`;
+            const url = `${SCRIPT_URL}?action=updateHarvest&username=${encodeURIComponent(username)}&timestamp=${encodeURIComponent(timestamp)}&monthly=${encodeURIComponent(JSON.stringify(newMonthly))}&unit=${encodeURIComponent(newUnit)}`;
             const res = await fetch(url);
             const result = await res.json();
             if (result.success) {
@@ -662,11 +672,9 @@
         } catch(e) { toast("Error: "+e.message, true); }
     }
 
-    // Login function (unchanged but includes profile area auto-fill)
+    // Login
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
-        const debugDiv = document.getElementById('loginDebug');
-        if (debugDiv) debugDiv.innerHTML = '';
         errorDiv.innerText = '';
         if (!username || !password) { errorDiv.innerText = "Enter credentials"; return; }
         const loginBtn = document.getElementById('loginBtn');
@@ -748,7 +756,7 @@
             const data = await res.json();
             if (!data.rows || !data.rows.length) { document.getElementById('historyLoading').innerHTML = 'No records'; return; }
             const thead = document.getElementById('historyTableHead');
-            thead.innerHTML = '<td>' + data.headers.map(h => `<th>${h}</th>`).join('</td><td>') + '</td></tr>';
+            thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
             const tbody = document.getElementById('historyTableBody');
             tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td>${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
             document.getElementById('historyLoading').style.display = 'none';
@@ -759,11 +767,10 @@
     document.getElementById('cancelUpdateBtn').onclick = () => updateModal.style.display = 'none';
     document.getElementById('saveUpdateBtn').onclick = saveHarvestUpdate;
 
+    // Initialise
     if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
-        document.getElementById('loginDebug').innerHTML = '⚠️ Replace YOUR_APPS_SCRIPT_URL with your Web App URL.';
-        document.getElementById('loginDebug').style.display = 'block';
+        document.getElementById('loginError').innerHTML = '⚠️ Replace YOUR_APPS_SCRIPT_URL with your Web App URL.';
     }
-
     initZoneButtons();
     greenhouseSection.classList.add('hidden');
     loadDashboard();
