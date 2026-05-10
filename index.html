@@ -20,6 +20,7 @@
             padding: 20px;
         }
 
+        /* Glassmorphism card container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -40,6 +41,7 @@
             box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.25);
         }
 
+        /* Login overlay */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -111,6 +113,7 @@
             transform: translateY(-1px);
         }
 
+        /* Zone pills */
         .zone-pill {
             background: #ecf7e6;
             border: 1px solid #cde0c2;
@@ -129,6 +132,7 @@
             box-shadow: 0 2px 8px rgba(25,138,46,0.3);
         }
 
+        /* Dashboard grid */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -157,6 +161,7 @@
             gap: 0.5rem;
         }
 
+        /* Progress bars */
         .stage-progress {
             background: #e9f3e4;
             border-radius: 1rem;
@@ -172,6 +177,7 @@
             border-radius: 1rem;
         }
 
+        /* Tables */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -206,6 +212,7 @@
             color: #2e6b2e;
         }
 
+        /* Form inputs */
         input, select {
             width: 100%;
             padding: 0.6rem 0.9rem;
@@ -260,6 +267,7 @@
             border-top: 1px solid #cde0c2;
         }
 
+        /* Modal styles */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -429,11 +437,11 @@
     </div>
 </div>
 
-<!-- Update Harvest Modal (pre-filled with existing monthly data) -->
+<!-- Update Harvest Modal -->
 <div id="updateModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color: #1c5a1c;">Update Monthly Harvest</h3>
-        <p style="margin-bottom: 0.8rem;">Adjust harvest amounts per month – existing values (incl. March, April, May) are pre‑filled.</p>
+        <p style="margin-bottom: 0.8rem;">Adjust harvest amounts per month</p>
         <div id="updateInfo" style="background: #eef4ea; padding: 0.8rem; border-radius: 1rem; margin-bottom: 1rem;"></div>
         <div id="monthlyInputs" class="update-grid"></div>
         <div style="margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 1rem;">
@@ -601,7 +609,7 @@
         else localitySelect.disabled = false;
     }
 
-    // Greenhouse form (simplified but fully functional)
+    // Greenhouse form (shortened but functional)
     function renderActiveForm() {
         let cropOptions = CROP_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
         let stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -716,7 +724,7 @@
         finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All New Data'; }
     }
 
-    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (PRE-FILLED) ==========
+    // ========== PREVIOUS SUBMISSIONS & UPDATE HARVEST (FIXED) ==========
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -742,7 +750,7 @@
                 `;
                 prevTableBody.appendChild(tr);
             }
-            // Attach event listeners to each update button
+            // Attach event listeners to each update button (after DOM update)
             document.querySelectorAll('.update-harvest-btn').forEach((btn, idx) => {
                 btn.onclick = () => openUpdateModal(rows[idx]);
             });
@@ -759,7 +767,6 @@
         }
         debugLog("Opening update modal for row:", row);
         currentUpdateRow = row;
-        // Extract monthly values (columns 16..27)
         const monthlyVals = [];
         for (let i=16; i<=27; i++) monthlyVals.push(parseFloat(row[i]) || 0);
         let currentUnit = (row[12] || "kg").toLowerCase();
@@ -769,7 +776,7 @@
         MONTHS.forEach((m, idx) => {
             let div = document.createElement('div');
             div.className = 'month-card';
-            div.innerHTML = `<span>${m}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}">`;
+            div.innerHTML = `<span>${m.substring(0,3)}</span><input type="number" step="0.01" id="upd_month_${idx}" value="${monthlyVals[idx]}">`;
             grid.appendChild(div);
         });
         const kgRadio = document.querySelector('#updateModal input[value="kg"]');
