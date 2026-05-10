@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Smart Data Capture | Real Time Insights</title>
+    <title>Smart Data Capture for Hydroponic| Real Time Insights</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -194,22 +194,29 @@
             transition: width 0.5s ease;
         }
 
-        /* Crop stage side-by-side */
+        /* Crop stage row - HORIZONTAL ALIGNMENT FIX */
         .crop-stage-row {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row;
+            flex-wrap: nowrap;
             gap: 1rem;
             justify-content: space-between;
+            overflow-x: auto;
             margin-top: 1rem;
         }
 
         .crop-stage-col {
             flex: 1;
-            min-width: 180px;
+            min-width: 200px;
             background: #fafefa;
             border-radius: 1.5rem;
             padding: 1rem;
             border: 1px solid #e2efda;
+        }
+
+        /* Make sure card doesn't force wrap */
+        .stat-card:last-child {
+            width: 100%;
         }
 
         /* Form grid */
@@ -387,7 +394,7 @@
 
 <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
-        <div class="login-header"><i class="fas fa-microchip"></i> Smart Data Capture</div>
+        <div class="login-header"><i class="fas fa-microchip"></i> Hydroponic Smart Data Tracker </div>
         <div class="input-group" style="margin-bottom:1rem;">
             <label>👤 Username</label>
             <input type="text" id="loginUsername" placeholder="Enter your username">
@@ -560,7 +567,7 @@
         }
     }
 
-    // Dashboard: only 3 crops
+    // Dashboard: only 3 crops, horizontal stage columns
     async function loadDashboard() {
         dashboardContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Fetching live analytics...';
         try {
@@ -609,7 +616,7 @@
         else html += `<div>🥒 English Cucumber: No data</div>`;
         html += `</div>`;
 
-        // Area by stage for each of the 3 crops (side by side)
+        // Area by stage for each of the 3 crops (HORIZONTAL FLEX ROW)
         html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-chart-line"></i> Area by Stage (Tomato, Sweet Pepper, English Cucumber)</div><div class="crop-stage-row">`;
         for (let crop of targetCrops) {
             let stagesData = (stats.areaByStageByCrop && stats.areaByStageByCrop[crop]) || {};
@@ -938,7 +945,7 @@
         const data = await res.json();
         if (!data.rows || !data.rows.length) { document.getElementById('historyLoading').innerHTML = 'No records'; return; }
         const thead = document.getElementById('historyTableHead');
-        thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+        thead.innerHTML = '<tr>' + data.headers.map(h => `<th>${h}</th>`).join('') + '</table>';
         const tbody = document.getElementById('historyTableBody');
         tbody.innerHTML = data.rows.map(row => '<tr>' + row.map(cell => `<td>${(typeof cell === 'number') ? cell.toFixed(2) : cell}</td>`).join('') + '</tr>').join('');
         document.getElementById('historyLoading').style.display = 'none';
