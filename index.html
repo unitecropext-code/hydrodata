@@ -8,12 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at 10% 30%, #0e3a12, #072b0a);
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
         .page-wrapper {
             flex: 1;
@@ -69,21 +70,25 @@
         }
         .btn-secondary:hover { background: #e0f0d8; border-color: #2e8b57; transform: translateY(-1px); }
         .zone-pill {
-            background: #ecf7e6; border: 1px solid #cde0c2; padding: 0.5rem 1.5rem;
+            background: #ecf7e6; border: 1px solid #cde0c2; padding: 0.4rem 1.2rem;
             border-radius: 3rem; font-weight: 600; cursor: pointer;
-            transition: all 0.2s; white-space: nowrap;
+            transition: all 0.2s; white-space: nowrap; font-size: 0.85rem;
         }
         .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .dashboard-grid {
+        .dashboard-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 1.5rem;
-            margin: 1rem 0;
+            margin-bottom: 1.5rem;
+        }
+        .full-width-card {
+            grid-column: 1 / -1;
         }
         .stat-card {
             background: #ffffff; border-radius: 1.8rem; padding: 1.5rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2efda;
             transition: all 0.2s;
+            height: 100%;
         }
         .stat-title {
             font-weight: 800; font-size: 1.2rem; color: #1b5e1f;
@@ -92,11 +97,27 @@
         }
         .stage-progress { background: #e4f0dd; border-radius: 2rem; height: 10px; margin: 0.75rem 0; overflow: hidden; }
         .stage-progress-fill { background: #2e8b57; height: 100%; width: 0%; border-radius: 2rem; transition: width 0.5s ease; }
-        .crop-stage-row { display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
-        .crop-stage-col { flex: 1; min-width: 200px; background: #fafefa; border-radius: 1.5rem; padding: 1rem; border: 1px solid #e2efda; }
+        .crop-stage-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: space-between;
+        }
+        .crop-stage-col {
+            flex: 1;
+            min-width: 200px;
+            background: #fafefa;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #e2efda;
+        }
         .grid-2col { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
         @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
-        input, select { width: 100%; padding: 0.7rem 1rem; border: 2px solid #deecce; border-radius: 2rem; font-size: 0.85rem; transition: 0.2s; }
+        input, select {
+            width: 100%; padding: 0.7rem 1rem; border: 2px solid #deecce;
+            border-radius: 2rem; font-size: 0.85rem; transition: 0.2s;
+        }
         input:focus, select:focus { border-color: #2e8b57; outline: none; box-shadow: 0 0 0 3px rgba(46,139,87,0.2); }
         .prev-table-wrapper { overflow-x: auto; border-radius: 1.5rem; border: 1px solid #d4e8ca; background: white; }
         .prev-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
@@ -109,7 +130,7 @@
         .footer {
             text-align: center; font-size: 0.75rem; color: #cbe5c0;
             padding: 1rem; border-top: 1px solid #cbe5c0;
-            margin-top: 2rem;
+            margin-top: auto;
         }
         .welcome-username {
             font-weight: 600; background: #eef4ea; padding: 0.3rem 1rem; border-radius: 3rem;
@@ -126,7 +147,27 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .profile-buttons { display: flex; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap; }
         .profile-buttons .btn, .profile-buttons .btn-secondary { flex: 1; justify-content: center; }
-        .header-left { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.8rem; }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .zone-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: #f4f9f0;
+            padding: 0.5rem 1rem;
+            border-radius: 3rem;
+        }
+        .zone-scroll {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
         .banner-title { display: flex; flex-direction: column; }
         .banner-title h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(130deg,#136b1e,#259132); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.2rem; }
         .banner-title p { font-size: 0.8rem; color: #2e6b2e; margin-left: 0.2rem; }
@@ -134,10 +175,6 @@
         .unit-group label { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
         .crop-area-item { display: flex; justify-content: space-between; border-bottom: 1px solid #e2efda; padding: 0.5rem 0; }
         .crop-area-item span:first-child i { margin-right: 0.5rem; }
-        .zone-scroll { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.75rem; padding-bottom: 0.5rem; }
-        .zone-scroll::-webkit-scrollbar { height: 4px; }
-        .zone-scroll::-webkit-scrollbar-track { background: #e2efda; border-radius: 10px; }
-        .zone-scroll::-webkit-scrollbar-thumb { background: #2e8b57; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -156,33 +193,44 @@
 </div>
 
 <div id="mainApp" style="display: none;">
-    <!-- Header -->
-    <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-        <div class="header-left">
+    <!-- Header with integrated Growing Zone -->
+    <div class="glass-card">
+        <div class="header-content">
             <div class="banner-title">
                 <h1><i class="fas fa-chart-line"></i> Smart Data Capture</h1>
                 <p><i class="fas fa-clock"></i> Real Time Insights</p>
             </div>
-            <span id="welcomeUserSpan" class="welcome-username"><i class="fas fa-user-check"></i> Welcome, <span id="loggedInUsername"></span></span>
-        </div>
-        <div>
-            <button id="viewHistoryBtn" class="btn-secondary"><i class="fas fa-table-list"></i> My History</button>
-            <button id="logoutBtn" class="btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <div class="zone-header">
+                <i class="fas fa-map-marked-alt"></i>
+                <div id="zoneButtons" class="zone-scroll"></div>
+                <span id="zoneActiveDisplay" style="font-size:0.85rem;"><i class="fas fa-map-pin"></i> Active: <strong>E2</strong></span>
+            </div>
+            <div>
+                <span id="welcomeUserSpan" class="welcome-username"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
+                <button id="viewHistoryBtn" class="btn-secondary" style="margin-left:0.5rem;"><i class="fas fa-table-list"></i> History</button>
+                <button id="logoutBtn" class="btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
         </div>
     </div>
 
-    <!-- Growing Zone - redesigned compact & scrollable -->
-    <div class="glass-card">
-        <div class="stat-title"><i class="fas fa-map-marked-alt"></i> Growing Zone</div>
-        <div id="zoneButtons" class="zone-scroll"></div>
-        <div id="zoneActiveDisplay" style="margin-top: 0.8rem;"><i class="fas fa-map-pin"></i> Active zone: <strong>E2</strong></div>
+    <!-- Live Dashboard - two rows -->
+    <div class="dashboard-row">
+        <!-- Total Area by Stage -->
+        <div class="stat-card">
+            <div class="stat-title"><i class="fas fa-chart-pie"></i> Total Area by Stage</div>
+            <div id="areaByStageContainer"></div>
+        </div>
+        <!-- Total Area by Crop + Top Varieties -->
+        <div class="stat-card">
+            <div class="stat-title"><i class="fas fa-apple-alt"></i> Total Area by Crop & Top Varieties</div>
+            <div id="cropAndVarietiesContainer"></div>
+        </div>
     </div>
 
-    <!-- Live Dashboard -->
-    <div class="glass-card">
-        <div class="stat-title"><i class="fas fa-chart-simple"></i> 📈 Live Dashboard · All Growers</div>
-        <div id="dashboardContainer"><i class="fas fa-spinner fa-pulse"></i> Loading analytics...</div>
-        <div style="margin-top: 1rem; text-align: right;"><button id="refreshDashboard" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh</button></div>
+    <!-- Full width: Area by Stage for 3 main crops (horizontal) -->
+    <div class="stat-card full-width-card">
+        <div class="stat-title"><i class="fas fa-chart-line"></i> Area by Stage (Tomato, Sweet Pepper, English Cucumber)</div>
+        <div id="stageByCropContainer" class="crop-stage-row"></div>
     </div>
 
     <!-- Grower Profile -->
@@ -218,7 +266,7 @@
     </div>
 </div>
 
-<!-- Footer outside container but inside page-wrapper -->
+<!-- Footer -->
 <div class="footer"><i class="fas fa-leaf"></i> Hydroponic Data Tracker – All Rights Reserved 2026</div>
 </div>
 </div>
@@ -232,7 +280,7 @@
     </div>
 </div>
 
-<!-- Update Harvest Modal - redesigned, no freeze -->
+<!-- Update Harvest Modal -->
 <div id="updateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2200; align-items:center; justify-content:center;">
     <div style="background:white; max-width:1000px; width:90%; border-radius:2.5rem; padding:2rem; box-shadow: 0 25px 50px -12px black;">
         <h3 style="color:#1c5a1c; font-size:1.8rem; margin-bottom:0.5rem;"><i class="fas fa-edit"></i> Update Monthly Harvest</h3>
@@ -282,7 +330,9 @@
     const editAreaBtn = document.getElementById('editAreaBtn');
     const zoneDiv = document.getElementById('zoneButtons');
     const zoneActiveDisplay = document.getElementById('zoneActiveDisplay');
-    const dashboardContainer = document.getElementById('dashboardContainer');
+    const areaByStageContainer = document.getElementById('areaByStageContainer');
+    const cropAndVarietiesContainer = document.getElementById('cropAndVarietiesContainer');
+    const stageByCropContainer = document.getElementById('stageByCropContainer');
     const greenhouseSection = document.getElementById('greenhouseSection');
     const activeFormDiv = document.getElementById('activeGreenhouseForm');
     const savedListDiv = document.getElementById('savedList');
@@ -294,7 +344,7 @@
     const prevTableBody = document.getElementById('prevTableBody');
     const viewHistoryBtn = document.getElementById('viewHistoryBtn');
     const logoutBtn = document.getElementById('logoutBtn');
-    const refreshDashboardBtn = document.getElementById('refreshDashboard');
+    const refreshDashboardBtn = document.getElementById('refreshDashboard'); // not used but kept
     const historyModal = document.getElementById('historyModal');
     const updateModal = document.getElementById('updateModal');
     const loggedInUsernameSpan = document.getElementById('loggedInUsername');
@@ -318,9 +368,11 @@
         }
     }
 
-    // ==================== DASHBOARD ====================
+    // ==================== DASHBOARD RENDERING ====================
     async function loadDashboard() {
-        dashboardContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Fetching live analytics...';
+        areaByStageContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
+        cropAndVarietiesContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
+        stageByCropContainer.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
         try {
             const url = `${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`;
             const controller = new AbortController();
@@ -331,52 +383,55 @@
             if (data.error) throw new Error(data.error);
             renderDashboard(data);
         } catch (e) {
-            dashboardContainer.innerHTML = `<div style="padding:1.5rem; background:#fff5e6; border-radius:1.5rem;">⚠️ Dashboard error: ${e.message}. Check backend.</div>`;
+            areaByStageContainer.innerHTML = `<div style="padding:1rem; background:#fff5e6; border-radius:1.5rem;">⚠️ Error: ${e.message}</div>`;
+            cropAndVarietiesContainer.innerHTML = '';
+            stageByCropContainer.innerHTML = '';
         }
     }
 
     function renderDashboard(stats) {
-        let html = `<div class="dashboard-grid">`;
-        // Enlarged Area by Stage box
-        html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-chart-pie"></i> Total Area by Stage</div>`;
+        // 1. Total Area by Stage
         let maxArea = Math.max(...Object.values(stats.areaByStageTotal || {}).map(v => v || 0), 1);
+        let stageHtml = '';
         for (let s of STAGES) {
             let area = (stats.areaByStageTotal && stats.areaByStageTotal[s]) || 0;
             let percent = (area / maxArea) * 100;
-            html += `<div style="margin-bottom:1rem;"><div style="display:flex; justify-content:space-between; font-size:0.9rem;"><b>${s}</b><span>${area.toFixed(1)} m²</span></div><div class="stage-progress"><div class="stage-progress-fill" style="width:${percent}%;"></div></div></div>`;
+            stageHtml += `<div style="margin-bottom:1rem;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.9rem;"><b>${s}</b><span>${area.toFixed(1)} m²</span></div>
+                            <div class="stage-progress"><div class="stage-progress-fill" style="width:${percent}%;"></div></div>
+                         </div>`;
         }
-        html += `</div>`;
+        areaByStageContainer.innerHTML = stageHtml;
 
-        // Combined box: Total Area by Crop + Top Varieties
-        html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-apple-alt"></i> Total Area by Crop & Top Varieties</div>`;
+        // 2. Total Area by Crop + Top Varieties
         const targetCrops = ["Tomato", "Sweet Pepper", "English Cucumber"];
+        let cropHtml = '';
         for (let crop of targetCrops) {
             let cropEntry = (stats.areaByCrop || []).find(c => c.crop === crop);
             let area = cropEntry ? cropEntry.area : 0;
-            html += `<div class="crop-area-item"><span><i class="fas fa-seedling"></i> ${crop}</span><strong>${area.toFixed(1)} m²</strong></div>`;
+            cropHtml += `<div class="crop-area-item"><span><i class="fas fa-seedling"></i> ${crop}</span><strong>${area.toFixed(1)} m²</strong></div>`;
         }
-        html += `<hr style="margin: 0.8rem 0;"><div><strong>🏆 Top Varieties</strong></div>`;
-        if (stats.topVarieties?.tomato) html += `<div class="crop-area-item"><span><i class="fas fa-tomato"></i> Tomato</span><span><b>${stats.topVarieties.tomato.variety}</b> (${stats.topVarieties.tomato.area.toFixed(1)} m²)</span></div>`;
-        else html += `<div>🍅 Tomato: No data</div>`;
-        if (stats.topVarieties?.sweetPepper) html += `<div class="crop-area-item"><span><i class="fas fa-pepper-hot"></i> Sweet Pepper</span><span><b>${stats.topVarieties.sweetPepper.variety}</b> (${stats.topVarieties.sweetPepper.area.toFixed(1)} m²)</span></div>`;
-        else html += `<div>🌶️ Sweet Pepper: No data</div>`;
-        if (stats.topVarieties?.englishCucumber) html += `<div class="crop-area-item"><span><i class="fas fa-cucumber"></i> English Cucumber</span><span><b>${stats.topVarieties.englishCucumber.variety}</b> (${stats.topVarieties.englishCucumber.area.toFixed(1)} m²)</span></div>`;
-        else html += `<div>🥒 English Cucumber: No data</div>`;
-        html += `</div>`;
+        cropHtml += `<hr style="margin: 0.8rem 0;"><div><strong>🏆 Top Varieties</strong></div>`;
+        if (stats.topVarieties?.tomato) cropHtml += `<div class="crop-area-item"><span><i class="fas fa-tomato"></i> Tomato</span><span><b>${stats.topVarieties.tomato.variety}</b> (${stats.topVarieties.tomato.area.toFixed(1)} m²)</span></div>`;
+        else cropHtml += `<div>🍅 Tomato: No data</div>`;
+        if (stats.topVarieties?.sweetPepper) cropHtml += `<div class="crop-area-item"><span><i class="fas fa-pepper-hot"></i> Sweet Pepper</span><span><b>${stats.topVarieties.sweetPepper.variety}</b> (${stats.topVarieties.sweetPepper.area.toFixed(1)} m²)</span></div>`;
+        else cropHtml += `<div>🌶️ Sweet Pepper: No data</div>`;
+        if (stats.topVarieties?.englishCucumber) cropHtml += `<div class="crop-area-item"><span><i class="fas fa-cucumber"></i> English Cucumber</span><span><b>${stats.topVarieties.englishCucumber.variety}</b> (${stats.topVarieties.englishCucumber.area.toFixed(1)} m²)</span></div>`;
+        else cropHtml += `<div>🥒 English Cucumber: No data</div>`;
+        cropAndVarietiesContainer.innerHTML = cropHtml;
 
-        // Area by stage for each crop (horizontal)
-        html += `<div class="stat-card"><div class="stat-title"><i class="fas fa-chart-line"></i> Area by Stage (Tomato, Sweet Pepper, English Cucumber)</div><div class="crop-stage-row">`;
+        // 3. Area by Stage for 3 main crops (horizontal)
+        let byCropHtml = '';
         for (let crop of targetCrops) {
             let stagesData = (stats.areaByStageByCrop && stats.areaByStageByCrop[crop]) || {};
-            html += `<div class="crop-stage-col"><h4 style="margin-bottom:0.8rem;">${crop}</h4>`;
+            byCropHtml += `<div class="crop-stage-col"><h4 style="margin-bottom:0.8rem;">${crop}</h4>`;
             for (let s of STAGES) {
                 let area = stagesData[s] || 0;
-                html += `<div style="margin-bottom:0.5rem;"><span style="font-size:0.75rem;">${s}:</span> <strong>${area.toFixed(1)} m²</strong></div>`;
+                byCropHtml += `<div style="margin-bottom:0.5rem;"><span style="font-size:0.75rem;">${s}:</span> <strong>${area.toFixed(1)} m²</strong></div>`;
             }
-            html += `</div>`;
+            byCropHtml += `</div>`;
         }
-        html += `</div></div></div>`;
-        dashboardContainer.innerHTML = html;
+        stageByCropContainer.innerHTML = byCropHtml;
     }
 
     // ==================== ZONE & LOCALITY ====================
@@ -390,7 +445,7 @@
     }
     function setZone(zone) {
         currentZone = zone;
-        zoneActiveDisplay.innerHTML = `<i class="fas fa-map-pin"></i> Active zone: <strong>${zone}</strong>`;
+        zoneActiveDisplay.innerHTML = `<i class="fas fa-map-pin"></i> Active: <strong>${zone}</strong>`;
         document.querySelectorAll('.zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === zone));
         updateLocalityDropdown();
     }
@@ -435,7 +490,7 @@
         let unitHtml = `
             <div style="margin-top:12px;">
                 <label style="font-weight:600;">Yield Unit (weekly):</label>
-                <div class="unit-group" style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
+                <div class="unit-group" style="display: flex; gap: 1rem; margin-top: 0.5rem;">
                     ${isWeight ? `<label><input type="radio" name="weeklyUnit" value="kg" checked> kg/week</label>
                                 <label><input type="radio" name="weeklyUnit" value="crates"> crates/week</label>` : `<label><input type="radio" name="weeklyUnit" value="units" checked> units/week</label>`}
                 </div>
@@ -503,7 +558,7 @@
         if (data.stage === 'Harvesting' && (data.weeklyYield <= 0 || data.harvestMonths <= 0)) { toast("Harvest details required", true); return; }
         savedGreenhouses.push({ ...data, id: Date.now() });
         updateSavedListDisplay();
-        renderActiveForm(); // reset form
+        renderActiveForm();
         toast(`Greenhouse saved. Total pending: ${savedGreenhouses.length}`);
     }
 
@@ -551,7 +606,7 @@
             const rows = data.rows;
             const displayIdx = [0, 3, 6, 8, 9, 7, 11, 12, 13];
             const displayNames = ["Timestamp", "Zone", "Crop", "Stage", "Area(m²)", "Variety", "Weekly Yield", "Active Months", "Harvest Months", "Actions"];
-            prevTableHead.innerHTML = '<tr>' + displayNames.map(n => `<th>${n}</th>`).join('') + '<tr>';
+            prevTableHead.innerHTML = '<tr>' + displayNames.map(n => `<th>${n}</th>`).join('') + '</tr>';
             prevTableBody.innerHTML = '';
             for (let row of rows) {
                 let tr = document.createElement('tr');
@@ -590,6 +645,7 @@
     }
 
     function openUpdateModal(row) {
+        if (!row) { toast("Error: row data missing", true); return; }
         currentUpdateRow = row;
         const monthlyVals = [];
         for (let i = 0; i < 12; i++) monthlyVals.push(parseFloat(row[16 + i]) || 0);
@@ -614,7 +670,7 @@
     }
 
     async function saveHarvestUpdate() {
-        if (!currentUpdateRow) return;
+        if (!currentUpdateRow) { toast("No harvest row selected", true); return; }
         let newMonthly = [];
         for (let i = 0; i < 12; i++) newMonthly.push(parseFloat(document.getElementById(`upd_month_${i}`).value) || 0);
         let timestamp = currentUpdateRow[0];
@@ -624,11 +680,11 @@
             const res = await fetch(url);
             const result = await res.json();
             if (result.success) { toast("Harvest updated"); updateModal.style.display = 'none'; await loadUserPreviousData(username); await loadDashboard(); }
-            else toast("Update failed", true);
-        } catch (e) { toast("Error updating: " + e.message, true); }
+            else toast("Update failed: " + (result.error || "unknown"), true);
+        } catch (e) { toast("Error: " + e.message, true); }
     }
 
-    // ==================== LOGIN & AUTO-FILL ====================
+    // ==================== LOGIN ====================
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         const debugDiv = document.getElementById('loginDebug');
@@ -695,14 +751,20 @@
         }
     }
 
-    // ==================== EVENT BINDINGS ====================
+    // ==================== EVENT LISTENERS ====================
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; greenhouseSection.classList.add('hidden'); toast("Logged out"); };
     accessTrackerBtn.onclick = () => { if (!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile first", true); else { greenhouseSection.classList.remove('hidden'); renderActiveForm(); toast("Tracker activated"); } };
     addGreenhouseBtn.onclick = saveCurrentGreenhouse;
     submitDataBtn.onclick = submitAllNewData;
-    refreshDashboardBtn.onclick = loadDashboard;
+    // Refresh button not needed because dashboard auto-updates, but we add a manual refresh function
+    const refreshBtn = document.createElement('button');
+    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Dashboard';
+    refreshBtn.className = 'btn-secondary';
+    refreshBtn.style.marginTop = '0.5rem';
+    refreshBtn.onclick = loadDashboard;
+    document.querySelector('.full-width-card').after(refreshBtn);
     editAreaBtn.onclick = async () => {
         let newArea = parseFloat(prompt("Update total greenhouse area (m²):", totalAreaInput.value));
         if (newArea > 0 && confirm("Update area for your profile?")) {
