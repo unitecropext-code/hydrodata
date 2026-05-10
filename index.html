@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Tracker – Complete Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Hydroponic Tracker – Complete System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 30%, #1b4d1f, #0e3a12); min-height: 100vh; padding: 16px; }
         .container { max-width: 1600px; margin: 0 auto; }
-        .glass-card { background: rgba(255,255,255,0.97); backdrop-filter: blur(2px); border-radius: 28px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid #cfebc7; }
+        .glass-card { background: rgba(255,255,255,0.97); border-radius: 28px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid #cfebc7; }
         .login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:2000; backdrop-filter:blur(6px); }
         .login-card { background:white; max-width:420px; width:90%; border-radius:32px; padding:28px; text-align:center; }
         .login-header { font-size:1.8rem; font-weight:800; background:linear-gradient(130deg,#136b1e,#259132); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:20px; }
@@ -28,23 +28,18 @@
         .zone-active-status { text-align:center; font-size:0.75rem; font-weight:600; background:#e0f2d9; display:inline-block; margin-top:8px; padding:5px 14px; border-radius:40px; }
         .grid-2col { display:grid; grid-template-columns:1fr; gap:16px; }
         @media (min-width:640px) { .grid-2col { grid-template-columns:repeat(2,1fr); } }
-        .input-field label { font-weight:600; font-size:0.75rem; color:#235b1e; display:block; margin-bottom:5px; }
-        .input-field input, .input-field select { width:100%; padding:10px 12px; border:2px solid #deecce; border-radius:20px; font-size:0.85rem; }
         .btn-lg { background:linear-gradient(95deg,#1f682a,#156f1a); border:none; color:white; font-weight:700; padding:12px; border-radius:50px; cursor:pointer; width:100%; }
         .btn-secondary { background:#e9ecef; color:#1f5a22; border:none; padding:10px; border-radius:40px; font-weight:600; cursor:pointer; width:100%; }
         .btn-small { background:#2e8b57; color:white; border:none; padding:4px 12px; border-radius:40px; font-size:0.7rem; cursor:pointer; margin:4px; }
-        .greenhouse-card { background:#fff; border-radius:24px; padding:16px; margin-bottom:18px; border:1px solid #cfe5c4; box-shadow:0 2px 6px rgba(0,0,0,0.03); }
-        .saved-item { background:#f8faf5; border-radius:18px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
-        .toast-msg { position:fixed; bottom:20px; left:16px; right:16px; max-width:350px; margin:0 auto; background:#1f3120; color:white; padding:10px 16px; border-radius:50px; z-index:1100; transform:translateY(100px); transition:transform 0.25s; text-align:center; }
-        .toast-msg.show { transform:translateY(0); }
+        .greenhouse-card { background:#fff; border-radius:24px; padding:16px; margin-bottom:18px; border:1px solid #cfe5c4; }
         .hidden-section { display:none; }
         .prev-table-wrapper { overflow-x:auto; border-radius:20px; border:1px solid #d4e8ca; background:#fff; margin-top:12px; }
         .prev-table { width:100%; border-collapse:collapse; font-size:0.75rem; }
-        .prev-table th, .prev-table td { border:1px solid #deecce; padding:8px 6px; text-align:left; vertical-align:middle; }
-        .prev-table th { background:#ecf7e6; color:#1a551a; font-weight:700; }
+        .prev-table th, .prev-table td { border:1px solid #deecce; padding:8px 6px; text-align:left; }
+        .prev-table th { background:#ecf7e6; color:#1a551a; }
         .dashboard-landscape { display: flex; flex-direction: column; gap: 24px; }
         .dashboard-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .stat-card { background: white; border-radius: 24px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e2f0db; overflow-x: auto; }
+        .stat-card { background: white; border-radius: 24px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e2f0db; }
         .stat-header { font-weight: 800; font-size: 1rem; color: #1c5a1c; border-bottom: 2px solid #bcddab; padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .crop-table, .stage-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
         .crop-table th, .crop-table td, .stage-table th, .stage-table td { padding: 6px 4px; border-bottom: 1px solid #e2ecd9; text-align: left; }
@@ -57,8 +52,8 @@
         .month-card { background:#fff; border-radius:16px; padding:8px; text-align:center; border:1px solid #c0dfb0; }
         .month-card input { width:100%; padding:6px; border-radius:20px; border:1px solid #c0dfb0; text-align:center; }
         .flex-between { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
-        .btn-icon { background:#eef3ea; border:none; border-radius:30px; padding:5px 12px; font-size:0.7rem; cursor:pointer; }
-        hr { margin:12px 0; border-color:#dcf0d3; }
+        .toast-msg { position:fixed; bottom:20px; left:16px; right:16px; max-width:350px; margin:0 auto; background:#1f3120; color:white; padding:10px 16px; border-radius:50px; z-index:1100; transform:translateY(100px); transition:transform 0.25s; text-align:center; }
+        .toast-msg.show { transform:translateY(0); }
     </style>
 </head>
 <body>
@@ -80,14 +75,12 @@
         <div class="flex-between"><h1 style="font-size:1.4rem;">🌿 Hydroponic Data Tracker</h1><div><button id="viewHistoryBtn" class="history-btn"><i class="fas fa-table-list"></i> My History</button><button id="logoutButton" class="logout-btn">Logout</button></div></div>
     </div>
 
-    <!-- Zone Selection -->
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-map-marked-alt"></i> Growing Zone</div>
         <div class="zone-btn-group" id="zoneButtonsGroup"><button class="zone-pill" data-zone="E1">E1</button><button class="zone-pill" data-zone="E2">E2</button><button class="zone-pill" data-zone="E3">E3</button><button class="zone-pill" data-zone="E4">E4</button></div>
         <div id="zoneActiveDisplay" class="zone-active-status">Zone: E2</div>
     </div>
 
-    <!-- Grower Profile -->
     <div class="glass-card">
         <div class="section-title"><i class="fas fa-user-check"></i> Grower Profile</div>
         <div class="grid-2col">
@@ -98,13 +91,11 @@
         <div style="display:flex; gap:12px; margin-top:12px;"><button id="updateProfileBtn" class="btn-secondary"><i class="fas fa-save"></i> Update Total Area</button><button id="accessTrackerBtn" class="btn-lg"><i class="fas fa-charging-station"></i> Access Tracker</button></div>
     </div>
 
-    <!-- Landscape Dashboard -->
     <div class="glass-card">
         <div class="section-title" style="justify-content:space-between;"><span><i class="fas fa-chart-pie"></i> 📊 Live Dashboard (All Growers)</span><button id="refreshDashboardBtn" class="refresh-dash-btn"><i class="fas fa-sync-alt"></i> Refresh</button></div>
         <div id="dashboardContent"><div class="insight-empty">Loading dashboard...</div></div>
     </div>
 
-    <!-- Greenhouse Tracker Section (hidden initially) -->
     <div id="greenhouseDashboard" class="hidden-section">
         <div class="glass-card">
             <div class="section-title"><i class="fas fa-greenhouse"></i> Greenhouse Entries</div>
@@ -115,7 +106,6 @@
         </div>
     </div>
 
-    <!-- Previous Submissions Table -->
     <div id="previousSubmissionsSection" class="glass-card" style="display:none;">
         <div class="section-title">📜 My Previous Submissions</div>
         <div class="prev-table-wrapper"><table class="prev-table" id="prevSubmissionsTable"><thead id="prevTableHead"></thead><tbody id="prevTableBody"></tbody></table></div>
@@ -129,11 +119,9 @@
 <div id="updateHarvestModal" class="update-modal"><div class="update-card"><h3>✏️ Update Monthly Harvest (kg)</h3><div id="updateHarvestInfo"></div><div id="monthlyHarvestFields" class="update-grid"></div><button id="saveUpdateBtn" class="btn-small">Save Changes</button><button id="cancelUpdateBtn" class="btn-small">Cancel</button></div></div>
 
 <script>
-    // ======================== CONFIGURATION ========================
-    // IMPORTANT: REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-JX_7YLACY1V2Z1IUpYmAc4y5YXQNA4mv4a-1dRMRl-Mg298YmyDndElFZXS_XwywMg/exec';  // <-- REPLACE
-    
-    // Locality mapping per zone
+    // ==================== 👇 REPLACE WITH YOUR DEPLOYED APPS SCRIPT URL ====================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJyexUOxsWW2i_6kNT9mzckzWDkwwBZzwIor5imZaTG-RedHvMeAo4D-vxVw-HGde0QA/exec';   // <-- PASTE YOUR WEB APP URL HERE
+
     const EXCEL_LOCALITIES = {
         "E1":["Alma","Bagatelle Dam","Bar Le Duc","Beau Bois","Bell Village","Belle Rive","Bonne Veine","Camp Auguste","Circonstance","Cote D’Or","Dagotiere","Gentilly","Guibies","Helvetia","Hermitage","L’Agrement","L’Assurance","L’Avenir","L’Escalier Br Rd","L’Esperance","La Laura","Le Pouce","Malinga","Minissy","Moka","Nouvelle Decouverte","Petit Verger","Providence","Quartier Militaire","Reduit","Ripailles","Riviere Baptiste","Roselyn Cottage","Soreze","St Pierre","Valetta","Verdun"],
         "E2":["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"],
@@ -145,7 +133,7 @@
     const PROD_SYSTEMS = ["Cocopeat","Aggregates","Woodchips","NFT","DFT","Aquaponics"];
 
     let currentZone = "E2";
-    let currentGreenhouses = [];     // array of greenhouse objects
+    let currentGreenhouses = [];
     let currentUser = "";
     let existingDataAvailable = false;
 
@@ -175,7 +163,6 @@
     const refreshDashboardBtn = document.getElementById('refreshDashboardBtn');
     const updateProfileBtn = document.getElementById('updateProfileBtn');
 
-    // Helper: toast
     function showToast(msg, isError = false) {
         let toast = document.getElementById('globalToast');
         if(!toast) { const div=document.createElement('div'); div.id='globalToast'; div.className='toast-msg'; document.body.appendChild(div); toast=div; }
@@ -201,7 +188,6 @@
         if(growerNameInput.value.trim() && existingDataAvailable) await autoFillProfileFromHistory(growerNameInput.value.trim());
     }
 
-    // Auto-fill from latest user record
     async function autoFillProfileFromHistory(username) {
         try {
             const resp = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`);
@@ -213,9 +199,8 @@
                 const idxZone = headers.findIndex(h => h && h.toLowerCase().includes('zone'));
                 const idxTotalArea = headers.findIndex(h => h && h.toLowerCase().includes('total') && !h.toLowerCase().includes('harvest'));
                 if(idxLocality !== -1 && latest[idxLocality]) {
-                    const savedLocality = latest[idxLocality];
-                    if([...localitySelect.options].some(opt => opt.value === savedLocality)) localitySelect.value = savedLocality;
-                    else { const opt = document.createElement('option'); opt.value = savedLocality; opt.textContent = savedLocality; localitySelect.appendChild(opt); localitySelect.value = savedLocality; }
+                    if([...localitySelect.options].some(opt => opt.value === latest[idxLocality])) localitySelect.value = latest[idxLocality];
+                    else { const opt = document.createElement('option'); opt.value = latest[idxLocality]; opt.textContent = latest[idxLocality]; localitySelect.appendChild(opt); localitySelect.value = latest[idxLocality]; }
                 }
                 if(idxZone !== -1 && latest[idxZone] && latest[idxZone] !== currentZone) await setZone(latest[idxZone]);
                 if(idxTotalArea !== -1 && !isNaN(parseFloat(latest[idxTotalArea]))) totalAreaMain.value = parseFloat(latest[idxTotalArea]);
@@ -223,7 +208,6 @@
         } catch(e) { console.warn("Auto-fill error", e); }
     }
 
-    // Load Previous Submissions Table
     async function loadUserSubmissions(username) {
         if(!username) return false;
         try {
@@ -241,7 +225,7 @@
                 return false;
             }
             existingDataAvailable = true;
-            const interestingHeaders = headers.slice(0,13); // show id, grower, locality, zone, total, counter, crop, variety, stage, area, transplant, system
+            const interestingHeaders = headers.slice(0,13);
             prevTableHead.innerHTML = '<tr>' + interestingHeaders.map(h => `<th>${h || '?'}</th>`).join('') + '<th>Actions</th></tr>';
             prevTableBody.innerHTML = '';
             rows.forEach(row => {
@@ -282,7 +266,6 @@
         const grid = document.getElementById('monthlyHarvestFields');
         grid.innerHTML = '';
         const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        // monthly columns expected after column 13 (index 13 to 24)
         for(let i=0;i<12;i++) {
             const val = (row[13 + i] !== undefined && !isNaN(parseFloat(row[13+i]))) ? parseFloat(row[13+i]) : 0;
             const div = document.createElement('div'); div.className = 'month-card';
@@ -304,7 +287,6 @@
         } catch(e) { showToast("Error updating harvest", true); }
     }
 
-    // Dashboard: all growers aggregated
     async function renderDashboard() {
         const container = document.getElementById('dashboardContent');
         try {
@@ -331,7 +313,7 @@
                 else if(displayCrop === "English Cucumber") varietyMap.EnglishCucumber[variety] = (varietyMap.EnglishCucumber[variety] || 0) + area;
             }
             let html = `<div class="dashboard-landscape"><div class="dashboard-row"><div class="stat-card"><div class="stat-header">📊 Area by Crop (m²)</div><table class="crop-table">${Object.entries(cropArea).sort((a,b)=>b[1]-a[1]).map(([c,a])=>`<tr><td>${c}</td><td>${a.toFixed(0)}</td></tr>`).join('')}</table></div>`;
-            html += `<div class="stat-card"><div class="stat-header">🌱 Stage Area (m²)</div><div style="overflow-x:auto"><table class="stage-table"><tr><th>Crop</th><th>Seedl</th><th>Veg</th><th>Flow</th><th>Fruit</th><th>Harvest</th></tr>${Object.entries(stageCrop).map(([c,st])=>`<tr><td>${c}</td><td>${(st.Seedling||0).toFixed(0)}</td><td>${(st.Vegetative||0).toFixed(0)}</td><td>${(st.Flowering||0).toFixed(0)}</td><td>${(st.Fruiting||0).toFixed(0)}</td><td>${(st.Harvesting||0).toFixed(0)}</td></tr>`).join('')}${'</table></div></div></div><div class="dashboard-row">'}`;
+            html += `<div class="stat-card"><div class="stat-header">🌱 Stage Area (m²)</div><div style="overflow-x:auto"><table class="stage-table"><tr><th>Crop</th><th>Seedl</th><th>Veg</th><th>Flow</th><th>Fruit</th><th>Harvest</th></tr>${Object.entries(stageCrop).map(([c,st])=>`<tr><td>${c}</td><td>${(st.Seedling||0).toFixed(0)}</td><td>${(st.Vegetative||0).toFixed(0)}</td><td>${(st.Flowering||0).toFixed(0)}</td><td>${(st.Fruiting||0).toFixed(0)}</td><td>${(st.Harvesting||0).toFixed(0)}</td></tr>`).join('')}</table></div></div></div><div class="dashboard-row">`;
             for(let [key,label] of [["Tomato","🍅 Top Tomato Varieties"],["SweetPepper","🫑 Top Sweet Pepper"],["EnglishCucumber","🥒 Top Cucumber"]]) {
                 let top = Object.entries(varietyMap[key]).sort((a,b)=>b[1]-a[1]).slice(0,4);
                 if(top.length) html += `<div class="stat-card"><div class="stat-header">${label}</div><div class="variety-list">${top.map(([v,a])=>`<div class="variety-item"><span>${v}</span><span>${a.toFixed(0)} m²</span></div>`).join('')}</div></div>`;
@@ -341,7 +323,6 @@
         } catch(e) { container.innerHTML = `<div class="insight-empty">Dashboard error</div>`; console.error(e); }
     }
 
-    // Greenhouse tracker management
     function renderGreenhouseForms() {
         greenhouseEntriesContainer.innerHTML = '';
         currentGreenhouses.forEach((gh, idx) => {
@@ -389,7 +370,6 @@
         if(result.success) { showToast("Total area updated"); await loadUserSubmissions(username); } else showToast("Update failed", true);
     }
 
-    // LOGIN
     async function performLogin() {
         const un = loginUsername.value.trim(), pw = loginPassword.value;
         if(!un || !pw) { loginErrorSpan.innerText = "Enter credentials"; return; }
