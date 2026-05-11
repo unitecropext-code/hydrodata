@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* (same CSS as before - keep unchanged) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -395,7 +396,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // IMPORTANT: Replace this URL with your deployed Google Apps Script web app URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXGKgITO2nU1Xic8uwGcR54OwpzAq75X63fu6VJojpkmk5HyJoIUAFkzdMT66T3dymVQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlMBE5_QQT_mXVBSDsrCx3VXfkpifd-WroHk6Yy3ENwDpxgXcTdbY-oqIdGsZkTrAP9g/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -492,7 +493,7 @@
                     <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td>
                 </tr>`;
             }
-            cropTable += '</tbody><tr>';
+            cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
             let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.2rem;">';
             const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
@@ -513,8 +514,6 @@
             const headers = data.headers.map(h => h.toString().toLowerCase());
             
             // ----- FIXED AREA COLUMN DETECTION -----
-            // The individual greenhouse area is stored in the column that exactly matches "area (m²)" or similar
-            // We look for exact or partial matches, and if multiple, we prioritize the one that is NOT "total area"
             let areaIdx = -1;
             for (let i = 0; i < headers.length; i++) {
                 const h = headers[i];
@@ -523,7 +522,6 @@
                     break;
                 }
             }
-            // Fallback: if not found, try to find any column with 'area' but exclude 'total'
             if (areaIdx === -1) {
                 for (let i = 0; i < headers.length; i++) {
                     const h = headers[i];
@@ -533,10 +531,7 @@
                     }
                 }
             }
-            // Final fallback: column index 9 (known position after timestamp)
             if (areaIdx === -1 && headers.length > 9) areaIdx = 9;
-            
-            console.log("Area column index detected:", areaIdx, "header:", headers[areaIdx]);
             
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
             const stageIdx = getColIndex(['stage']);
@@ -621,6 +616,7 @@
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
             const username = growerName.value.trim();
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
+            const cropName = row[cropIdx] || "";  // get crop name from the record
             
             // Update main record (stage, area, variety, weekly yield, unit, harvest months)
             const mainPayload = {
@@ -641,7 +637,7 @@
                 body: JSON.stringify(mainPayload)
             });
             
-            // Log each non-zero monthly harvest to CropUpdates sheet
+            // Log each non-zero monthly harvest to CropUpdates sheet (now with crop name)
             for (let i = 0; i < 12; i++) {
                 const harvestValue = newMonthly[i];
                 if (harvestValue !== 0 && !isNaN(harvestValue)) {
@@ -649,6 +645,7 @@
                     const monthlyPayload = {
                         action: 'recordMonthlyHarvest',
                         grower: username,
+                        crop: cropName,                     // NEW: crop name
                         greenhouseArea: totalGreenhouseArea,
                         month: monthName,
                         harvestAmount: harvestValue,
