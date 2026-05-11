@@ -338,7 +338,7 @@
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
             <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
-            <div class="info-note"><i class="fas fa-info-circle"></i> Updates are sent to Google Sheet 1. After clicking, refresh manually to see changes.</div>
+            <div class="info-note"><i class="fas fa-cloud-upload-alt"></i> </div>
         </div>
 
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
@@ -381,10 +381,11 @@
             <div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option></select></div>
             <div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div>
         </div>
+        <!-- Monthly section always visible for editing -->
         <div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;">
             <h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4>
             <div id="editMonthlyGrid" class="update-grid"></div>
-            <div class="info-note" style="margin-top:0.5rem;"><i class="fas fa-database"></i> These values are saved to the corresponding monthly columns in Google Sheet 1 (January through December).</div>
+            <div class="info-note" style="margin-top:0.5rem;"><i class="fas fa-database"></i> These monthly values will be saved to the corresponding monthly columns in Google Sheet 1 (January through December).</div>
         </div>
         <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
             <button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
@@ -476,7 +477,7 @@
             const targetCrops = ["Tomato","Sweet Pepper","English Cucumber"];
             let maxArea = 0;
             for (let crop of targetCrops) { let entry = (data.areaByCrop || []).find(c => c.crop === crop); let area = entry ? entry.area : 0; if (area > maxArea) maxArea = area; }
-            let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></tr></thead><tbody>`;
+            let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></td></thead><tbody>`;
             for (let crop of targetCrops) {
                 let entry = (data.areaByCrop || []).find(c => c.crop === crop);
                 let area = entry ? entry.area : 0;
@@ -485,7 +486,13 @@
                 else if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
                 else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
                 const percent = maxArea > 0 ? (area / maxArea) * 100 : 0;
-                cropTable += `<tr><td><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td><td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td></table>`;
+                cropTable += `<tr>
+                    <td><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td>
+                    <td><strong>${area.toFixed(1)}</strong></td>
+                    <td>${topVariety.variety}</td>
+                    <td>${topVariety.area.toFixed(1)}</div></td>
+                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td>
+                </tr>`;
             }
             cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
@@ -551,6 +558,7 @@
         const rawTimestamp = row[currentEditRecord.timestampIdx] || '—';
         document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${formatToMauritiusTime(rawTimestamp)}`;
         
+        // Build monthly grid (always visible)
         const monthVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
         const grid = document.getElementById('editMonthlyGrid');
         grid.innerHTML = '';
@@ -560,13 +568,6 @@
             grid.appendChild(div);
         });
         
-        const monthlySection = document.getElementById('editMonthlySection');
-        const toggleMonthly = () => {
-            const stage = document.getElementById('editStage').value;
-            monthlySection.style.display = stage === 'Harvesting' ? 'block' : 'none';
-        };
-        document.getElementById('editStage').onchange = toggleMonthly;
-        toggleMonthly();
         editModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -592,15 +593,14 @@
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
             const username = growerName.value.trim();
             const payload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly: newMonthly };
-            // No-CORS POST - works with Apps Script, response not readable but request reaches server
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            toast("✅ Update request sent to Google Sheet 1! Your changes (area, stage, weekly yield, monthly harvest) are saved. Refreshing data...");
+            toast("✅ Update sent to Google Sheet 1! Refreshing data...");
             editModal.style.display = 'none';
             document.body.style.overflow = '';
             setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
-                toast("Data refreshed from Google Sheet. Your updates are now visible.");
+                toast("Data refreshed. Your changes are now visible.");
             }, 2000);
         } catch(e) { 
             console.error(e);
@@ -623,7 +623,7 @@
         try {
             const url = `${SCRIPT_URL}?action=updateProfile&username=${encodeURIComponent(username)}&locality=${encodeURIComponent(locality)}&totalArea=${totalArea}&zone=${encodeURIComponent(currentZone)}`;
             await fetch(url, { mode: 'no-cors' });
-            toast("✅ Greenhouse area update sent to Google Sheet 1. Refresh to see changes.");
+            toast("✅ Total greenhouse area update sent to Google Sheet 1. Refresh to see changes.");
             await autoFillProfileFromRecords(username);
         } catch(e) { toast("Error: " + e.message, true); } 
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
