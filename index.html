@@ -326,12 +326,8 @@
                     </h1>
                     <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics</div>
                 </div>
-                <div class="zone-banner">
-                    <i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong>
-                    <div id="zonePillsHeader" style="display: flex; gap: 8px;"></div>
-                </div>
-                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
-                <button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
+                <div class="zone-banner"><i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong><div id="zonePillsHeader" style="display: flex; gap: 8px;"></div></div>
+                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span><button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
             </div>
         </div>
 
@@ -340,19 +336,13 @@
             <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" readonly style="background:#f4f9f0;"></div>
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
-            <div class="profile-row">
-                <button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button>
-                <button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button>
-            </div>
+            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
         </div>
 
-        <div class="live-dashboard-title">
-            <i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD
-        </div>
-
+        <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         <div class="dashboard-grid">
             <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
-            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div id="cropAndVarietiesContainer"></div></div>
+            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas & Varieties</div><div id="cropAndVarietiesContainer"></div></div>
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer"></div></div>
 
@@ -390,12 +380,13 @@
             <div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div>
         </div>
         <div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;">
-            <h4>📅 Monthly Harvest Distribution</h4>
+            <h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4>
             <div id="editMonthlyGrid" class="update-grid"></div>
+            <p style="font-size:0.7rem; margin-top:0.5rem;"><i class="fas fa-info-circle"></i> Enter harvested quantity (kg or crates) for each month. These values will be saved to the corresponding monthly columns in your Google Sheet.</p>
         </div>
         <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
-            <button id="cancelEditBtn" class="btn-secondary">Cancel</button>
-            <button id="saveEditBtn" class="btn">Save Changes</button>
+            <button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+            <button id="saveEditBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button>
         </div>
     </div>
 </div>
@@ -459,18 +450,8 @@
             toast(`Zone switched to ${btn.dataset.zone}`);
         }));
     }
-
-    function setZone(zone) { 
-        currentZone = zone; 
-        document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone));
-        updateLocalityDropdown();
-    }
-
-    function updateLocalityDropdown() {
-        const locs = ZONE_LOCALITIES[currentZone] || [];
-        localitySelect.innerHTML = '<option value="">-- Select Locality --</option>';
-        locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); });
-    }
+    function setZone(zone) { currentZone = zone; document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone)); updateLocalityDropdown(); }
+    function updateLocalityDropdown() { const locs = ZONE_LOCALITIES[currentZone] || []; localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); }
 
     function renderAreaByStage(stats) {
         const areaByStage = stats.areaByStageTotal || {};
@@ -479,10 +460,7 @@
         for (let s of STAGES) {
             let area = areaByStage[s] || 0;
             let percent = (area / maxArea) * 100;
-            html += `<div class="stage-progress-container">
-                        <div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div>
-                        <div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div>
-                    </div>`;
+            html += `<div class="stage-progress-container"><div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div><div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div></div>`;
         }
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
@@ -493,46 +471,27 @@
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
-            
             const targetCrops = ["Tomato","Sweet Pepper","English Cucumber"];
             let maxArea = 0;
+            for (let crop of targetCrops) { let entry = (data.areaByCrop || []).find(c => c.crop === crop); let area = entry ? entry.area : 0; if (area > maxArea) maxArea = area; }
+            let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></tr></thead><tbody>`;
             for (let crop of targetCrops) {
-                let cropEntry = (data.areaByCrop || []).find(c => c.crop === crop);
-                let area = cropEntry ? cropEntry.area : 0;
-                if (area > maxArea) maxArea = area;
-            }
-            let cropTable = `<table class="top-crops-table">
-                <thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></tr></thead><tbody>`;
-            for (let crop of targetCrops) {
-                let cropEntry = (data.areaByCrop || []).find(c => c.crop === crop);
-                let area = cropEntry ? cropEntry.area : 0;
+                let entry = (data.areaByCrop || []).find(c => c.crop === crop);
+                let area = entry ? entry.area : 0;
                 let topVariety = { variety: '—', area: 0 };
                 if (crop === 'Tomato' && data.topVarieties?.tomato?.length) topVariety = data.topVarieties.tomato[0];
                 else if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
                 else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
                 const percent = maxArea > 0 ? (area / maxArea) * 100 : 0;
-                cropTable += `<tr>
-                    <td><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td>
-                    <td><strong>${area.toFixed(1)}</strong></td>
-                    <td>${topVariety.variety}</td>
-                    <td>${topVariety.area.toFixed(1)}</td>
-                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td>
-                </tr>`;
+                cropTable += `<tr><td><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td><td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td></tr>`;
             }
             cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
-            
             let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.2rem;">';
             const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
             for (let crop of targetCrops) {
                 let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {};
-                stageCropHtml += `<div class="stage-crop-card" style="flex:1; min-width:200px;">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;">
-                        <span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span>
-                        <span style="font-weight:800; font-size:1.2rem;">${crop}</span>
-                    </div>
-                    ${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}
-                </div>`;
+                stageCropHtml += `<div class="stage-crop-card" style="flex:1; min-width:200px;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
             }
             stageCropHtml += '</div>';
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
@@ -556,31 +515,16 @@
             const timestampIdx = getColIndex(['timestamp', 'date']);
             const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
             if (stageIdx === -1) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
-            
             cropRecordsGrid.innerHTML = '';
             for (let row of data.rows) {
                 if (!row[cropIdx]) continue;
-                const cropVal = row[cropIdx];
-                const stageVal = (row[stageIdx] || "").toString();
+                const cropVal = row[cropIdx], stageVal = (row[stageIdx] || "").toString();
                 const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
-                const varietyVal = row[varietyIdx] || "—";
-                const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
+                const varietyVal = row[varietyIdx] || "—", weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
                 const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg";
                 const harvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
-                
-                const card = document.createElement('div');
-                card.className = 'record-card';
-                card.innerHTML = `
-                    <div class="record-header">
-                        <div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div>
-                        <div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div>
-                    </div>
-                    <div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
-                    <div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div>
-                    <div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div>
-                    <div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div>
-                    <button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>
-                `;
+                const card = document.createElement('div'); card.className = 'record-card';
+                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div><div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div><div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
                 const btn = card.querySelector('.edit-btn-card');
                 btn.addEventListener('click', () => {
                     const rec = JSON.parse(btn.getAttribute('data-record'));
@@ -605,7 +549,7 @@
         const rawTimestamp = row[currentEditRecord.timestampIdx] || '—';
         document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${formatToMauritiusTime(rawTimestamp)}`;
         
-        // Build monthly grid regardless of stage, but hide/show based on stage
+        // Build monthly grid always
         const monthVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
         const grid = document.getElementById('editMonthlyGrid');
         grid.innerHTML = '';
@@ -648,16 +592,17 @@
             const username = growerName.value.trim();
             const payload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly: newMonthly };
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            toast("✅ Record update sent! Refreshing data...");
+            toast("✅ Update request sent! Your changes (area, stage, weekly yield, monthly harvest) are being saved to Google Sheet. Refreshing data...");
             editModal.style.display = 'none';
             document.body.style.overflow = '';
             setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
-            }, 1500);
+                toast("Data refreshed with latest updates from Google Sheet.");
+            }, 2000);
         } catch(e) { 
             console.error(e);
-            toast("Update request sent but could not verify. Check sheet after refresh.", true); 
+            toast("Update request sent but verification pending. Please refresh manually.", true); 
         } finally {
             saveBtn.innerHTML = originalHtml;
             saveBtn.disabled = false;
@@ -676,7 +621,7 @@
         try {
             const url = `${SCRIPT_URL}?action=updateProfile&username=${encodeURIComponent(username)}&locality=${encodeURIComponent(locality)}&totalArea=${totalArea}&zone=${encodeURIComponent(currentZone)}`;
             await fetch(url, { mode: 'no-cors' });
-            toast("✅ Update request sent. Refresh to see changes.");
+            toast("✅ Greenhouse area update request sent. Refresh to see changes.");
             await autoFillProfileFromRecords(username);
         } catch(e) { toast("Error: " + e.message, true); } 
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
@@ -687,18 +632,7 @@
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
             if (profRes.ok) {
                 const prof = await profRes.json();
-                if (prof.locality && localitySelect.querySelector(`option[value="${prof.locality}"]`)) {
-                    localitySelect.value = prof.locality;
-                } else if (prof.locality) {
-                    const optionExists = Array.from(localitySelect.options).some(opt => opt.value === prof.locality);
-                    if (!optionExists && prof.locality) {
-                        const newOpt = document.createElement('option');
-                        newOpt.value = prof.locality;
-                        newOpt.textContent = prof.locality;
-                        localitySelect.appendChild(newOpt);
-                        localitySelect.value = prof.locality;
-                    }
-                }
+                if (prof.locality && localitySelect.querySelector(`option[value="${prof.locality}"]`)) localitySelect.value = prof.locality;
                 if (prof.zone && ZONE_LOCALITIES[prof.zone]) setZone(prof.zone);
                 if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalAreaInput.value = parseFloat(prof.totalArea);
                 return;
@@ -711,17 +645,12 @@
                 const headers = data.headers.map(h => h.toString().toLowerCase());
                 const getCol = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
                 const latest = data.rows[0];
-                const localityCol = getCol(['locality']);
-                const zoneCol = getCol(['zone']);
-                const totalAreaCol = getCol(['total area', 'total greenhouse area', 'total area (m²)']);
-                if (localityCol !== -1 && latest[localityCol]) {
-                    let loc = latest[localityCol];
-                    if (localitySelect.querySelector(`option[value="${loc}"]`)) localitySelect.value = loc;
-                }
+                const localityCol = getCol(['locality']), zoneCol = getCol(['zone']), totalAreaCol = getCol(['total area', 'total greenhouse area', 'total area (m²)']);
+                if (localityCol !== -1 && latest[localityCol] && localitySelect.querySelector(`option[value="${latest[localityCol]}"]`)) localitySelect.value = latest[localityCol];
                 if (zoneCol !== -1 && latest[zoneCol] && ZONE_LOCALITIES[latest[zoneCol]]) setZone(latest[zoneCol]);
                 if (totalAreaCol !== -1 && !isNaN(parseFloat(latest[totalAreaCol]))) totalAreaInput.value = parseFloat(latest[totalAreaCol]);
             }
-        } catch(e) { console.warn("Auto-fill from records failed", e); }
+        } catch(e) { console.warn("Auto-fill failed", e); }
     }
 
     async function refreshFullData() {
@@ -734,7 +663,7 @@
             await loadUserPreviousData(user);
             await loadDashboard();
             await autoFillProfileFromRecords(user);
-            toast("📊 Dashboard & records refreshed");
+            toast("📊 Dashboard & records refreshed from Google Sheet");
         } else { toast("No active user", true); }
         refreshBtn.innerHTML = originalText;
         refreshBtn.classList.remove('btn-loading');
@@ -756,9 +685,7 @@
             <div id="tomatoTypeContainer"></div>
             <div id="dynamicHarvestDetails"></div>
         `;
-        const cropSelect = document.getElementById('cropSelect');
-        const varietyInput = document.getElementById('varietyInput');
-        const tomatoContainer = document.getElementById('tomatoTypeContainer');
+        const cropSelect = document.getElementById('cropSelect'), varietyInput = document.getElementById('varietyInput'), tomatoContainer = document.getElementById('tomatoTypeContainer');
         const updateTomatoType = () => {
             if (cropSelect.value === 'Tomato') {
                 tomatoContainer.innerHTML = `<div class="tomato-type-row"><label>🍅 Tomato Type: </label><select id="tomatoTypeSelect"><option value="Cooking">Cooking</option><option value="Salad">Salad</option><option value="Cherry">Cherry</option></select> <small>(auto-fills variety)</small></div>`;
@@ -784,13 +711,7 @@
     }
     
     function getCurrentFormData() {
-        let crop = document.getElementById('cropSelect')?.value;
-        let area = parseFloat(document.getElementById('areaInput')?.value) || 0;
-        let variety = document.getElementById('varietyInput')?.value || '';
-        let stage = document.getElementById('stageSelect')?.value;
-        let transplantDate = document.getElementById('transplantDate')?.value || '';
-        let prodSystem = document.getElementById('prodSystemSelect')?.value || '';
-        let harvest = { weeklyYield:0, harvestMonths:0, weeklyUnit:'kg', monthly:{} };
+        let crop = document.getElementById('cropSelect')?.value, area = parseFloat(document.getElementById('areaInput')?.value) || 0, variety = document.getElementById('varietyInput')?.value || '', stage = document.getElementById('stageSelect')?.value, transplantDate = document.getElementById('transplantDate')?.value || '', prodSystem = document.getElementById('prodSystemSelect')?.value || '', harvest = { weeklyYield:0, harvestMonths:0, weeklyUnit:'kg', monthly:{} };
         if (stage === 'Harvesting') {
             harvest.weeklyYield = parseFloat(document.getElementById('weeklyYield')?.value) || 0;
             harvest.harvestMonths = parseFloat(document.getElementById('harvestMonths')?.value) || 0;
