@@ -146,7 +146,6 @@
             width: 0%;
             transition: width 0.3s ease;
         }
-        /* Enhanced Top Crops Table */
         .top-crops-table {
             width: 100%;
             border-collapse: collapse;
@@ -343,11 +342,10 @@
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
             <div class="profile-row">
                 <button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button>
-                <button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button>
+                <button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Data</button>
             </div>
         </div>
 
-        <!-- LIVE DASHBOARD TITLE -->
         <div class="live-dashboard-title">
             <i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD
         </div>
@@ -378,7 +376,6 @@
     <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker</div>
 </div>
 
-<!-- Edit Record Modal -->
 <div id="editRecordModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3>
@@ -497,7 +494,6 @@
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
             
-            // Enhanced Top Crop Areas table with visual progress bars
             const targetCrops = ["Tomato","Sweet Pepper","English Cucumber"];
             let maxArea = 0;
             const cropAreas = [];
@@ -522,7 +518,7 @@
                     <td><strong>${area.toFixed(1)}</strong></td>
                     <td>${topVariety.variety}</td>
                     <td>${topVariety.area.toFixed(1)}</td>
-                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td>
+                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td>
                 </tr>`;
             }
             cropTable += '</tbody></table>';
@@ -649,20 +645,19 @@
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
             const username = growerName.value.trim();
             const payload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly: newMonthly };
-            const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            const result = await response.json();
-            if (result.success) {
-                toast("✅ Record updated! Individual area (Col J) & monthly saved.");
-                editModal.style.display = 'none';
-                document.body.style.overflow = '';
+            // Use no-cors mode to avoid CORS errors; the request will still reach the Apps Script
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            toast("✅ Record update sent! Refreshing data...");
+            editModal.style.display = 'none';
+            document.body.style.overflow = '';
+            // Wait a moment then refresh data
+            setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
-            } else {
-                toast("Update failed: " + (result.error || "unknown"), true);
-            }
+            }, 1500);
         } catch(e) { 
             console.error(e);
-            toast("Network error: " + e.message, true); 
+            toast("Update request sent but could not verify. Check sheet after refresh.", true); 
         } finally {
             saveBtn.innerHTML = originalHtml;
             saveBtn.disabled = false;
@@ -680,10 +675,9 @@
         updateBtn.disabled = true;
         try {
             const url = `${SCRIPT_URL}?action=updateProfile&username=${encodeURIComponent(username)}&locality=${encodeURIComponent(locality)}&totalArea=${totalArea}&zone=${encodeURIComponent(currentZone)}`;
-            const res = await fetch(url);
-            const result = await res.json();
-            if (result.success) { toast("✅ Greenhouse area updated"); await autoFillProfileFromRecords(username); }
-            else { toast("Update failed: " + (result.error || "Server error"), true); }
+            await fetch(url, { mode: 'no-cors' });
+            toast("✅ Update request sent. Refresh to see changes.");
+            await autoFillProfileFromRecords(username);
         } catch(e) { toast("Error: " + e.message, true); } 
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
@@ -696,7 +690,6 @@
                 if (prof.locality && localitySelect.querySelector(`option[value="${prof.locality}"]`)) {
                     localitySelect.value = prof.locality;
                 } else if (prof.locality) {
-                    // If locality not in dropdown (different zone), we still try to set
                     const optionExists = Array.from(localitySelect.options).some(opt => opt.value === prof.locality);
                     if (!optionExists && prof.locality) {
                         const newOpt = document.createElement('option');
@@ -711,7 +704,6 @@
                 return;
             }
         } catch(e) { console.warn("Profile endpoint fallback"); }
-        // Fallback: get from latest record
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
