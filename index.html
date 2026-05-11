@@ -551,7 +551,7 @@
     <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker</div>
 </div>
 
-<!-- Edit Record Modal (improved & smooth) -->
+<!-- Edit Record Modal (fully functional with monthly columns save) -->
 <div id="editRecordModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3>
@@ -689,9 +689,9 @@
             if (crop === 'Tomato' && stats.topVarieties?.tomato?.length) topVariety = stats.topVarieties.tomato[0];
             else if (crop === 'Sweet Pepper' && stats.topVarieties?.sweetPepper?.length) topVariety = stats.topVarieties.sweetPepper[0];
             else if (crop === 'English Cucumber' && stats.topVarieties?.englishCucumber?.length) topVariety = stats.topVarieties.englishCucumber[0];
-            cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}<td></tr>`;
+            cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
         }
-        cropTable += '</tbody></table>';
+        cropTable += '</tbody></tr>';
         document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
         
         // Enhanced stage breakdown per crop with icons & visual cards
@@ -816,7 +816,7 @@
             const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const result = await response.json();
             if (result.success) {
-                toast("✅ Record updated successfully!");
+                toast("✅ Record updated successfully! Monthly data saved to sheet.");
                 editModal.style.display = 'none';
                 document.body.style.overflow = '';
                 await loadUserPreviousData(username);
@@ -883,8 +883,8 @@
         } catch(e) { console.warn("Auto-fill error", e); }
     }
 
-    // Greenhouse form (unchanged, fully functional)
-    function renderActiveForm() { /* same as before but kept concise */ 
+    // Greenhouse form (fully functional, same as before)
+    function renderActiveForm() {
         const cropOptions = EXTENDED_CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
         const prodSysOptions = ["Cocopeat", "Rockwool", "NFT", "DWC", "Aeroponics"].map(s => `<option value="${s}">${s}</option>`).join('');
