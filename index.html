@@ -472,7 +472,7 @@
             const targetCrops = ["Tomato","Sweet Pepper","English Cucumber"];
             let maxArea = 0;
             for (let crop of targetCrops) { let entry = (data.areaByCrop || []).find(c => c.crop === crop); let area = entry ? entry.area : 0; if (area > maxArea) maxArea = area; }
-            let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></tr></thead><tbody>`;
+            let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></table></thead><tbody>`;
             for (let crop of targetCrops) {
                 let entry = (data.areaByCrop || []).find(c => c.crop === crop);
                 let area = entry ? entry.area : 0;
@@ -553,7 +553,6 @@
         const rawTimestamp = row[currentEditRecord.timestampIdx] || '—';
         document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${formatToMauritiusTime(rawTimestamp)}`;
         
-        // Build monthly grid - always visible
         const monthVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
         const grid = document.getElementById('editMonthlyGrid');
         grid.innerHTML = '';
@@ -587,15 +586,35 @@
             for (let i=0; i<12; i++) newMonthly[i] = parseFloat(document.getElementById(`edit_month_${i}`).value) || 0;
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
             const username = growerName.value.trim();
-            const payload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly: newMonthly };
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            toast("✅ Update sent to Google Sheet 1! Refreshing data...");
+            
+            // Build form-urlencoded payload (reliable for Apps Script)
+            const formData = new URLSearchParams();
+            formData.append('action', 'updateFullRecord');
+            formData.append('username', username);
+            formData.append('timestamp', timestamp);
+            formData.append('stage', newStage);
+            formData.append('area', newArea);
+            formData.append('variety', newVariety);
+            formData.append('weeklyYield', newWeeklyYield);
+            formData.append('weeklyUnit', newUnit);
+            formData.append('harvestMonths', newHarvestMonths);
+            for (let i=0; i<12; i++) {
+                formData.append(`monthly[${i}]`, newMonthly[i]);
+            }
+            
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            toast("✅ Monthly update sent to Google Sheet 1! Refreshing data...");
             editModal.style.display = 'none';
             document.body.style.overflow = '';
             setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
-                toast("Data refreshed. Your changes are now visible.");
+                toast("Data refreshed. Your monthly changes are now visible.");
             }, 2000);
         } catch(e) { 
             console.error(e);
@@ -616,8 +635,13 @@
         updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>';
         updateBtn.disabled = true;
         try {
-            const url = `${SCRIPT_URL}?action=updateProfile&username=${encodeURIComponent(username)}&locality=${encodeURIComponent(locality)}&totalArea=${totalArea}&zone=${encodeURIComponent(currentZone)}`;
-            await fetch(url, { mode: 'no-cors' });
+            const formData = new URLSearchParams();
+            formData.append('action', 'updateProfile');
+            formData.append('username', username);
+            formData.append('locality', locality);
+            formData.append('totalArea', totalArea);
+            formData.append('zone', currentZone);
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData });
             toast("✅ Total greenhouse area update sent to Google Sheet 1. Refresh to see changes.");
             await autoFillProfileFromRecords(username);
         } catch(e) { toast("Error: " + e.message, true); } 
