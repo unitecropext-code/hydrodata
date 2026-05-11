@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Hydroponic Smart Data Tracker | Visual Insights</title>
+    <title>Hydroponic Smart Tracker | Real-Time Insights</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%);
@@ -20,12 +15,7 @@
             padding: 20px;
             overflow-x: hidden;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
+        .container { max-width: 1400px; margin: 0 auto; }
         .glass-card {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(4px);
@@ -36,12 +26,7 @@
             border: 1px solid rgba(70, 130, 50, 0.25);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 24px 40px -14px rgba(0, 0, 0, 0.25);
-        }
-
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 24px 40px -14px rgba(0,0,0,0.25); }
         .login-overlay {
             position: fixed;
             top: 0;
@@ -55,7 +40,6 @@
             justify-content: center;
             z-index: 2000;
         }
-
         .login-card {
             background: white;
             max-width: 480px;
@@ -65,7 +49,6 @@
             text-align: center;
             box-shadow: 0 25px 50px -12px black;
         }
-
         .login-header {
             font-size: 2rem;
             font-weight: 800;
@@ -75,7 +58,6 @@
             color: transparent;
             margin-bottom: 2rem;
         }
-
         .login-card input {
             width: 100%;
             padding: 0.9rem 1rem;
@@ -84,7 +66,6 @@
             border-radius: 2rem;
             font-size: 1rem;
         }
-
         .btn {
             background: linear-gradient(95deg, #1f682a, #156f1a);
             border: none;
@@ -98,14 +79,9 @@
             gap: 0.6rem;
             font-size: 1rem;
             transition: all 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.03);
-        }
-
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.03); }
         .btn-secondary {
             background: #eef3ea;
             color: #1f5a22;
@@ -114,14 +90,7 @@
             border-radius: 2rem;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.1s;
         }
-
-        .btn-secondary:hover {
-            background: #e2f0da;
-            transform: scale(0.98);
-        }
-
         .zone-pill {
             background: #ecf7e6;
             border: 1px solid #cde0c2;
@@ -130,31 +99,21 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 0.85rem;
-            transition: all 0.2s;
         }
-
-        .zone-pill.active {
-            background: #198a2e;
-            color: white;
-            border-color: #198a2e;
-            box-shadow: 0 2px 6px rgba(25, 138, 46, 0.3);
-        }
-
+        .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; }
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
-
         .stat-card {
             background: white;
             border-radius: 1.5rem;
             padding: 1.2rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             border: 1px solid #e2efda;
         }
-
         .stat-title {
             font-weight: 800;
             font-size: 1.2rem;
@@ -166,11 +125,7 @@
             align-items: center;
             gap: 0.5rem;
         }
-
-        /* Enhanced progress bars */
-        .stage-progress-container {
-            margin-bottom: 1rem;
-        }
+        .stage-progress-container { margin-bottom: 1rem; }
         .stage-progress-label {
             display: flex;
             justify-content: space-between;
@@ -191,8 +146,6 @@
             width: 0%;
             transition: width 0.3s ease;
         }
-
-        /* Card-based crop records */
         .crop-records-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -207,11 +160,7 @@
             border: 1px solid #e0f0d8;
             transition: all 0.2s;
         }
-        .record-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.1);
-            border-color: #b8d9a8;
-        }
+        .record-card:hover { transform: translateY(-4px); box-shadow: 0 15px 25px rgba(0,0,0,0.1); }
         .record-header {
             display: flex;
             justify-content: space-between;
@@ -220,33 +169,10 @@
             padding-bottom: 0.6rem;
             margin-bottom: 0.6rem;
         }
-        .record-crop {
-            font-weight: 800;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .record-stage {
-            background: #e8f0e4;
-            padding: 0.2rem 0.7rem;
-            border-radius: 2rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .record-detail {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 0.85rem;
-        }
-        .record-area {
-            font-weight: 800;
-            color: #1f6e1f;
-            background: #edf7e7;
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
+        .record-crop { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .record-stage { background: #e8f0e4; padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; }
+        .record-detail { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; }
+        .record-area { font-weight: 800; color: #1f6e1f; background: #edf7e7; padding: 2px 10px; border-radius: 20px; }
         .edit-btn-card {
             background: #2c7a2a;
             color: white;
@@ -257,51 +183,10 @@
             cursor: pointer;
             width: 100%;
             margin-top: 10px;
-            transition: 0.1s;
         }
-        .edit-btn-card:hover {
-            background: #1a5e18;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-        }
-
-        .data-table th {
-            background: #ecf7e6;
-            color: #1a551a;
-            padding: 0.7rem 0.5rem;
-            text-align: left;
-            font-weight: 700;
-        }
-
-        .data-table td {
-            padding: 0.6rem 0.5rem;
-            border-bottom: 1px solid #deecce;
-        }
-
-        .badge {
-            background: #e9f3e4;
-            border-radius: 2rem;
-            padding: 0.2rem 0.6rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #2e6b2e;
-        }
-
-        .grid-2col {
-            display: grid;
-            gap: 1rem;
-        }
-
-        @media (min-width: 640px) {
-            .grid-2col {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
+        .edit-btn-card:hover { background: #1a5e18; }
+        .grid-2col { display: grid; gap: 1rem; }
+        @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
         .toast-msg {
             position: fixed;
             bottom: 20px;
@@ -316,15 +201,8 @@
             font-size: 0.85rem;
             white-space: nowrap;
         }
-
-        .toast-msg.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .hidden {
-            display: none;
-        }
-
+        .toast-msg.show { transform: translateX(-50%) translateY(0); }
+        .hidden { display: none; }
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -337,9 +215,7 @@
             align-items: center;
             justify-content: center;
             z-index: 2100;
-            transition: opacity 0.25s ease;
         }
-
         .modal-container {
             background: white;
             max-width: 950px;
@@ -349,92 +225,34 @@
             max-height: 85vh;
             overflow-y: auto;
             animation: modalFadeIn 0.25s ease-out;
-            box-shadow: 0 30px 45px rgba(0,0,0,0.25);
         }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .update-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-
-        .month-card {
-            background: #f9fef7;
-            border-radius: 1rem;
-            padding: 0.6rem;
-            text-align: center;
-            border: 1px solid #d5e8ca;
-        }
-
-        .month-card input {
-            width: 100%;
-            margin-top: 0.3rem;
-            padding: 0.4rem;
-            border-radius: 1rem;
-            border: 1px solid #bddbab;
-            text-align: center;
-        }
-
-        .profile-row {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .profile-row label {
-            font-weight: 600;
-            min-width: 150px;
-        }
-
-        .profile-row input, .profile-row select {
-            flex: 1;
-            padding: 0.7rem 1rem;
-            border-radius: 2rem;
-            border: 1px solid #cde0c2;
-            background: white;
-        }
-
-        .update-area-btn {
-            background: #2e7d64;
-            color: white;
-            border: none;
-            border-radius: 2rem;
-            padding: 0.5rem 1.2rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #2f5e2f;
-            margin-top: 2rem;
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        .update-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin: 1rem 0; }
+        .month-card { background: #f9fef7; border-radius: 1rem; padding: 0.6rem; text-align: center; border: 1px solid #d5e8ca; }
+        .month-card input { width: 100%; margin-top: 0.3rem; padding: 0.4rem; border-radius: 1rem; border: 1px solid #bddbab; text-align: center; }
+        .profile-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .profile-row label { font-weight: 600; min-width: 150px; }
+        .profile-row input, .profile-row select { flex: 1; padding: 0.7rem 1rem; border-radius: 2rem; border: 1px solid #cde0c2; background: white; }
+        .update-area-btn { background: #2e7d64; color: white; border: none; border-radius: 2rem; padding: 0.5rem 1.2rem; cursor: pointer; font-weight: 600; }
+        .footer { text-align: center; font-size: 0.7rem; color: #2f5e2f; margin-top: 2rem; padding: 1rem; }
+        .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #2e6b2e; }
+        .crop-icon-small { font-size: 1.2rem; }
+        .btn-loading { pointer-events: none; opacity: 0.7; }
+        .fa-spin-custom { animation: fa-spin 1s infinite linear; }
+        @keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .stage-crop-card {
+            background: linear-gradient(135deg, #ffffff, #fef7e0);
+            border-radius: 1.5rem;
             padding: 1rem;
+            transition: all 0.2s;
+            border: 1px solid #e0efd4;
         }
-
-        .crop-icon-small {
-            font-size: 1.2rem;
-        }
-
-        .btn-loading {
-            pointer-events: none;
-            opacity: 0.7;
-        }
-        .fa-spin-custom {
-            animation: fa-spin 1s infinite linear;
-        }
-        @keyframes fa-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .stage-crop-card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
+        .form-group input, .form-group select { width: 100%; padding: 0.6rem; border-radius: 1rem; border: 1px solid #cde0c2; }
+        .zone-banner { background: rgba(30, 70, 30, 0.08); border-radius: 3rem; padding: 0.4rem 1.2rem; display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .tomato-type-row { background: #f5fcee; border-radius: 1rem; padding: 0.6rem 1rem; margin-top: 0.5rem; border-left: 4px solid #f39c12; }
     </style>
 </head>
 <body>
@@ -456,7 +274,7 @@
                     <h1 style="font-size: 1.7rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;">
                         <i class="fas fa-chart-line"></i> Hydroponic Data Tracker | Real Time Insights
                     </h1>
-                    <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics</div>
+                    <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics </div>
                 </div>
                 <div class="zone-banner">
                     <i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong>
@@ -479,14 +297,8 @@
         </div>
 
         <div class="dashboard-grid">
-            <div class="stat-card">
-                <div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div>
-                <div id="areaByStageContainer"></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div>
-                <div id="cropAndVarietiesContainer"></div>
-            </div>
+            <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
+            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div id="cropAndVarietiesContainer"></div></div>
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer"></div></div>
 
@@ -503,14 +315,13 @@
         </div>
 
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
-            <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records (from Column J area values)</div>
+            <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div>
             <div id="cropRecordsGrid" class="crop-records-grid"></div>
         </div>
     </div>
     <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker</div>
 </div>
 
-<!-- Edit Record Modal -->
 <div id="editRecordModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3>
@@ -518,7 +329,7 @@
         <div class="grid-2col">
             <div class="form-group"><label>Crop</label><input type="text" id="editCrop" readonly></div>
             <div class="form-group"><label>Stage *</label><select id="editStage"><option>Seedling</option><option>Vegetative</option><option>Flowering</option><option>Fruiting</option><option>Harvesting</option></select></div>
-            <div class="form-group"><label>Area (m²) *</label><input type="number" step="0.01" id="editArea" placeholder="from Column J"></div>
+            <div class="form-group"><label>Area (m²) *</label><input type="number" step="0.01" id="editArea"></div>
             <div class="form-group"><label>Variety</label><input type="text" id="editVariety"></div>
             <div class="form-group"><label>Weekly Yield</label><input type="number" step="0.01" id="editWeeklyYield"></div>
             <div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option></select></div>
@@ -547,7 +358,6 @@
     let currentZone = "E2";
     let savedGreenhouses = [];
     let currentEditRecord = null;
-    let rawUserRecords = []; // store for card rendering
 
     function getCurrentMauritiusISOString() {
         const now = new Date();
@@ -570,14 +380,10 @@
     const growerName = document.getElementById('growerName');
     const localitySelect = document.getElementById('localitySelect');
     const totalAreaInput = document.getElementById('totalArea');
-    const updateAreaBtn = document.getElementById('updateAreaBtn');
-    const accessTrackerBtn = document.getElementById('accessTrackerBtn');
-    const prevSubSection = document.getElementById('prevSubmissionsSection');
     const cropRecordsGrid = document.getElementById('cropRecordsGrid');
     const logoutBtn = document.getElementById('logoutBtn');
     const editModal = document.getElementById('editRecordModal');
     const loggedInUsernameSpan = document.getElementById('loggedInUsername');
-    const refreshProfileBtn = document.getElementById('refreshProfileBtn');
 
     function toast(msg, isError = false) { 
         const t = document.getElementById('toastText');
@@ -611,7 +417,6 @@
         locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); });
     }
 
-    // Enhanced area-by-stage with visual progress bars
     function renderAreaByStage(stats) {
         const areaByStage = stats.areaByStageTotal || {};
         let maxArea = Math.max(...Object.values(areaByStage).map(v=>v||0),1);
@@ -620,13 +425,8 @@
             let area = areaByStage[s] || 0;
             let percent = (area / maxArea) * 100;
             html += `<div class="stage-progress-container">
-                        <div class="stage-progress-label">
-                            <span><i class="fas fa-chart-line"></i> ${s}</span>
-                            <span><strong>${area.toFixed(1)} m²</strong></span>
-                        </div>
-                        <div class="stage-progress-bar-bg">
-                            <div class="stage-progress-fill" style="width: ${percent}%;"></div>
-                        </div>
+                        <div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div>
+                        <div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div>
                     </div>`;
         }
         document.getElementById('areaByStageContainer').innerHTML = html;
@@ -652,11 +452,18 @@
             cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
             
+            // Enhanced Stage Breakdown with crop icons
             let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.2rem;">';
-            const cropIcons = { "Tomato": '<i class="fas fa-tomato"></i>', "Sweet Pepper": '<i class="fas fa-pepper-hot"></i>', "English Cucumber": '<i class="fas fa-leaf"></i>' };
+            const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
             for (let crop of targetCrops) {
                 let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {};
-                stageCropHtml += `<div style="flex:1; background:#fafefa; border-radius:1.2rem; padding:0.8rem; border:1px solid #e0efd4;"><h4>${cropIcons[crop] || '🌱'} ${crop}</h4>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:4px 0;"><span>${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
+                stageCropHtml += `<div class="stage-crop-card" style="flex:1; min-width:200px;">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;">
+                        <span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span>
+                        <span style="font-weight:800; font-size:1.2rem;">${crop}</span>
+                    </div>
+                    ${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}
+                </div>`;
             }
             stageCropHtml += '</div>';
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
@@ -667,27 +474,26 @@
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
-            if (!data.rows || data.rows.length === 0) { prevSubSection.style.display = 'none'; return false; }
+            if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const headers = data.headers.map(h => h.toString().toLowerCase());
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
             const stageIdx = getColIndex(['stage']);
             const cropIdx = getColIndex(['crop']);
-            const areaIdx = getColIndex(['area', 'area (m²)']); // Column J
+            const areaIdx = getColIndex(['area', 'area (m²)']);
             const varietyIdx = getColIndex(['variety']);
             const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']);
             const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']);
             const harvestMonthsIdx = getColIndex(['harvest months']);
             const timestampIdx = getColIndex(['timestamp', 'date']);
             const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
-            if (stageIdx === -1) { prevSubSection.style.display = 'none'; return false; }
+            if (stageIdx === -1) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             
-            // Build card-based grid
             cropRecordsGrid.innerHTML = '';
             for (let row of data.rows) {
                 if (!row[cropIdx]) continue;
                 const cropVal = row[cropIdx];
                 const stageVal = (row[stageIdx] || "").toString();
-                const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0; // exact Column J
+                const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
                 const varietyVal = row[varietyIdx] || "—";
                 const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
                 const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg";
@@ -700,11 +506,11 @@
                         <div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div>
                         <div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div>
                     </div>
-                    <div class="record-detail"><span>📐 Area (Col J):</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
+                    <div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
                     <div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div>
                     <div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div>
                     <div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div>
-                    <button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row, headers })}'><i class="fas fa-edit"></i> Edit Record</button>
+                    <button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>
                 `;
                 const btn = card.querySelector('.edit-btn-card');
                 btn.addEventListener('click', () => {
@@ -714,9 +520,9 @@
                 });
                 cropRecordsGrid.appendChild(card);
             }
-            prevSubSection.style.display = 'block';
+            document.getElementById('prevSubmissionsSection').style.display = 'block';
             return true;
-        } catch(e) { console.error(e); prevSubSection.style.display = 'none'; return false; }
+        } catch(e) { console.error(e); document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
     }
 
     function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) {
@@ -771,7 +577,7 @@
             const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const result = await response.json();
             if (result.success) {
-                toast("✅ Record updated! Column J area & monthly saved.");
+                toast("✅ Record updated! Area & monthly saved.");
                 editModal.style.display = 'none';
                 document.body.style.overflow = '';
                 await loadUserPreviousData(username);
@@ -779,8 +585,10 @@
             } else {
                 toast("Update failed: " + (result.error || "unknown"), true);
             }
-        } catch(e) { toast("Network error: " + e.message, true); } 
-        finally {
+        } catch(e) { 
+            console.error(e);
+            toast("Network error: " + e.message, true); 
+        } finally {
             saveBtn.innerHTML = originalHtml;
             saveBtn.disabled = false;
         }
@@ -805,8 +613,19 @@
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
 
-    // Auto-fill from most recent record (locality, zone, total area)
     async function autoFillProfileFromRecords(username) {
+        try {
+            // First try dedicated profile endpoint
+            const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
+            if (profRes.ok) {
+                const prof = await profRes.json();
+                if (prof.locality && localitySelect.querySelector(`option[value="${prof.locality}"]`)) localitySelect.value = prof.locality;
+                if (prof.zone && ZONE_LOCALITIES[prof.zone]) setZone(prof.zone);
+                if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalAreaInput.value = parseFloat(prof.totalArea);
+                return;
+            }
+        } catch(e) { console.warn("Profile endpoint fallback"); }
+        // Fallback: get from latest record
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
@@ -837,13 +656,13 @@
             await loadUserPreviousData(user);
             await loadDashboard();
             await autoFillProfileFromRecords(user);
-            toast("📊 Dashboard & records refreshed (Column J area shown)");
+            toast("📊 Dashboard & records refreshed");
         } else { toast("No active user", true); }
         refreshBtn.innerHTML = originalText;
         refreshBtn.classList.remove('btn-loading');
     }
 
-    // Greenhouse form (same as before, concise)
+    // Greenhouse form (simplified but functional)
     function renderActiveForm() {
         const cropOptions = EXTENDED_CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -934,11 +753,11 @@
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; toast("Logged out"); };
-    accessTrackerBtn.onclick = () => { if(!growerName.value.trim()||!localitySelect.value||!totalAreaInput.value) toast("Complete profile (locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
+    document.getElementById('accessTrackerBtn').onclick = () => { if(!growerName.value.trim()||!localitySelect.value||!totalAreaInput.value) toast("Complete profile (locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
     document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
     document.getElementById('submitDataBtn').onclick = submitAllNewData;
-    updateAreaBtn.onclick = updateProfile;
-    refreshProfileBtn.onclick = refreshFullData;
+    document.getElementById('updateAreaBtn').onclick = updateProfile;
+    document.getElementById('refreshProfileBtn').onclick = refreshFullData;
     document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
