@@ -179,7 +179,6 @@
             height: 100%;
             background: #2e8b57;
             border-radius: 20px;
-            width: 0%;
         }
         .crop-icon-cell {
             font-size: 1.3rem;
@@ -303,7 +302,6 @@
         .form-group input, .form-group select { width: 100%; padding: 0.6rem; border-radius: 1rem; border: 1px solid #cde0c2; }
         .zone-banner { background: rgba(30, 70, 30, 0.08); border-radius: 3rem; padding: 0.4rem 1.2rem; display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .tomato-type-row { background: #f5fcee; border-radius: 1rem; padding: 0.6rem 1rem; margin-top: 0.5rem; border-left: 4px solid #f39c12; }
-        .info-note { background: #e8f0e4; border-radius: 1rem; padding: 0.5rem; font-size: 0.7rem; margin-top: 0.5rem; text-align: center; }
     </style>
 </head>
 <body>
@@ -338,7 +336,6 @@
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
             <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
-            <div class="info-note"><i class="fas fa-cloud-upload-alt"></i> </div>
         </div>
 
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
@@ -381,11 +378,9 @@
             <div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option></select></div>
             <div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div>
         </div>
-        <!-- Monthly section always visible for editing -->
         <div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;">
             <h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4>
             <div id="editMonthlyGrid" class="update-grid"></div>
-            <div class="info-note" style="margin-top:0.5rem;"><i class="fas fa-database"></i> These monthly values will be saved to the corresponding monthly columns in Google Sheet 1 (January through December).</div>
         </div>
         <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
             <button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
@@ -477,7 +472,7 @@
             const targetCrops = ["Tomato","Sweet Pepper","English Cucumber"];
             let maxArea = 0;
             for (let crop of targetCrops) { let entry = (data.areaByCrop || []).find(c => c.crop === crop); let area = entry ? entry.area : 0; if (area > maxArea) maxArea = area; }
-            let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></td></thead><tbody>`;
+            let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></tr></thead><tbody>`;
             for (let crop of targetCrops) {
                 let entry = (data.areaByCrop || []).find(c => c.crop === crop);
                 let area = entry ? entry.area : 0;
@@ -487,11 +482,11 @@
                 else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
                 const percent = maxArea > 0 ? (area / maxArea) * 100 : 0;
                 cropTable += `<tr>
-                    <td><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td>
+                    <td style="display: flex; align-items: center; gap: 6px;"><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td>
                     <td><strong>${area.toFixed(1)}</strong></td>
                     <td>${topVariety.variety}</td>
-                    <td>${topVariety.area.toFixed(1)}</div></td>
-                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td>
+                    <td>${topVariety.area.toFixed(1)}</td>
+                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td>
                 </tr>`;
             }
             cropTable += '</tbody></table>';
@@ -558,7 +553,7 @@
         const rawTimestamp = row[currentEditRecord.timestampIdx] || '—';
         document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${formatToMauritiusTime(rawTimestamp)}`;
         
-        // Build monthly grid (always visible)
+        // Build monthly grid - always visible
         const monthVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
         const grid = document.getElementById('editMonthlyGrid');
         grid.innerHTML = '';
