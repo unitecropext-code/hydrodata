@@ -393,12 +393,9 @@
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
-    // ==================== FRONT-END CODE ====================
-    // This version sends monthly harvest updates to the new "CropUpdates" sheet
-    // via the 'recordMonthlyHarvest' action. The main record fields (stage, area, etc.)
-    // are still updated in the main sheet via 'updateFullRecord'.
-    
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6u_4iMbVd4VzYisqsUgwJQ96-qCz_lusRvhv29sLBbflkZQgj7TCCg1YyYe5oTKvUuQ/exec';
+    // ==================== FRONT-END ====================
+    // Replace this URL with your deployed Google Apps Script web app URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXGKgITO2nU1Xic8uwGcR54OwpzAq75X63fu6VJojpkmk5HyJoIUAFkzdMT66T3dymVQ/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -592,8 +589,9 @@
             for (let i=0; i<12; i++) newMonthly[i] = parseFloat(document.getElementById(`edit_month_${i}`).value) || 0;
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
             const username = growerName.value.trim();
+            const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
             
-            // 1. Update the main record in the primary sheet (stage, area, variety, weekly yield, etc.)
+            // 1. Update main record (stage, area, variety, weekly yield, unit, harvest months)
             const mainPayload = {
                 action: 'updateFullRecord',
                 username: username,
@@ -604,7 +602,6 @@
                 weeklyYield: newWeeklyYield,
                 weeklyUnit: newUnit,
                 harvestMonths: newHarvestMonths
-                // No monthly here, those go to CropUpdates sheet
             };
             await fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -613,16 +610,10 @@
                 body: JSON.stringify(mainPayload)
             });
             
-            // 2. For each month that has a value > 0, send a separate record to the CropUpdates sheet
-            const currentMonthIndex = new Date().getMonth(); // 0-11
-            const currentMonthName = MONTHS[currentMonthIndex];
-            const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
-            
-            // Send only the current month's harvest (or all non-zero months? According to requirement: "Monthly Harvest stating which current month filled")
-            // We'll send only the month that the user edited (all months are displayed, but we'll send each non-zero as a separate row)
+            // 2. Log each non-zero monthly harvest to the CropUpdates sheet
             for (let i = 0; i < 12; i++) {
                 const harvestValue = newMonthly[i];
-                if (harvestValue !== undefined && harvestValue !== null && harvestValue !== 0) {
+                if (harvestValue !== 0 && !isNaN(harvestValue)) {
                     const monthName = MONTHS[i];
                     const monthlyPayload = {
                         action: 'recordMonthlyHarvest',
@@ -641,7 +632,7 @@
                 }
             }
             
-            toast("✅ Updates sent! Main record updated and monthly harvests logged to 'CropUpdates' sheet.");
+            toast("✅ Update sent! Main record updated and monthly harvests logged to CropUpdates sheet.");
             editModal.style.display = 'none';
             document.body.style.overflow = '';
             setTimeout(async () => {
@@ -812,46 +803,5 @@
     updateLocalityDropdown();
     document.getElementById('greenhouseSection').classList.add('hidden');
 </script>
-
-<!-- ==================== GOOGLE APPS SCRIPT CODE (MUST BE ADDED TO YOUR SCRIPT EDITOR) ==================== -->
-<!--
-Copy and paste the following code into your Apps Script project (the one linked to your Google Sheet).
-It adds the "CropUpdates" sheet and handles the new 'recordMonthlyHarvest' action.
-
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const action = data.action;
-    
-    if (action === 'recordMonthlyHarvest') {
-      const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('CropUpdates');
-      if (!sheet) {
-        const newSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet('CropUpdates');
-        newSheet.appendRow(['Timestamp', 'Grower', 'Greenhouse Area (m²)', 'Month', 'Harvest Amount', 'Unit']);
-      }
-      const targetSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('CropUpdates');
-      targetSheet.appendRow([
-        new Date(),
-        data.grower,
-        data.greenhouseArea,
-        data.month,
-        data.harvestAmount,
-        data.unit
-      ]);
-      return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
-    }
-    // ... keep your existing handlers for updateFullRecord, updateProfile, login, getUserData, etc.
-    else if (action === 'updateFullRecord') {
-      // your existing code to update the main sheet
-    }
-    // ... all other existing actions
-  } catch(e) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: e.toString() })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-// Also add doGet(e) for GET requests if needed (like your existing dashboard stats)
-// Make sure to include all your existing functions (getDashboardStats, getUserData, login, updateProfile, etc.)
--->
 </body>
 </html>
