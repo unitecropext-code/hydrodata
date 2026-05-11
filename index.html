@@ -396,7 +396,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // IMPORTANT: Replace this URL with your deployed Google Apps Script web app URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlMBE5_QQT_mXVBSDsrCx3VXfkpifd-WroHk6Yy3ENwDpxgXcTdbY-oqIdGsZkTrAP9g/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1yc7tv27qZbIVVj10uoGA1lVe2aQfbjqRf2jgJwXn-Id676V-32hXUzuEiEvvDj5VTg/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -452,8 +452,16 @@
             toast(`Zone switched to ${btn.dataset.zone}`);
         }));
     }
-    function setZone(zone) { currentZone = zone; document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone)); updateLocalityDropdown(); }
-    function updateLocalityDropdown() { const locs = ZONE_LOCALITIES[currentZone] || []; localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); }
+    function setZone(zone) { 
+        currentZone = zone; 
+        document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone)); 
+        updateLocalityDropdown(); 
+    }
+    function updateLocalityDropdown() { 
+        const locs = ZONE_LOCALITIES[currentZone] || []; 
+        localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; 
+        locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); 
+    }
 
     function renderAreaByStage(stats) {
         const areaByStage = stats.areaByStageTotal || {};
@@ -512,8 +520,6 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const headers = data.headers.map(h => h.toString().toLowerCase());
-            
-            // ----- FIXED AREA COLUMN DETECTION -----
             let areaIdx = -1;
             for (let i = 0; i < headers.length; i++) {
                 const h = headers[i];
@@ -616,9 +622,8 @@
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
             const username = growerName.value.trim();
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
-            const cropName = row[cropIdx] || "";  // get crop name from the record
+            const cropName = row[cropIdx] || "";
             
-            // Update main record (stage, area, variety, weekly yield, unit, harvest months)
             const mainPayload = {
                 action: 'updateFullRecord',
                 username: username,
@@ -637,7 +642,6 @@
                 body: JSON.stringify(mainPayload)
             });
             
-            // Log each non-zero monthly harvest to CropUpdates sheet (now with crop name)
             for (let i = 0; i < 12; i++) {
                 const harvestValue = newMonthly[i];
                 if (harvestValue !== 0 && !isNaN(harvestValue)) {
@@ -645,7 +649,7 @@
                     const monthlyPayload = {
                         action: 'recordMonthlyHarvest',
                         grower: username,
-                        crop: cropName,                     // NEW: crop name
+                        crop: cropName,
                         greenhouseArea: totalGreenhouseArea,
                         month: monthName,
                         harvestAmount: harvestValue,
@@ -695,28 +699,53 @@
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
 
+    // IMPROVED: auto-fill locality from user's most recent record
     async function autoFillProfileFromRecords(username) {
         try {
-            const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
-            if (profRes.ok) {
-                const prof = await profRes.json();
-                if (prof.locality && localitySelect.querySelector(`option[value="${prof.locality}"]`)) localitySelect.value = prof.locality;
-                if (prof.zone && ZONE_LOCALITIES[prof.zone]) setZone(prof.zone);
-                if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalAreaInput.value = parseFloat(prof.totalArea);
-                return;
-            }
-        } catch(e) { console.warn("Profile endpoint fallback"); }
-        try {
+            // 1. Try to get the latest record for this user
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
             if (data.rows && data.rows.length > 0) {
                 const headers = data.headers.map(h => h.toString().toLowerCase());
                 const getCol = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
                 const latest = data.rows[0];
-                const localityCol = getCol(['locality']), zoneCol = getCol(['zone']), totalAreaCol = getCol(['total area', 'total greenhouse area', 'total area (m²)']);
-                if (localityCol !== -1 && latest[localityCol] && localitySelect.querySelector(`option[value="${latest[localityCol]}"]`)) localitySelect.value = latest[localityCol];
-                if (zoneCol !== -1 && latest[zoneCol] && ZONE_LOCALITIES[latest[zoneCol]]) setZone(latest[zoneCol]);
-                if (totalAreaCol !== -1 && !isNaN(parseFloat(latest[totalAreaCol]))) totalAreaInput.value = parseFloat(latest[totalAreaCol]);
+                
+                // Locality column detection (case-insensitive)
+                const localityCol = getCol(['locality', 'location', 'address']);
+                if (localityCol !== -1 && latest[localityCol]) {
+                    const localityValue = latest[localityCol];
+                    // Wait for dropdown to be populated
+                    setTimeout(() => {
+                        if (localitySelect.querySelector(`option[value="${localityValue}"]`)) {
+                            localitySelect.value = localityValue;
+                        } else {
+                            // If not in dropdown, add it temporarily? Better to just show message
+                            console.warn(`Locality "${localityValue}" not in current zone dropdown`);
+                        }
+                    }, 200);
+                }
+                
+                // Zone column detection
+                const zoneCol = getCol(['zone']);
+                if (zoneCol !== -1 && latest[zoneCol] && ZONE_LOCALITIES[latest[zoneCol]]) {
+                    setZone(latest[zoneCol]);
+                }
+                
+                // Total area column (from the record's individual area? No, from profile sheet)
+                // Try to get total area from profile sheet first
+                const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
+                if (profRes.ok) {
+                    const prof = await profRes.json();
+                    if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) {
+                        totalAreaInput.value = parseFloat(prof.totalArea);
+                    }
+                } else {
+                    // Fallback: try to find total area in the record (but record has individual area)
+                    // Not ideal, but we'll leave it.
+                }
+            } else {
+                // No records found
+                console.warn("No records found for user");
             }
         } catch(e) { console.warn("Auto-fill failed", e); }
     }
