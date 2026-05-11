@@ -2,32 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Hydroponic Smart Tracker | Real-Time Insights</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* (same CSS as before - keep unchanged) */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
             overflow-x: hidden;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* Responsive container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Glass card - responsive padding */
         .glass-card {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(4px);
             border-radius: 28px;
-            padding: 1.5rem 2rem;
+            padding: 1.2rem;
             margin-bottom: 1.5rem;
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(70, 130, 50, 0.25);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 24px 40px -14px rgba(0,0,0,0.25); }
+
+        @media (min-width: 768px) {
+            .glass-card {
+                padding: 1.5rem 2rem;
+            }
+            body {
+                padding: 20px;
+            }
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 24px 40px -14px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Login overlay */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -40,18 +67,21 @@
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            padding: 16px;
         }
+
         .login-card {
             background: white;
             max-width: 480px;
-            width: 90%;
+            width: 100%;
             border-radius: 2.5rem;
-            padding: 2.5rem;
+            padding: 2rem 1.5rem;
             text-align: center;
             box-shadow: 0 25px 50px -12px black;
         }
+
         .login-header {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             background: linear-gradient(135deg, #136b1e, #259132);
             -webkit-background-clip: text;
@@ -59,6 +89,7 @@
             color: transparent;
             margin-bottom: 2rem;
         }
+
         .login-card input {
             width: 100%;
             padding: 0.9rem 1rem;
@@ -67,109 +98,99 @@
             border-radius: 2rem;
             font-size: 1rem;
         }
+
+        /* Buttons - touch friendly */
+        .btn, .btn-secondary, .update-area-btn, .edit-btn-card, .edit-record-btn {
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            touch-action: manipulation;
+        }
+
         .btn {
             background: linear-gradient(95deg, #1f682a, #156f1a);
             border: none;
             color: white;
-            font-weight: 700;
-            padding: 0.8rem 1.8rem;
+            padding: 12px 20px;
             border-radius: 3rem;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.6rem;
             font-size: 1rem;
-            transition: all 0.2s;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.03); }
+
         .btn-secondary {
             background: #eef3ea;
             color: #1f5a22;
             border: 1px solid #b8daa8;
-            padding: 0.6rem 1.2rem;
+            padding: 10px 16px;
             border-radius: 2rem;
-            font-weight: 600;
-            cursor: pointer;
         }
+
         .zone-pill {
             background: #ecf7e6;
             border: 1px solid #cde0c2;
-            padding: 0.4rem 1.4rem;
+            padding: 8px 16px;
             border-radius: 3rem;
             font-weight: 600;
             cursor: pointer;
             font-size: 0.85rem;
+            white-space: nowrap;
         }
-        .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; }
+
+        .zone-pill.active {
+            background: #198a2e;
+            color: white;
+            border-color: #198a2e;
+        }
+
+        /* Dashboard grid - responsive */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        .stat-card {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 1.2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            border: 1px solid #e2efda;
+
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
-        .stat-title {
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: #1b5e1f;
-            border-left: 5px solid #2e8b57;
-            padding-left: 0.8rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+
+        /* Tables with horizontal scroll on mobile */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -0.5rem;
+            padding: 0 0.5rem;
         }
-        .stage-progress-container { margin-bottom: 1rem; }
-        .stage-progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .stage-progress-bar-bg {
-            background: #e9f3e4;
-            border-radius: 1rem;
-            height: 12px;
-            overflow: hidden;
-        }
-        .stage-progress-fill {
-            background: linear-gradient(90deg, #2e8b57, #4cae4c);
-            height: 100%;
-            border-radius: 1rem;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .top-crops-table {
+
+        .top-crops-table, .data-table {
             width: 100%;
             border-collapse: collapse;
             border-radius: 1rem;
-            overflow: hidden;
+            min-width: 500px;
         }
-        .top-crops-table th {
+
+        .top-crops-table th, .data-table th {
             background: #2c5e2a;
             color: white;
             padding: 12px 8px;
             font-weight: 600;
             text-align: left;
+            white-space: nowrap;
         }
-        .top-crops-table td {
+
+        .top-crops-table td, .data-table td {
             padding: 10px 8px;
             border-bottom: 1px solid #e0efd4;
             vertical-align: middle;
         }
-        .top-crops-table tr:hover {
-            background: #f9fef5;
-        }
+
         .crop-progress {
-            width: 100px;
+            width: 80px;
             background: #e9f3e4;
             border-radius: 20px;
             height: 8px;
@@ -177,33 +198,28 @@
             display: inline-block;
             margin-left: 8px;
         }
+
         .crop-progress-bar {
             height: 100%;
             background: #2e8b57;
             border-radius: 20px;
+            width: 0%;
         }
-        .crop-icon-cell {
-            font-size: 1.3rem;
-            margin-right: 6px;
-            vertical-align: middle;
-        }
-        .live-dashboard-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #1b5e1f;
-            margin: 0 0 1rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px dashed #b8daa8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+
+        /* Crop records grid - responsive cards */
         .crop-records-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1.2rem;
             margin-top: 1rem;
         }
+
+        @media (min-width: 480px) {
+            .crop-records-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
         .record-card {
             background: #ffffff;
             border-radius: 1.5rem;
@@ -212,33 +228,194 @@
             border: 1px solid #e0f0d8;
             transition: all 0.2s;
         }
-        .record-card:hover { transform: translateY(-4px); box-shadow: 0 15px 25px rgba(0,0,0,0.1); }
+
         .record-header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
             border-bottom: 2px solid #eef4e6;
             padding-bottom: 0.6rem;
             margin-bottom: 0.6rem;
         }
-        .record-crop { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
-        .record-stage { background: #e8f0e4; padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; }
-        .record-detail { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; }
-        .record-area { font-weight: 800; color: #1f6e1f; background: #edf7e7; padding: 2px 10px; border-radius: 20px; }
-        .edit-btn-card {
-            background: #2c7a2a;
-            color: white;
-            border: none;
-            border-radius: 2rem;
-            padding: 0.3rem 1rem;
-            font-size: 0.7rem;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
+
+        .record-crop {
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .edit-btn-card:hover { background: #1a5e18; }
-        .grid-2col { display: grid; gap: 1rem; }
-        @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
+
+        .record-stage {
+            background: #e8f0e4;
+            padding: 0.2rem 0.7rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .record-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .record-area {
+            font-weight: 800;
+            color: #1f6e1f;
+            background: #edf7e7;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        /* Stage breakdown cards - responsive */
+        .stage-breakdown-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stage-crop-card {
+            background: linear-gradient(135deg, #ffffff, #fef7e0);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            transition: all 0.2s;
+            border: 1px solid #e0efd4;
+            flex: 1 1 200px;
+            min-width: 180px;
+        }
+
+        /* Modal - mobile friendly */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2100;
+            padding: 16px;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 950px;
+            animation: modalFadeIn 0.25s ease-out;
+            box-shadow: 0 30px 45px rgba(0,0,0,0.25);
+            margin: auto;
+            position: relative;
+        }
+
+        @media (max-width: 640px) {
+            .modal-container {
+                padding: 1rem;
+                max-height: 85vh;
+            }
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Monthly grid - responsive */
+        .update-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        @media (min-width: 640px) {
+            .update-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .month-card {
+            background: #f9fef7;
+            border-radius: 1rem;
+            padding: 0.6rem;
+            text-align: center;
+            border: 1px solid #d5e8ca;
+        }
+
+        .month-card input {
+            width: 100%;
+            margin-top: 0.3rem;
+            padding: 0.4rem;
+            border-radius: 1rem;
+            border: 1px solid #bddbab;
+            text-align: center;
+        }
+
+        /* Profile rows - responsive */
+        .profile-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .profile-row {
+                flex-direction: row;
+                align-items: center;
+                gap: 1rem;
+            }
+            .profile-row label {
+                min-width: 150px;
+            }
+        }
+
+        .profile-row input, .profile-row select {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid #cde0c2;
+            background: white;
+        }
+
+        /* Zone banner - wrap on mobile */
+        .zone-banner {
+            background: rgba(30, 70, 30, 0.08);
+            border-radius: 3rem;
+            padding: 0.4rem 1.2rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Header row wrap */
+        .header-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .header-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
         .toast-msg {
             position: fixed;
             bottom: 20px;
@@ -252,58 +429,97 @@
             transition: 0.3s;
             font-size: 0.85rem;
             white-space: nowrap;
+            max-width: 90%;
+            white-space: normal;
+            text-align: center;
         }
-        .toast-msg.show { transform: translateX(-50%) translateY(0); }
-        .hidden { display: none; }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
+
+        .toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .hidden {
             display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2100;
         }
-        .modal-container {
-            background: white;
-            max-width: 950px;
-            width: 90%;
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 1rem;
+            border: 1px solid #cde0c2;
+        }
+
+        .grid-2col {
+            display: grid;
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .grid-2col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .fa-spin-custom {
+            animation: fa-spin 1s infinite linear;
+        }
+
+        @keyframes fa-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .edit-btn-card, .edit-record-btn {
+            background: #2c7a2a;
+            color: white;
+            border: none;
             border-radius: 2rem;
-            padding: 1.5rem;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: modalFadeIn 0.25s ease-out;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            width: 100%;
+            margin-top: 10px;
         }
-        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-        .update-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin: 1rem 0; }
-        .month-card { background: #f9fef7; border-radius: 1rem; padding: 0.6rem; text-align: center; border: 1px solid #d5e8ca; }
-        .month-card input { width: 100%; margin-top: 0.3rem; padding: 0.4rem; border-radius: 1rem; border: 1px solid #bddbab; text-align: center; }
-        .profile-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .profile-row label { font-weight: 600; min-width: 150px; }
-        .profile-row input, .profile-row select { flex: 1; padding: 0.7rem 1rem; border-radius: 2rem; border: 1px solid #cde0c2; background: white; }
-        .update-area-btn { background: #2e7d64; color: white; border: none; border-radius: 2rem; padding: 0.5rem 1.2rem; cursor: pointer; font-weight: 600; }
-        .footer { text-align: center; font-size: 0.7rem; color: #2f5e2f; margin-top: 2rem; padding: 1rem; }
-        .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #2e6b2e; }
-        .btn-loading { pointer-events: none; opacity: 0.7; }
-        .fa-spin-custom { animation: fa-spin 1s infinite linear; }
-        @keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .stage-crop-card {
-            background: linear-gradient(135deg, #ffffff, #fef7e0);
-            border-radius: 1.5rem;
-            padding: 1rem;
-            transition: all 0.2s;
-            border: 1px solid #e0efd4;
+
+        .stage-progress-container {
+            margin-bottom: 1rem;
         }
-        .stage-crop-card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
-        .form-group input, .form-group select { width: 100%; padding: 0.6rem; border-radius: 1rem; border: 1px solid #cde0c2; }
-        .zone-banner { background: rgba(30, 70, 30, 0.08); border-radius: 3rem; padding: 0.4rem 1.2rem; display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .tomato-type-row { background: #f5fcee; border-radius: 1rem; padding: 0.6rem 1rem; margin-top: 0.5rem; border-left: 4px solid #f39c12; }
+
+        .stage-progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .stage-progress-bar-bg {
+            background: #e9f3e4;
+            border-radius: 1rem;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .stage-progress-fill {
+            background: linear-gradient(90deg, #2e8b57, #4cae4c);
+            height: 100%;
+            border-radius: 1rem;
+            width: 0%;
+        }
     </style>
 </head>
 <body>
@@ -320,15 +536,19 @@
 
     <div id="mainApp" style="display: none;">
         <div class="glass-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div class="header-flex">
                 <div>
-                    <h1 style="font-size: 1.7rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;">
-                        <i class="fas fa-chart-line"></i> Hydroponic Data Tracker | Real Time Insights
+                    <h1 style="font-size: 1.5rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;">
+                        <i class="fas fa-chart-line"></i> Hydroponic Data Tracker
                     </h1>
                     <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics</div>
                 </div>
-                <div class="zone-banner"><i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong><div id="zonePillsHeader" style="display: flex; gap: 8px;"></div></div>
-                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span><button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
+                <div class="zone-banner">
+                    <i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong>
+                    <div id="zonePillsHeader" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
+                <button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
             </div>
         </div>
 
@@ -343,9 +563,17 @@
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         <div class="dashboard-grid">
             <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
-            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div id="cropAndVarietiesContainer"></div></div>
+            <div class="stat-card">
+                <div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div>
+                <div class="table-wrapper">
+                    <div id="cropAndVarietiesContainer"></div>
+                </div>
+            </div>
         </div>
-        <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer"></div></div>
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div>
+            <div id="stageByCropContainer" class="stage-breakdown-wrapper"></div>
+        </div>
 
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%);">
@@ -384,7 +612,7 @@
             <h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4>
             <div id="editMonthlyGrid" class="update-grid"></div>
         </div>
-        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem; flex-wrap: wrap;">
             <button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
             <button id="saveEditBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button>
         </div>
@@ -395,7 +623,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    // IMPORTANT: Replace this URL with your deployed Google Apps Script web app URL
+    // Replace this URL with your deployed Google Apps Script web app URL
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1yc7tv27qZbIVVj10uoGA1lVe2aQfbjqRf2jgJwXn-Id676V-32hXUzuEiEvvDj5VTg/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -470,7 +698,10 @@
         for (let s of STAGES) {
             let area = areaByStage[s] || 0;
             let percent = (area / maxArea) * 100;
-            html += `<div class="stage-progress-container"><div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div><div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div></div>`;
+            html += `<div class="stage-progress-container">
+                        <div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div>
+                        <div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div>
+                    </div>`;
         }
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
@@ -503,13 +734,12 @@
             }
             cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
-            let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.2rem;">';
+            let stageCropHtml = '';
             const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
             for (let crop of targetCrops) {
                 let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {};
-                stageCropHtml += `<div class="stage-crop-card" style="flex:1; min-width:200px;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
+                stageCropHtml += `<div class="stage-crop-card"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
             }
-            stageCropHtml += '</div>';
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
@@ -699,53 +929,34 @@
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
 
-    // IMPROVED: auto-fill locality from user's most recent record
     async function autoFillProfileFromRecords(username) {
         try {
-            // 1. Try to get the latest record for this user
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
             if (data.rows && data.rows.length > 0) {
                 const headers = data.headers.map(h => h.toString().toLowerCase());
                 const getCol = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
                 const latest = data.rows[0];
-                
-                // Locality column detection (case-insensitive)
-                const localityCol = getCol(['locality', 'location', 'address']);
+                const localityCol = getCol(['locality', 'location']);
                 if (localityCol !== -1 && latest[localityCol]) {
                     const localityValue = latest[localityCol];
-                    // Wait for dropdown to be populated
                     setTimeout(() => {
                         if (localitySelect.querySelector(`option[value="${localityValue}"]`)) {
                             localitySelect.value = localityValue;
-                        } else {
-                            // If not in dropdown, add it temporarily? Better to just show message
-                            console.warn(`Locality "${localityValue}" not in current zone dropdown`);
                         }
                     }, 200);
                 }
-                
-                // Zone column detection
                 const zoneCol = getCol(['zone']);
                 if (zoneCol !== -1 && latest[zoneCol] && ZONE_LOCALITIES[latest[zoneCol]]) {
                     setZone(latest[zoneCol]);
                 }
-                
-                // Total area column (from the record's individual area? No, from profile sheet)
-                // Try to get total area from profile sheet first
                 const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
                 if (profRes.ok) {
                     const prof = await profRes.json();
                     if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) {
                         totalAreaInput.value = parseFloat(prof.totalArea);
                     }
-                } else {
-                    // Fallback: try to find total area in the record (but record has individual area)
-                    // Not ideal, but we'll leave it.
                 }
-            } else {
-                // No records found
-                console.warn("No records found for user");
             }
         } catch(e) { console.warn("Auto-fill failed", e); }
     }
