@@ -274,7 +274,7 @@
                     <h1 style="font-size: 1.7rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;">
                         <i class="fas fa-chart-line"></i> Hydroponic Data Tracker | Real Time Insights
                     </h1>
-                    <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics </div>
+                    <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics</div>
                 </div>
                 <div class="zone-banner">
                     <i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong>
@@ -315,7 +315,7 @@
         </div>
 
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
-            <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div>
+            <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records (Individual Greenhouse Area - Column J)</div>
             <div id="cropRecordsGrid" class="crop-records-grid"></div>
         </div>
     </div>
@@ -352,7 +352,10 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLr6U10BzZgOdcprjiawgsAP5Zh-Tk8_eIJTZVH_kGd9lJSKt5XWd7T3ujl_cIdVh2/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
-    const EXTENDED_CROPS = ["Cabbage","Cauliflower","Okra","English Cucumber","Sweet Pepper","Tomato","Lettuce","Melon","Chillies"];
+    // Extended crop list in alphabetical order
+    const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
+    // Updated production system options
+    const PROD_SYSTEMS = ["Cocopeat", "Rockwool", "NFT", "DWC", "Aquaponic", "Aggregates"];
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
     
     let currentZone = "E2";
@@ -452,7 +455,6 @@
             cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
             
-            // Enhanced Stage Breakdown with crop icons
             let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.2rem;">';
             const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
             for (let crop of targetCrops) {
@@ -476,10 +478,12 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const headers = data.headers.map(h => h.toString().toLowerCase());
+            // Enhanced column matching for area (Column J)
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
             const stageIdx = getColIndex(['stage']);
             const cropIdx = getColIndex(['crop']);
-            const areaIdx = getColIndex(['area', 'area (m²)']);
+            // Prioritize exact column J header variations
+            const areaIdx = getColIndex(['area (m²)', 'area', 'greenhouse area', 'm²']);
             const varietyIdx = getColIndex(['variety']);
             const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']);
             const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']);
@@ -493,6 +497,7 @@
                 if (!row[cropIdx]) continue;
                 const cropVal = row[cropIdx];
                 const stageVal = (row[stageIdx] || "").toString();
+                // Individual greenhouse area from Column J
                 const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
                 const varietyVal = row[varietyIdx] || "—";
                 const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
@@ -506,7 +511,7 @@
                         <div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div>
                         <div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div>
                     </div>
-                    <div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
+                    <div class="record-detail"><span>📐 Individual Area (Col J):</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
                     <div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div>
                     <div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div>
                     <div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div>
@@ -577,7 +582,7 @@
             const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const result = await response.json();
             if (result.success) {
-                toast("✅ Record updated! Area & monthly saved.");
+                toast("✅ Record updated! Individual area (Col J) & monthly saved.");
                 editModal.style.display = 'none';
                 document.body.style.overflow = '';
                 await loadUserPreviousData(username);
@@ -615,7 +620,6 @@
 
     async function autoFillProfileFromRecords(username) {
         try {
-            // First try dedicated profile endpoint
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
             if (profRes.ok) {
                 const prof = await profRes.json();
@@ -625,7 +629,6 @@
                 return;
             }
         } catch(e) { console.warn("Profile endpoint fallback"); }
-        // Fallback: get from latest record
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
@@ -656,17 +659,17 @@
             await loadUserPreviousData(user);
             await loadDashboard();
             await autoFillProfileFromRecords(user);
-            toast("📊 Dashboard & records refreshed");
+            toast("📊 Dashboard & records refreshed (Individual greenhouse area shown)");
         } else { toast("No active user", true); }
         refreshBtn.innerHTML = originalText;
         refreshBtn.classList.remove('btn-loading');
     }
 
-    // Greenhouse form (simplified but functional)
+    // Greenhouse form with updated crop list (alphabetical) and production systems
     function renderActiveForm() {
         const cropOptions = EXTENDED_CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
-        const prodSysOptions = ["Cocopeat","Rockwool","NFT","DWC","Aeroponics"].map(s => `<option value="${s}">${s}</option>`).join('');
+        const prodSysOptions = PROD_SYSTEMS.map(s => `<option value="${s}">${s}</option>`).join('');
         document.getElementById('activeGreenhouseForm').innerHTML = `
             <div class="grid-2col">
                 <div><label><i class="fas fa-seedling"></i> Crop *</label><select id="cropSelect">${cropOptions}</select></div>
