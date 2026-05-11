@@ -146,7 +146,6 @@
             width: 0%;
             transition: width 0.3s ease;
         }
-        /* Fixed table styling */
         .top-crops-table {
             width: 100%;
             border-collapse: collapse;
@@ -337,7 +336,7 @@
             <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" readonly style="background:#f4f9f0;"></div>
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
-            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Data</button></div>
+            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
         </div>
 
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
@@ -360,7 +359,7 @@
         </div>
 
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
-            <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div>
+            <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records (Individual Area from Column J)</div>
             <div id="cropRecordsGrid" class="crop-records-grid"></div>
         </div>
     </div>
@@ -487,8 +486,8 @@
                     <td><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td>
                     <td><strong>${area.toFixed(1)}</strong></td>
                     <td>${topVariety.variety}</td>
-                    <td>${topVariety.area.toFixed(1)}</td>
-                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td>
+                    <td>${topVariety.area.toFixed(1)}</div></td>
+                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td>
                 </tr>`;
             }
             cropTable += '</tbody></table>';
@@ -589,7 +588,6 @@
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
             const username = growerName.value.trim();
             
-            // Build form-urlencoded payload (reliable for Apps Script)
             const formData = new URLSearchParams();
             formData.append('action', 'updateFullRecord');
             formData.append('username', username);
