@@ -146,6 +146,58 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+        /* Enhanced Top Crops Table */
+        .top-crops-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .top-crops-table th {
+            background: #2c5e2a;
+            color: white;
+            padding: 12px 8px;
+            font-weight: 600;
+            text-align: left;
+        }
+        .top-crops-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0efd4;
+        }
+        .top-crops-table tr:hover {
+            background: #f9fef5;
+        }
+        .crop-progress {
+            width: 100px;
+            background: #e9f3e4;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .crop-progress-bar {
+            height: 100%;
+            background: #2e8b57;
+            border-radius: 20px;
+            width: 0%;
+        }
+        .crop-icon-cell {
+            font-size: 1.3rem;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        .live-dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1b5e1f;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px dashed #b8daa8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .crop-records-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -236,7 +288,6 @@
         .update-area-btn { background: #2e7d64; color: white; border: none; border-radius: 2rem; padding: 0.5rem 1.2rem; cursor: pointer; font-weight: 600; }
         .footer { text-align: center; font-size: 0.7rem; color: #2f5e2f; margin-top: 2rem; padding: 1rem; }
         .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #2e6b2e; }
-        .crop-icon-small { font-size: 1.2rem; }
         .btn-loading { pointer-events: none; opacity: 0.7; }
         .fa-spin-custom { animation: fa-spin 1s infinite linear; }
         @keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -296,6 +347,11 @@
             </div>
         </div>
 
+        <!-- LIVE DASHBOARD TITLE -->
+        <div class="live-dashboard-title">
+            <i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD
+        </div>
+
         <div class="dashboard-grid">
             <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
             <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div id="cropAndVarietiesContainer"></div></div>
@@ -322,6 +378,7 @@
     <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker</div>
 </div>
 
+<!-- Edit Record Modal -->
 <div id="editRecordModal" class="modal-overlay">
     <div class="modal-container">
         <h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3>
@@ -352,9 +409,7 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLr6U10BzZgOdcprjiawgsAP5Zh-Tk8_eIJTZVH_kGd9lJSKt5XWd7T3ujl_cIdVh2/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
-    // Extended crop list in alphabetical order
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
-    // Updated production system options
     const PROD_SYSTEMS = ["Cocopeat", "Rockwool", "NFT", "DWC", "Aquaponic", "Aggregates"];
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
     
@@ -441,8 +496,19 @@
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
+            
+            // Enhanced Top Crop Areas table with visual progress bars
             const targetCrops = ["Tomato","Sweet Pepper","English Cucumber"];
-            let cropTable = '<table class="data-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th></tr></thead><tbody>';
+            let maxArea = 0;
+            const cropAreas = [];
+            for (let crop of targetCrops) {
+                let cropEntry = (data.areaByCrop || []).find(c => c.crop === crop);
+                let area = cropEntry ? cropEntry.area : 0;
+                cropAreas.push({ crop, area });
+                if (area > maxArea) maxArea = area;
+            }
+            let cropTable = `<table class="top-crops-table">
+                <thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></tr></thead><tbody>`;
             for (let crop of targetCrops) {
                 let cropEntry = (data.areaByCrop || []).find(c => c.crop === crop);
                 let area = cropEntry ? cropEntry.area : 0;
@@ -450,7 +516,14 @@
                 if (crop === 'Tomato' && data.topVarieties?.tomato?.length) topVariety = data.topVarieties.tomato[0];
                 else if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
                 else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
-                cropTable += `<tr><td><i class="fas fa-seedling"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
+                const percent = maxArea > 0 ? (area / maxArea) * 100 : 0;
+                cropTable += `<tr>
+                    <td><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td>
+                    <td><strong>${area.toFixed(1)}</strong></td>
+                    <td>${topVariety.variety}</td>
+                    <td>${topVariety.area.toFixed(1)}</td>
+                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td>
+                </tr>`;
             }
             cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
@@ -478,11 +551,9 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const headers = data.headers.map(h => h.toString().toLowerCase());
-            // Enhanced column matching for area (Column J)
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
             const stageIdx = getColIndex(['stage']);
             const cropIdx = getColIndex(['crop']);
-            // Prioritize exact column J header variations
             const areaIdx = getColIndex(['area (m²)', 'area', 'greenhouse area', 'm²']);
             const varietyIdx = getColIndex(['variety']);
             const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']);
@@ -497,7 +568,6 @@
                 if (!row[cropIdx]) continue;
                 const cropVal = row[cropIdx];
                 const stageVal = (row[stageIdx] || "").toString();
-                // Individual greenhouse area from Column J
                 const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
                 const varietyVal = row[varietyIdx] || "—";
                 const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
@@ -623,12 +693,25 @@
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
             if (profRes.ok) {
                 const prof = await profRes.json();
-                if (prof.locality && localitySelect.querySelector(`option[value="${prof.locality}"]`)) localitySelect.value = prof.locality;
+                if (prof.locality && localitySelect.querySelector(`option[value="${prof.locality}"]`)) {
+                    localitySelect.value = prof.locality;
+                } else if (prof.locality) {
+                    // If locality not in dropdown (different zone), we still try to set
+                    const optionExists = Array.from(localitySelect.options).some(opt => opt.value === prof.locality);
+                    if (!optionExists && prof.locality) {
+                        const newOpt = document.createElement('option');
+                        newOpt.value = prof.locality;
+                        newOpt.textContent = prof.locality;
+                        localitySelect.appendChild(newOpt);
+                        localitySelect.value = prof.locality;
+                    }
+                }
                 if (prof.zone && ZONE_LOCALITIES[prof.zone]) setZone(prof.zone);
                 if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalAreaInput.value = parseFloat(prof.totalArea);
                 return;
             }
         } catch(e) { console.warn("Profile endpoint fallback"); }
+        // Fallback: get from latest record
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
@@ -665,7 +748,6 @@
         refreshBtn.classList.remove('btn-loading');
     }
 
-    // Greenhouse form with updated crop list (alphabetical) and production systems
     function renderActiveForm() {
         const cropOptions = EXTENDED_CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
