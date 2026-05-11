@@ -393,8 +393,8 @@
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
-    // ==================== FRONT-END ====================
-    // Replace this URL with your deployed Google Apps Script web app URL
+    // ==================== CONFIGURATION ====================
+    // IMPORTANT: Replace this URL with your deployed Google Apps Script web app URL
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXGKgITO2nU1Xic8uwGcR54OwpzAq75X63fu6VJojpkmk5HyJoIUAFkzdMT66T3dymVQ/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -492,7 +492,7 @@
                     <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</div></td>
                 </tr>`;
             }
-            cropTable += '</tbody></table>';
+            cropTable += '</tbody><tr>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
             let stageCropHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1.2rem;">';
             const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
@@ -511,25 +511,56 @@
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const headers = data.headers.map(h => h.toString().toLowerCase());
+            
+            // ----- FIXED AREA COLUMN DETECTION -----
+            // The individual greenhouse area is stored in the column that exactly matches "area (m²)" or similar
+            // We look for exact or partial matches, and if multiple, we prioritize the one that is NOT "total area"
+            let areaIdx = -1;
+            for (let i = 0; i < headers.length; i++) {
+                const h = headers[i];
+                if ((h === 'area (m²)' || h === 'area (m2)' || h === 'area' || h.includes('area (m²)')) && !h.includes('total')) {
+                    areaIdx = i;
+                    break;
+                }
+            }
+            // Fallback: if not found, try to find any column with 'area' but exclude 'total'
+            if (areaIdx === -1) {
+                for (let i = 0; i < headers.length; i++) {
+                    const h = headers[i];
+                    if (h.includes('area') && !h.includes('total')) {
+                        areaIdx = i;
+                        break;
+                    }
+                }
+            }
+            // Final fallback: column index 9 (known position after timestamp)
+            if (areaIdx === -1 && headers.length > 9) areaIdx = 9;
+            
+            console.log("Area column index detected:", areaIdx, "header:", headers[areaIdx]);
+            
             const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
             const stageIdx = getColIndex(['stage']);
             const cropIdx = getColIndex(['crop']);
-            const areaIdx = getColIndex(['area (m²)', 'area', 'greenhouse area', 'm²']);
             const varietyIdx = getColIndex(['variety']);
             const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']);
             const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']);
             const harvestMonthsIdx = getColIndex(['harvest months']);
             const timestampIdx = getColIndex(['timestamp', 'date']);
             const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
+            
             if (stageIdx === -1) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+            
             cropRecordsGrid.innerHTML = '';
             for (let row of data.rows) {
                 if (!row[cropIdx]) continue;
-                const cropVal = row[cropIdx], stageVal = (row[stageIdx] || "").toString();
-                const areaVal = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
-                const varietyVal = row[varietyIdx] || "—", weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
+                const cropVal = row[cropIdx];
+                const stageVal = (row[stageIdx] || "").toString();
+                const areaVal = (areaIdx !== -1 && areaIdx < row.length) ? parseFloat(row[areaIdx]) || 0 : 0;
+                const varietyVal = row[varietyIdx] || "—";
+                const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
                 const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg";
                 const harvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
+                
                 const card = document.createElement('div'); card.className = 'record-card';
                 card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div><div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div><div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
                 const btn = card.querySelector('.edit-btn-card');
@@ -548,7 +579,7 @@
     function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) {
         document.getElementById('editCrop').value = row[cropIdx] || "";
         document.getElementById('editStage').value = (row[stageIdx] || "Seedling").toString();
-        document.getElementById('editArea').value = areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0;
+        document.getElementById('editArea').value = (areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0);
         document.getElementById('editVariety').value = row[varietyIdx] || "";
         document.getElementById('editWeeklyYield').value = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
         document.getElementById('editUnit').value = (weeklyUnitIdx !== -1 && row[weeklyUnitIdx]) ? row[weeklyUnitIdx] : "kg";
@@ -591,7 +622,7 @@
             const username = growerName.value.trim();
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
             
-            // 1. Update main record (stage, area, variety, weekly yield, unit, harvest months)
+            // Update main record (stage, area, variety, weekly yield, unit, harvest months)
             const mainPayload = {
                 action: 'updateFullRecord',
                 username: username,
@@ -610,7 +641,7 @@
                 body: JSON.stringify(mainPayload)
             });
             
-            // 2. Log each non-zero monthly harvest to the CropUpdates sheet
+            // Log each non-zero monthly harvest to CropUpdates sheet
             for (let i = 0; i < 12; i++) {
                 const harvestValue = newMonthly[i];
                 if (harvestValue !== 0 && !isNaN(harvestValue)) {
@@ -661,7 +692,7 @@
         try {
             const payload = { action: 'updateProfile', username, locality, totalArea, zone: currentZone };
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            toast("✅ Total greenhouse area update sent to Google Sheet 1. Refresh to see changes.");
+            toast("✅ Total greenhouse area update sent. Refresh to see changes.");
             await autoFillProfileFromRecords(username);
         } catch(e) { toast("Error: " + e.message, true); } 
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
@@ -703,7 +734,7 @@
             await loadUserPreviousData(user);
             await loadDashboard();
             await autoFillProfileFromRecords(user);
-            toast("📊 Dashboard & records refreshed from Google Sheet 1");
+            toast("📊 Dashboard & records refreshed");
         } else { toast("No active user", true); }
         refreshBtn.innerHTML = originalText;
         refreshBtn.classList.remove('btn-loading');
