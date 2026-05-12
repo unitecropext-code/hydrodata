@@ -188,14 +188,12 @@
             flex: 1 1 200px;
             min-width: 180px;
         }
+        /* Crop records grid – equal height cards and aligned button */
         .crop-records-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.2rem;
-            margin-top: 1rem;
-        }
-        @media (min-width: 480px) {
-            .crop-records-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+            align-items: stretch;
         }
         .record-card {
             background: #ffffff;
@@ -203,6 +201,69 @@
             padding: 1rem;
             box-shadow: 0 6px 14px rgba(0,0,0,0.05);
             border: 1px solid #e0f0d8;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .record-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+        }
+        .record-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #eef4e6;
+            padding-bottom: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+        .record-crop {
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .record-stage {
+            background: #e8f0e4;
+            padding: 0.2rem 0.7rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .record-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .record-area {
+            font-weight: 800;
+            color: #1f6e1f;
+            background: #edf7e7;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .edit-btn-card {
+            background: #2c7a2a;
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            width: 100%;
+            margin-top: auto;   /* pushes button to bottom */
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .edit-btn-card:hover {
+            background: #1e5a1e;
+            transform: translateY(-2px);
         }
         .profile-row {
             display: flex;
@@ -339,7 +400,6 @@
         .toast-msg.show { transform: translateX(-50%) translateY(0); }
         .hidden { display: none; }
         .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #2e6b2e; }
-        .edit-btn-card { background: #2c7a2a; color: white; border: none; border-radius: 2rem; padding: 8px 12px; font-size: 0.8rem; width: 100%; margin-top: 10px; cursor: pointer; }
         .fa-spin-custom { animation: fa-spin 1s infinite linear; }
         @keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .btn-loading { pointer-events: none; opacity: 0.7; }
@@ -395,13 +455,12 @@
             <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" readonly style="background:#f4f9f0;"></div>
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
-            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
+            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details </button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
         </div>
 
         <!-- REDESIGNED LIVE DASHBOARD -->
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         <div class="dashboard-grid">
-            <!-- Area by Stage (table) -->
             <div class="glass-card" style="padding: 1rem;">
                 <div class="stat-title"><i class="fas fa-chart-simple"></i> Area by Stage (m²)</div>
                 <div style="overflow-x: auto;">
@@ -411,7 +470,6 @@
                     </table>
                 </div>
             </div>
-            <!-- Top Crop Areas -->
             <div class="glass-card" style="padding: 1rem;">
                 <div class="stat-title"><i class="fas fa-table-list"></i> Top Crop Areas</div>
                 <div><strong>🍅 Top 5 Tomato Varieties</strong></div>
@@ -431,7 +489,6 @@
             </div>
         </div>
 
-        <!-- Trend Trajectory Chart -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-line"></i> 📈 Crop Development Trajectory (Area by Stage)</div>
             <div class="chart-container">
@@ -439,13 +496,11 @@
             </div>
         </div>
 
-        <!-- Stage Breakdown per Crop -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-layer-group"></i> Stage Breakdown per Crop</div>
             <div id="stageByCropContainer" class="stage-breakdown-wrapper"></div>
         </div>
 
-        <!-- Greenhouse registration (interactive) -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%);">
                 <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
@@ -458,7 +513,6 @@
             </div>
         </div>
 
-        <!-- Previous crop records -->
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
             <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div>
             <div id="cropRecordsGrid" class="crop-records-grid"></div>
@@ -496,7 +550,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRMr3WudofMpvLDj5Z35QxZQsgxGPDY4rFmIhtyaP4VFpXHjmsc_7sE00-o-Z06F6A/exec';   // <--- REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJiXfr_QpjNM4bnoYkN7s6hHrJqMcSP8K-YEEqGzlRg5y8xwlo1qHkLPfRlSDbRK1ubw/exec';   // <--- REPLACE WITH YOUR WEB APP URL
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -562,12 +616,11 @@
         for (let s of STAGES) {
             let area = areaByStage[s] || 0;
             let percent = (area / maxArea) * 100;
-            let row = `<tr><td><span class="badge-stage">${s}</span></td><td><strong>${area.toFixed(1)}</strong></td><td><div class="progress-bar-bg"><div class="progress-fill" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td></tr>`;
+            let row = `<tr><tr><span class="badge-stage">${s}</span></td><td><strong>${area.toFixed(1)}</strong></td><td><div class="progress-bar-bg"><div class="progress-fill" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td></tr>`;
             tbody.innerHTML += row;
         }
     }
     function renderTopCropTables(data) {
-        // Tomato top 5
         let tomatoHtml = '';
         if (data.topVarieties?.tomato?.length) {
             data.topVarieties.tomato.slice(0,5).forEach(v => {
@@ -575,7 +628,6 @@
             });
         } else { tomatoHtml = '<tr><td colspan="2">No tomato data</td></tr>'; }
         document.querySelector('#tomatoVarietiesTable tbody').innerHTML = tomatoHtml;
-        // Other crops
         const otherCrops = ["Sweet Pepper", "English Cucumber"];
         let otherHtml = '';
         for (let crop of otherCrops) {
@@ -584,7 +636,12 @@
             let topVariety = { variety: '—', area: 0 };
             if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
             else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
-            otherHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
+            otherHtml += `<tr>
+                <td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td>
+                <td><strong>${area.toFixed(1)}</strong></td>
+                <td>${topVariety.variety}</td>
+                <td>${topVariety.area.toFixed(1)}</td>
+            </tr>`;
         }
         document.querySelector('#otherCropsTable tbody').innerHTML = otherHtml;
     }
@@ -620,7 +677,6 @@
             renderAreaByStageTable(data.areaByStageTotal || {});
             renderTopCropTables(data);
             renderTrendChart(data.areaByStageByCrop || {});
-            // Stage breakdown per crop
             let stageCropHtml = '';
             const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
             for (let crop of ["Tomato","Sweet Pepper","English Cucumber"]) {
@@ -631,7 +687,7 @@
         } catch(e) { console.error(e); toast("Stats error", true); }
     }
 
-    // Load user previous records (crop records)
+    // Load user previous records
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -667,7 +723,12 @@
                 const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg";
                 const harvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
                 const card = document.createElement('div'); card.className = 'record-card';
-                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div><div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div><div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
+                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div><div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div></div>
+                    <div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
+                    <div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div>
+                    <div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div>
+                    <div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div>
+                    <button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
                 const btn = card.querySelector('.edit-btn-card');
                 btn.addEventListener('click', () => {
                     const rec = JSON.parse(btn.getAttribute('data-record'));
@@ -817,7 +878,7 @@
         refreshBtn.classList.remove('btn-loading');
     }
 
-    // Greenhouse form rendering
+    // Greenhouse form
     function renderActiveForm() {
         const cropOptions = EXTENDED_CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
         const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
