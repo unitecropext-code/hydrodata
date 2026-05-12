@@ -3,29 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Real-Time Insights</title>
+    <title>Hydroponic Smart Tracker | Admin & Grower</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%);
             min-height: 100vh;
             padding: 16px;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
+        .container { max-width: 1400px; margin: 0 auto; width: 100%; }
         .glass-card {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(4px);
@@ -35,391 +24,61 @@
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(70, 130, 50, 0.25);
         }
-
-        @media (min-width: 768px) {
-            .glass-card {
-                padding: 1.5rem 2rem;
-            }
-            body {
-                padding: 20px;
-            }
-        }
-
-        /* Login overlay */
+        @media (min-width: 768px) { .glass-card { padding: 1.5rem 2rem; } body { padding: 20px; } }
         .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 16px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 16px;
         }
-        .login-card {
-            background: white;
-            max-width: 480px;
-            width: 100%;
-            border-radius: 2.5rem;
-            padding: 2rem 1.5rem;
-            text-align: center;
-        }
-        .login-header {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #136b1e, #259132);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 2rem;
-        }
-        .login-card input {
-            width: 100%;
-            padding: 0.9rem 1rem;
-            margin-bottom: 1.2rem;
-            border: 1px solid #cde0c2;
-            border-radius: 2rem;
-            font-size: 1rem;
-        }
-
-        .btn, .btn-secondary, .update-area-btn, .edit-btn-card {
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 600;
-            border: none;
-        }
-        .btn {
-            background: linear-gradient(95deg, #1f682a, #156f1a);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 3rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 1rem;
-        }
-        .btn-secondary {
-            background: #eef3ea;
-            color: #1f5a22;
-            border: 1px solid #b8daa8;
-            padding: 10px 16px;
-            border-radius: 2rem;
-        }
-        .update-area-btn {
-            background: #2e7d64;
-            color: white;
-            border-radius: 2rem;
-            padding: 0.5rem 1.2rem;
-            margin-left: 0.5rem;
-        }
-        .zone-pill {
-            background: #ecf7e6;
-            border: 1px solid #cde0c2;
-            padding: 8px 16px;
-            border-radius: 3rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-        .zone-pill.active {
-            background: #198a2e;
-            color: white;
-            border-color: #198a2e;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        @media (min-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            width: 100%;
-        }
-        .top-crops-table, .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 1rem;
-            min-width: 400px;
-        }
-        .top-crops-table th, .data-table th {
-            background: #2c5e2a;
-            color: white;
-            padding: 12px 8px;
-            text-align: left;
-            white-space: nowrap;
-        }
-        .top-crops-table td, .data-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #e0efd4;
-            vertical-align: middle;
-        }
-
-        .stage-breakdown-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
-        .stage-crop-card {
-            background: linear-gradient(135deg, #ffffff, #fef7e0);
-            border-radius: 1.5rem;
-            padding: 1rem;
-            border: 1px solid #e0efd4;
-            flex: 1 1 200px;
-            min-width: 180px;
-        }
-
-        .crop-records-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.2rem;
-            margin-top: 1rem;
-        }
-        @media (min-width: 480px) {
-            .crop-records-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-        }
-        .record-card {
-            background: #ffffff;
-            border-radius: 1.5rem;
-            padding: 1rem;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-            border: 1px solid #e0f0d8;
-        }
-        .record-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 2px solid #eef4e6;
-            padding-bottom: 0.6rem;
-            margin-bottom: 0.6rem;
-        }
-        .record-crop {
-            font-weight: 800;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .record-stage {
-            background: #e8f0e4;
-            padding: 0.2rem 0.7rem;
-            border-radius: 2rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .record-detail {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 0.85rem;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .record-area {
-            font-weight: 800;
-            color: #1f6e1f;
-            background: #edf7e7;
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
-
-        .profile-row {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        @media (min-width: 640px) {
-            .profile-row {
-                flex-direction: row;
-                align-items: center;
-                gap: 1rem;
-            }
-            .profile-row label {
-                min-width: 150px;
-            }
-        }
-        .profile-row input, .profile-row select {
-            flex: 1;
-            padding: 0.7rem 1rem;
-            border-radius: 2rem;
-            border: 1px solid #cde0c2;
-            background: white;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2100;
-            padding: 16px;
-        }
-        .modal-container {
-            background: white;
-            border-radius: 2rem;
-            padding: 1.5rem;
-            max-height: 90vh;
-            overflow-y: auto;
-            width: 100%;
-            max-width: 950px;
-            animation: modalFadeIn 0.25s ease-out;
-            margin: auto;
-        }
-        @media (max-width: 640px) {
-            .modal-container {
-                padding: 1rem;
-            }
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .update-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-        @media (min-width: 640px) {
-            .update-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        .month-card {
-            background: #f9fef7;
-            border-radius: 1rem;
-            padding: 0.6rem;
-            text-align: center;
-            border: 1px solid #d5e8ca;
-        }
-        .month-card input {
-            width: 100%;
-            margin-top: 0.3rem;
-            padding: 0.4rem;
-            border-radius: 1rem;
-            border: 1px solid #bddbab;
-            text-align: center;
-        }
-
-        .header-flex {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        @media (min-width: 768px) {
-            .header-flex {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        .zone-banner {
-            background: rgba(30, 70, 30, 0.08);
-            border-radius: 3rem;
-            padding: 0.4rem 1.2rem;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .stage-progress-container {
-            margin-bottom: 1rem;
-        }
-        .stage-progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .stage-progress-bar-bg {
-            background: #e9f3e4;
-            border-radius: 1rem;
-            height: 12px;
-            overflow: hidden;
-        }
-        .stage-progress-fill {
-            background: linear-gradient(90deg, #2e8b57, #4cae4c);
-            height: 100%;
-            border-radius: 1rem;
-            width: 0%;
-        }
-
-        .stat-title {
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: #1b5e1f;
-            border-left: 5px solid #2e8b57;
-            padding-left: 0.8rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .live-dashboard-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #1b5e1f;
-            margin: 0 0 1rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px dashed #b8daa8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .grid-2col {
-            display: grid;
-            gap: 1rem;
-        }
-        @media (min-width: 640px) {
-            .grid-2col {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        .toast-msg {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #1f3120;
-            color: white;
-            padding: 0.7rem 1.5rem;
-            border-radius: 3rem;
-            z-index: 1100;
-            transition: 0.3s;
-            font-size: 0.85rem;
-            text-align: center;
-            max-width: 90%;
-        }
-        .toast-msg.show {
-            transform: translateX(-50%) translateY(0);
-        }
+        .login-card { background: white; max-width: 480px; width: 100%; border-radius: 2.5rem; padding: 2rem 1.5rem; text-align: center; }
+        .login-header { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #136b1e, #259132); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 2rem; }
+        .login-card input { width: 100%; padding: 0.9rem 1rem; margin-bottom: 1.2rem; border: 1px solid #cde0c2; border-radius: 2rem; font-size: 1rem; }
+        .btn, .btn-secondary, .update-area-btn, .edit-btn-card { cursor: pointer; transition: all 0.2s; font-weight: 600; border: none; }
+        .btn { background: linear-gradient(95deg, #1f682a, #156f1a); color: white; padding: 12px 20px; border-radius: 3rem; display: inline-flex; align-items: center; gap: 0.6rem; font-size: 1rem; }
+        .btn-secondary { background: #eef3ea; color: #1f5a22; border: 1px solid #b8daa8; padding: 10px 16px; border-radius: 2rem; }
+        .update-area-btn { background: #2e7d64; color: white; border-radius: 2rem; padding: 0.5rem 1.2rem; margin-left: 0.5rem; }
+        .zone-pill { background: #ecf7e6; border: 1px solid #cde0c2; padding: 8px 16px; border-radius: 3rem; font-weight: 600; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
+        .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+        .top-crops-table, .data-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
+        .top-crops-table th, .data-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
+        .top-crops-table td, .data-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
+        .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
+        .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
+        .crop-records-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 1rem; }
+        @media (min-width: 480px) { .crop-records-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+        .record-card { background: #ffffff; border-radius: 1.5rem; padding: 1rem; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #e0f0d8; }
+        .record-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 2px solid #eef4e6; padding-bottom: 0.6rem; margin-bottom: 0.6rem; }
+        .record-crop { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .record-stage { background: #e8f0e4; padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; }
+        .record-detail { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; flex-wrap: wrap; gap: 8px; }
+        .record-area { font-weight: 800; color: #1f6e1f; background: #edf7e7; padding: 2px 10px; border-radius: 20px; }
+        .profile-row { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+        @media (min-width: 640px) { .profile-row { flex-direction: row; align-items: center; gap: 1rem; } .profile-row label { min-width: 150px; } }
+        .profile-row input, .profile-row select { flex: 1; padding: 0.7rem 1rem; border-radius: 2rem; border: 1px solid #cde0c2; background: white; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2100; padding: 16px; }
+        .modal-container { background: white; border-radius: 2rem; padding: 1.5rem; max-height: 90vh; overflow-y: auto; width: 100%; max-width: 950px; animation: modalFadeIn 0.25s ease-out; margin: auto; }
+        @media (max-width: 640px) { .modal-container { padding: 1rem; } }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        .update-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin: 1rem 0; }
+        @media (min-width: 640px) { .update-grid { grid-template-columns: repeat(4, 1fr); } }
+        .month-card { background: #f9fef7; border-radius: 1rem; padding: 0.6rem; text-align: center; border: 1px solid #d5e8ca; }
+        .month-card input { width: 100%; margin-top: 0.3rem; padding: 0.4rem; border-radius: 1rem; border: 1px solid #bddbab; text-align: center; }
+        .header-flex { display: flex; flex-direction: column; gap: 12px; }
+        @media (min-width: 768px) { .header-flex { flex-direction: row; justify-content: space-between; align-items: center; } }
+        .zone-banner { background: rgba(30, 70, 30, 0.08); border-radius: 3rem; padding: 0.4rem 1.2rem; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .stage-progress-container { margin-bottom: 1rem; }
+        .stage-progress-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.8rem; font-weight: 500; }
+        .stage-progress-bar-bg { background: #e9f3e4; border-radius: 1rem; height: 12px; overflow: hidden; }
+        .stage-progress-fill { background: linear-gradient(90deg, #2e8b57, #4cae4c); height: 100%; border-radius: 1rem; width: 0%; }
+        .stat-title { font-weight: 800; font-size: 1.2rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .live-dashboard-title { font-size: 1.5rem; font-weight: 800; color: #1b5e1f; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px dashed #b8daa8; display: flex; align-items: center; gap: 10px; }
+        .grid-2col { display: grid; gap: 1rem; }
+        @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
+        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f3120; color: white; padding: 0.7rem 1.5rem; border-radius: 3rem; z-index: 1100; transition: 0.3s; font-size: 0.85rem; text-align: center; max-width: 90%; }
+        .toast-msg.show { transform: translateX(-50%) translateY(0); }
         .hidden { display: none; }
         .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #2e6b2e; }
         .edit-btn-card { background: #2c7a2a; color: white; border: none; border-radius: 2rem; padding: 8px 12px; font-size: 0.8rem; width: 100%; margin-top: 10px; }
@@ -430,18 +89,10 @@
         .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
         .form-group input, .form-group select { width: 100%; padding: 0.6rem; border-radius: 1rem; border: 1px solid #cde0c2; }
         .footer { text-align: center; font-size: 0.7rem; color: #2f5e2f; margin-top: 2rem; padding: 1rem; }
-        .pending-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8faf5;
-            border-radius: 1rem;
-            padding: 0.8rem;
-            margin: 0.5rem 0;
-            border-left: 6px solid #2e8b57;
-        }
+        .pending-card { display: flex; justify-content: space-between; align-items: center; background: #f8faf5; border-radius: 1rem; padding: 0.8rem; margin: 0.5rem 0; border-left: 6px solid #2e8b57; }
         .pending-crop-icon { font-size: 1.2rem; margin-right: 8px; }
         .remove-pending { background: #e74c3c; color: white; border: none; border-radius: 2rem; padding: 0.3rem 0.8rem; cursor: pointer; }
+        .admin-badge { background: #ff9800; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; margin-left: 8px; }
     </style>
 </head>
 <body>
@@ -469,14 +120,14 @@
                     <i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong>
                     <div id="zonePillsHeader" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                 </div>
-                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
+                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span><span id="adminBadge" class="admin-badge hidden">ADMIN</span></span>
                 <button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
             </div>
         </div>
 
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-user-edit"></i> Grower Profile</div>
-            <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" readonly style="background:#f4f9f0;"></div>
+            <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" placeholder="Enter grower name" style="background:#f4f9f0;"></div>
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
             <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details </button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
@@ -485,19 +136,10 @@
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         <div class="dashboard-grid">
             <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
-            <div class="stat-card">
-                <div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div>
-                <div class="table-responsive">
-                    <div id="cropAndVarietiesContainer"></div>
-                </div>
-            </div>
+            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div></div>
         </div>
-        <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div>
-            <div id="stageByCropContainer" class="stage-breakdown-wrapper"></div>
-        </div>
+        <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
 
-        <!-- Interactive Greenhouse Registration -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%);">
                 <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
@@ -531,22 +173,15 @@
             <div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option></select></div>
             <div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div>
         </div>
-        <div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;">
-            <h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4>
-            <div id="editMonthlyGrid" class="update-grid"></div>
-        </div>
-        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem; flex-wrap: wrap;">
-            <button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
-            <button id="saveEditBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button>
-        </div>
+        <div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;"><h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4><div id="editMonthlyGrid" class="update-grid"></div></div>
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem; flex-wrap: wrap;"><button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button><button id="saveEditBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button></div>
     </div>
 </div>
-
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0782Yu0VG7Rdl1SWwB9vlllkGXl_8BGwLKIEaY3kjlGVdflqvq9qM481g2HltwTkYyA/exec'; // <-- REPLACE WITH YOUR DEPLOYED WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKfAzyZP6EoasID51nAtOkMBBAHM9TwQyz_WtnJEanUJQq8LIjQHxJNRKP_k9YnasQ9A/exec'; // <-- REPLACE WITH YOUR WEB APP URL
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -556,6 +191,8 @@
     let currentZone = "E2";
     let savedGreenhouses = [];
     let currentEditRecord = null;
+    let isAdmin = false;
+    let currentLoggedInUser = "";
 
     function getCurrentMauritiusISOString() {
         const now = new Date();
@@ -582,6 +219,7 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const editModal = document.getElementById('editRecordModal');
     const loggedInUsernameSpan = document.getElementById('loggedInUsername');
+    const adminBadge = document.getElementById('adminBadge');
 
     function toast(msg, isError = false) { 
         const t = document.getElementById('toastText');
@@ -635,18 +273,12 @@
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
             
-            // NEW: Display top 5 tomato varieties, no distribution %
             let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             if (data.topVarieties?.tomato?.length) {
-                data.topVarieties.tomato.forEach(v => {
-                    tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`;
-                });
-            } else {
-                tomatoHtml += `<tr><td colspan="2">No tomato data yet</td></tr>`;
-            }
+                data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
+            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td></tr>`; }
             tomatoHtml += `</tbody></table></div>`;
             
-            // Additional other crops summary
             let otherCropsHtml = `<div><h4>🌾 Other Key Crops</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             const targetOther = ["Sweet Pepper", "English Cucumber"];
             for (let crop of targetOther) {
@@ -658,7 +290,6 @@
                 otherCropsHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
             }
             otherCropsHtml += `</tbody></table></div>`;
-            
             document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + otherCropsHtml;
             
             let stageCropHtml = '';
@@ -672,6 +303,7 @@
     }
 
     async function loadUserPreviousData(username) {
+        if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
@@ -680,19 +312,10 @@
             let areaIdx = -1;
             for (let i = 0; i < headers.length; i++) {
                 const h = headers[i];
-                if ((h === 'area (m²)' || h === 'area (m2)' || h === 'area' || h.includes('area (m²)')) && !h.includes('total')) {
-                    areaIdx = i;
-                    break;
-                }
+                if ((h === 'area (m²)' || h === 'area (m2)' || h === 'area' || h.includes('area (m²)')) && !h.includes('total')) { areaIdx = i; break; }
             }
             if (areaIdx === -1) {
-                for (let i = 0; i < headers.length; i++) {
-                    const h = headers[i];
-                    if (h.includes('area') && !h.includes('total')) {
-                        areaIdx = i;
-                        break;
-                    }
-                }
+                for (let i = 0; i < headers.length; i++) { if (headers[i].includes('area') && !headers[i].includes('total')) { areaIdx = i; break; } }
             }
             if (areaIdx === -1 && headers.length > 9) areaIdx = 9;
             
@@ -753,7 +376,6 @@
             div.innerHTML = `<span style="font-weight:600;">${month.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${idx}" value="${monthVals[idx].toFixed(2)}">`;
             grid.appendChild(div);
         });
-        
         editModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -820,8 +442,7 @@
                     });
                 }
             }
-            
-            toast("✅ Update sent! Main record updated and monthly harvests logged to CropUpdates sheet.");
+            toast("✅ Update sent! Main record updated and monthly harvests logged.");
             editModal.style.display = 'none';
             document.body.style.overflow = '';
             setTimeout(async () => {
@@ -831,14 +452,13 @@
             }, 2000);
         } catch(e) { 
             console.error(e);
-            toast("Request sent but could not verify. Please refresh manually after a few seconds.", true); 
+            toast("Request sent but could not verify. Please refresh manually.", true); 
         } finally {
             saveBtn.innerHTML = originalHtml;
             saveBtn.disabled = false;
         }
     }
 
-    // NEW: log area update to greenhouseareaupdate sheet + update profile
     async function logAreaUpdate() {
         const username = growerName.value.trim();
         const locality = localitySelect.value;
@@ -846,10 +466,7 @@
         let newArea = prompt("Enter new total greenhouse area (m²):", currentArea);
         if (newArea === null) return;
         newArea = parseFloat(newArea);
-        if (isNaN(newArea) || newArea <= 0) {
-            toast("Invalid area value", true);
-            return;
-        }
+        if (isNaN(newArea) || newArea <= 0) { toast("Invalid area value", true); return; }
         const updateBtn = document.getElementById('updateAreaBtn');
         const originalText = updateBtn.innerHTML;
         updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>';
@@ -862,52 +479,41 @@
                 newArea: newArea,
                 locality: locality
             };
-            const response = await fetch(SCRIPT_URL, {
+            await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             totalAreaInput.value = newArea;
-            toast("✅ Area updated successfully! Log saved to 'greenhouseareaupdate' sheet.");
-        } catch(e) {
-            toast("Error: " + e.message, true);
-        } finally {
-            updateBtn.innerHTML = originalText;
-            updateBtn.disabled = false;
-        }
+            toast("✅ Area updated successfully! Log saved.");
+        } catch(e) { toast("Error: " + e.message, true); }
+        finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
 
     async function autoFillProfileFromRecords(username) {
+        if (isAdmin) return;
         try {
-            // First, get profile from server
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             if (profRes.ok) {
                 const prof = await profRes.json();
                 if (prof.totalArea && !isNaN(parseFloat(prof.totalArea)) && parseFloat(prof.totalArea) > 0) {
                     totalAreaInput.value = parseFloat(prof.totalArea);
                 } else {
-                    // fallback: compute from user data
                     const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
                     const data = await dataRes.json();
                     if (data.rows && data.rows.length) {
                         let sumArea = 0;
                         const headers = data.headers.map(h => h.toString().toLowerCase());
                         let areaIdx = -1;
-                        for (let i=0; i<headers.length; i++) {
-                            if (headers[i].includes('area') && !headers[i].includes('total')) { areaIdx = i; break; }
-                        }
+                        for (let i=0; i<headers.length; i++) { if (headers[i].includes('area') && !headers[i].includes('total')) { areaIdx = i; break; } }
                         if (areaIdx !== -1) {
-                            for (let row of data.rows) {
-                                let a = parseFloat(row[areaIdx]);
-                                if (!isNaN(a)) sumArea += a;
-                            }
+                            for (let row of data.rows) { let a = parseFloat(row[areaIdx]); if (!isNaN(a)) sumArea += a; }
                         }
                         if (sumArea > 0) totalAreaInput.value = sumArea;
                     }
                 }
             }
-            // Also set locality from first record if available
             const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await dataRes.json();
             if (data.rows && data.rows.length) {
@@ -915,16 +521,10 @@
                 const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
                 if (localityCol !== -1 && data.rows[0][localityCol]) {
                     const locVal = data.rows[0][localityCol];
-                    setTimeout(() => {
-                        if (localitySelect.querySelector(`option[value="${locVal}"]`)) {
-                            localitySelect.value = locVal;
-                        }
-                    }, 200);
+                    setTimeout(() => { if (localitySelect.querySelector(`option[value="${locVal}"]`)) localitySelect.value = locVal; }, 200);
                 }
                 const zoneCol = headers.findIndex(h => h === 'zone');
-                if (zoneCol !== -1 && data.rows[0][zoneCol] && ZONE_LOCALITIES[data.rows[0][zoneCol]]) {
-                    setZone(data.rows[0][zoneCol]);
-                }
+                if (zoneCol !== -1 && data.rows[0][zoneCol] && ZONE_LOCALITIES[data.rows[0][zoneCol]]) { setZone(data.rows[0][zoneCol]); }
             }
         } catch(e) { console.warn("Auto-fill failed", e); }
     }
@@ -938,7 +538,7 @@
         if (user) {
             await loadUserPreviousData(user);
             await loadDashboard();
-            await autoFillProfileFromRecords(user);
+            if (!isAdmin) await autoFillProfileFromRecords(user);
             toast("📊 Dashboard & records refreshed");
         } else { toast("No active user", true); }
         refreshBtn.innerHTML = originalText;
@@ -1010,29 +610,22 @@
     
     function updateSavedListDisplay() { 
         const container = document.getElementById('savedList'); 
-        if (savedGreenhouses.length === 0) { 
-            container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; 
-            return; 
-        } 
+        if (savedGreenhouses.length === 0) { container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; return; } 
         container.innerHTML = `<div><strong>Pending (${savedGreenhouses.length})</strong></div>` + savedGreenhouses.map((g,i)=>`
             <div class="pending-card">
                 <div><i class="fas ${g.crop === 'Tomato' ? 'fa-tomato' : (g.crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} pending-crop-icon"></i> 
                 <strong>${g.crop}</strong> | ${g.area} m² | ${g.stage}</div>
                 <button class="remove-pending" data-idx="${i}"><i class="fas fa-trash"></i> Remove</button>
             </div>`).join('');
-        document.querySelectorAll('.remove-pending').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                let idx = parseInt(btn.dataset.idx);
-                savedGreenhouses.splice(idx,1);
-                updateSavedListDisplay();
-            });
-        });
+        document.querySelectorAll('.remove-pending').forEach(btn => { btn.addEventListener('click', (e) => { let idx = parseInt(btn.dataset.idx); savedGreenhouses.splice(idx,1); updateSavedListDisplay(); }); });
     }
     
     async function submitAllNewData() { 
-        const grower = growerName.value, locality = localitySelect.value, totalArea = parseFloat(totalAreaInput.value); 
+        const grower = growerName.value.trim();
+        const locality = localitySelect.value;
+        const totalArea = parseFloat(totalAreaInput.value);
         if (!grower || !locality || totalArea <= 0 || savedGreenhouses.length === 0) { 
-            toast("Complete profile & add greenhouses", true); 
+            toast("Complete profile (grower name, locality, area) & add greenhouses", true); 
             return; 
         } 
         let rows = []; 
@@ -1050,7 +643,7 @@
             renderActiveForm(); 
             await loadUserPreviousData(grower); 
             await loadDashboard(); 
-            await autoFillProfileFromRecords(grower);
+            if (!isAdmin) await autoFillProfileFromRecords(grower);
         } catch(e) { toast("Submit error", true); } 
     }
 
@@ -1065,24 +658,40 @@
             const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
             const data = await res.json();
             if (!data.success) { errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; }
+            isAdmin = data.isAdmin === true;
+            currentLoggedInUser = username;
             loggedInUsernameSpan.innerText = username;
-            growerName.value = username;
-            await autoFillProfileFromRecords(username);
-            await loadUserPreviousData(username);
+            if (isAdmin) {
+                adminBadge.classList.remove('hidden');
+                growerName.value = '';
+                growerName.placeholder = 'Enter target grower name';
+                growerName.readOnly = false;
+                totalAreaInput.value = '';
+                localitySelect.value = '';
+            } else {
+                adminBadge.classList.add('hidden');
+                growerName.readOnly = true;
+                growerName.value = username;
+                await autoFillProfileFromRecords(username);
+            }
+            await loadUserPreviousData(isAdmin ? '' : username);
             await loadDashboard();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
-            toast(`Welcome ${username}!`);
+            toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}!`);
         } catch (err) { errorDiv.innerText = `Network error`; } finally { loginBtn.disabled=false; loginBtn.innerHTML=original; }
     }
 
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
-    logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; toast("Logged out"); };
-    document.getElementById('accessTrackerBtn').onclick = () => { if(!growerName.value.trim()||!localitySelect.value||!totalAreaInput.value) toast("Complete profile (locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
+    logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; toast("Logged out"); };
+    document.getElementById('accessTrackerBtn').onclick = () => { 
+        if(!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); 
+        else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } 
+    };
     document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
     document.getElementById('submitDataBtn').onclick = submitAllNewData;
-    document.getElementById('updateAreaBtn').onclick = logAreaUpdate;  // NEW
+    document.getElementById('updateAreaBtn').onclick = logAreaUpdate;
     document.getElementById('refreshProfileBtn').onclick = refreshFullData;
     document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
