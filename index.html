@@ -7,14 +7,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%);
             min-height: 100vh;
             padding: 16px;
         }
-        .container { max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Glass card */
         .glass-card {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(4px);
@@ -24,71 +36,424 @@
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(70, 130, 50, 0.25);
         }
-        @media (min-width: 768px) { .glass-card { padding: 1.5rem 2rem; } body { padding: 20px; } }
-        
+        @media (min-width: 768px) {
+            .glass-card {
+                padding: 1.5rem 2rem;
+            }
+            body {
+                padding: 20px;
+            }
+        }
+
         /* Login overlay */
         .login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
-            display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
         }
-        .login-card { background: white; max-width: 480px; width: 100%; border-radius: 2.5rem; padding: 2rem 1.5rem; text-align: center; }
-        .login-header { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #136b1e, #259132); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 2rem; }
-        .login-card input { width: 100%; padding: 0.9rem 1rem; margin-bottom: 1.2rem; border: 1px solid #cde0c2; border-radius: 2rem; font-size: 1rem; }
-        
-        .btn, .btn-secondary, .update-area-btn, .edit-btn-card { cursor: pointer; transition: all 0.2s; font-weight: 600; }
-        .btn { background: linear-gradient(95deg, #1f682a, #156f1a); border: none; color: white; padding: 12px 20px; border-radius: 3rem; display: inline-flex; align-items: center; gap: 0.6rem; font-size: 1rem; }
-        .btn-secondary { background: #eef3ea; color: #1f5a22; border: 1px solid #b8daa8; padding: 10px 16px; border-radius: 2rem; }
-        .update-area-btn { background: #2e7d64; color: white; border: none; border-radius: 2rem; padding: 0.5rem 1.2rem; }
-        .zone-pill { background: #ecf7e6; border: 1px solid #cde0c2; padding: 8px 16px; border-radius: 3rem; font-weight: 600; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
-        .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; }
-        
-        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-        @media (min-width: 768px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
-        
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
-        .top-crops-table, .data-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 500px; }
-        .top-crops-table th, .data-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
-        .top-crops-table td, .data-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
-        .crop-progress { width: 80px; background: #e9f3e4; border-radius: 20px; height: 8px; overflow: hidden; display: inline-block; margin-left: 8px; }
-        .crop-progress-bar { height: 100%; background: #2e8b57; border-radius: 20px; width: 0%; }
-        
-        .varieties-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
-        .variety-badge { background: #f4f9ef; border-radius: 2rem; padding: 8px 14px; font-size: 0.8rem; font-weight: 500; border-left: 4px solid #2e8b57; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex: 1 0 auto; min-width: 160px; }
-        
-        .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
-        .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
-        .crop-records-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 1rem; }
-        @media (min-width: 480px) { .crop-records-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
-        .record-card { background: #ffffff; border-radius: 1.5rem; padding: 1rem; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #e0f0d8; }
-        .record-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 2px solid #eef4e6; padding-bottom: 0.6rem; margin-bottom: 0.6rem; }
-        .profile-row { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
-        @media (min-width: 640px) { .profile-row { flex-direction: row; align-items: center; gap: 1rem; } .profile-row label { min-width: 150px; } }
-        .profile-row input, .profile-row select { flex: 1; padding: 0.7rem 1rem; border-radius: 2rem; border: 1px solid #cde0c2; background: white; }
-        
+        .login-card {
+            background: white;
+            max-width: 480px;
+            width: 100%;
+            border-radius: 2.5rem;
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+        .login-header {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #136b1e, #259132);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 2rem;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #cde0c2;
+            border-radius: 2rem;
+            font-size: 1rem;
+        }
+
+        /* Buttons */
+        .btn, .btn-secondary, .update-area-btn, .edit-btn-card {
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn {
+            background: linear-gradient(95deg, #1f682a, #156f1a);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 3rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1rem;
+        }
+        .btn-secondary {
+            background: #eef3ea;
+            color: #1f5a22;
+            border: 1px solid #b8daa8;
+            padding: 10px 16px;
+            border-radius: 2rem;
+        }
+        .update-area-btn {
+            background: #2e7d64;
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 0.5rem 1.2rem;
+        }
+        .zone-pill {
+            background: #ecf7e6;
+            border: 1px solid #cde0c2;
+            padding: 8px 16px;
+            border-radius: 3rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .zone-pill.active {
+            background: #198a2e;
+            color: white;
+            border-color: #198a2e;
+        }
+
+        /* Dashboard grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scrollable table wrapper - only when needed */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+        }
+        .top-crops-table, .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 1rem;
+            min-width: 500px;
+        }
+        .top-crops-table th, .data-table th {
+            background: #2c5e2a;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .top-crops-table td, .data-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0efd4;
+            vertical-align: middle;
+        }
+        .crop-progress {
+            width: 80px;
+            background: #e9f3e4;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .crop-progress-bar {
+            height: 100%;
+            background: #2e8b57;
+            border-radius: 20px;
+            width: 0%;
+        }
+
+        /* Stage breakdown cards */
+        .stage-breakdown-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        .stage-crop-card {
+            background: linear-gradient(135deg, #ffffff, #fef7e0);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #e0efd4;
+            flex: 1 1 200px;
+            min-width: 180px;
+        }
+
+        /* Crop records grid - responsive cards */
+        .crop-records-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+        @media (min-width: 480px) {
+            .crop-records-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+        .record-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+            border: 1px solid #e0f0d8;
+        }
+        .record-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #eef4e6;
+            padding-bottom: 0.6rem;
+            margin-bottom: 0.6rem;
+        }
+        .record-crop {
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .record-stage {
+            background: #e8f0e4;
+            padding: 0.2rem 0.7rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .record-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .record-area {
+            font-weight: 800;
+            color: #1f6e1f;
+            background: #edf7e7;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        /* Profile rows - responsive */
+        .profile-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 640px) {
+            .profile-row {
+                flex-direction: row;
+                align-items: center;
+                gap: 1rem;
+            }
+            .profile-row label {
+                min-width: 150px;
+            }
+        }
+        .profile-row input, .profile-row select {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid #cde0c2;
+            background: white;
+        }
+
+        /* Modal */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2100; padding: 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2100;
+            padding: 16px;
         }
-        .modal-container { background: white; border-radius: 2rem; padding: 1.5rem; max-height: 90vh; overflow-y: auto; width: 100%; max-width: 950px; margin: auto; }
-        .update-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin: 1rem 0; }
-        @media (min-width: 640px) { .update-grid { grid-template-columns: repeat(4, 1fr); } }
-        .month-card { background: #f9fef7; border-radius: 1rem; padding: 0.6rem; text-align: center; border: 1px solid #d5e8ca; }
-        .month-card input { width: 100%; margin-top: 0.3rem; padding: 0.4rem; border-radius: 1rem; border: 1px solid #bddbab; text-align: center; }
-        .header-flex { display: flex; flex-direction: column; gap: 12px; }
-        @media (min-width: 768px) { .header-flex { flex-direction: row; justify-content: space-between; align-items: center; } }
-        .zone-banner { background: rgba(30, 70, 30, 0.08); border-radius: 3rem; padding: 0.4rem 1.2rem; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .stat-title { font-weight: 800; font-size: 1.2rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .grid-2col { display: grid; gap: 1rem; }
-        @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
-        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f3120; color: white; padding: 0.7rem 1.5rem; border-radius: 3rem; z-index: 1100; transition: 0.3s; font-size: 0.85rem; text-align: center; max-width: 90%; }
-        .toast-msg.show { transform: translateX(-50%) translateY(0); }
+        .modal-container {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 950px;
+            animation: modalFadeIn 0.25s ease-out;
+            margin: auto;
+        }
+        @media (max-width: 640px) {
+            .modal-container {
+                padding: 1rem;
+            }
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .update-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        @media (min-width: 640px) {
+            .update-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .month-card {
+            background: #f9fef7;
+            border-radius: 1rem;
+            padding: 0.6rem;
+            text-align: center;
+            border: 1px solid #d5e8ca;
+        }
+        .month-card input {
+            width: 100%;
+            margin-top: 0.3rem;
+            padding: 0.4rem;
+            border-radius: 1rem;
+            border: 1px solid #bddbab;
+            text-align: center;
+        }
+
+        /* Header row wrap */
+        .header-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        @media (min-width: 768px) {
+            .header-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+        .zone-banner {
+            background: rgba(30, 70, 30, 0.08);
+            border-radius: 3rem;
+            padding: 0.4rem 1.2rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Progress bars */
+        .stage-progress-container {
+            margin-bottom: 1rem;
+        }
+        .stage-progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .stage-progress-bar-bg {
+            background: #e9f3e4;
+            border-radius: 1rem;
+            height: 12px;
+            overflow: hidden;
+        }
+        .stage-progress-fill {
+            background: linear-gradient(90deg, #2e8b57, #4cae4c);
+            height: 100%;
+            border-radius: 1rem;
+            width: 0%;
+        }
+
+        .stat-title {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #1b5e1f;
+            border-left: 5px solid #2e8b57;
+            padding-left: 0.8rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .live-dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1b5e1f;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px dashed #b8daa8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid-2col {
+            display: grid;
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .grid-2col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1f3120;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 3rem;
+            z-index: 1100;
+            transition: 0.3s;
+            font-size: 0.85rem;
+            white-space: normal;
+            text-align: center;
+            max-width: 90%;
+        }
+        .toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+        }
         .hidden { display: none; }
         .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #2e6b2e; }
         .edit-btn-card { background: #2c7a2a; color: white; border: none; border-radius: 2rem; padding: 8px 12px; font-size: 0.8rem; width: 100%; margin-top: 10px; }
-        .variety-section-title { font-size: 1rem; font-weight: 700; margin-top: 12px; margin-bottom: 8px; color: #1d4d1d; display: flex; align-items: center; gap: 8px; }
         .fa-spin-custom { animation: fa-spin 1s infinite linear; }
         @keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn-loading { pointer-events: none; opacity: 0.7; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
+        .form-group input, .form-group select { width: 100%; padding: 0.6rem; border-radius: 1rem; border: 1px solid #cde0c2; }
         .footer { text-align: center; font-size: 0.7rem; color: #2f5e2f; margin-top: 2rem; padding: 1rem; }
     </style>
 </head>
@@ -107,9 +472,18 @@
     <div id="mainApp" style="display: none;">
         <div class="glass-card">
             <div class="header-flex">
-                <div><h1 style="font-size: 1.5rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;"><i class="fas fa-chart-line"></i> Hydroponic Data Tracker</h1><div style="font-size: 0.75rem; color: #3a7b3a;">Smart Analytics</div></div>
-                <div class="zone-banner"><i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong><div id="zonePillsHeader" style="display: flex; flex-wrap: wrap; gap: 8px;"></div></div>
-                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span><button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
+                <div>
+                    <h1 style="font-size: 1.5rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;">
+                        <i class="fas fa-chart-line"></i> Hydroponic Data Tracker
+                    </h1>
+                    <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics</div>
+                </div>
+                <div class="zone-banner">
+                    <i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong>
+                    <div id="zonePillsHeader" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span></span>
+                <button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
             </div>
         </div>
 
@@ -121,23 +495,18 @@
             <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
         </div>
 
-        <div class="live-dashboard-title" style="font-size: 1.5rem; font-weight: 800; color: #1b5e1f; margin-bottom: 1rem;"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
+        <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         <div class="dashboard-grid">
-            <div class="glass-card"><div class="stat-title"><i class="fas fa-chart-simple"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
-            <div class="glass-card">
-                <div class="stat-title"><i class="fas fa-table-list"></i> Top Crop Areas</div>
-                <div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div>
+            <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
+            <div class="stat-card">
+                <div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div>
+                <div class="table-responsive">
+                    <div id="cropAndVarietiesContainer"></div>
+                </div>
             </div>
         </div>
-
-        <!-- Top 5 Varieties Section (Tomato, Sweet Pepper, English Cucumber) -->
-        <div class="glass-card" id="topVarietiesContainer">
-            <div class="stat-title"><i class="fas fa-trophy"></i> 🏆 Top 5 Varieties by Cultivated Area</div>
-            <div id="topVarietiesGrid" style="display: flex; flex-wrap: wrap; gap: 1.5rem;"></div>
-        </div>
-
         <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-layer-group"></i> Stage Breakdown per Crop</div>
+            <div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div>
             <div id="stageByCropContainer" class="stage-breakdown-wrapper"></div>
         </div>
 
@@ -157,24 +526,39 @@
             <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div>
             <div id="cropRecordsGrid" class="crop-records-grid"></div>
         </div>
-        <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker</div>
     </div>
+    <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker</div>
 </div>
 
 <div id="editRecordModal" class="modal-overlay">
-    <div class="modal-container"><h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3><div id="editRecordInfo" style="background:#eef4ea; padding:0.8rem; border-radius:1rem; margin-bottom:1rem;"></div>
-        <div class="grid-2col"><div class="form-group"><label>Crop</label><input type="text" id="editCrop" readonly></div><div class="form-group"><label>Stage *</label><select id="editStage"><option>Seedling</option><option>Vegetative</option><option>Flowering</option><option>Fruiting</option><option>Harvesting</option></select></div>
-        <div class="form-group"><label>Area (m²) *</label><input type="number" step="0.01" id="editArea"></div><div class="form-group"><label>Variety</label><input type="text" id="editVariety"></div>
-        <div class="form-group"><label>Weekly Yield</label><input type="number" step="0.01" id="editWeeklyYield"></div><div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option></select></div>
-        <div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div></div>
-        <div style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;"><h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4><div id="editMonthlyGrid" class="update-grid"></div></div>
-        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem; flex-wrap: wrap;"><button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button><button id="saveEditBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button></div>
+    <div class="modal-container">
+        <h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3>
+        <div id="editRecordInfo" style="background:#eef4ea; padding:0.8rem; border-radius:1rem; margin-bottom:1rem;"></div>
+        <div class="grid-2col">
+            <div class="form-group"><label>Crop</label><input type="text" id="editCrop" readonly></div>
+            <div class="form-group"><label>Stage *</label><select id="editStage"><option>Seedling</option><option>Vegetative</option><option>Flowering</option><option>Fruiting</option><option>Harvesting</option></select></div>
+            <div class="form-group"><label>Area (m²) *</label><input type="number" step="0.01" id="editArea"></div>
+            <div class="form-group"><label>Variety</label><input type="text" id="editVariety"></div>
+            <div class="form-group"><label>Weekly Yield</label><input type="number" step="0.01" id="editWeeklyYield"></div>
+            <div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option></select></div>
+            <div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div>
+        </div>
+        <div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;">
+            <h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4>
+            <div id="editMonthlyGrid" class="update-grid"></div>
+        </div>
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem; flex-wrap: wrap;">
+            <button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+            <button id="saveEditBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
     </div>
 </div>
+
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTNpUVh7i3yzYVuUfJyc1JLl62GNB459bCxJ64RqzS6CsDbN3lebdKQV4tYTMFxAhC1A/exec';
+    // ==================== CONFIGURATION ====================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9PVdL5QToO1NaE1EOFwZSob48RzBj9GZGR-ncpLe-yeKU1clEDAFdKLq0NYbnUKt0Dw/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -184,34 +568,75 @@
     let currentZone = "E2";
     let savedGreenhouses = [];
     let currentEditRecord = null;
-    function getCurrentMauritiusISOString() { const now = new Date(); const utc = now.getTime() + (now.getTimezoneOffset() * 60000); return new Date(utc + (4 * 3600000)).toISOString().replace('Z', '+04:00'); }
-    function formatToMauritiusTime(ts) { if (!ts) return '—'; try { let d = new Date(ts); if (isNaN(d.getTime())) return ts.substring(0,16); return new Intl.DateTimeFormat('en-MU', { timeZone: 'Indian/Mauritius', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false }).format(d); } catch(e) { return ts; } }
-    const loginOverlay = document.getElementById('loginOverlay'), mainApp = document.getElementById('mainApp'), growerName = document.getElementById('growerName'), localitySelect = document.getElementById('localitySelect'), totalAreaInput = document.getElementById('totalArea'), cropRecordsGrid = document.getElementById('cropRecordsGrid'), logoutBtn = document.getElementById('logoutBtn'), editModal = document.getElementById('editRecordModal'), loggedInUsernameSpan = document.getElementById('loggedInUsername');
-    function toast(msg, isError = false) { const t = document.getElementById('toastText'); t.innerText = msg; const td = document.getElementById('toast'); td.classList.add('show'); td.style.background = isError ? "#c0392b" : "#1c5c22"; setTimeout(() => td.classList.remove('show'), 2800); }
-    function initZoneHeader() { const zones = Object.keys(ZONE_LOCALITIES); const container = document.getElementById('zonePillsHeader'); container.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join(''); document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.addEventListener('click', () => { setZone(btn.dataset.zone); updateLocalityDropdown(); toast(`Zone switched to ${btn.dataset.zone}`); })); }
-    function setZone(zone) { currentZone = zone; document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone)); updateLocalityDropdown(); }
-    function updateLocalityDropdown() { const locs = ZONE_LOCALITIES[currentZone] || []; localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); }
-    
-    function renderTopVarieties(stats) {
-        const crops = [
-            { key: 'tomato', label: '🍅 Tomato', icon: 'fa-tomato' },
-            { key: 'sweetPepper', label: '🌶️ Sweet Pepper', icon: 'fa-pepper-hot' },
-            { key: 'englishCucumber', label: '🥒 English Cucumber', icon: 'fa-leaf' }
-        ];
-        let html = '';
-        for (let c of crops) {
-            let varieties = stats.topVarieties?.[c.key] || [];
-            if (varieties.length === 0) varieties = [{ variety: 'No data', area: 0 }];
-            html += `<div style="flex:1; min-width:220px; background:#fefef5; border-radius:1.5rem; padding:1rem;"><div class="variety-section-title"><i class="fas ${c.icon}"></i> ${c.label} — Top 5</div><div class="varieties-grid">`;
-            varieties.slice(0,5).forEach(v => { html += `<div class="variety-badge"><i class="fas fa-seedling"></i> <strong>${v.variety}</strong> <span style="margin-left:auto; background:#e0efd4; padding:2px 8px; border-radius:20px;">${v.area.toFixed(1)} m²</span></div>`; });
-            html += `</div></div>`;
-        }
-        document.getElementById('topVarietiesGrid').innerHTML = html;
+
+    function getCurrentMauritiusISOString() {
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const mauritiusTime = new Date(utc + (4 * 3600000));
+        return mauritiusTime.toISOString().replace('Z', '+04:00');
+    }
+
+    function formatToMauritiusTime(timestampStr) {
+        if (!timestampStr) return '—';
+        try {
+            let date = new Date(timestampStr);
+            if (isNaN(date.getTime())) return timestampStr.substring(0, 16);
+            return new Intl.DateTimeFormat('en-MU', { timeZone: 'Indian/Mauritius', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
+        } catch(e) { return timestampStr; }
+    }
+
+    const loginOverlay = document.getElementById('loginOverlay');
+    const mainApp = document.getElementById('mainApp');
+    const growerName = document.getElementById('growerName');
+    const localitySelect = document.getElementById('localitySelect');
+    const totalAreaInput = document.getElementById('totalArea');
+    const cropRecordsGrid = document.getElementById('cropRecordsGrid');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const editModal = document.getElementById('editRecordModal');
+    const loggedInUsernameSpan = document.getElementById('loggedInUsername');
+
+    function toast(msg, isError = false) { 
+        const t = document.getElementById('toastText');
+        t.innerText = msg;
+        const toastDiv = document.getElementById('toast');
+        toastDiv.classList.add('show');
+        toastDiv.style.background = isError ? "#c0392b" : "#1c5c22";
+        setTimeout(() => toastDiv.classList.remove('show'), 2800);
+    }
+
+    function initZoneHeader() {
+        const zones = Object.keys(ZONE_LOCALITIES);
+        const zoneContainer = document.getElementById('zonePillsHeader');
+        zoneContainer.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join('');
+        document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.addEventListener('click', (e) => {
+            setZone(btn.dataset.zone);
+            updateLocalityDropdown();
+            toast(`Zone switched to ${btn.dataset.zone}`);
+        }));
+    }
+    function setZone(zone) { 
+        currentZone = zone; 
+        document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone)); 
+        updateLocalityDropdown(); 
+    }
+    function updateLocalityDropdown() { 
+        const locs = ZONE_LOCALITIES[currentZone] || []; 
+        localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; 
+        locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); 
     }
 
     function renderAreaByStage(stats) {
-        let maxArea = Math.max(...Object.values(stats.areaByStageTotal || {}).map(v=>v||0),1);
-        let html = ''; for(let s of STAGES) { let area = stats.areaByStageTotal?.[s] || 0; let percent = (area / maxArea) * 100; html += `<div><div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div><div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width:${percent}%;"></div></div></div>`; }
+        const areaByStage = stats.areaByStageTotal || {};
+        let maxArea = Math.max(...Object.values(areaByStage).map(v=>v||0),1);
+        let html = '';
+        for (let s of STAGES) {
+            let area = areaByStage[s] || 0;
+            let percent = (area / maxArea) * 100;
+            html += `<div class="stage-progress-container">
+                        <div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div>
+                        <div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div>
+                    </div>`;
+        }
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
 
@@ -221,11 +646,11 @@
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
-            renderTopVarieties(data);
             const targetCrops = ["Tomato","Sweet Pepper","English Cucumber"];
-            let maxArea = 0; for(let crop of targetCrops) { let entry = (data.areaByCrop || []).find(c => c.crop === crop); let area = entry ? entry.area : 0; if(area > maxArea) maxArea = area; }
+            let maxArea = 0;
+            for (let crop of targetCrops) { let entry = (data.areaByCrop || []).find(c => c.crop === crop); let area = entry ? entry.area : 0; if (area > maxArea) maxArea = area; }
             let cropTable = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>🏆 Top Variety</th><th>Area (m²)</th><th>Distribution</th></tr></thead><tbody>`;
-            for(let crop of targetCrops) {
+            for (let crop of targetCrops) {
                 let entry = (data.areaByCrop || []).find(c => c.crop === crop);
                 let area = entry ? entry.area : 0;
                 let topVariety = { variety: '—', area: 0 };
@@ -233,12 +658,22 @@
                 else if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
                 else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
                 const percent = maxArea > 0 ? (area / maxArea) * 100 : 0;
-                cropTable += `<tr><td><i class="fas ${crop==='Tomato'?'fa-tomato':(crop==='Sweet Pepper'?'fa-pepper-hot':'fa-leaf')}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td><td><div class="crop-progress"><div class="crop-progress-bar" style="width:${percent}%;"></div></div> ${percent.toFixed(0)}%</td></tr>`;
+                cropTable += `<td>
+                    <td style="display: flex; align-items: center; gap: 6px;"><i class="fas ${crop === 'Tomato' ? 'fa-tomato' : (crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} crop-icon-cell"></i> ${crop}</td>
+                    <td><strong>${area.toFixed(1)}</strong></td>
+                    <td>${topVariety.variety}</td>
+                    <td>${topVariety.area.toFixed(1)}</td>
+                    <td><div class="crop-progress"><div class="crop-progress-bar" style="width: ${percent}%;"></div></div> ${percent.toFixed(0)}%</td>
+                <tr>`;
             }
             cropTable += '</tbody></table>';
             document.getElementById('cropAndVarietiesContainer').innerHTML = cropTable;
-            let stageCropHtml = ''; const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
-            for(let crop of targetCrops) { let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {}; stageCropHtml += `<div class="stage-crop-card"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"><span style="font-size:2rem;">${cropIcons[crop]}</span><span style="font-weight:800;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span>${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`; }
+            let stageCropHtml = '';
+            const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
+            for (let crop of targetCrops) {
+                let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {};
+                stageCropHtml += `<div class="stage-crop-card"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
+            }
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
@@ -246,55 +681,329 @@
     async function loadUserPreviousData(username) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-            const data = await res.json(); if(!data.rows || data.rows.length===0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
-            const headers = data.headers.map(h=>h.toString().toLowerCase()); let areaIdx = headers.findIndex(h => h.includes('area') && !h.includes('total')); if(areaIdx===-1) areaIdx=9;
-            const getIdx = (patterns) => headers.findIndex(h=>patterns.some(p=>h.includes(p))); const stageIdx = getIdx(['stage']), cropIdx = getIdx(['crop']), varietyIdx = getIdx(['variety']), weeklyYieldIdx = getIdx(['weekly yield']), weeklyUnitIdx = getIdx(['weekly unit']), harvestMonthsIdx = getIdx(['harvest months']), timestampIdx = getIdx(['timestamp']), monthIndices = MONTHS.map(m=>headers.findIndex(h=>h===m.toLowerCase()));
-            if(stageIdx===-1){ document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
+            const data = await res.json();
+            if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+            const headers = data.headers.map(h => h.toString().toLowerCase());
+            let areaIdx = -1;
+            for (let i = 0; i < headers.length; i++) {
+                const h = headers[i];
+                if ((h === 'area (m²)' || h === 'area (m2)' || h === 'area' || h.includes('area (m²)')) && !h.includes('total')) {
+                    areaIdx = i;
+                    break;
+                }
+            }
+            if (areaIdx === -1) {
+                for (let i = 0; i < headers.length; i++) {
+                    const h = headers[i];
+                    if (h.includes('area') && !h.includes('total')) {
+                        areaIdx = i;
+                        break;
+                    }
+                }
+            }
+            if (areaIdx === -1 && headers.length > 9) areaIdx = 9;
+            
+            const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
+            const stageIdx = getColIndex(['stage']);
+            const cropIdx = getColIndex(['crop']);
+            const varietyIdx = getColIndex(['variety']);
+            const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']);
+            const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']);
+            const harvestMonthsIdx = getColIndex(['harvest months']);
+            const timestampIdx = getColIndex(['timestamp', 'date']);
+            const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
+            
+            if (stageIdx === -1) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+            
             cropRecordsGrid.innerHTML = '';
-            for(let row of data.rows){
-                if(!row[cropIdx]) continue;
+            for (let row of data.rows) {
+                if (!row[cropIdx]) continue;
+                const cropVal = row[cropIdx];
+                const stageVal = (row[stageIdx] || "").toString();
                 const areaVal = (areaIdx !== -1 && areaIdx < row.length) ? parseFloat(row[areaIdx]) || 0 : 0;
-                const card = document.createElement('div'); card.className='record-card';
-                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${row[cropIdx]}</div><div class="record-stage"><i class="fas ${row[stageIdx]==='Harvesting'?'fa-tractor':'fa-chart-line'}"></i> ${row[stageIdx]}</div></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${row[varietyIdx]||'—'}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${parseFloat(row[weeklyYieldIdx])||0} ${row[weeklyUnitIdx]||'kg'}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
-                const btn = card.querySelector('.edit-btn-card'); btn.addEventListener('click', () => { const rec = JSON.parse(btn.getAttribute('data-record')); currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices }; openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices); });
+                const varietyVal = row[varietyIdx] || "—";
+                const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
+                const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg";
+                const harvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
+                
+                const card = document.createElement('div'); card.className = 'record-card';
+                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div><div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div><div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
+                const btn = card.querySelector('.edit-btn-card');
+                btn.addEventListener('click', () => {
+                    const rec = JSON.parse(btn.getAttribute('data-record'));
+                    currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices };
+                    openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices);
+                });
                 cropRecordsGrid.appendChild(card);
             }
-            document.getElementById('prevSubmissionsSection').style.display = 'block'; return true;
-        } catch(e){ console.error(e); document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
+            document.getElementById('prevSubmissionsSection').style.display = 'block';
+            return true;
+        } catch(e) { console.error(e); document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
     }
 
-    function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices){
-        document.getElementById('editCrop').value = row[cropIdx] || ""; document.getElementById('editStage').value = (row[stageIdx] || "Seedling").toString();
+    function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) {
+        document.getElementById('editCrop').value = row[cropIdx] || "";
+        document.getElementById('editStage').value = (row[stageIdx] || "Seedling").toString();
         document.getElementById('editArea').value = (areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0);
-        document.getElementById('editVariety').value = row[varietyIdx] || ""; document.getElementById('editWeeklyYield').value = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
+        document.getElementById('editVariety').value = row[varietyIdx] || "";
+        document.getElementById('editWeeklyYield').value = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
         document.getElementById('editUnit').value = (weeklyUnitIdx !== -1 && row[weeklyUnitIdx]) ? row[weeklyUnitIdx] : "kg";
         document.getElementById('editHarvestMonths').value = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
-        const rawTimestamp = row[currentEditRecord.timestampIdx] || '—'; document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${formatToMauritiusTime(rawTimestamp)}`;
+        const rawTimestamp = row[currentEditRecord.timestampIdx] || '—';
+        document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${formatToMauritiusTime(rawTimestamp)}`;
+        
         const monthVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
-        const grid = document.getElementById('editMonthlyGrid'); grid.innerHTML = '';
-        MONTHS.forEach((month, idx) => { const div = document.createElement('div'); div.className = 'month-card'; div.innerHTML = `<span style="font-weight:600;">${month.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${idx}" value="${monthVals[idx].toFixed(2)}">`; grid.appendChild(div); });
-        editModal.style.display = 'flex'; document.body.style.overflow = 'hidden';
+        const grid = document.getElementById('editMonthlyGrid');
+        grid.innerHTML = '';
+        MONTHS.forEach((month, idx) => {
+            const div = document.createElement('div'); div.className = 'month-card';
+            div.innerHTML = `<span style="font-weight:600;">${month.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${idx}" value="${monthVals[idx].toFixed(2)}">`;
+            grid.appendChild(div);
+        });
+        
+        editModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     }
 
-    async function saveFullRecordUpdate() { if (!currentEditRecord) { toast("No record", true); return; } const saveBtn = document.getElementById('saveEditBtn'); saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Saving...'; saveBtn.disabled = true; try { const { row, timestampIdx } = currentEditRecord; const timestamp = row[timestampIdx]; if (!timestamp) throw "Invalid timestamp"; const payload = { action:'updateFullRecord', username: growerName.value.trim(), timestamp, stage: document.getElementById('editStage').value, area: parseFloat(document.getElementById('editArea').value), variety: document.getElementById('editVariety').value, weeklyYield: parseFloat(document.getElementById('editWeeklyYield').value), weeklyUnit: document.getElementById('editUnit').value, harvestMonths: parseFloat(document.getElementById('editHarvestMonths').value) }; await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(payload) }); toast("✅ Update sent!", false); editModal.style.display = 'none'; document.body.style.overflow = ''; setTimeout(()=>{ loadUserPreviousData(growerName.value.trim()); loadDashboard(); }, 1500); } catch(e){ toast("Update error", true); } finally { saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes'; saveBtn.disabled = false; } }
+    async function saveFullRecordUpdate() {
+        if (!currentEditRecord) { toast("No record selected", true); return; }
+        const saveBtn = document.getElementById('saveEditBtn');
+        const originalHtml = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Saving...';
+        saveBtn.disabled = true;
+        try {
+            const { row, timestampIdx, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices } = currentEditRecord;
+            const timestamp = row[timestampIdx];
+            if (!timestamp) { toast("Invalid timestamp", true); return; }
+            const newStage = document.getElementById('editStage').value;
+            const newArea = parseFloat(document.getElementById('editArea').value);
+            const newVariety = document.getElementById('editVariety').value;
+            const newWeeklyYield = parseFloat(document.getElementById('editWeeklyYield').value);
+            const newUnit = document.getElementById('editUnit').value;
+            const newHarvestMonths = parseFloat(document.getElementById('editHarvestMonths').value);
+            let newMonthly = Array(12).fill(0);
+            for (let i=0; i<12; i++) newMonthly[i] = parseFloat(document.getElementById(`edit_month_${i}`).value) || 0;
+            if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
+            const username = growerName.value.trim();
+            const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
+            const cropName = row[cropIdx] || "";
+            
+            const mainPayload = {
+                action: 'updateFullRecord',
+                username: username,
+                timestamp: timestamp,
+                stage: newStage,
+                area: newArea,
+                variety: newVariety,
+                weeklyYield: newWeeklyYield,
+                weeklyUnit: newUnit,
+                harvestMonths: newHarvestMonths
+            };
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mainPayload)
+            });
+            
+            for (let i = 0; i < 12; i++) {
+                const harvestValue = newMonthly[i];
+                if (harvestValue !== 0 && !isNaN(harvestValue)) {
+                    const monthName = MONTHS[i];
+                    const monthlyPayload = {
+                        action: 'recordMonthlyHarvest',
+                        grower: username,
+                        crop: cropName,
+                        greenhouseArea: totalGreenhouseArea,
+                        month: monthName,
+                        harvestAmount: harvestValue,
+                        unit: newUnit
+                    };
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(monthlyPayload)
+                    });
+                }
+            }
+            
+            toast("✅ Update sent! Main record updated and monthly harvests logged to CropUpdates sheet.");
+            editModal.style.display = 'none';
+            document.body.style.overflow = '';
+            setTimeout(async () => {
+                await loadUserPreviousData(username);
+                await loadDashboard();
+                toast("Data refreshed.");
+            }, 2000);
+        } catch(e) { 
+            console.error(e);
+            toast("Request sent but could not verify. Please refresh manually after a few seconds.", true); 
+        } finally {
+            saveBtn.innerHTML = originalHtml;
+            saveBtn.disabled = false;
+        }
+    }
 
-    async function updateProfile() { const username = growerName.value.trim(); const locality = localitySelect.value; const newArea = parseFloat(totalAreaInput.value); if (!username || !locality || isNaN(newArea) || newArea <= 0) { toast("Complete profile and valid area", true); return; } const btn = document.getElementById('updateAreaBtn'); const original = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>'; btn.disabled = true; try { await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'updateProfile', username, locality, totalArea: newArea, zone: currentZone }) }); toast("✅ Area updated & logged in greenhouseareaupdate sheet"); setTimeout(()=>{ refreshFullData(); }, 1000); } catch(e){ toast("Error: "+e.message, true); } finally { btn.innerHTML = original; btn.disabled = false; } }
-    async function refreshFullData() { const user = growerName.value.trim(); if(user) { await loadUserPreviousData(user); await loadDashboard(); toast("Dashboard & records refreshed"); } else toast("No active user", true); }
-    function renderActiveForm() { const cropOptions = EXTENDED_CROPS.map(c=>`<option value="${c}">${c}</option>`).join(''); const stageOptions = STAGES.map(s=>`<option value="${s}">${s}</option>`).join(''); const prodSysOptions = PROD_SYSTEMS.map(s=>`<option value="${s}">${s}</option>`).join(''); document.getElementById('activeGreenhouseForm').innerHTML = `<div class="grid-2col"><div><label><i class="fas fa-seedling"></i> Crop *</label><select id="cropSelect">${cropOptions}</select></div><div><label><i class="fas fa-vector-square"></i> Area (m²) *</label><input type="number" step="0.01" id="areaInput" placeholder="e.g., 120"></div><div><label><i class="fas fa-tag"></i> Variety</label><input type="text" id="varietyInput" placeholder="specific variety"></div><div><label><i class="fas fa-chart-line"></i> Stage *</label><select id="stageSelect">${stageOptions}</select></div><div><label><i class="fas fa-calendar-alt"></i> Transplant Date</label><input type="date" id="transplantDate"></div><div><label><i class="fas fa-industry"></i> Production System</label><select id="prodSystemSelect">${prodSysOptions}</select></div></div><div id="tomatoTypeContainer"></div><div id="dynamicHarvestDetails"></div>`; const cropSelect = document.getElementById('cropSelect'), varietyInput = document.getElementById('varietyInput'), tomatoContainer = document.getElementById('tomatoTypeContainer'); const updateTomatoType = () => { if(cropSelect.value === 'Tomato') { tomatoContainer.innerHTML = `<div class="tomato-type-row"><label>🍅 Tomato Type: </label><select id="tomatoTypeSelect"><option value="Cooking">Cooking</option><option value="Salad">Salad</option><option value="Cherry">Cherry</option></select> <small>(auto-fills variety)</small></div>`; const tomatoSelect = document.getElementById('tomatoTypeSelect'); tomatoSelect.addEventListener('change', () => { varietyInput.value = tomatoSelect.value; }); if(varietyInput.value && ["Cooking","Salad","Cherry"].includes(varietyInput.value)) tomatoSelect.value = varietyInput.value; else varietyInput.value = tomatoSelect.value; } else tomatoContainer.innerHTML = ''; }; cropSelect.addEventListener('change', updateTomatoType); updateTomatoType(); const stageSel = document.getElementById('stageSelect'); const updateHarvestFields = () => { if(stageSel.value !== 'Harvesting') { document.getElementById('dynamicHarvestDetails').innerHTML = ''; return; } document.getElementById('dynamicHarvestDetails').innerHTML = `<div style="margin-top:1rem;"><h4>Harvest Details</h4><div class="grid-2col"><div><label>Avg Weekly Yield</label><input type="number" step="0.01" id="weeklyYield"></div><div><label>Harvesting Months (duration)</label><input type="number" step="0.5" id="harvestMonths"></div></div><div><label>Unit: <input type="radio" name="weeklyUnit" value="kg" checked> kg/week <input type="radio" name="weeklyUnit" value="crates"> crates/week</label></div><div><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem;"></div></div></div>`; const grid = document.getElementById('monthGrid'); if(grid) grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join(''); }; stageSel.addEventListener('change', updateHarvestFields); updateHarvestFields(); }
-    function getCurrentFormData(){ let crop = document.getElementById('cropSelect')?.value, area = parseFloat(document.getElementById('areaInput')?.value)||0, variety = document.getElementById('varietyInput')?.value||'', stage = document.getElementById('stageSelect')?.value, transplantDate = document.getElementById('transplantDate')?.value||'', prodSystem = document.getElementById('prodSystemSelect')?.value||'', harvest = { weeklyYield:0, harvestMonths:0, weeklyUnit:'kg', monthly:{} }; if(stage === 'Harvesting') { harvest.weeklyYield = parseFloat(document.getElementById('weeklyYield')?.value)||0; harvest.harvestMonths = parseFloat(document.getElementById('harvestMonths')?.value)||0; let unitRadio = document.querySelector('input[name="weeklyUnit"]:checked'); if(unitRadio) harvest.weeklyUnit = unitRadio.value; document.querySelectorAll('.monthVal').forEach(inp=>{ harvest.monthly[inp.dataset.month] = parseFloat(inp.value)||0; }); } return { crop, area, variety, stage, transplantDate, prodSystem, ...harvest }; }
-    function saveCurrentGreenhouse(){ let data = getCurrentFormData(); if(!data.crop || data.area <= 0) { toast("Crop and area >0 required", true); return; } if(data.stage === 'Harvesting' && (data.weeklyYield <= 0 || data.harvestMonths <= 0)) { toast("Harvest details required", true); return; } savedGreenhouses.push({ ...data, id: Date.now() }); updateSavedListDisplay(); renderActiveForm(); toast(`Added: ${data.crop} (${data.area} m²)`); }
-    function updateSavedListDisplay(){ const container = document.getElementById('savedList'); if(savedGreenhouses.length === 0){ container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; return; } container.innerHTML = `<div><strong>Pending (${savedGreenhouses.length})</strong></div>` + savedGreenhouses.map((g,i)=>`<div style="background:#f8faf5; border-radius:1rem; padding:0.5rem; margin:0.5rem 0;">${g.crop} | ${g.area} m² | ${g.stage} <button onclick="window.removeSavedItem(${i})" style="float:right; background:#e74c3c; color:white; border:none; border-radius:1rem;"><i class="fas fa-trash"></i> Remove</button></div>`).join(''); }
+    async function updateProfile() {
+        const username = growerName.value.trim();
+        const locality = localitySelect.value;
+        const totalArea = parseFloat(totalAreaInput.value);
+        if (!username || !locality || isNaN(totalArea) || totalArea <= 0) { toast("Complete locality and valid greenhouse area", true); return; }
+        const updateBtn = document.getElementById('updateAreaBtn');
+        const originalText = updateBtn.innerHTML;
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>';
+        updateBtn.disabled = true;
+        try {
+            const payload = { action: 'updateProfile', username, locality, totalArea, zone: currentZone };
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            toast("✅ Total greenhouse area update sent. Refresh to see changes.");
+            await autoFillProfileFromRecords(username);
+        } catch(e) { toast("Error: " + e.message, true); } 
+        finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
+    }
+
+    async function autoFillProfileFromRecords(username) {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+            const data = await res.json();
+            if (data.rows && data.rows.length > 0) {
+                const headers = data.headers.map(h => h.toString().toLowerCase());
+                const getCol = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
+                const latest = data.rows[0];
+                const localityCol = getCol(['locality', 'location']);
+                if (localityCol !== -1 && latest[localityCol]) {
+                    const localityValue = latest[localityCol];
+                    setTimeout(() => {
+                        if (localitySelect.querySelector(`option[value="${localityValue}"]`)) {
+                            localitySelect.value = localityValue;
+                        }
+                    }, 200);
+                }
+                const zoneCol = getCol(['zone']);
+                if (zoneCol !== -1 && latest[zoneCol] && ZONE_LOCALITIES[latest[zoneCol]]) {
+                    setZone(latest[zoneCol]);
+                }
+                const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`);
+                if (profRes.ok) {
+                    const prof = await profRes.json();
+                    if (prof.totalArea && !isNaN(parseFloat(prof.totalArea))) {
+                        totalAreaInput.value = parseFloat(prof.totalArea);
+                    }
+                }
+            }
+        } catch(e) { console.warn("Auto-fill failed", e); }
+    }
+
+    async function refreshFullData() {
+        const refreshBtn = document.getElementById('refreshProfileBtn');
+        const originalText = refreshBtn.innerHTML;
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Refreshing...';
+        refreshBtn.classList.add('btn-loading');
+        const user = growerName.value.trim();
+        if (user) {
+            await loadUserPreviousData(user);
+            await loadDashboard();
+            await autoFillProfileFromRecords(user);
+            toast("📊 Dashboard & records refreshed");
+        } else { toast("No active user", true); }
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.classList.remove('btn-loading');
+    }
+
+    function renderActiveForm() {
+        const cropOptions = EXTENDED_CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
+        const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
+        const prodSysOptions = PROD_SYSTEMS.map(s => `<option value="${s}">${s}</option>`).join('');
+        document.getElementById('activeGreenhouseForm').innerHTML = `
+            <div class="grid-2col">
+                <div><label><i class="fas fa-seedling"></i> Crop *</label><select id="cropSelect">${cropOptions}</select></div>
+                <div><label><i class="fas fa-vector-square"></i> Area (m²) *</label><input type="number" step="0.01" id="areaInput" placeholder="e.g., 120"></div>
+                <div><label><i class="fas fa-tag"></i> Variety</label><input type="text" id="varietyInput" placeholder="specific variety"></div>
+                <div><label><i class="fas fa-chart-line"></i> Stage *</label><select id="stageSelect">${stageOptions}</select></div>
+                <div><label><i class="fas fa-calendar-alt"></i> Transplant Date</label><input type="date" id="transplantDate"></div>
+                <div><label><i class="fas fa-industry"></i> Production System</label><select id="prodSystemSelect">${prodSysOptions}</select></div>
+            </div>
+            <div id="tomatoTypeContainer"></div>
+            <div id="dynamicHarvestDetails"></div>
+        `;
+        const cropSelect = document.getElementById('cropSelect'), varietyInput = document.getElementById('varietyInput'), tomatoContainer = document.getElementById('tomatoTypeContainer');
+        const updateTomatoType = () => {
+            if (cropSelect.value === 'Tomato') {
+                tomatoContainer.innerHTML = `<div class="tomato-type-row"><label>🍅 Tomato Type: </label><select id="tomatoTypeSelect"><option value="Cooking">Cooking</option><option value="Salad">Salad</option><option value="Cherry">Cherry</option></select> <small>(auto-fills variety)</small></div>`;
+                const tomatoSelect = document.getElementById('tomatoTypeSelect');
+                tomatoSelect.addEventListener('change', () => { varietyInput.value = tomatoSelect.value; });
+                if (varietyInput.value && ["Cooking","Salad","Cherry"].includes(varietyInput.value)) tomatoSelect.value = varietyInput.value;
+                else varietyInput.value = tomatoSelect.value;
+            } else { tomatoContainer.innerHTML = ''; }
+        };
+        cropSelect.addEventListener('change', updateTomatoType);
+        updateTomatoType();
+        const stageSel = document.getElementById('stageSelect');
+        const updateHarvestFields = () => {
+            const stage = stageSel.value;
+            const harvestDiv = document.getElementById('dynamicHarvestDetails');
+            if (stage !== 'Harvesting') { harvestDiv.innerHTML = ''; return; }
+            harvestDiv.innerHTML = `<div style="margin-top:1rem;"><h4>Harvest Details</h4><div class="grid-2col"><div><label>Avg Weekly Yield</label><input type="number" step="0.01" id="weeklyYield"></div><div><label>Harvesting Months (duration)</label><input type="number" step="0.5" id="harvestMonths"></div></div><div><label>Unit: <input type="radio" name="weeklyUnit" value="kg" checked> kg/week <input type="radio" name="weeklyUnit" value="crates"> crates/week</label></div><div><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem;"></div></div></div>`;
+            const grid = document.getElementById('monthGrid');
+            if (grid) grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join('');
+        };
+        stageSel.addEventListener('change', updateHarvestFields);
+        updateHarvestFields();
+    }
+    
+    function getCurrentFormData() {
+        let crop = document.getElementById('cropSelect')?.value, area = parseFloat(document.getElementById('areaInput')?.value) || 0, variety = document.getElementById('varietyInput')?.value || '', stage = document.getElementById('stageSelect')?.value, transplantDate = document.getElementById('transplantDate')?.value || '', prodSystem = document.getElementById('prodSystemSelect')?.value || '', harvest = { weeklyYield:0, harvestMonths:0, weeklyUnit:'kg', monthly:{} };
+        if (stage === 'Harvesting') {
+            harvest.weeklyYield = parseFloat(document.getElementById('weeklyYield')?.value) || 0;
+            harvest.harvestMonths = parseFloat(document.getElementById('harvestMonths')?.value) || 0;
+            let unitRadio = document.querySelector('input[name="weeklyUnit"]:checked');
+            if (unitRadio) harvest.weeklyUnit = unitRadio.value;
+            document.querySelectorAll('.monthVal').forEach(inp => { harvest.monthly[inp.dataset.month] = parseFloat(inp.value) || 0; });
+        }
+        return { crop, area, variety, stage, transplantDate, prodSystem, ...harvest };
+    }
+    function saveCurrentGreenhouse() { let data = getCurrentFormData(); if (!data.crop || data.area <= 0) { toast("Crop and area >0 required", true); return; } if (data.stage === 'Harvesting' && (data.weeklyYield <= 0 || data.harvestMonths <= 0)) { toast("Harvest details required", true); return; } savedGreenhouses.push({ ...data, id: Date.now() }); updateSavedListDisplay(); renderActiveForm(); toast(`Added: ${data.crop} (${data.area} m²)`); }
+    function updateSavedListDisplay() { const container = document.getElementById('savedList'); if (savedGreenhouses.length === 0) { container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; return; } container.innerHTML = `<div><strong>Pending (${savedGreenhouses.length})</strong></div>` + savedGreenhouses.map((g,i)=>`<div style="background:#f8faf5; border-radius:1rem; padding:0.5rem; margin:0.5rem 0;">${g.crop} | ${g.area} m² | ${g.stage} <button onclick="window.removeSavedItem(${i})" style="float:right; background:#e74c3c; color:white; border:none; border-radius:1rem;"><i class="fas fa-trash"></i> Remove</button></div>`).join(''); }
     window.removeSavedItem = (idx) => { savedGreenhouses.splice(idx,1); updateSavedListDisplay(); };
-    async function submitAllNewData() { const grower = growerName.value, locality = localitySelect.value, totalArea = parseFloat(totalAreaInput.value); if(!grower || !locality || totalArea <= 0 || savedGreenhouses.length === 0){ toast("Complete profile & add greenhouses", true); return; } let rows = []; let counter = 1; const ts = getCurrentMauritiusISOString(); for(let gh of savedGreenhouses){ let monthlyArr = MONTHS.map(m=>gh.monthly?.[m] || 0); rows.push([grower, locality, currentZone, totalArea, counter++, gh.crop, gh.variety, gh.stage, gh.area, gh.transplantDate, gh.weeklyYield || 0, gh.weeklyUnit || 'kg', gh.harvestMonths || 0, gh.prodSystem, ts, ...monthlyArr]); } try { await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({ rows }) }); toast("✅ Data submitted"); savedGreenhouses = []; updateSavedListDisplay(); renderActiveForm(); await loadUserPreviousData(grower); await loadDashboard(); } catch(e){ toast("Submit error", true); } }
-    async function login(username, password){ const errorDiv = document.getElementById('loginError'); errorDiv.innerText = ''; if(!username||!password){ errorDiv.innerText = "Enter credentials"; return; } const loginBtn = document.getElementById('loginBtn'); const original = loginBtn.innerHTML; loginBtn.disabled=true; loginBtn.innerHTML='<i class="fas fa-spinner fa-pulse"></i>'; try { const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`); const data = await res.json(); if(!data.success){ errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; } loggedInUsernameSpan.innerText = username; growerName.value = username; await loadUserPreviousData(username); await loadDashboard(); loginOverlay.style.display = 'none'; mainApp.style.display = 'block'; toast(`Welcome ${username}!`); } catch(err){ errorDiv.innerText = `Network error`; } finally { loginBtn.disabled=false; loginBtn.innerHTML=original; } }
+    async function submitAllNewData() { const grower = growerName.value, locality = localitySelect.value, totalArea = parseFloat(totalAreaInput.value); if (!grower || !locality || totalArea <= 0 || savedGreenhouses.length === 0) { toast("Complete profile & add greenhouses", true); return; } let rows = []; let counter = 1; const ts = getCurrentMauritiusISOString(); for (let gh of savedGreenhouses) { let monthlyArr = MONTHS.map(m => gh.monthly?.[m] || 0); rows.push([grower, locality, currentZone, totalArea, counter++, gh.crop, gh.variety, gh.stage, gh.area, gh.transplantDate, gh.weeklyYield || 0, gh.weeklyUnit || 'kg', gh.harvestMonths || 0, gh.prodSystem, ts, ...monthlyArr]); } try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ rows }) }); toast("✅ Data submitted to Google Sheet 1", false); savedGreenhouses = []; updateSavedListDisplay(); renderActiveForm(); await loadUserPreviousData(grower); await loadDashboard(); } catch(e) { toast("Submit error", true); } }
+
+    async function login(username, password) {
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.innerText = '';
+        if (!username || !password) { errorDiv.innerText = "Enter credentials"; return; }
+        const loginBtn = document.getElementById('loginBtn');
+        const original = loginBtn.innerHTML;
+        loginBtn.disabled = true; loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+            const data = await res.json();
+            if (!data.success) { errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; }
+            loggedInUsernameSpan.innerText = username;
+            growerName.value = username;
+            await autoFillProfileFromRecords(username);
+            await loadUserPreviousData(username);
+            await loadDashboard();
+            loginOverlay.style.display = 'none';
+            mainApp.style.display = 'block';
+            toast(`Welcome ${username}!`);
+        } catch (err) { errorDiv.innerText = `Network error`; } finally { loginBtn.disabled=false; loginBtn.innerHTML=original; }
+    }
+
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; toast("Logged out"); };
     document.getElementById('accessTrackerBtn').onclick = () => { if(!growerName.value.trim()||!localitySelect.value||!totalAreaInput.value) toast("Complete profile (locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
-    document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse; document.getElementById('submitDataBtn').onclick = submitAllNewData; document.getElementById('updateAreaBtn').onclick = updateProfile; document.getElementById('refreshProfileBtn').onclick = refreshFullData;
-    document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; }; document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
+    document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
+    document.getElementById('submitDataBtn').onclick = submitAllNewData;
+    document.getElementById('updateAreaBtn').onclick = updateProfile;
+    document.getElementById('refreshProfileBtn').onclick = refreshFullData;
+    document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
+    document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
-    initZoneHeader(); updateLocalityDropdown(); document.getElementById('greenhouseSection').classList.add('hidden');
+    initZoneHeader();
+    updateLocalityDropdown();
+    document.getElementById('greenhouseSection').classList.add('hidden');
 </script>
 </body>
 </html>
