@@ -93,7 +93,6 @@
         .pending-crop-icon { font-size: 1.2rem; margin-right: 8px; }
         .remove-pending { background: #e74c3c; color: white; border: none; border-radius: 2rem; padding: 0.3rem 0.8rem; cursor: pointer; }
         .admin-badge { background: #ff9800; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; margin-left: 8px; }
-        /* Small margin for button group */
         .action-buttons { display: flex; gap: 8px; align-items: center; }
     </style>
 </head>
@@ -199,6 +198,24 @@
     let isAdmin = false;
     let currentLoggedInUser = "";
 
+    // ========== SESSION PERSISTENCE ==========
+    function saveLoginState(username, admin) {
+        sessionStorage.setItem('hydroponic_loggedIn', 'true');
+        sessionStorage.setItem('hydroponic_username', username);
+        sessionStorage.setItem('hydroponic_isAdmin', admin ? 'true' : 'false');
+    }
+    function clearLoginState() {
+        sessionStorage.removeItem('hydroponic_loggedIn');
+        sessionStorage.removeItem('hydroponic_username');
+        sessionStorage.removeItem('hydroponic_isAdmin');
+    }
+    function getStoredLogin() {
+        const loggedIn = sessionStorage.getItem('hydroponic_loggedIn') === 'true';
+        const username = sessionStorage.getItem('hydroponic_username');
+        const admin = sessionStorage.getItem('hydroponic_isAdmin') === 'true';
+        return { loggedIn, username, admin };
+    }
+
     function getCurrentMauritiusISOString() {
         const now = new Date();
         const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
@@ -279,10 +296,10 @@
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
             
-            let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
+            let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th><tr></thead><tbody>`;
             if (data.topVarieties?.tomato?.length) {
                 data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
-            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td></tr>`; }
+            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td>`; }
             tomatoHtml += `</tbody></table></div>`;
             
             let otherCropsHtml = `<div><h4>🌾 Other Key Crops</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
@@ -653,6 +670,7 @@
         } catch(e) { toast("Submit error", true); } 
     }
 
+    // ---------- LOGIN & AUTO‑RESTORE ----------
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         errorDiv.innerText = '';
@@ -684,13 +702,54 @@
             await loadDashboard();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
+            saveLoginState(username, isAdmin);
             toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}!`);
         } catch (err) { errorDiv.innerText = `Network error`; } finally { loginBtn.disabled=false; loginBtn.innerHTML=original; }
     }
 
+    // Auto‑restore session on page load
+    async function restoreSession() {
+        const { loggedIn, username, admin } = getStoredLogin();
+        if (loggedIn && username) {
+            // We don't have the password, but we can simulate a login without password?
+            // Actually we can trust the stored session and directly set the UI.
+            // However the backend might reject API calls if we didn't authenticate? No – the backend only checks password on login.
+            // All other endpoints are open. So we can just set the UI state.
+            isAdmin = admin;
+            currentLoggedInUser = username;
+            loggedInUsernameSpan.innerText = username;
+            if (isAdmin) {
+                adminBadge.classList.remove('hidden');
+                growerName.value = '';
+                growerName.placeholder = 'Enter target grower name';
+                growerName.readOnly = false;
+                totalAreaInput.value = '';
+                localitySelect.value = '';
+            } else {
+                adminBadge.classList.add('hidden');
+                growerName.readOnly = true;
+                growerName.value = username;
+                await autoFillProfileFromRecords(username);
+            }
+            await loadUserPreviousData(isAdmin ? '' : username);
+            await loadDashboard();
+            loginOverlay.style.display = 'none';
+            mainApp.style.display = 'block';
+            toast(`Welcome back ${username}${isAdmin ? ' (Admin)' : ''}!`, false);
+        }
+    }
+
+    // Event listeners
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
-    logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; toast("Logged out"); };
+    logoutBtn.onclick = () => { 
+        clearLoginState(); 
+        mainApp.style.display = 'none'; 
+        loginOverlay.style.display = 'flex'; 
+        savedGreenhouses = []; 
+        isAdmin = false; 
+        toast("Logged out"); 
+    };
     refreshPageBtn.onclick = () => { window.location.reload(); };
     document.getElementById('accessTrackerBtn').onclick = () => { 
         if(!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); 
@@ -706,6 +765,9 @@
     initZoneHeader();
     updateLocalityDropdown();
     document.getElementById('greenhouseSection').classList.add('hidden');
+
+    // Try to restore session before showing login overlay
+    restoreSession();
 </script>
 </body>
 </html>
