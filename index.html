@@ -93,6 +93,8 @@
         .pending-crop-icon { font-size: 1.2rem; margin-right: 8px; }
         .remove-pending { background: #e74c3c; color: white; border: none; border-radius: 2rem; padding: 0.3rem 0.8rem; cursor: pointer; }
         .admin-badge { background: #ff9800; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; margin-left: 8px; }
+        /* Small margin for button group */
+        .action-buttons { display: flex; gap: 8px; align-items: center; }
     </style>
 </head>
 <body>
@@ -120,8 +122,11 @@
                     <i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong>
                     <div id="zonePillsHeader" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                 </div>
-                <div><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span><span id="adminBadge" class="admin-badge hidden">ADMIN</span></span>
-                <button id="logoutBtn" class="btn-secondary" style="margin-left: 0.8rem;">Logout</button></div>
+                <div class="action-buttons">
+                    <span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span><span id="adminBadge" class="admin-badge hidden">ADMIN</span></span>
+                    <button id="logoutBtn" class="btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button id="refreshPageBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Page</button>
+                </div>
             </div>
         </div>
 
@@ -181,7 +186,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKfAzyZP6EoasID51nAtOkMBBAHM9TwQyz_WtnJEanUJQq8LIjQHxJNRKP_k9YnasQ9A/exec'; // <-- REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNlB1YLJNkrWyhjcf86VFZIh5CSIrqi6uq1yTDQZfdQ2AQ14kj2maFNUFH_xeL2cCk_Q/exec'; // <-- REPLACE WITH YOUR WEB APP URL
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -217,6 +222,7 @@
     const totalAreaInput = document.getElementById('totalArea');
     const cropRecordsGrid = document.getElementById('cropRecordsGrid');
     const logoutBtn = document.getElementById('logoutBtn');
+    const refreshPageBtn = document.getElementById('refreshPageBtn');
     const editModal = document.getElementById('editRecordModal');
     const loggedInUsernameSpan = document.getElementById('loggedInUsername');
     const adminBadge = document.getElementById('adminBadge');
@@ -685,6 +691,7 @@
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; toast("Logged out"); };
+    refreshPageBtn.onclick = () => { window.location.reload(); };
     document.getElementById('accessTrackerBtn').onclick = () => { 
         if(!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); 
         else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } 
