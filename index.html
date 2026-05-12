@@ -7,325 +7,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%);
-            min-height: 100vh;
-            padding: 12px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Enhanced glass cards with touch margins */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(4px);
-            border-radius: 28px;
-            padding: 1.2rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(70, 130, 50, 0.25);
-            transition: transform 0.1s ease;
-        }
-        @media (min-width: 768px) {
-            .glass-card { padding: 1.5rem 2rem; }
-            body { padding: 20px; }
-        }
-
-        /* Login layer */
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-        .login-card {
-            background: white;
-            max-width: 460px;
-            width: 100%;
-            border-radius: 2.5rem;
-            padding: 2rem 1.5rem;
-            text-align: center;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.2);
-        }
-        .login-header {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #136b1e, #259132);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 1.8rem;
-        }
-        .login-card input {
-            width: 100%;
-            padding: 14px 16px;
-            margin-bottom: 1rem;
-            border: 1px solid #cde0c2;
-            border-radius: 2rem;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-        /* responsive buttons */
-        .btn, .btn-secondary, .update-area-btn {
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 600;
-            border-radius: 3rem;
-            padding: 12px 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.9rem;
-            justify-content: center;
-        }
-        .btn {
-            background: linear-gradient(95deg, #1f682a, #156f1a);
-            border: none;
-            color: white;
-        }
-        .btn-secondary {
-            background: #eef3ea;
-            color: #1f5a22;
-            border: 1px solid #b8daa8;
-        }
-        .zone-pill {
-            background: #ecf7e6;
-            border: 1px solid #cde0c2;
-            padding: 8px 18px;
-            border-radius: 3rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            transition: 0.1s;
-            min-width: 70px;
-            text-align: center;
-        }
-        .zone-pill.active {
-            background: #198a2e;
-            color: white;
-            border-color: #198a2e;
-        }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        @media (min-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            width: 100%;
-        }
-        .top-crops-table, .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 480px;
-        }
-        .top-crops-table th, .data-table th {
-            background: #2c5e2a;
-            color: white;
-            padding: 12px 8px;
-            text-align: left;
-        }
-        .top-crops-table td, .data-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #e0efd4;
-            vertical-align: middle;
-        }
-        .crop-progress {
-            width: 80px;
-            background: #e9f3e4;
-            border-radius: 20px;
-            height: 8px;
-            overflow: hidden;
-            display: inline-block;
-            margin-left: 8px;
-        }
-        .stage-crop-card {
-            background: linear-gradient(135deg, #ffffff, #fef7e0);
-            border-radius: 1.5rem;
-            padding: 1rem;
-            border: 1px solid #e0efd4;
-            flex: 1 1 200px;
-            min-width: 180px;
-        }
-        .variety-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .variety-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8faf3;
-            padding: 8px 12px;
-            border-radius: 2rem;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .variety-name {
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .variety-area {
-            font-weight: 600;
-            background: #e0ecd4;
-            padding: 4px 12px;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-        }
-        .crop-records-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        @media (min-width: 480px) {
-            .crop-records-grid {
-                grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-            }
-        }
-        .record-card {
-            background: #ffffff;
-            border-radius: 1.5rem;
-            padding: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border: 1px solid #e0f0d8;
-        }
-        .profile-row {
-            display: flex;
-            flex-direction: column;
-            gap: 0.7rem;
-            margin-bottom: 1rem;
-        }
-        @media (min-width: 640px) {
-            .profile-row {
-                flex-direction: row;
-                align-items: center;
-                gap: 1rem;
-            }
-            .profile-row label {
-                min-width: 150px;
-            }
-        }
-        .profile-row input, .profile-row select {
-            flex: 1;
-            padding: 12px 14px;
-            border-radius: 2rem;
-            border: 1px solid #cde0c2;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2100;
-            padding: 16px;
-        }
-        .modal-container {
-            background: white;
-            border-radius: 2rem;
-            padding: 1.5rem;
-            max-height: 90vh;
-            overflow-y: auto;
-            width: 100%;
-            max-width: 950px;
-        }
-        .update-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-        }
-        @media (min-width: 640px) {
-            .update-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        .month-card {
-            background: #f9fef7;
-            border-radius: 1rem;
-            padding: 0.6rem;
-            text-align: center;
-        }
-        .btn-icon {
-            min-width: 44px;
-            min-height: 44px;
-        }
-        .toast-msg {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #1f3120;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 3rem;
-            z-index: 1100;
-            transition: 0.25s;
-            font-size: 0.85rem;
-            max-width: 90vw;
-            text-align: center;
-        }
-        .toast-msg.show {
-            transform: translateX(-50%) translateY(0);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%); min-height: 100vh; padding: 12px; }
+        .container { max-width: 1400px; margin: 0 auto; width: 100%; }
+        .glass-card { background: rgba(255,255,255,0.96); backdrop-filter: blur(4px); border-radius: 28px; padding: 1.2rem; margin-bottom: 1.25rem; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); border: 1px solid rgba(70,130,50,0.25); }
+        @media (min-width: 768px) { .glass-card { padding: 1.5rem 2rem; } body { padding: 20px; } }
+        .login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index:2000; padding:20px; }
+        .login-card { background: white; max-width:460px; width:100%; border-radius:2.5rem; padding:2rem 1.5rem; text-align:center; }
+        .login-header { font-size:1.8rem; font-weight:800; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:1.8rem; }
+        .login-card input { width:100%; padding:14px 16px; margin-bottom:1rem; border:1px solid #cde0c2; border-radius:2rem; font-size:1rem; }
+        .btn, .btn-secondary, .update-area-btn { cursor:pointer; transition:0.2s; font-weight:600; border-radius:3rem; padding:12px 20px; display:inline-flex; align-items:center; gap:0.6rem; font-size:0.9rem; justify-content:center; }
+        .btn { background: linear-gradient(95deg,#1f682a,#156f1a); border:none; color:white; }
+        .btn-secondary { background:#eef3ea; color:#1f5a22; border:1px solid #b8daa8; }
+        .zone-pill { background:#ecf7e6; border:1px solid #cde0c2; padding:8px 18px; border-radius:3rem; font-weight:600; cursor:pointer; font-size:0.8rem; white-space:nowrap; text-align:center; }
+        .zone-pill.active { background:#198a2e; color:white; border-color:#198a2e; }
+        .dashboard-grid { display:grid; grid-template-columns:1fr; gap:1.5rem; margin-bottom:1.5rem; }
+        @media (min-width:768px) { .dashboard-grid { grid-template-columns:repeat(2,1fr); } }
+        .table-responsive { overflow-x:auto; -webkit-overflow-scrolling:touch; width:100%; }
+        .top-crops-table { width:100%; border-collapse:collapse; min-width:480px; }
+        .top-crops-table th { background:#2c5e2a; color:white; padding:12px 8px; text-align:left; }
+        .top-crops-table td { padding:10px 8px; border-bottom:1px solid #e0efd4; }
+        .crop-progress { width:80px; background:#e9f3e4; border-radius:20px; height:8px; overflow:hidden; display:inline-block; margin-left:8px; }
+        .stage-crop-card { background:linear-gradient(135deg,#ffffff,#fef7e0); border-radius:1.5rem; padding:1rem; border:1px solid #e0efd4; flex:1 1 200px; min-width:180px; }
+        .variety-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1rem; margin-top:0.5rem; }
+        .variety-section { background:#ffffffdd; border-radius:1.5rem; padding:1rem; }
+        .variety-item { display:flex; justify-content:space-between; align-items:center; background:#f8faf3; padding:8px 12px; border-radius:2rem; flex-wrap:wrap; gap:8px; margin-top:8px; }
+        .crop-records-grid { display:grid; grid-template-columns:1fr; gap:1rem; margin-top:1rem; }
+        @media (min-width:480px) { .crop-records-grid { grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); } }
+        .record-card { background:white; border-radius:1.5rem; padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.04); border:1px solid #e0f0d8; }
+        .profile-row { display:flex; flex-direction:column; gap:0.7rem; margin-bottom:1rem; }
+        @media (min-width:640px) { .profile-row { flex-direction:row; align-items:center; gap:1rem; } .profile-row label { min-width:150px; } }
+        .profile-row input, .profile-row select { flex:1; padding:12px 14px; border-radius:2rem; border:1px solid #cde0c2; }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(5px); display:none; align-items:center; justify-content:center; z-index:2100; padding:16px; }
+        .modal-container { background:white; border-radius:2rem; padding:1.5rem; max-height:90vh; overflow-y:auto; width:100%; max-width:950px; }
+        .update-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:0.8rem; }
+        @media (min-width:640px) { .update-grid { grid-template-columns:repeat(4,1fr); } }
+        .month-card { background:#f9fef7; border-radius:1rem; padding:0.6rem; text-align:center; }
+        .toast-msg { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(100px); background:#1f3120; color:white; padding:12px 24px; border-radius:3rem; z-index:1100; transition:0.25s; font-size:0.85rem; max-width:90vw; text-align:center; }
+        .toast-msg.show { transform:translateX(-50%) translateY(0); }
         .hidden { display: none; }
-        .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.3rem 0.8rem; font-weight: 600; font-size: 0.75rem; }
-        .edit-btn-card { background: #2c7a2a; color: white; border: none; border-radius: 2rem; padding: 10px; font-size: 0.8rem; width: 100%; margin-top: 12px; }
-        .stat-title {
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: #1b5e1f;
-            border-left: 5px solid #2e8b57;
-            padding-left: 0.8rem;
-            margin-bottom: 1rem;
-        }
-        .variety-section {
-            background: #ffffffdd;
-            border-radius: 1.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        button { cursor: pointer; }
-        @media (max-width: 480px) {
-            .btn, .btn-secondary { padding: 10px 14px; font-size: 0.8rem; }
-        }
-        .footer { text-align: center; font-size: 0.7rem; color: #2f5e2f; margin-top: 2rem; padding: 1rem; }
+        .badge { background:#e9f3e4; border-radius:2rem; padding:0.3rem 0.8rem; font-weight:600; font-size:0.75rem; }
+        .edit-btn-card { background:#2c7a2a; color:white; border:none; border-radius:2rem; padding:10px; font-size:0.8rem; width:100%; margin-top:12px; }
+        .stat-title { font-weight:800; font-size:1.2rem; color:#1b5e1f; border-left:5px solid #2e8b57; padding-left:0.8rem; margin-bottom:1rem; }
+        @media (max-width:480px) { .btn, .btn-secondary { padding:10px 14px; font-size:0.8rem; } }
+        .footer { text-align:center; font-size:0.7rem; color:#2f5e2f; margin-top:2rem; padding:1rem; }
     </style>
 </head>
 <body>
@@ -361,7 +86,7 @@
             <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" readonly style="background:#f4f9f0;"></div>
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area & Log</button></div>
-            <div class="profile-row" style="flex-wrap:wrap;"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Launch Tracker</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
+            <div class="profile-row" style="flex-wrap:wrap;"><button id="registerGreenhouseBtn" class="btn"><i class="fas fa-plus-circle"></i> Register New Greenhouse</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
         </div>
 
         <div class="live-dashboard-title" style="font-size:1.4rem; font-weight:800; color:#1b5e1f; margin:0.5rem 0 1rem;"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
@@ -373,10 +98,10 @@
             </div>
         </div>
         
-        <!-- TOP 5 VARIETIES SECTION (extended) -->
+        <!-- TOP 5 VARIETIES SECTION -->
         <div class="glass-card" id="topVarietiesContainer">
             <div class="stat-title"><i class="fas fa-trophy"></i> 🏆 TOP 5 VARIETIES (Tomato · Sweet Pepper · English Cucumber)</div>
-            <div id="varietiesGrid" class="variety-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1rem;"></div>
+            <div id="varietiesGrid" class="variety-list"></div>
         </div>
 
         <div class="glass-card">
@@ -427,7 +152,7 @@
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1yc7tv27qZbIVVj10uoGA1lVe2aQfbjqRf2jgJwXn-Id676V-32hXUzuEiEvvDj5VTg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6C00Bzjeu5Tv5paExT17_09-gvX2kOjGIycHFrSyxBMDijQzMzqj0uZ--tJ7EZtVv_g/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -517,25 +242,105 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    async function loadUserPreviousData(username) { /* same robust logic, keep short */ try { const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`); const data = await res.json(); if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; } const headers = data.headers.map(h=>h.toString().toLowerCase()); let areaIdx = headers.findIndex(h=>h.includes('area') && !h.includes('total')); if(areaIdx===-1) areaIdx=9; const stageIdx = headers.findIndex(h=>h.includes('stage')); const cropIdx = headers.findIndex(h=>h.includes('crop')); const varietyIdx = headers.findIndex(h=>h.includes('variety')); const weeklyYieldIdx = headers.findIndex(h=>h.includes('weekly')); const weeklyUnitIdx = headers.findIndex(h=>h.includes('unit')); const harvestMonthsIdx = headers.findIndex(h=>h.includes('harvest months')); const timestampIdx = headers.findIndex(h=>h.includes('timestamp')); const monthIndices = MONTHS.map(m=>headers.findIndex(h=>h===m.toLowerCase())); const grid = document.getElementById('cropRecordsGrid'); grid.innerHTML = ''; for(let row of data.rows){ if(!row[cropIdx]) continue; const card=document.createElement('div'); card.className='record-card'; card.innerHTML=`<div class="record-header"><strong>${row[cropIdx]}</strong> <span class="badge">${row[stageIdx]||''}</span></div><div>📐 Area: ${(areaIdx!==-1?parseFloat(row[areaIdx])||0:0).toFixed(1)} m²</div><div>🌱 Variety: ${row[varietyIdx]||'—'}</div><button class="edit-btn-card" data-idx="${grid.children.length}">Edit Record</button>`; const btn=card.querySelector('.edit-btn-card'); btn.addEventListener('click',()=>{ currentEditRecord={ row, headers, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices }; openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices); }); grid.appendChild(card); } document.getElementById('prevSubmissionsSection').style.display = 'block'; return true; } catch(e){ console.error(e); document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; } }
+    async function loadUserPreviousData(username) { 
+        try { 
+            const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`); 
+            const data = await res.json(); 
+            if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; } 
+            const headers = data.headers.map(h=>h.toString().toLowerCase()); 
+            let areaIdx = headers.findIndex(h=>h.includes('area') && !h.includes('total')); if(areaIdx===-1) areaIdx=9; 
+            const stageIdx = headers.findIndex(h=>h.includes('stage')); 
+            const cropIdx = headers.findIndex(h=>h.includes('crop')); 
+            const varietyIdx = headers.findIndex(h=>h.includes('variety')); 
+            const weeklyYieldIdx = headers.findIndex(h=>h.includes('weekly')); 
+            const weeklyUnitIdx = headers.findIndex(h=>h.includes('unit')); 
+            const harvestMonthsIdx = headers.findIndex(h=>h.includes('harvest months')); 
+            const timestampIdx = headers.findIndex(h=>h.includes('timestamp')); 
+            const monthIndices = MONTHS.map(m=>headers.findIndex(h=>h===m.toLowerCase())); 
+            const grid = document.getElementById('cropRecordsGrid'); grid.innerHTML = ''; 
+            for(let row of data.rows){ if(!row[cropIdx]) continue; 
+                const card=document.createElement('div'); card.className='record-card'; 
+                card.innerHTML=`<div><strong>${row[cropIdx]}</strong> <span class="badge">${row[stageIdx]||''}</span></div><div>📐 Area: ${(areaIdx!==-1?parseFloat(row[areaIdx])||0:0).toFixed(1)} m²</div><div>🌱 Variety: ${row[varietyIdx]||'—'}</div><button class="edit-btn-card">Edit Record</button>`; 
+                const btn=card.querySelector('.edit-btn-card'); btn.addEventListener('click',()=>{ currentEditRecord={ row, headers, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices }; openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices); }); 
+                grid.appendChild(card); 
+            } 
+            document.getElementById('prevSubmissionsSection').style.display = 'block'; return true; 
+        } catch(e){ console.error(e); document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; } 
+    }
     
-    function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) { /* populate fields */ document.getElementById('editCrop').value = row[cropIdx]||''; document.getElementById('editStage').value = row[stageIdx]||'Seedling'; document.getElementById('editArea').value = (areaIdx!==-1 ? parseFloat(row[areaIdx])||0 : 0); document.getElementById('editVariety').value = row[varietyIdx]||''; document.getElementById('editWeeklyYield').value = weeklyYieldIdx!==-1?parseFloat(row[weeklyYieldIdx])||0:0; document.getElementById('editUnit').value = (weeklyUnitIdx!==-1 && row[weeklyUnitIdx])?row[weeklyUnitIdx]:'kg'; document.getElementById('editHarvestMonths').value = harvestMonthsIdx!==-1?parseFloat(row[harvestMonthsIdx])||0:0; const monthVals = monthIndices.map(idx=> idx!==-1? parseFloat(row[idx])||0:0); const grid=document.getElementById('editMonthlyGrid'); grid.innerHTML=''; MONTHS.forEach((m,i)=>{ const div=document.createElement('div'); div.className='month-card'; div.innerHTML=`<span>${m.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${i}" value="${monthVals[i].toFixed(2)}">`; grid.appendChild(div); }); editModal.style.display='flex'; }
-    async function saveFullRecordUpdate(){ /* unchanged but ensures monthly harvest logs crop column */ const saveBtn=document.getElementById('saveEditBtn'); saveBtn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i>'; saveBtn.disabled=true; try{ const {row, timestampIdx, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices}=currentEditRecord; const timestamp=row[timestampIdx]; if(!timestamp) throw new Error('no timestamp'); const newStage=document.getElementById('editStage').value; const newArea=parseFloat(document.getElementById('editArea').value); const newVariety=document.getElementById('editVariety').value; const newWeeklyYield=parseFloat(document.getElementById('editWeeklyYield').value); const newUnit=document.getElementById('editUnit').value; const newHarvestMonths=parseFloat(document.getElementById('editHarvestMonths').value); let newMonthly=Array(12).fill(0); for(let i=0;i<12;i++) newMonthly[i]=parseFloat(document.getElementById(`edit_month_${i}`).value)||0; if(isNaN(newArea)) throw new Error('Invalid area'); const username=growerName.value.trim(); const cropName=row[cropIdx]||''; await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateFullRecord',username,timestamp,stage:newStage,area:newArea,variety:newVariety,weeklyYield:newWeeklyYield,weeklyUnit:newUnit,harvestMonths:newHarvestMonths})}); for(let i=0;i<12;i++){ if(newMonthly[i]!==0 && !isNaN(newMonthly[i])){ await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'recordMonthlyHarvest',grower:username,crop:cropName,greenhouseArea:parseFloat(totalAreaInput.value)||0,month:MONTHS[i],harvestAmount:newMonthly[i],unit:newUnit})}); } } toast("✅ Update sent + harvest logs"); editModal.style.display='none'; loadUserPreviousData(username); loadDashboard(); }catch(e){ toast("error",true); }finally{ saveBtn.innerHTML='Save Changes'; saveBtn.disabled=false; } }
-    async function updateProfileWithLog() { const username = growerName.value.trim(); const locality = localitySelect.value; const newArea = parseFloat(totalAreaInput.value); if (!username || !locality || isNaN(newArea) || newArea <= 0) { toast("Complete locality & area", true); return; } const updateBtn = document.getElementById('updateAreaBtn'); updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>'; updateBtn.disabled = true; try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'updateProfileWithGreenhouseLog', username, totalArea: newArea, locality, zone: currentZone }) }); toast("✅ Greenhouse area updated & logged"); await autoFillProfileFromRecords(username); } catch(e) { toast("Error", true); } finally { updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Area & Log'; updateBtn.disabled = false; } }
-    async function autoFillProfileFromRecords(username) { try { const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`); if(profRes.ok){ const prof = await profRes.json(); if(prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalAreaInput.value = parseFloat(prof.totalArea); } } catch(e){} }
-    function renderActiveForm() { const cropOptions = EXTENDED_CROPS.map(c=>`<option value="${c}">${c}</option>`).join(''); const stageOptions = STAGES.map(s=>`<option value="${s}">${s}</option>`).join(''); document.getElementById('activeGreenhouseForm').innerHTML = `<div class="grid-2col" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1rem;"><div><label>Crop</label><select id="cropSelect">${cropOptions}</select></div><div><label>Area (m²)</label><input type="number" step="0.01" id="areaInput"></div><div><label>Variety</label><input id="varietyInput"></div><div><label>Stage</label><select id="stageSelect">${stageOptions}</select></div></div><div id="dynamicHarvestDetails"></div>`; const stageSel = document.getElementById('stageSelect'); stageSel.onchange = () => { if(stageSel.value==='Harvesting') document.getElementById('dynamicHarvestDetails').innerHTML = `<div><label>Weekly Yield</label><input id="weeklyYield" type="number"><label>Unit</label><select id="weeklyUnitSelect"><option>kg</option><option>crates</option></select><label>Harvest Months</label><input id="harvestMonths" type="number"><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-top:8px;">${MONTHS.map(m=>`<div class="month-card"><span>${m.slice(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}"></div>`).join('')}</div></div>`; else document.getElementById('dynamicHarvestDetails').innerHTML=''; }; stageSel.dispatchEvent(new Event('change')); }
+    function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) { 
+        document.getElementById('editCrop').value = row[cropIdx]||''; 
+        document.getElementById('editStage').value = row[stageIdx]||'Seedling'; 
+        document.getElementById('editArea').value = (areaIdx!==-1 ? parseFloat(row[areaIdx])||0 : 0); 
+        document.getElementById('editVariety').value = row[varietyIdx]||''; 
+        document.getElementById('editWeeklyYield').value = weeklyYieldIdx!==-1?parseFloat(row[weeklyYieldIdx])||0:0; 
+        document.getElementById('editUnit').value = (weeklyUnitIdx!==-1 && row[weeklyUnitIdx])?row[weeklyUnitIdx]:'kg'; 
+        document.getElementById('editHarvestMonths').value = harvestMonthsIdx!==-1?parseFloat(row[harvestMonthsIdx])||0:0; 
+        const monthVals = monthIndices.map(idx=> idx!==-1? parseFloat(row[idx])||0:0); 
+        const grid=document.getElementById('editMonthlyGrid'); grid.innerHTML=''; 
+        MONTHS.forEach((m,i)=>{ const div=document.createElement('div'); div.className='month-card'; div.innerHTML=`<span>${m.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${i}" value="${monthVals[i].toFixed(2)}">`; grid.appendChild(div); }); 
+        editModal.style.display='flex'; 
+    }
+    
+    async function saveFullRecordUpdate(){ 
+        const saveBtn=document.getElementById('saveEditBtn'); saveBtn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i>'; saveBtn.disabled=true; 
+        try{ 
+            const {row, timestampIdx, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices}=currentEditRecord; 
+            const timestamp=row[timestampIdx]; if(!timestamp) throw new Error('no timestamp'); 
+            const newStage=document.getElementById('editStage').value; 
+            const newArea=parseFloat(document.getElementById('editArea').value); 
+            const newVariety=document.getElementById('editVariety').value; 
+            const newWeeklyYield=parseFloat(document.getElementById('editWeeklyYield').value); 
+            const newUnit=document.getElementById('editUnit').value; 
+            const newHarvestMonths=parseFloat(document.getElementById('editHarvestMonths').value); 
+            let newMonthly=Array(12).fill(0); for(let i=0;i<12;i++) newMonthly[i]=parseFloat(document.getElementById(`edit_month_${i}`).value)||0; 
+            if(isNaN(newArea)) throw new Error('Invalid area'); 
+            const username=growerName.value.trim(); const cropName=row[cropIdx]||''; 
+            await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateFullRecord',username,timestamp,stage:newStage,area:newArea,variety:newVariety,weeklyYield:newWeeklyYield,weeklyUnit:newUnit,harvestMonths:newHarvestMonths})}); 
+            for(let i=0;i<12;i++){ if(newMonthly[i]!==0 && !isNaN(newMonthly[i])){ await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'recordMonthlyHarvest',grower:username,crop:cropName,greenhouseArea:parseFloat(totalAreaInput.value)||0,month:MONTHS[i],harvestAmount:newMonthly[i],unit:newUnit})}); } } 
+            toast("✅ Update sent + harvest logs"); editModal.style.display='none'; loadUserPreviousData(username); loadDashboard(); 
+        }catch(e){ toast("error",true); }finally{ saveBtn.innerHTML='Save Changes'; saveBtn.disabled=false; } 
+    }
+    
+    async function updateAreaWithLog() { 
+        const username = growerName.value.trim(); 
+        const locality = localitySelect.value; 
+        const newArea = parseFloat(totalAreaInput.value); 
+        if (!username || !locality || isNaN(newArea) || newArea <= 0) { toast("Complete locality & valid area", true); return; } 
+        const updateBtn = document.getElementById('updateAreaBtn'); 
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>'; updateBtn.disabled = true; 
+        try { 
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'updateAreaWithLog', username, newTotalArea: newArea, locality, zone: currentZone }) }); 
+            toast("✅ Area updated and logged to greenhouseareaupdate sheet"); 
+            await autoFillProfileFromRecords(username); 
+        } catch(e) { toast("Error", true); } finally { updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Area & Log'; updateBtn.disabled = false; } 
+    }
+    
+    async function autoFillProfileFromRecords(username) { 
+        try { const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}`); if(profRes.ok){ const prof = await profRes.json(); if(prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalAreaInput.value = parseFloat(prof.totalArea); } } catch(e){} 
+    }
+    
+    function renderActiveForm() { 
+        const cropOptions = EXTENDED_CROPS.map(c=>`<option value="${c}">${c}</option>`).join(''); 
+        const stageOptions = STAGES.map(s=>`<option value="${s}">${s}</option>`).join(''); 
+        document.getElementById('activeGreenhouseForm').innerHTML = `<div class="grid-2col" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1rem;"><div><label>Crop</label><select id="cropSelect">${cropOptions}</select></div><div><label>Area (m²)</label><input type="number" step="0.01" id="areaInput"></div><div><label>Variety</label><input id="varietyInput"></div><div><label>Stage</label><select id="stageSelect">${stageOptions}</select></div></div><div id="dynamicHarvestDetails"></div>`; 
+        const stageSel = document.getElementById('stageSelect'); stageSel.onchange = () => { if(stageSel.value==='Harvesting') document.getElementById('dynamicHarvestDetails').innerHTML = `<div><label>Weekly Yield</label><input id="weeklyYield" type="number"><label>Unit</label><select id="weeklyUnitSelect"><option>kg</option><option>crates</option></select><label>Harvest Months</label><input id="harvestMonths" type="number"><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-top:8px;">${MONTHS.map(m=>`<div class="month-card"><span>${m.slice(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}"></div>`).join('')}</div></div>`; else document.getElementById('dynamicHarvestDetails').innerHTML=''; }; stageSel.dispatchEvent(new Event('change')); 
+    }
+    
     function getCurrentFormData(){ const crop=document.getElementById('cropSelect')?.value, area=parseFloat(document.getElementById('areaInput')?.value)||0, variety=document.getElementById('varietyInput')?.value||'', stage=document.getElementById('stageSelect')?.value; let harvest={}; if(stage==='Harvesting'){ harvest.weeklyYield=parseFloat(document.getElementById('weeklyYield')?.value)||0; harvest.weeklyUnit=document.getElementById('weeklyUnitSelect')?.value||'kg'; harvest.harvestMonths=parseFloat(document.getElementById('harvestMonths')?.value)||0; harvest.monthly={}; document.querySelectorAll('.monthVal').forEach(inp=>{ harvest.monthly[inp.dataset.month]=parseFloat(inp.value)||0; }); } return {crop,area,variety,stage, ...harvest}; }
     function saveCurrentGreenhouse(){ let data=getCurrentFormData(); if(!data.crop||data.area<=0){ toast("Crop & area required",true); return; } if(data.stage==='Harvesting' && (!data.weeklyYield||data.weeklyYield<=0)){ toast("Harvest details needed",true); return; } savedGreenhouses.push({...data,id:Date.now()}); updateSavedListDisplay(); renderActiveForm(); toast(`Added ${data.crop}`); }
     function updateSavedListDisplay(){ const container=document.getElementById('savedList'); if(savedGreenhouses.length===0){ container.innerHTML='<div class="badge">📋 No greenhouses added yet.</div>'; return; } container.innerHTML=`<div><strong>Pending (${savedGreenhouses.length})</strong></div>`+savedGreenhouses.map((g,i)=>`<div style="background:#f8faf5; border-radius:1rem; padding:0.5rem; margin:0.5rem 0;">${g.crop} | ${g.area} m² | ${g.stage} <button onclick="window.removeSavedItem(${i})" style="float:right; background:#e74c3c; color:white; border:none; border-radius:1rem;">Remove</button></div>`).join(''); }
     window.removeSavedItem=(idx)=>{ savedGreenhouses.splice(idx,1); updateSavedListDisplay(); };
     async function submitAllNewData(){ const grower=growerName.value, locality=localitySelect.value, totalAreaVal=parseFloat(totalAreaInput.value); if(!grower||!locality||totalAreaVal<=0||savedGreenhouses.length===0){ toast("Complete profile & add records",true); return; } let rows=[]; let counter=1; const ts=new Date().toISOString(); for(let gh of savedGreenhouses){ let monthlyArr=MONTHS.map(m=>gh.monthly?.[m]||0); rows.push([grower,locality,currentZone,totalAreaVal,counter++,gh.crop,gh.variety,gh.stage,gh.area,'',gh.weeklyYield||0,gh.weeklyUnit||'kg',gh.harvestMonths||0,gh.prodSystem||'Cocopeat',ts,...monthlyArr]); } try{ await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({rows})}); toast("Data submitted"); savedGreenhouses=[]; updateSavedListDisplay(); renderActiveForm(); loadUserPreviousData(grower); loadDashboard(); }catch(e){ toast("error",true); } }
+    
     async function login(username, password) { const errorDiv=document.getElementById('loginError'); errorDiv.innerText=''; if(!username||!password){ errorDiv.innerText="Enter credentials"; return; } const loginBtn=document.getElementById('loginBtn'); loginBtn.disabled=true; loginBtn.innerHTML='<i class="fas fa-spinner fa-pulse"></i>'; try{ const res=await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`); const data=await res.json(); if(!data.success){ errorDiv.innerText="Invalid login"; return; } loggedInUsernameSpan.innerText=username; growerName.value=username; await autoFillProfileFromRecords(username); await loadUserPreviousData(username); await loadDashboard(); loginOverlay.style.display='none'; mainApp.style.display='block'; toast(`Welcome ${username}!`); }catch(e){ errorDiv.innerText="Network error"; }finally{ loginBtn.disabled=false; loginBtn.innerHTML='<i class="fas fa-sign-in-alt"></i> Login'; } }
+    
     document.getElementById('loginBtn').onclick=()=>login(loginUsername.value,loginPassword.value);
     document.getElementById('logoutBtn').onclick=()=>{ mainApp.style.display='none'; loginOverlay.style.display='flex'; savedGreenhouses=[]; toast("Logged out"); };
-    document.getElementById('accessTrackerBtn').onclick=()=>{ if(!growerName.value.trim()||!localitySelect.value||!totalAreaInput.value) toast("Complete profile first", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
+    document.getElementById('registerGreenhouseBtn').onclick=()=>{ if(!growerName.value.trim()||!localitySelect.value||!totalAreaInput.value) toast("Complete profile first", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
     document.getElementById('addGreenhouseBtn').onclick=saveCurrentGreenhouse;
     document.getElementById('submitDataBtn').onclick=submitAllNewData;
-    document.getElementById('updateAreaBtn').onclick=updateProfileWithLog;
+    document.getElementById('updateAreaBtn').onclick=updateAreaWithLog;
     document.getElementById('refreshProfileBtn').onclick=async()=>{ await loadUserPreviousData(growerName.value); await loadDashboard(); toast("Refreshed"); };
     document.getElementById('cancelEditBtn').onclick=()=>{ editModal.style.display='none'; };
     document.getElementById('saveEditBtn').onclick=saveFullRecordUpdate;
