@@ -6,6 +6,7 @@
     <title>Hydroponic Smart Tracker | Admin & Grower</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -94,6 +95,8 @@
         .remove-pending { background: #e74c3c; color: white; border: none; border-radius: 2rem; padding: 0.3rem 0.8rem; cursor: pointer; }
         .admin-badge { background: #ff9800; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; margin-left: 8px; }
         .action-buttons { display: flex; gap: 8px; align-items: center; }
+        .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
+        .crop-filter-btn.active { background: #2c7a2a; }
     </style>
 </head>
 <body>
@@ -138,6 +141,21 @@
         </div>
 
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
+        
+        <!-- NEW: Monthly Yield Efficiency Chart -->
+        <div class="glass-card">
+            <div class="stat-title">
+                <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
+            </div>
+            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="cropFilterButtons">
+                <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
+                <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
+                <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
+            </div>
+            <canvas id="efficiencyChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
+            <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
+        </div>
+        
         <div class="dashboard-grid">
             <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
             <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div></div>
@@ -185,7 +203,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxvIP96lc-_5xouVaIxAawGDIjwHTdz-qbVv7SHTMJoR2vlibtk0p_QjSv-OIbBMjrjQ/exec'; // <-- REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8e2HC_M9w377l77FHqOFsnYgnDxL77f-2Y6fTHEToGcrq3eCOVnoATaVbikB2PZYr5A/exec'; // <-- REPLACE WITH YOUR WEB APP URL
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -197,6 +215,8 @@
     let currentEditRecord = null;
     let isAdmin = false;
     let currentLoggedInUser = "";
+    let efficiencyChart = null;
+    let currentActiveCrop = "Tomato";
 
     // ========== SESSION PERSISTENCE ==========
     function saveLoginState(username, admin) {
@@ -289,6 +309,42 @@
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
 
+    // NEW: Load efficiency chart
+    async function loadEfficiencyChart(activeCrop = currentActiveCrop) {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getMonthlyEfficiency&_=${Date.now()}`);
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            const months = ["January", "February", "March", "April"];
+            if (!data[activeCrop] || Object.keys(data).length === 0) {
+                document.getElementById('noEfficiencyData').classList.remove('hidden');
+                if (efficiencyChart) { efficiencyChart.destroy(); efficiencyChart = null; }
+                return;
+            }
+            document.getElementById('noEfficiencyData').classList.add('hidden');
+            
+            const values = months.map(m => data[activeCrop]?.[m] || 0);
+            const color = activeCrop === "Tomato" ? "#e67e22" : (activeCrop === "Sweet Pepper" ? "#e74c3c" : "#2ecc71");
+            
+            if (efficiencyChart) efficiencyChart.destroy();
+            const ctx = document.getElementById('efficiencyChart').getContext('2d');
+            efficiencyChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: months, datasets: [{ label: activeCrop, data: values, backgroundColor: color, borderRadius: 8 }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(2)} kg/m²` } },
+                        legend: { position: 'top' }
+                    },
+                    scales: { y: { title: { display: true, text: 'Yield Efficiency (kg/m²)' }, beginAtZero: true } }
+                }
+            });
+        } catch(e) { console.error(e); document.getElementById('noEfficiencyData').classList.remove('hidden'); }
+    }
+
     async function loadDashboard() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
@@ -296,7 +352,7 @@
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
             
-            let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th><tr></thead><tbody>`;
+            let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             if (data.topVarieties?.tomato?.length) {
                 data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
             } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td>`; }
@@ -322,6 +378,9 @@
                 stageCropHtml += `<div class="stage-crop-card"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
             }
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
+            
+            // Load efficiency chart after dashboard data
+            await loadEfficiencyChart(currentActiveCrop);
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
@@ -707,14 +766,9 @@
         } catch (err) { errorDiv.innerText = `Network error`; } finally { loginBtn.disabled=false; loginBtn.innerHTML=original; }
     }
 
-    // Auto‑restore session on page load
     async function restoreSession() {
         const { loggedIn, username, admin } = getStoredLogin();
         if (loggedIn && username) {
-            // We don't have the password, but we can simulate a login without password?
-            // Actually we can trust the stored session and directly set the UI.
-            // However the backend might reject API calls if we didn't authenticate? No – the backend only checks password on login.
-            // All other endpoints are open. So we can just set the UI state.
             isAdmin = admin;
             currentLoggedInUser = username;
             loggedInUsernameSpan.innerText = username;
@@ -762,11 +816,24 @@
     document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
+    
+    // Efficiency filter buttons
+    function initEfficiencyFilter() {
+        const btns = document.querySelectorAll('.crop-filter-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                btns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentActiveCrop = btn.dataset.crop;
+                loadEfficiencyChart(currentActiveCrop);
+            });
+        });
+    }
+    
     initZoneHeader();
     updateLocalityDropdown();
     document.getElementById('greenhouseSection').classList.add('hidden');
-
-    // Try to restore session before showing login overlay
+    initEfficiencyFilter();
     restoreSession();
 </script>
 </body>
