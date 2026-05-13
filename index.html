@@ -25,15 +25,6 @@
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(70, 130, 50, 0.25);
         }
-        /* Compact card for efficiency chart */
-        .glass-card-compact {
-            background: rgba(255, 255, 255, 0.96);
-            border-radius: 24px;
-            padding: 0.8rem 1rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.1);
-            border: 1px solid rgba(70,130,50,0.2);
-        }
         @media (min-width: 768px) { .glass-card { padding: 1.5rem 2rem; } body { padding: 20px; } }
         .login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -104,12 +95,8 @@
         .remove-pending { background: #e74c3c; color: white; border: none; border-radius: 2rem; padding: 0.3rem 0.8rem; cursor: pointer; }
         .admin-badge { background: #ff9800; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; margin-left: 8px; }
         .action-buttons { display: flex; gap: 8px; align-items: center; }
-        .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.3rem 0.9rem; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
         .crop-filter-btn.active { background: #2c7a2a; }
-        /* Compact efficiency chart container */
-        .eff-chart-wrapper { max-width: 500px; margin: 0 auto; text-align: center; }
-        .eff-chart-wrapper canvas { max-width: 100%; height: auto; }
-        .filter-group { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     </style>
 </head>
 <body>
@@ -155,20 +142,18 @@
 
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         
-        <!-- RESIZED Monthly Yield Efficiency Chart -->
-        <div class="glass-card-compact">
-            <div class="stat-title" style="margin-bottom: 0.5rem;">
+        <!-- NEW: Monthly Yield Efficiency Chart -->
+        <div class="glass-card">
+            <div class="stat-title">
                 <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
             </div>
-            <div class="filter-group" id="cropFilterButtons">
+            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="cropFilterButtons">
                 <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
                 <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
                 <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
             </div>
-            <div class="eff-chart-wrapper">
-                <canvas id="efficiencyChart" width="300" height="200" style="width:100%; height:auto; max-width:300px; margin:0 auto;"></canvas>
-            </div>
-            <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:0.5rem; font-size:0.8rem;">No efficiency data available for Jan–Apr</div>
+            <canvas id="efficiencyChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
+            <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
         </div>
         
         <div class="dashboard-grid">
@@ -218,7 +203,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUcUmYKk5EPmXKGF4S2XPy0lccnPd4jrmTxE7V8WWWMMGpFdYamRY_mMj3pczo58gXAw/exec'; // <-- REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMQoJfC996ini39DfOWhJ06gCGBUERcUIOKYVsWbWOOaKux1y2HP2cRlmHNkSz3bshpQ/exec'; // <-- REPLACE WITH YOUR WEB APP URL
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -324,7 +309,7 @@
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
 
-    // Load efficiency chart (resized)
+    // NEW: Load efficiency chart
     async function loadEfficiencyChart(activeCrop = currentActiveCrop) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getMonthlyEfficiency&_=${Date.now()}`);
@@ -346,15 +331,15 @@
             const ctx = document.getElementById('efficiencyChart').getContext('2d');
             efficiencyChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: months, datasets: [{ label: activeCrop, data: values, backgroundColor: color, borderRadius: 6, barPercentage: 0.7 }] },
+                data: { labels: months, datasets: [{ label: activeCrop, data: values, backgroundColor: color, borderRadius: 8 }] },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
                     plugins: {
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(2)} kg/m²` }, bodyFont: { size: 10 } },
-                        legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(2)} kg/m²` } },
+                        legend: { position: 'top' }
                     },
-                    scales: { y: { title: { display: true, text: 'kg/m²', font: { size: 10 } }, beginAtZero: true, ticks: { font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } }
+                    scales: { y: { title: { display: true, text: 'Yield Efficiency (kg/m²)' }, beginAtZero: true } }
                 }
             });
         } catch(e) { console.error(e); document.getElementById('noEfficiencyData').classList.remove('hidden'); }
@@ -381,7 +366,7 @@
                 let topVariety = { variety: '—', area: 0 };
                 if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
                 else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
-                otherCropsHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td>`);
+                otherCropsHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
             }
             otherCropsHtml += `</tbody></table></div>`;
             document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + otherCropsHtml;
@@ -394,6 +379,7 @@
             }
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
             
+            // Load efficiency chart after dashboard data
             await loadEfficiencyChart(currentActiveCrop);
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
@@ -831,6 +817,7 @@
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
     
+    // Efficiency filter buttons
     function initEfficiencyFilter() {
         const btns = document.querySelectorAll('.crop-filter-btn');
         btns.forEach(btn => {
