@@ -97,6 +97,44 @@
         .action-buttons { display: flex; gap: 8px; align-items: center; }
         .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
         .crop-filter-btn.active { background: #2c7a2a; }
+
+        /* ========== COMPACT EFFICIENCY SECTION STYLES ========== */
+        .efficiency-compact {
+            padding: 0.5rem 0;
+        }
+        .efficiency-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            justify-content: center;
+        }
+        .efficiency-filters .crop-filter-btn {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.8rem;
+        }
+        .chart-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        canvas#efficiencyChart {
+            max-height: 180px;
+            width: 100%;
+            height: auto;
+        }
+        @media (min-width: 640px) {
+            canvas#efficiencyChart { max-height: 220px; }
+        }
+        .no-efficiency-data {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        /* Ensure the stat-title inside this card uses less bottom margin */
+        .glass-card .stat-title + .efficiency-compact {
+            margin-top: -0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -142,18 +180,22 @@
 
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         
-        <!-- NEW: Monthly Yield Efficiency Chart -->
+        <!-- COMPACT Monthly Yield Efficiency Chart -->
         <div class="glass-card">
             <div class="stat-title">
-                <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
+                <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²)
             </div>
-            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="cropFilterButtons">
-                <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
-                <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
-                <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
+            <div class="efficiency-compact">
+                <div class="efficiency-filters" id="cropFilterButtons">
+                    <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
+                    <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
+                    <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="efficiencyChart" width="400" height="180" style="max-width:100%; height:auto;"></canvas>
+                </div>
+                <div id="noEfficiencyData" class="hidden no-efficiency-data">⚠️ No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
             </div>
-            <canvas id="efficiencyChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
-            <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
         </div>
         
         <div class="dashboard-grid">
@@ -309,7 +351,7 @@
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
 
-    // NEW: Load efficiency chart
+    // Compact version: chart height reduced, uses the new canvas max-height
     async function loadEfficiencyChart(activeCrop = currentActiveCrop) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getMonthlyEfficiency&_=${Date.now()}`);
@@ -329,17 +371,22 @@
             
             if (efficiencyChart) efficiencyChart.destroy();
             const ctx = document.getElementById('efficiencyChart').getContext('2d');
+            // Adjust chart options for compact view – maintain aspect ratio but set max height via CSS
             efficiencyChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: months, datasets: [{ label: activeCrop, data: values, backgroundColor: color, borderRadius: 8 }] },
+                data: { labels: months, datasets: [{ label: activeCrop, data: values, backgroundColor: color, borderRadius: 6, barPercentage: 0.65, categoryPercentage: 0.8 }] },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
                     plugins: {
                         tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(2)} kg/m²` } },
-                        legend: { position: 'top' }
+                        legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }
                     },
-                    scales: { y: { title: { display: true, text: 'Yield Efficiency (kg/m²)' }, beginAtZero: true } }
+                    scales: {
+                        y: { title: { display: true, text: 'kg/m²', font: { size: 10 } }, beginAtZero: true, ticks: { font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10 } } }
+                    },
+                    layout: { padding: { top: 5, bottom: 5, left: 5, right: 5 } }
                 }
             });
         } catch(e) { console.error(e); document.getElementById('noEfficiencyData').classList.remove('hidden'); }
@@ -379,7 +426,6 @@
             }
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
             
-            // Load efficiency chart after dashboard data
             await loadEfficiencyChart(currentActiveCrop);
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
