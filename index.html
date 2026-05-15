@@ -8,29 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* (Same as before – keep all styles) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%);
-            min-height: 100vh;
-            padding: 16px;
-        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%); min-height: 100vh; padding: 16px; }
         .container { max-width: 1400px; margin: 0 auto; width: 100%; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(4px);
-            border-radius: 28px;
-            padding: 1.2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(70, 130, 50, 0.25);
-        }
+        .glass-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(4px); border-radius: 28px; padding: 1.2rem; margin-bottom: 1.5rem; box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2); border: 1px solid rgba(70, 130, 50, 0.25); }
         @media (min-width: 768px) { .glass-card { padding: 1.5rem 2rem; } body { padding: 20px; } }
-        .login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
-            display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 16px;
-        }
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 16px; }
         .login-card { background: white; max-width: 480px; width: 100%; border-radius: 2.5rem; padding: 2rem 1.5rem; text-align: center; }
         .login-header { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #136b1e, #259132); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 2rem; }
         .login-card input { width: 100%; padding: 0.9rem 1rem; margin-bottom: 1.2rem; border: 1px solid #cde0c2; border-radius: 2rem; font-size: 1rem; }
@@ -283,6 +267,7 @@
     const PROD_SYSTEMS = ["Cocopeat", "Rockwool", "NFT", "DWC", "Aquaponic", "Aggregates"];
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
     
+    // Global variables
     let currentZone = "E2";
     let savedGreenhouses = [];
     let currentEditRecord = null;
@@ -295,6 +280,26 @@
     let currentTimelineCrop = "Tomato";
     let currentForecastCrop = "Tomato";
     let currentZoneEfficiency = "E2";
+
+    // DOM element references
+    const loginOverlay = document.getElementById('loginOverlay');
+    const mainApp = document.getElementById('mainApp');
+    const growerNameInput = document.getElementById('growerName');
+    const localitySelect = document.getElementById('localitySelect');
+    const totalAreaInput = document.getElementById('totalArea');
+    const cropRecordsGrid = document.getElementById('cropRecordsGrid');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshPageBtn = document.getElementById('refreshPageBtn');
+    const editModal = document.getElementById('editRecordModal');
+    const loggedInUsernameSpan = document.getElementById('loggedInUsername');
+    const adminBadge = document.getElementById('adminBadge');
+    const updateAreaBtn = document.getElementById('updateAreaBtn');
+    const refreshProfileBtn = document.getElementById('refreshProfileBtn');
+    const accessTrackerBtn = document.getElementById('accessTrackerBtn');
+    const addGreenhouseBtn = document.getElementById('addGreenhouseBtn');
+    const submitDataBtn = document.getElementById('submitDataBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveEditBtn = document.getElementById('saveEditBtn');
 
     // Helper functions
     function saveLoginState(username, admin) { sessionStorage.setItem('hydroponic_loggedIn', 'true'); sessionStorage.setItem('hydroponic_username', username); sessionStorage.setItem('hydroponic_isAdmin', admin ? 'true' : 'false'); }
@@ -509,7 +514,7 @@
             let newMonthly = Array(12).fill(0);
             for (let i=0; i<12; i++) newMonthly[i] = parseFloat(document.getElementById(`edit_month_${i}`).value) || 0;
             if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
-            const username = growerName.value.trim();
+            const username = growerNameInput.value.trim();
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
             const cropName = row[cropIdx] || "";
             
@@ -533,7 +538,7 @@
     }
 
     async function logAreaUpdate() {
-        const username = growerName.value.trim();
+        const username = growerNameInput.value.trim();
         const locality = localitySelect.value;
         const currentArea = parseFloat(totalAreaInput.value) || 0;
         let newArea = prompt("Enter new total greenhouse area (m²):", currentArea);
@@ -595,7 +600,7 @@
         const originalText = refreshBtn.innerHTML;
         refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Refreshing...';
         refreshBtn.classList.add('btn-loading');
-        const user = growerName.value.trim();
+        const user = growerNameInput.value.trim();
         if (user) {
             await loadUserPreviousData(user);
             await loadDashboard();
@@ -682,7 +687,7 @@
     }
     
     async function submitAllNewData() { 
-        const grower = growerName.value.trim();
+        const grower = growerNameInput.value.trim();
         const locality = localitySelect.value;
         const totalArea = parseFloat(totalAreaInput.value);
         if (!grower || !locality || totalArea <= 0 || savedGreenhouses.length === 0) { 
@@ -720,7 +725,7 @@
             const data = await res.json();
             if (!data.success) { errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; }
             isAdmin = data.isAdmin === true; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username;
-            if (isAdmin) { adminBadge.classList.remove('hidden'); growerName.value = ''; growerName.placeholder = 'Enter target grower name'; growerName.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerName.readOnly = true; growerName.value = username; await autoFillProfileFromRecords(username); }
+            if (isAdmin) { adminBadge.classList.remove('hidden'); growerNameInput.value = ''; growerNameInput.placeholder = 'Enter target grower name'; growerNameInput.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerNameInput.readOnly = true; growerNameInput.value = username; await autoFillProfileFromRecords(username); }
             await loadUserPreviousData(isAdmin ? '' : username); await loadDashboard();
             loginOverlay.style.display = 'none'; mainApp.style.display = 'block'; saveLoginState(username, isAdmin); toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}!`);
         } catch (err) { errorDiv.innerText = `Network error: ${err.message}`; console.error(err); }
@@ -731,7 +736,7 @@
         const { loggedIn, username, admin } = getStoredLogin();
         if (loggedIn && username) {
             isAdmin = admin; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username;
-            if (isAdmin) { adminBadge.classList.remove('hidden'); growerName.value = ''; growerName.placeholder = 'Enter target grower name'; growerName.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerName.readOnly = true; growerName.value = username; await autoFillProfileFromRecords(username); }
+            if (isAdmin) { adminBadge.classList.remove('hidden'); growerNameInput.value = ''; growerNameInput.placeholder = 'Enter target grower name'; growerNameInput.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerNameInput.readOnly = true; growerNameInput.value = username; await autoFillProfileFromRecords(username); }
             await loadUserPreviousData(isAdmin ? '' : username); await loadDashboard();
             loginOverlay.style.display = 'none'; mainApp.style.display = 'block'; toast(`Welcome back ${username}${isAdmin ? ' (Admin)' : ''}!`, false);
         }
@@ -742,13 +747,13 @@
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { clearLoginState(); mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; toast("Logged out"); };
     refreshPageBtn.onclick = () => { window.location.reload(); };
-    document.getElementById('accessTrackerBtn').onclick = () => { if(!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
-    document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
-    document.getElementById('submitDataBtn').onclick = submitAllNewData;
-    document.getElementById('updateAreaBtn').onclick = logAreaUpdate;
-    document.getElementById('refreshProfileBtn').onclick = refreshFullData;
-    document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
-    document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
+    accessTrackerBtn.onclick = () => { if(!growerNameInput.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
+    addGreenhouseBtn.onclick = saveCurrentGreenhouse;
+    submitDataBtn.onclick = submitAllNewData;
+    updateAreaBtn.onclick = logAreaUpdate;
+    refreshProfileBtn.onclick = refreshFullData;
+    cancelEditBtn.onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
+    saveEditBtn.onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
 
     function initFilters() {
