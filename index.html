@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Category Area Outlook</title>
+    <title>Hydroponic Smart Tracker | Reordered Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -46,7 +46,6 @@
         .top-crops-table, .data-table, .efficiency-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
         .top-crops-table th, .data-table th, .efficiency-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
         .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
-        /* Center the efficiency range values */
         .efficiency-table td:nth-child(3) { text-align: center; }
         .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
         .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
@@ -72,10 +71,11 @@
         .header-flex { display: flex; flex-direction: column; gap: 12px; }
         @media (min-width: 768px) { .header-flex { flex-direction: row; justify-content: space-between; align-items: center; } }
         .zone-banner { background: rgba(30, 70, 30, 0.08); border-radius: 3rem; padding: 0.4rem 1.2rem; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .stage-progress-container { margin-bottom: 1rem; }
-        .stage-progress-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.8rem; font-weight: 500; }
-        .stage-progress-bar-bg { background: #e9f3e4; border-radius: 1rem; height: 12px; overflow: hidden; }
-        .stage-progress-fill { background: linear-gradient(90deg, #2e8b57, #4cae4c); height: 100%; border-radius: 1rem; width: 0%; }
+        .stage-progress-container { margin-bottom: 1rem; cursor: pointer; transition: transform 0.2s; }
+        .stage-progress-container:hover { transform: scale(1.02); }
+        .stage-progress-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.9rem; font-weight: 500; align-items: center; }
+        .stage-progress-bar-bg { background: #e9f3e4; border-radius: 1rem; height: 14px; overflow: hidden; }
+        .stage-progress-fill { background: linear-gradient(90deg, #2e8b57, #4cae4c); height: 100%; border-radius: 1rem; width: 0%; transition: width 0.3s ease; }
         .stat-title { font-weight: 800; font-size: 1.2rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
         .live-dashboard-title { font-size: 1.5rem; font-weight: 800; color: #1b5e1f; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px dashed #b8daa8; display: flex; align-items: center; gap: 10px; }
         .grid-2col { display: grid; gap: 1rem; }
@@ -105,6 +105,10 @@
         canvas#areaOutlookChart { max-height: 400px; width: 100%; }
         .zonal-table-wrapper { overflow-x: auto; }
         .greenhouse-form-container { margin-top: 1rem; transition: all 0.3s ease; }
+        .stage-icon { width: 28px; text-align: center; font-size: 1.2rem; }
+        [data-tooltip] { position: relative; cursor: help; }
+        [data-tooltip]:before { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #2c5e2a; color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; white-space: nowrap; z-index: 10; opacity: 0; pointer-events: none; transition: 0.2s; }
+        [data-tooltip]:hover:before { opacity: 1; bottom: 120%; }
     </style>
 </head>
 <body>
@@ -147,7 +151,6 @@
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
             <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
             
-            <!-- Greenhouse registration form appears here when clicked -->
             <div id="greenhouseSection" class="greenhouse-form-container hidden">
                 <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%); margin-top: 1rem; padding: 1rem;">
                     <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
@@ -161,7 +164,43 @@
             </div>
         </div>
 
-        <!-- Projected Monthly Cultivated Area (moved above efficiency chart) -->
+        <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
+        
+        <!-- 1. Area by Stage (interactive with icons) -->
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-chart-simple"></i> 📊 Area by Stage</div>
+            <div id="areaByStageContainer"></div>
+        </div>
+
+        <!-- 2. Stage Breakdown per Crop -->
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-layer-group"></i> 🌿 Stage Breakdown per Crop</div>
+            <div id="stageByCropContainer" class="stage-breakdown-wrapper"></div>
+        </div>
+
+        <!-- 3. Top Crop Areas (top 5 by total area) -->
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-chart-simple"></i> 🏆 Top Crop Areas</div>
+            <div class="table-responsive">
+                <table class="top-crops-table" id="topCropsTable">
+                    <thead><tr><th>Crop</th><th>Total Area (m²)</th></tr></thead>
+                    <tbody id="topCropsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. Other Key Crops (remaining crops after top 5) -->
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-seedling"></i> 🌾 Other Key Crops</div>
+            <div class="table-responsive">
+                <table class="top-crops-table" id="otherCropsTable">
+                    <thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead>
+                    <tbody id="otherCropsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. Projected Monthly Cultivated Area -->
         <div class="glass-card" id="areaOutlookSection">
             <div class="stat-title">
                 <i class="fas fa-chart-line"></i> 📅 Projected Monthly Cultivated Area (m²) by Crop Type (Jan–Dec 2026)
@@ -175,7 +214,7 @@
             <div id="areaOutlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
         </div>
 
-        <!-- Monthly Yield Efficiency Chart (smaller, moved down) -->
+        <!-- 6. Monthly Yield Efficiency -->
         <div class="glass-card">
             <div class="stat-title">
                 <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
@@ -190,19 +229,14 @@
             </div>
             <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
         </div>
-        
-        <!-- Zonal Yield Efficiency Table with range (min–max) -->
+
+        <!-- 7. Zonal Yield Efficiency Reference -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-table-list"></i> 📊 Zonal Yield Efficiency Reference</div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
                     <thead>
-                        <tr>
-                            <th>Crop</th>
-                            <th>Type / Variety</th>
-                            <th>Avg Yield Efficiency Range (kg/m²)</th>
-                            <th>Units</th>
-                        </tr>
+                        <tr><th>Crop</th><th>Type / Variety</th><th>Avg Yield Efficiency Range (kg/m²)</th><th>Units</th></tr>
                     </thead>
                     <tbody>
                         <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>30 – 58</td><td>unit</td></tr>
@@ -215,12 +249,6 @@
                 </table>
             </div>
         </div>
-
-        <div class="dashboard-grid">
-            <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
-            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div></div>
-        </div>
-        <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
 
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
             <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div>
@@ -252,10 +280,13 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL WEB APP URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkRg3NyIKQ5KDgG6r1V2XdrmOQ9he7u8VWZnjmio-WOb3xn7Cm_8qwYrZfXQzfTSOP0Q/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzn5Fz1QfKVY28epAKCTB7OynqlYmf-a6plPGpdmLXr7RRtDsrpYwxwjQPROc_jignHPA/exec';
     
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
+    const STAGE_ICONS = {
+        "Seedling": "🌱", "Vegetative": "🌿", "Flowering": "🌸", "Fruiting": "🍅", "Harvesting": "🚜"
+    };
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
     const PROD_SYSTEMS = ["Cocopeat", "Rockwool", "NFT", "DWC", "Aquaponic", "Aggregates"];
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
@@ -269,28 +300,13 @@
     let areaOutlookChart = null;
     let currentActiveCrop = "Tomato";
     let planningData = [];
+    let dashboardStats = null; // store for top crops
 
     const CROP_CYCLES = {
         "Tomato": { preHarvestMonths: 2.5, harvestDurationMonths: 5 },
         "Sweet Pepper": { preHarvestMonths: 2.5, harvestDurationMonths: 5 },
         "English Cucumber": { preHarvestMonths: 1.5, harvestDurationMonths: 3 }
     };
-
-    // Category mapping for area outlook
-    function getCategory(crop, variety, tomatoType) {
-        if (crop === "English Cucumber") return "English Cucumber";
-        if (crop === "Sweet Pepper") return "Sweet Pepper";
-        if (crop === "Tomato") {
-            let type = (tomatoType || "").toLowerCase();
-            if (type.includes("salad")) return "Tomato (Salad)";
-            if (type.includes("cooking")) return "Tomato (Cooking)";
-            let varLower = (variety || "").toLowerCase();
-            if (varLower.includes("salad")) return "Tomato (Salad)";
-            if (varLower.includes("cooking")) return "Tomato (Cooking)";
-            return "Tomato (Cooking)";
-        }
-        return null;
-    }
 
     // ========== SESSION ==========
     function saveLoginState(username, admin) {
@@ -368,6 +384,7 @@
         locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); 
     }
 
+    // Interactive Area by Stage with icons and tooltips
     function renderAreaByStage(stats) {
         const areaByStage = stats.areaByStageTotal || {};
         let maxArea = Math.max(...Object.values(areaByStage).map(v=>v||0),1);
@@ -375,12 +392,67 @@
         for (let s of STAGES) {
             let area = areaByStage[s] || 0;
             let percent = (area / maxArea) * 100;
-            html += `<div class="stage-progress-container">
-                        <div class="stage-progress-label"><span><i class="fas fa-chart-line"></i> ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div>
+            let icon = STAGE_ICONS[s] || '🌱';
+            html += `<div class="stage-progress-container" data-tooltip="${s}: ${area.toFixed(1)} m²">
+                        <div class="stage-progress-label">
+                            <span><i class="fas ${s === 'Seedling' ? 'fa-seedling' : (s === 'Vegetative' ? 'fa-leaf' : (s === 'Flowering' ? 'fa-tree' : (s === 'Fruiting' ? 'fa-apple-alt' : 'fa-tractor')))}"></i> ${icon} ${s}</span>
+                            <span><strong>${area.toFixed(1)} m²</strong></span>
+                        </div>
                         <div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div>
                     </div>`;
         }
         document.getElementById('areaByStageContainer').innerHTML = html;
+    }
+
+    // Render Top Crop Areas and Other Key Crops from dashboardStats
+    function renderTopAndOtherCrops(stats) {
+        const areaByCrop = stats.areaByCrop || [];
+        // Sort descending by area
+        const sorted = [...areaByCrop].sort((a,b) => b.area - a.area);
+        const top5 = sorted.slice(0,5);
+        const other = sorted.slice(5);
+        
+        // Top 5 table
+        const topBody = document.getElementById('topCropsBody');
+        topBody.innerHTML = top5.map(c => `<tr><td><i class="fas fa-chart-line"></i> ${c.crop}</td><td><strong>${c.area.toFixed(1)}</strong></td></tr>`).join('');
+        
+        // Other crops table (with top variety if available)
+        const otherBody = document.getElementById('otherCropsBody');
+        if (other.length === 0) {
+            otherBody.innerHTML = '<tr><td colspan="4">No other crops recorded</td></tr>';
+        } else {
+            otherBody.innerHTML = other.map(c => {
+                let topVar = { variety: '—', area: 0 };
+                if (c.crop === 'Sweet Pepper' && stats.topVarieties?.sweetPepper?.length) topVar = stats.topVarieties.sweetPepper[0];
+                else if (c.crop === 'English Cucumber' && stats.topVarieties?.englishCucumber?.length) topVar = stats.topVarieties.englishCucumber[0];
+                else if (c.crop === 'Tomato' && stats.topVarieties?.tomato?.length) {
+                    // just pick the first tomato variety for simplicity
+                    topVar = stats.topVarieties.tomato[0];
+                }
+                return `<tr><td><i class="fas ${c.crop === 'Sweet Pepper' ? 'fa-pepper-hot' : (c.crop === 'English Cucumber' ? 'fa-leaf' : 'fa-seedling')}"></i> ${c.crop}</td><td>${c.area.toFixed(1)}</td><td>${topVar.variety}</td><td>${topVar.area.toFixed(1)}</td></tr>`;
+            }).join('');
+        }
+    }
+
+    async function loadDashboard() {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            dashboardStats = data;
+            renderAreaByStage(data);
+            renderTopAndOtherCrops(data);
+            
+            // Stage Breakdown per Crop
+            let stageCropHtml = '';
+            const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
+            for (let crop of ["Tomato","Sweet Pepper","English Cucumber"]) {
+                let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {};
+                stageCropHtml += `<div class="stage-crop-card"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${STAGE_ICONS[s] || '🌱'} ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
+            }
+            document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
+            await loadEfficiencyChart(currentActiveCrop);
+        } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
     async function loadEfficiencyChart(activeCrop = currentActiveCrop) {
@@ -407,41 +479,7 @@
         } catch(e) { console.error(e); document.getElementById('noEfficiencyData').classList.remove('hidden'); }
     }
 
-    async function loadDashboard() {
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
-            renderAreaByStage(data);
-            let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
-            if (data.topVarieties?.tomato?.length) {
-                data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
-            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td>`; }
-            tomatoHtml += `</tbody></table></div>`;
-            let otherCropsHtml = `<div><h4>🌾 Other Key Crops</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
-            const targetOther = ["Sweet Pepper", "English Cucumber"];
-            for (let crop of targetOther) {
-                let entry = (data.areaByCrop || []).find(c => c.crop === crop);
-                let area = entry ? entry.area : 0;
-                let topVariety = { variety: '—', area: 0 };
-                if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
-                else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
-                otherCropsHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
-            }
-            otherCropsHtml += `</tbody></table></div>`;
-            document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + otherCropsHtml;
-            let stageCropHtml = '';
-            const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
-            for (let crop of ["Tomato","Sweet Pepper","English Cucumber"]) {
-                let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {};
-                stageCropHtml += `<div class="stage-crop-card"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
-            }
-            document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
-            await loadEfficiencyChart(currentActiveCrop);
-        } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
-    }
-
-    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY (LINE CHART, JAN-DEC 2026) ==========
+    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY (LINE CHART) ==========
     async function loadPlanningData() {
         const username = isAdmin ? "" : currentLoggedInUser;
         const res = await fetch(`${SCRIPT_URL}?action=getCropPlanningData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -471,11 +509,10 @@
                 loadingDiv.classList.add('hidden');
                 return;
             }
-            // Fixed months: Jan 2026 to Dec 2026
             const startYear = 2026;
             const months = [];
             for (let i = 0; i < 12; i++) {
-                months.push(new Date(startYear, i, 1)); // Jan 2026 = month 0
+                months.push(new Date(startYear, i, 1));
             }
             const categories = ["Tomato (Cooking)", "Tomato (Salad)", "Sweet Pepper", "English Cucumber"];
             const categoryColors = {
@@ -517,28 +554,23 @@
             }
             
             const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: 'numeric' }));
-            // Prepare line datasets
             const lineDatasets = categories.map(cat => ({
                 label: cat,
                 data: datasets[cat],
-                backgroundColor: categoryColors[cat],
                 borderColor: categoryColors[cat],
+                backgroundColor: 'transparent',
                 borderWidth: 2,
                 fill: false,
                 tension: 0.3,
                 pointRadius: 4,
                 pointHoverRadius: 6
             }));
-            // Add trend line (linear regression on total area per month)
+            // Trend line
             let totalPerMonth = new Array(12).fill(0);
             for (let i = 0; i < 12; i++) {
-                for (let cat of categories) {
-                    totalPerMonth[i] += datasets[cat][i];
-                }
+                for (let cat of categories) totalPerMonth[i] += datasets[cat][i];
             }
-            // Calculate linear regression (x = month index)
-            let n = 12;
-            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            let n = 12, sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
             for (let i = 0; i < n; i++) {
                 sumX += i;
                 sumY += totalPerMonth[i];
@@ -567,14 +599,8 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: {
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(0)} m²` } },
-                        legend: { position: 'top' }
-                    },
-                    scales: {
-                        y: { title: { display: true, text: 'Cultivated Area (m²)' }, beginAtZero: true },
-                        x: { title: { display: true, text: 'Month (2026)' }, ticks: { maxRotation: 45, minRotation: 45 } }
-                    }
+                    plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(0)} m²` } }, legend: { position: 'top' } },
+                    scales: { y: { title: { display: true, text: 'Cultivated Area (m²)' }, beginAtZero: true }, x: { title: { display: true, text: 'Month (2026)' }, ticks: { maxRotation: 45, minRotation: 45 } } }
                 }
             });
             loadingDiv.classList.add('hidden');
@@ -586,7 +612,7 @@
         }
     }
 
-    // ========== EXISTING USER DATA, EDIT, PROFILE ==========
+    // ========== USER DATA, EDIT, PROFILE ==========
     async function loadUserPreviousData(username) {
         if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
         try {
@@ -961,9 +987,7 @@
         else { 
             const greenhouseDiv = document.getElementById('greenhouseSection');
             greenhouseDiv.classList.toggle('hidden');
-            if (!greenhouseDiv.classList.contains('hidden')) {
-                renderActiveForm();
-            }
+            if (!greenhouseDiv.classList.contains('hidden')) renderActiveForm();
         } 
     };
     document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
