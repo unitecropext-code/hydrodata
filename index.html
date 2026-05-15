@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Crop Timeline & Dashboard</title>
+    <title>Hydroponic Smart Tracker | Projected Harvest Outlook</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -97,8 +97,9 @@
         .action-buttons { display: flex; gap: 8px; align-items: center; }
         .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
         .crop-filter-btn.active { background: #2c7a2a; }
-        .gantt-row { transition: background 0.2s; }
-        .transplant-slider { cursor: pointer; }
+        /* Outlook chart container */
+        .outlook-chart-container { max-width: 100%; overflow-x: auto; margin-top: 1rem; }
+        canvas#outlookChart { max-height: 400px; width: 100%; }
     </style>
 </head>
 <body>
@@ -164,23 +165,18 @@
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
 
-        <!-- Interactive Crop Timeline (Gantt) -->
-        <div class="glass-card" id="timelineSection" style="margin-top: 1.5rem;">
+        <!-- NEW: Projected Harvest Outlook (kg) based on transplant dates -->
+        <div class="glass-card" id="outlookSection">
             <div class="stat-title">
-                <i class="fas fa-chalkboard-user"></i> 📅 Interactive Crop Timeline (Gantt)
-                <span style="font-size:0.8rem; margin-left:1rem;">Drag sliders → adjust transplant dates → forecast harvest</span>
+                <i class="fas fa-chart-line"></i> 📅 Projected Monthly Harvest Outlook (kg)
+                <span style="font-size:0.8rem; margin-left:1rem;">Based on transplant dates & crop cycles</span>
+                <button id="refreshOutlookBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
             </div>
-            <div id="timelineControls" style="margin-bottom:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
-                <button id="refreshTimelineBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
+            <div class="outlook-chart-container">
+                <canvas id="outlookChart" width="800" height="350" style="max-width:100%; height:auto;"></canvas>
             </div>
-            <div id="ganttContainer" style="overflow-x: auto;">
-                <div id="ganttHeader" style="display:flex; margin-bottom:8px; font-weight:bold;"></div>
-                <div id="ganttRows"></div>
-            </div>
-            <div id="timelineForecastSummary" class="hidden" style="margin-top:1.5rem; background:#f4f9ef; border-radius:1rem; padding:1rem;">
-                <h4>📊 Aggregated Monthly Harvest Forecast (kg)</h4>
-                <div id="forecastSummaryGrid" style="display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:0.5rem;"></div>
-            </div>
+            <div id="outlookLoading" class="hidden" style="text-align:center; padding:1rem;">Loading forecast...</div>
+            <div id="outlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
         </div>
 
         <div id="greenhouseSection" class="hidden">
@@ -239,10 +235,10 @@
     let isAdmin = false;
     let currentLoggedInUser = "";
     let efficiencyChart = null;
+    let outlookChart = null;
     let currentActiveCrop = "Tomato";
     let efficiencyMap = {};
     let planningData = [];
-    let timelineDragTimeout = null;
 
     const CROP_CYCLES = {
         "Tomato": { preHarvestMonths: 2.5, harvestDurationMonths: 5, color: "#2e8b57" },
@@ -399,7 +395,7 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    // ========== TIMELINE FUNCTIONS ==========
+    // ========== PROJECTED HARVEST OUTLOOK ==========
     async function loadEfficiencyMap() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getYieldEfficiencyMap&_=${Date.now()}`);
@@ -409,122 +405,100 @@
     }
 
     async function loadPlanningData() {
+        // For outlook, we want all growers if admin, else only current grower
         const username = isAdmin ? "" : currentLoggedInUser;
         const res = await fetch(`${SCRIPT_URL}?action=getCropPlanningData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
         const data = await res.json();
         planningData = data;
-        renderGantt();
     }
 
-    function renderGantt() {
-        const container = document.getElementById('ganttRows');
-        if (!planningData.length) {
-            container.innerHTML = '<div class="badge" style="padding:2rem; text-align:center;">No active crop records with transplant dates found.</div>';
-            document.getElementById('timelineForecastSummary').classList.add('hidden');
-            return;
-        }
-        document.getElementById('timelineForecastSummary').classList.remove('hidden');
-        
-        const today = new Date();
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 30);
-        const endDate = new Date(today);
-        endDate.setMonth(today.getMonth() + 12);
-        
-        let months = [];
-        let cursor = new Date(startDate);
-        while (cursor <= endDate) {
-            months.push(new Date(cursor));
-            cursor.setMonth(cursor.getMonth() + 1);
-        }
-        const headerDiv = document.getElementById('ganttHeader');
-        headerDiv.innerHTML = `<div style="width:250px; min-width:200px;">Crop / Details</div>` + 
-            months.map(m => `<div style="width:80px; text-align:center; font-size:0.75rem;">${m.toLocaleString('default', { month:'short', year:'2-digit' })}</div>`).join('');
-        
-        let allForecasts = {};
-        container.innerHTML = planningData.map((cropPlan, idx) => {
-            const transplantDate = new Date(cropPlan.transplantDate);
-            if (isNaN(transplantDate.getTime())) return '';
-            const cropType = cropPlan.crop;
-            const cycle = CROP_CYCLES[cropType] || CROP_CYCLES["Tomato"];
-            const harvestStart = new Date(transplantDate);
-            harvestStart.setMonth(harvestStart.getMonth() + cycle.preHarvestMonths);
-            const harvestEnd = new Date(harvestStart);
-            harvestEnd.setMonth(harvestEnd.getMonth() + cycle.harvestDurationMonths);
-            
-            const area = cropPlan.area;
-            const baseEfficiency = efficiencyMap[cropType] || (cropType === "English Cucumber" ? 12 : 10);
-            const monthlyKg = (baseEfficiency * area) / cycle.harvestDurationMonths;
-            
-            let forecasts = [];
-            for (let m of months) {
-                let harvestAmount = 0;
-                if (m >= harvestStart && m <= harvestEnd) {
-                    harvestAmount = monthlyKg;
-                    const monthKey = `${m.getFullYear()}-${m.getMonth()}`;
-                    allForecasts[monthKey] = (allForecasts[monthKey] || 0) + harvestAmount;
-                }
-                forecasts.push(harvestAmount);
-            }
-            
-            const todayRef = new Date(); todayRef.setHours(0,0,0,0);
-            const transplantDay = new Date(transplantDate); transplantDay.setHours(0,0,0,0);
-            const offsetDays = Math.round((transplantDay - todayRef) / (1000*3600*24));
-            const sliderMin = -90, sliderMax = 180;
-            
-            return `
-                <div class="gantt-row" data-timestamp="${cropPlan.timestamp}" data-grower="${cropPlan.grower}" data-original-transplant="${cropPlan.transplantDate}" style="display:flex; align-items:center; margin-bottom:12px; background:#fff; border-radius:1rem; padding:6px 0; border-bottom:1px solid #e0efd4;">
-                    <div style="width:250px; min-width:200px; padding:0 8px;">
-                        <strong>${cropPlan.crop}</strong> ${cropPlan.variety !== '—' ? `(${cropPlan.variety})` : ''}<br>
-                        <span style="font-size:0.7rem;">${cropPlan.area} m² | ${cropPlan.grower}</span>
-                        <div style="margin-top:4px;">
-                            <input type="range" class="transplant-slider" min="${sliderMin}" max="${sliderMax}" value="${offsetDays}" step="1" style="width:120px;">
-                            <span class="transplant-date-preview" style="font-size:0.7rem; margin-left:8px;">${transplantDate.toISOString().split('T')[0]}</span>
-                        </div>
-                    </div>
-                    ${forecasts.map(kg => `<div style="width:80px; text-align:center; font-size:0.7rem; background:${kg>0 ? cycle.color : '#f0f0f0'}; border-radius:8px; padding:4px 0;">${kg>0 ? kg.toFixed(0)+' kg' : '—'}</div>`).join('')}
-                </div>
-            `;
-        }).join('');
-        
-        const summaryDiv = document.getElementById('forecastSummaryGrid');
-        const sortedMonths = Object.keys(allForecasts).sort();
-        summaryDiv.innerHTML = sortedMonths.map(monthKey => {
-            const [year, month] = monthKey.split('-');
-            const date = new Date(parseInt(year), parseInt(month), 1);
-            return `<div style="background:#eef3e8; border-radius:12px; padding:6px 12px;"><strong>${date.toLocaleString('default', { month:'short', year:'numeric' })}</strong><br>${allForecasts[monthKey].toFixed(0)} kg</div>`;
-        }).join('');
-        
-        document.querySelectorAll('.transplant-slider').forEach(slider => {
-            const row = slider.closest('.gantt-row');
-            const previewSpan = row.querySelector('.transplant-date-preview');
-            const timestamp = row.dataset.timestamp;
-            const grower = row.dataset.grower;
-            slider.addEventListener('input', (e) => {
-                const daysOffset = parseInt(e.target.value);
-                const newDate = new Date();
-                newDate.setDate(newDate.getDate() + daysOffset);
-                previewSpan.innerText = newDate.toISOString().split('T')[0];
-                if (timelineDragTimeout) clearTimeout(timelineDragTimeout);
-                timelineDragTimeout = setTimeout(() => {
-                    updateTransplantDate(timestamp, grower, newDate.toISOString().split('T')[0]);
-                }, 600);
-            });
-        });
-    }
-
-    async function updateTransplantDate(timestamp, grower, newDateStr) {
+    async function computeAndRenderOutlook() {
+        const loadingDiv = document.getElementById('outlookLoading');
+        const errorDiv = document.getElementById('outlookError');
+        loadingDiv.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
         try {
-            const payload = { action: 'updateCropPlanningTransplant', updates: [{ timestamp, grower, newTransplantDate: newDateStr }] };
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+            await loadEfficiencyMap();
+            await loadPlanningData();
+            if (!planningData.length) {
+                errorDiv.innerText = 'No crop records with transplant dates found. Please add transplant dates to your crops.';
+                errorDiv.classList.remove('hidden');
+                if (outlookChart) outlookChart.destroy();
+                loadingDiv.classList.add('hidden');
+                return;
+            }
+            // Aggregate monthly harvest (kg) for the next 12 months from today
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const startDate = new Date(today);
+            startDate.setMonth(today.getMonth() + 1); // start from next month
+            const endDate = new Date(today);
+            endDate.setMonth(today.getMonth() + 13); // 12 months ahead
+            let months = [];
+            let cursor = new Date(startDate);
+            while (cursor <= endDate) {
+                months.push(new Date(cursor));
+                cursor.setMonth(cursor.getMonth() + 1);
+            }
+            // For each month, accumulate kg
+            let monthlyTotals = new Array(months.length).fill(0);
+            for (let cropPlan of planningData) {
+                const transplantDate = new Date(cropPlan.transplantDate);
+                if (isNaN(transplantDate.getTime())) continue;
+                const cropType = cropPlan.crop;
+                if (!CROP_CYCLES[cropType]) continue;
+                const cycle = CROP_CYCLES[cropType];
+                const harvestStart = new Date(transplantDate);
+                harvestStart.setMonth(harvestStart.getMonth() + cycle.preHarvestMonths);
+                const harvestEnd = new Date(harvestStart);
+                harvestEnd.setMonth(harvestEnd.getMonth() + cycle.harvestDurationMonths);
+                const area = cropPlan.area;
+                const baseEfficiency = efficiencyMap[cropType] || (cropType === "English Cucumber" ? 12 : 10); // lifetime kg/m²
+                const monthlyKg = (baseEfficiency * area) / cycle.harvestDurationMonths;
+                for (let i = 0; i < months.length; i++) {
+                    const m = months[i];
+                    if (m >= harvestStart && m <= harvestEnd) {
+                        monthlyTotals[i] += monthlyKg;
+                    }
+                }
+            }
+            // Prepare labels and data for chart
+            const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: '2-digit' }));
+            const data = monthlyTotals;
+            if (outlookChart) outlookChart.destroy();
+            const ctx = document.getElementById('outlookChart').getContext('2d');
+            outlookChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Projected Harvest (kg)',
+                        data: data,
+                        backgroundColor: '#2e8b57',
+                        borderRadius: 8,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(0)} kg` } },
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: { title: { display: true, text: 'Kilograms (kg)' }, beginAtZero: true },
+                        x: { title: { display: true, text: 'Month' }, ticks: { maxRotation: 45, minRotation: 45 } }
+                    }
+                }
             });
-            toast("Transplant date updated – reloading timeline...");
-            setTimeout(() => { loadEfficiencyMap(); loadPlanningData(); }, 1000);
-        } catch(e) { toast("Failed to update transplant date", true); }
+            loadingDiv.classList.add('hidden');
+        } catch(e) {
+            console.error(e);
+            errorDiv.innerText = 'Error loading outlook: ' + e.message;
+            errorDiv.classList.remove('hidden');
+            loadingDiv.classList.add('hidden');
+        }
     }
 
     // ========== EXISTING USER DATA, EDIT, PROFILE ==========
@@ -645,6 +619,7 @@
             setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
+                await computeAndRenderOutlook(); // refresh outlook after update
                 toast("Data refreshed.");
             }, 2000);
         } catch(e) { console.error(e); toast("Request sent but could not verify. Please refresh manually.", true); } finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
@@ -714,10 +689,9 @@
         if (user) {
             await loadUserPreviousData(user);
             await loadDashboard();
-            await loadEfficiencyMap();
-            await loadPlanningData();
+            await computeAndRenderOutlook();
             if (!isAdmin) await autoFillProfileFromRecords(user);
-            toast("📊 Dashboard & timeline refreshed");
+            toast("📊 Dashboard & outlook refreshed");
         } else { toast("No active user", true); }
         refreshBtn.innerHTML = originalText;
         refreshBtn.classList.remove('btn-loading');
@@ -821,8 +795,7 @@
             renderActiveForm(); 
             await loadUserPreviousData(grower); 
             await loadDashboard(); 
-            await loadEfficiencyMap();
-            await loadPlanningData();
+            await computeAndRenderOutlook();
             if (!isAdmin) await autoFillProfileFromRecords(grower);
         } catch(e) { toast("Submit error", true); } 
     }
@@ -857,8 +830,7 @@
             }
             await loadUserPreviousData(isAdmin ? '' : username);
             await loadDashboard();
-            await loadEfficiencyMap();
-            await loadPlanningData();
+            await computeAndRenderOutlook();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             saveLoginState(username, isAdmin);
@@ -887,8 +859,7 @@
             }
             await loadUserPreviousData(isAdmin ? '' : username);
             await loadDashboard();
-            await loadEfficiencyMap();
-            await loadPlanningData();
+            await computeAndRenderOutlook();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             toast(`Welcome back ${username}${isAdmin ? ' (Admin)' : ''}!`, false);
@@ -905,7 +876,7 @@
     document.getElementById('submitDataBtn').onclick = submitAllNewData;
     document.getElementById('updateAreaBtn').onclick = logAreaUpdate;
     document.getElementById('refreshProfileBtn').onclick = refreshFullData;
-    document.getElementById('refreshTimelineBtn').onclick = () => { loadEfficiencyMap(); loadPlanningData(); };
+    document.getElementById('refreshOutlookBtn').onclick = () => { computeAndRenderOutlook(); toast("Refreshing harvest outlook..."); };
     document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
