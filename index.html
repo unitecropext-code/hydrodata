@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* (Same as before – keep all styles) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%); min-height: 100vh; padding: 16px; }
         .container { max-width: 1400px; margin: 0 auto; width: 100%; }
@@ -125,10 +124,13 @@
             <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" placeholder="Enter grower name" style="background:#f4f9f0;"></div>
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
-            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details </button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
+            <div class="profile-row">
+                <button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details</button>
+                <button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button>
+            </div>
         </div>
 
-        <!-- Greenhouse Form (appears after profile) -->
+        <!-- Greenhouse Form (toggled) -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%);">
                 <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
@@ -156,13 +158,13 @@
             <div id="stageByCropContainer" class="stage-breakdown-wrapper"></div>
         </div>
 
-        <!-- 3. Top Crop Areas & Varieties -->
+        <!-- 3. Top Crop Areas & Varieties (Tomato + Sweet Pepper + English Cucumber summary) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-table-list metric-icon"></i> 🏆 Top Crop Areas & Varieties</div>
             <div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div>
         </div>
 
-        <!-- 4. Other Key Crops -->
+        <!-- 4. Other Key Crops (Cabbage, Lettuce, Eggplant, etc.) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-leaf metric-icon"></i> 🌾 Other Key Crops</div>
             <div id="otherKeyCropsContainer"></div>
@@ -260,7 +262,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL APPS SCRIPT URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxntYIBBJ2qgcuAkcA2-pSL7kfT82ULmJtVCkMH5RxBLLs-Xjb3wKRJhrXONe6A3XxqGA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby830CADezkxhYkbwFYF4SV5zhs3xEosPY3SVEPCXETlqBiHpTvdc1XH0f0XKW90qeBpA/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -280,6 +282,7 @@
     let currentTimelineCrop = "Tomato";
     let currentForecastCrop = "Tomato";
     let currentZoneEfficiency = "E2";
+    let greenhouseSectionVisible = false;
 
     // DOM element references
     const loginOverlay = document.getElementById('loginOverlay');
@@ -300,6 +303,7 @@
     const submitDataBtn = document.getElementById('submitDataBtn');
     const cancelEditBtn = document.getElementById('cancelEditBtn');
     const saveEditBtn = document.getElementById('saveEditBtn');
+    const greenhouseSection = document.getElementById('greenhouseSection');
 
     // Helper functions
     function saveLoginState(username, admin) { sessionStorage.setItem('hydroponic_loggedIn', 'true'); sessionStorage.setItem('hydroponic_username', username); sessionStorage.setItem('hydroponic_isAdmin', admin ? 'true' : 'false'); }
@@ -338,13 +342,14 @@
             if (data.error) throw new Error(data.error);
             renderAreaByStage(data);
             
+            // Top Crop Areas & Varieties (Tomato + Sweet Pepper + English Cucumber summary)
             let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             if (data.topVarieties?.tomato?.length) {
                 data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
             } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td></tr>`; }
             tomatoHtml += `</tbody></table></div>`;
             
-            let otherCropsHtml = `<div><h4>🌾 Other Key Crops</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
+            let sweetCucHtml = `<div><h4>🌶️ Sweet Pepper & 🥒 English Cucumber</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             const targetOther = ["Sweet Pepper", "English Cucumber"];
             for (let crop of targetOther) {
                 let entry = (data.areaByCrop || []).find(c => c.crop === crop);
@@ -352,12 +357,21 @@
                 let topVariety = { variety: '—', area: 0 };
                 if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
                 else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
-                otherCropsHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
+                sweetCucHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
             }
-            otherCropsHtml += `</tbody></table></div>`;
-            document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + otherCropsHtml;
+            sweetCucHtml += `</tbody></table></div>`;
+            document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + sweetCucHtml;
+            
+            // Other Key Crops (all except Tomato, Sweet Pepper, English Cucumber)
+            let otherCropsHtml = `<table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th></tr></thead><tbody>`;
+            const otherCrops = (data.areaByCrop || []).filter(c => !["Tomato","Sweet Pepper","English Cucumber"].includes(c.crop));
+            if (otherCrops.length) {
+                otherCrops.forEach(c => { otherCropsHtml += `<tr><td><i class="fas fa-seedling"></i> ${c.crop}</td><td><strong>${c.area.toFixed(1)}</strong></td></tr>`; });
+            } else { otherCropsHtml += `<tr><td colspan="2">No other crops recorded</td></tr>`; }
+            otherCropsHtml += `</tbody></table>`;
             document.getElementById('otherKeyCropsContainer').innerHTML = otherCropsHtml;
             
+            // Stage breakdown per crop
             let stageCropHtml = '';
             const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
             for (let crop of ["Tomato","Sweet Pepper","English Cucumber"]) {
@@ -518,22 +532,28 @@
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
             const cropName = row[cropIdx] || "";
             
+            // Step 1: Update the main record in Sheet1
             const mainPayload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths };
-            await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mainPayload) });
+            let response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mainPayload) });
+            if (!response.ok) throw new Error(`HTTP ${response.status} - ${await response.text()}`);
+            let result = await response.json();
+            if (result.error) throw new Error(result.error);
             
+            // Step 2: Record monthly harvests in CropUpdates sheet
             for (let i = 0; i < 12; i++) {
                 const harvestValue = newMonthly[i];
                 if (harvestValue !== 0 && !isNaN(harvestValue)) {
                     const monthName = MONTHS[i];
                     const monthlyPayload = { action: 'recordMonthlyHarvest', grower: username, crop: cropName, greenhouseArea: totalGreenhouseArea, month: monthName, harvestAmount: harvestValue, unit: newUnit };
-                    await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(monthlyPayload) });
+                    let resp = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(monthlyPayload) });
+                    if (!resp.ok) console.warn(`Failed to log monthly harvest for ${monthName}`);
                 }
             }
             toast("✅ Update sent! Main record updated and monthly harvests logged.");
             editModal.style.display = 'none';
             document.body.style.overflow = '';
             setTimeout(async () => { await loadUserPreviousData(username); await loadDashboard(); toast("Data refreshed."); }, 2000);
-        } catch(e) { console.error(e); toast("Request sent but could not verify. Please refresh manually.", true); }
+        } catch(e) { console.error(e); toast("Save failed: " + e.message, true); }
         finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
     }
 
@@ -551,7 +571,8 @@
         updateBtn.disabled = true;
         try {
             const payload = { action: 'logAreaUpdate', username, currentArea, newArea, locality };
-            await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(await response.text());
             totalAreaInput.value = newArea;
             toast("✅ Area updated successfully! Log saved.");
         } catch(e) { toast("Error: " + e.message, true); }
@@ -702,7 +723,7 @@
         } 
         try { 
             const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows }) });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
             const result = await response.json();
             if (result.error) throw new Error(result.error);
             toast("✅ Data submitted to Google Sheet", false); 
@@ -712,7 +733,24 @@
             await loadUserPreviousData(grower); 
             await loadDashboard(); 
             if (!isAdmin) await autoFillProfileFromRecords(grower);
-        } catch(e) { toast("Submit error: " + e.message, true); } 
+        } catch(e) { toast("Submit error: " + e.message, true); console.error(e); } 
+    }
+
+    // Toggle greenhouse section
+    function toggleGreenhouseSection() {
+        if (greenhouseSectionVisible) {
+            greenhouseSection.classList.add('hidden');
+            accessTrackerBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Register Greenhouse Details';
+        } else {
+            if (!growerNameInput.value.trim() || !localitySelect.value || !totalAreaInput.value) {
+                toast("Complete profile (grower name, locality & area) first", true);
+                return;
+            }
+            greenhouseSection.classList.remove('hidden');
+            accessTrackerBtn.innerHTML = '<i class="fas fa-minus-circle"></i> Hide Registration Form';
+            renderActiveForm();
+        }
+        greenhouseSectionVisible = !greenhouseSectionVisible;
     }
 
     // Login and session
@@ -745,9 +783,9 @@
     // Event listeners
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
-    logoutBtn.onclick = () => { clearLoginState(); mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; toast("Logged out"); };
+    logoutBtn.onclick = () => { clearLoginState(); mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; greenhouseSectionVisible = false; toast("Logged out"); };
     refreshPageBtn.onclick = () => { window.location.reload(); };
-    accessTrackerBtn.onclick = () => { if(!growerNameInput.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
+    accessTrackerBtn.onclick = toggleGreenhouseSection;
     addGreenhouseBtn.onclick = saveCurrentGreenhouse;
     submitDataBtn.onclick = submitAllNewData;
     updateAreaBtn.onclick = logAreaUpdate;
@@ -769,7 +807,7 @@
         document.querySelectorAll('.zone-efficiency-btn').forEach(btn => { btn.addEventListener('click', (e) => { document.querySelectorAll('.zone-efficiency-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentZoneEfficiency = btn.dataset.zone; loadZonalEfficiency(currentZoneEfficiency); }); });
     }
 
-    initZoneHeader(); updateLocalityDropdown(); document.getElementById('greenhouseSection').classList.add('hidden'); initFilters(); restoreSession();
+    initZoneHeader(); updateLocalityDropdown(); greenhouseSection.classList.add('hidden'); initFilters(); restoreSession();
 </script>
 </body>
 </html>
