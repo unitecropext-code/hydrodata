@@ -75,7 +75,7 @@
         .stage-progress-bar-bg { background: #e9f3e4; border-radius: 1rem; height: 12px; overflow: hidden; }
         .stage-progress-fill { background: linear-gradient(90deg, #2e8b57, #4cae4c); height: 100%; border-radius: 1rem; width: 0%; }
         .stat-title { font-weight: 800; font-size: 1.2rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .live-dashboard-title { font-size: 1.5rem; font-weight: 800; color: #1b5e1f; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px dashed #b8daa8; display: flex; align-items: center; gap: 10px; }
+        .live-dashboard-title { font-size: 1.5rem; font-weight: 800; color: #1b5e1f; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px dashed #b8daa8; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .grid-2col { display: grid; gap: 1rem; }
         @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
         .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f3120; color: white; padding: 0.7rem 1.5rem; border-radius: 3rem; z-index: 1100; transition: 0.3s; font-size: 0.85rem; text-align: center; max-width: 90%; }
@@ -97,6 +97,9 @@
         .action-buttons { display: flex; gap: 8px; align-items: center; }
         .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
         .crop-filter-btn.active { background: #2c7a2a; }
+        .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+        .qr-card { background: #fff; border-radius: 1rem; padding: 0.8rem; text-align: center; border: 1px solid #e0efd4; }
+        .qr-card img { width: 90px; height: 90px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -140,13 +143,20 @@
             <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details </button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
         </div>
 
-        <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
-        
+        <div class="live-dashboard-title">
+            <i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD
+            <button id="refreshProjectionsBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-chart-line"></i> Refresh Projections</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
+            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div></div>
+        </div>
+        <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
+
         <!-- NEW: Monthly Yield Efficiency Chart -->
         <div class="glass-card">
-            <div class="stat-title">
-                <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
-            </div>
+            <div class="stat-title"><i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr</div>
             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="cropFilterButtons">
                 <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
                 <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
@@ -155,12 +165,33 @@
             <canvas id="efficiencyChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
             <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
         </div>
-        
-        <div class="dashboard-grid">
-            <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
-            <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div></div>
+
+        <!-- NEW: Projected Harvest Outlook -->
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-calendar-alt"></i> 📈 Projected Harvest Outlook (kg) – based on transplant dates</div>
+            <div id="projectionsContainer" style="overflow-x: auto;">
+                <div class="table-responsive">
+                    <table class="data-table" id="projectionsTable" style="min-width: 500px;">
+                        <thead><tr><th>Crop</th><th>Area (m²)</th><th>Harvest Start</th><th>Monthly Projected Yield (kg)</th></tr></thead>
+                        <tbody><tr><td colspan="4">Loading projections...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
+
+        <!-- NEW: Detailed Monthly Projections Table -->
+        <div class="glass-card" id="detailedProjectionsCard" style="display: none;">
+            <div class="stat-title"><i class="fas fa-table"></i> Detailed Monthly Projections (per greenhouse)</div>
+            <div id="detailedProjectionsContainer" class="table-responsive"></div>
+        </div>
+
+        <!-- NEW: QR Codes for Greenhouses -->
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-qrcode"></i> Greenhouse QR Codes</div>
+            <div id="qrCodesContainer" class="qr-grid">
+                <div>No greenhouses yet. Add data to see QR codes.</div>
+            </div>
+        </div>
 
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%);">
@@ -203,7 +234,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQWqY2dPtGlWuHrO9cHth3oTDaP0G8w8Ps8Q9QG_lDfAe0qnMG3N0ewEf8BIumpiD3wA/exec'; // <-- REPLACE WITH YOUR WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwB9j_D9X_oHGE_FLDafsrpDBAYFV_3lQz6TyyZRcNZDSQ7905NFDaOjV3nshXUf5Jy8Q/exec'; // <-- REPLACE WITH YOUR WEB APP URL
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -379,7 +410,6 @@
             }
             document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
             
-            // Load efficiency chart after dashboard data
             await loadEfficiencyChart(currentActiveCrop);
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
@@ -511,6 +541,7 @@
                         action: 'recordMonthlyHarvest',
                         grower: username,
                         crop: cropName,
+                        variety: newVariety,
                         greenhouseArea: totalGreenhouseArea,
                         month: monthName,
                         harvestAmount: harvestValue,
@@ -530,6 +561,7 @@
             setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
+                await loadProjections();
                 toast("Data refreshed.");
             }, 2000);
         } catch(e) { 
@@ -620,6 +652,7 @@
         if (user) {
             await loadUserPreviousData(user);
             await loadDashboard();
+            await loadProjections();
             if (!isAdmin) await autoFillProfileFromRecords(user);
             toast("📊 Dashboard & records refreshed");
         } else { toast("No active user", true); }
@@ -725,11 +758,93 @@
             renderActiveForm(); 
             await loadUserPreviousData(grower); 
             await loadDashboard(); 
+            await loadProjections();
             if (!isAdmin) await autoFillProfileFromRecords(grower);
         } catch(e) { toast("Submit error", true); } 
     }
 
-    // ---------- LOGIN & AUTO‑RESTORE ----------
+    // ==================== PROJECTIONS & QR ====================
+    async function loadProjections() {
+        const username = isAdmin ? (growerName.value.trim() || currentLoggedInUser) : currentLoggedInUser;
+        if (!username) return;
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getProjections&grower=${encodeURIComponent(username)}&_=${Date.now()}`);
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            
+            const aggregated = data.aggregated || {};
+            const tbody = document.querySelector('#projectionsTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (Object.keys(aggregated).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">No future harvest projections available (missing transplant dates or crops).</td></tr>';
+            } else {
+                for (let [crop, info] of Object.entries(aggregated)) {
+                    const monthlyHtml = Object.entries(info.monthly)
+                        .sort((a,b) => a[0].localeCompare(b[0]))
+                        .map(([month, val]) => `${month}: ${val.toFixed(1)} kg`)
+                        .join('<br>');
+                    const row = tbody.insertRow();
+                    row.insertCell(0).innerText = crop;
+                    row.insertCell(1).innerText = info.totalArea.toFixed(1);
+                    row.insertCell(2).innerText = 'From first harvest';
+                    row.insertCell(3).innerHTML = monthlyHtml;
+                }
+            }
+            
+            const projections = data.projections || [];
+            if (projections.length > 0) {
+                document.getElementById('detailedProjectionsCard').style.display = 'block';
+                let detailHtml = '<table class="data-table" style="min-width:600px;"><thead><tr><th>Greenhouse</th><th>Crop</th><th>Area (m²)</th><th>Transplant Date</th><th>Harvest Start</th><th>Monthly Projections (kg)</th></tr></thead><tbody>';
+                projections.forEach(p => {
+                    const monthlyList = Object.entries(p.monthlyProjections)
+                        .sort((a,b)=>a[0].localeCompare(b[0]))
+                        .map(([m, v]) => `${m}: ${v.toFixed(1)}`)
+                        .join(', ');
+                    detailHtml += `<tr><td>${p.greenhouse}</td><td>${p.crop}</td><td>${p.area.toFixed(1)}</td><td>${p.transplantDate.substring(0,10)}</td><td>${p.harvestStart}</td><td>${monthlyList}</td></tr>`;
+                });
+                detailHtml += '</tbody></table>';
+                document.getElementById('detailedProjectionsContainer').innerHTML = detailHtml;
+            } else {
+                document.getElementById('detailedProjectionsCard').style.display = 'none';
+            }
+            
+            generateQRCodesFromRecords();
+        } catch(e) {
+            console.error(e);
+            document.querySelector('#projectionsTable tbody').innerHTML = '<tr><td colspan="4">Error loading projections.</td></tr>';
+        }
+    }
+
+    async function generateQRCodesFromRecords() {
+        const username = isAdmin ? (growerName.value.trim() || currentLoggedInUser) : currentLoggedInUser;
+        if (!username) return;
+        const recordsGrid = document.getElementById('cropRecordsGrid');
+        if (!recordsGrid) return;
+        const recordCards = recordsGrid.querySelectorAll('.record-card');
+        const qrContainer = document.getElementById('qrCodesContainer');
+        if (recordCards.length === 0) {
+            qrContainer.innerHTML = '<div>No greenhouses found. Add data to see QR codes.</div>';
+            return;
+        }
+        let qrHtml = '';
+        recordCards.forEach((card, idx) => {
+            const crop = card.querySelector('.record-crop')?.innerText || 'Crop';
+            const areaSpan = card.querySelector('.record-area');
+            const area = areaSpan ? areaSpan.innerText : '0 m²';
+            const qrData = encodeURIComponent(`Greenhouse: ${crop}, Area: ${area}, Grower: ${username}`);
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrData}`;
+            qrHtml += `<div class="qr-card">
+                <img src="${qrUrl}" alt="QR">
+                <div><strong>${crop}</strong></div>
+                <div>${area}</div>
+                <small>${username}</small>
+            </div>`;
+        });
+        qrContainer.innerHTML = qrHtml;
+    }
+
+    // ---------- LOGIN & AUTO-RESTORE ----------
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         errorDiv.innerText = '';
@@ -759,6 +874,7 @@
             }
             await loadUserPreviousData(isAdmin ? '' : username);
             await loadDashboard();
+            await loadProjections();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             saveLoginState(username, isAdmin);
@@ -787,6 +903,7 @@
             }
             await loadUserPreviousData(isAdmin ? '' : username);
             await loadDashboard();
+            await loadProjections();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             toast(`Welcome back ${username}${isAdmin ? ' (Admin)' : ''}!`, false);
@@ -816,8 +933,11 @@
     document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
+    document.getElementById('refreshProjectionsBtn').addEventListener('click', async () => {
+        await loadProjections();
+        toast("Projections refreshed");
+    });
     
-    // Efficiency filter buttons
     function initEfficiencyFilter() {
         const btns = document.querySelectorAll('.crop-filter-btn');
         btns.forEach(btn => {
