@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Total Cultivated vs Harvestable Outlook</title>
+    <title>Hydroponic Smart Tracker | Real Time Insights </title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -108,9 +108,9 @@
             <div class="header-flex">
                 <div>
                     <h1 style="font-size: 1.5rem; background: linear-gradient(135deg,#136b1e,#259132); -webkit-background-clip: text; background-clip: text; color: transparent;">
-                        <i class="fas fa-chart-line"></i> Hydroponic Data Tracker | Total Harvest Outlook
+                        <i class="fas fa-chart-line"></i> Hydroponic Data Tracker | Real Time Insights
                     </h1>
-                    <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Cultivated vs Harvestable area (All Growers Combined)</div>
+                    <div style="font-size: 0.75rem; color: #3a7b3a;"><i class="fas fa-chart-simple"></i> Hydroponic Analytics & Outlook (All Growers Combined)</div>
                 </div>
                 <div class="zone-banner"><i class="fas fa-map-marker-alt" style="color:#2e8b57;"></i> <strong>Active Zone:</strong> <div id="zonePillsHeader" style="display: flex; flex-wrap: wrap; gap: 8px;"></div></div>
                 <div class="action-buttons"><span class="badge"><i class="fas fa-user-check"></i> <span id="loggedInUsername"></span><span id="adminBadge" class="admin-badge hidden">ADMIN</span></span><button id="logoutBtn" class="btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</button><button id="refreshPageBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Page</button></div>
@@ -165,7 +165,7 @@
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;"><div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div><div id="cropRecordsGrid" class="crop-records-grid"></div></div>
     </div>
-    <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker | Total Cultivated vs Harvestable (All Growers)</div>
+    <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker | All Rights Reserved</div>
 </div>
 
 <div id="editRecordModal" class="modal-overlay"><div class="modal-container"><h3 style="color:#1c5a1c;"><i class="fas fa-edit"></i> Edit Crop Record</h3><div id="editRecordInfo" style="background:#eef4ea; padding:0.8rem; border-radius:1rem; margin-bottom:1rem;"></div><div class="grid-2col"><div class="form-group"><label>Crop</label><input type="text" id="editCrop" readonly></div><div class="form-group"><label>Stage *</label><select id="editStage"><option>Seedling</option><option>Vegetative</option><option>Flowering</option><option>Fruiting</option><option>Harvesting</option></select></div><div class="form-group"><label>Area (m²) *</label><input type="number" step="0.01" id="editArea"></div><div class="form-group"><label>Variety</label><input type="text" id="editVariety"></div><div class="form-group"><label>Weekly Yield</label><input type="number" step="0.01" id="editWeeklyYield"></div><div class="form-group"><label>Yield Unit</label><select id="editUnit"><option value="kg">kg</option><option value="crates">crates</option></select></div><div class="form-group"><label>Harvest Months (duration)</label><input type="number" step="0.5" id="editHarvestMonths"></div></div><div id="editMonthlySection" style="margin-top:1rem; border-top:1px solid #c0dfb0; padding-top:1rem;"><h4>📅 Monthly Harvest Distribution (Jan - Dec)</h4><div id="editMonthlyGrid" class="update-grid"></div></div><div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;"><button id="cancelEditBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button><button id="saveEditBtn" class="btn"><i class="fas fa-save"></i> Save Changes</button></div></div></div>
