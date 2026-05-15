@@ -37,15 +37,17 @@
         .btn, .btn-secondary, .update-area-btn, .edit-btn-card { cursor: pointer; transition: all 0.2s; font-weight: 600; border: none; }
         .btn { background: linear-gradient(95deg, #1f682a, #156f1a); color: white; padding: 12px 20px; border-radius: 3rem; display: inline-flex; align-items: center; gap: 0.6rem; font-size: 1rem; }
         .btn-secondary { background: #eef3ea; color: #1f5a22; border: 1px solid #b8daa8; padding: 10px 16px; border-radius: 2rem; }
+        .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        .crop-filter-btn.active { background: #2c7a2a; }
         .update-area-btn { background: #2e7d64; color: white; border-radius: 2rem; padding: 0.5rem 1.2rem; margin-left: 0.5rem; }
         .zone-pill { background: #ecf7e6; border: 1px solid #cde0c2; padding: 8px 16px; border-radius: 3rem; font-weight: 600; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
         .zone-pill.active { background: #198a2e; color: white; border-color: #198a2e; }
         .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         @media (min-width: 768px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
-        .top-crops-table, .data-table, .efficiency-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
-        .top-crops-table th, .data-table th, .efficiency-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
-        .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
+        .table-responsive { overflow-x: auto; }
+        .top-crops-table, .efficiency-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
+        .top-crops-table th, .efficiency-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; }
+        .top-crops-table td, .efficiency-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
         .efficiency-table td:nth-child(3) { text-align: center; }
         .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
         .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
@@ -61,9 +63,7 @@
         @media (min-width: 640px) { .profile-row { flex-direction: row; align-items: center; gap: 1rem; } .profile-row label { min-width: 150px; } }
         .profile-row input, .profile-row select { flex: 1; padding: 0.7rem 1rem; border-radius: 2rem; border: 1px solid #cde0c2; background: white; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2100; padding: 16px; }
-        .modal-container { background: white; border-radius: 2rem; padding: 1.5rem; max-height: 90vh; overflow-y: auto; width: 100%; max-width: 950px; animation: modalFadeIn 0.25s ease-out; margin: auto; }
-        @media (max-width: 640px) { .modal-container { padding: 1rem; } }
-        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        .modal-container { background: white; border-radius: 2rem; padding: 1.5rem; max-height: 90vh; overflow-y: auto; width: 100%; max-width: 950px; }
         .update-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin: 1rem 0; }
         @media (min-width: 640px) { .update-grid { grid-template-columns: repeat(4, 1fr); } }
         .month-card { background: #f9fef7; border-radius: 1rem; padding: 0.6rem; text-align: center; border: 1px solid #d5e8ca; }
@@ -76,7 +76,6 @@
         .stage-progress-bar-bg { background: #e9f3e4; border-radius: 1rem; height: 12px; overflow: hidden; }
         .stage-progress-fill { background: linear-gradient(90deg, #2e8b57, #4cae4c); height: 100%; border-radius: 1rem; width: 0%; }
         .stat-title { font-weight: 800; font-size: 1.2rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-        .live-dashboard-title { font-size: 1.5rem; font-weight: 800; color: #1b5e1f; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px dashed #b8daa8; display: flex; align-items: center; gap: 10px; }
         .grid-2col { display: grid; gap: 1rem; }
         @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
         .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f3120; color: white; padding: 0.7rem 1.5rem; border-radius: 3rem; z-index: 1100; transition: 0.3s; font-size: 0.85rem; text-align: center; max-width: 90%; }
@@ -84,24 +83,12 @@
         .hidden { display: none; }
         .badge { background: #e9f3e4; border-radius: 2rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #2e6b2e; }
         .edit-btn-card { background: #2c7a2a; color: white; border: none; border-radius: 2rem; padding: 8px 12px; font-size: 0.8rem; width: 100%; margin-top: 10px; }
-        .fa-spin-custom { animation: fa-spin 1s infinite linear; }
-        @keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .btn-loading { pointer-events: none; opacity: 0.7; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; }
-        .form-group input, .form-group select { width: 100%; padding: 0.6rem; border-radius: 1rem; border: 1px solid #cde0c2; }
-        .footer { text-align: center; font-size: 0.7rem; color: #2f5e2f; margin-top: 2rem; padding: 1rem; }
-        .pending-card { display: flex; justify-content: space-between; align-items: center; background: #f8faf5; border-radius: 1rem; padding: 0.8rem; margin: 0.5rem 0; border-left: 6px solid #2e8b57; }
-        .remove-pending { background: #e74c3c; color: white; border: none; border-radius: 2rem; padding: 0.3rem 0.8rem; cursor: pointer; }
         .admin-badge { background: #ff9800; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; margin-left: 8px; }
         .action-buttons { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
-        .crop-filter-btn.active { background: #2c7a2a; }
-        .efficiency-chart-wrapper { max-width: 100%; margin: 0 auto; }
-        canvas#efficiencyChart { max-height: 200px; width: 100%; }
         .area-outlook-wrapper { overflow-x: auto; margin-top: 1rem; }
         canvas#areaOutlookChart { max-height: 450px; width: 100%; }
         .zonal-table-wrapper { overflow-x: auto; }
+        .filter-group { margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
     </style>
 </head>
 <body>
@@ -139,19 +126,25 @@
             <div id="greenhouseSection" class="greenhouse-form-container hidden"><div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%); margin-top: 1rem; padding: 1rem;"><div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div><div id="activeGreenhouseForm"></div><div style="display: flex; gap: 12px; margin-top: 1.2rem; flex-wrap: wrap;"><button id="addGreenhouseBtn" class="btn-secondary" style="background:#378f2c; color:white;"><i class="fas fa-plus-circle"></i> Add to List</button><button id="submitDataBtn" class="btn"><i class="fas fa-cloud-upload-alt"></i> Submit All New Data</button></div><div id="savedList" style="margin-top: 1.2rem;"></div></div></div>
         </div>
 
-        <!-- COMPARATIVE GRAPH: Cultivated vs Harvestable Area -->
+        <!-- COMPARATIVE GRAPH WITH CROP FILTER BUTTONS -->
         <div class="glass-card" id="areaOutlookSection">
             <div class="stat-title">
-                <i class="fas fa-chart-line"></i> 📊 Comparative Forecast 2026: Cultivated vs HARVESTABLE Area (m²) by Crop Type
-                <span style="font-size:0.7rem; margin-left:1rem;">Solid lines: Cultivated | Dashed lines: Harvestable (based on transplant date + crop cycle)</span>
+                <i class="fas fa-chart-line"></i> 📊 Comparative Forecast 2026: Cultivated vs HARVESTABLE Area (m²)
                 <button id="refreshAreaOutlookBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
+            </div>
+            <div class="filter-group">
+                <span style="font-weight:600; margin-right:0.5rem;">Filter by crop:</span>
+                <button data-crop-filter="All" class="crop-filter-btn active" style="background:#2c7a2a;">🌾 All Crops</button>
+                <button data-crop-filter="Tomato" class="crop-filter-btn">🍅 Tomato (Cooking+Salad)</button>
+                <button data-crop-filter="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
+                <button data-crop-filter="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
             </div>
             <div class="area-outlook-wrapper">
                 <canvas id="areaOutlookChart" width="900" height="450" style="max-width:100%; height:auto;"></canvas>
             </div>
             <div id="areaOutlookLoading" class="hidden" style="text-align:center; padding:1rem;">Loading forecast data...</div>
             <div id="areaOutlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
-            <div class="badge" style="margin-top: 0.5rem;"><i class="fas fa-info-circle"></i> Harvestable area = area in harvesting window after pre‑harvest period (Tomato/Sweet Pepper: 2.5 months pre‑harvest, Cucumber: 1.5 months). Differentiated Tomato Cooking vs Salad.</div>
+            <div class="badge" style="margin-top: 0.5rem;"><i class="fas fa-info-circle"></i> Harvestable area = area within harvesting window after pre‑harvest period (Tomato/Sweet Pepper: 2.5 months pre‑harvest, Cucumber: 1.5 months). Tomato combines Cooking & Salad types.</div>
         </div>
 
         <!-- Monthly Yield Efficiency Chart -->
@@ -179,13 +172,14 @@
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyed86wSfz5qHQ1_pRetLeI6mtPNRzD3maAnXKCXic9ecS1kupMpAqltRttMH6yYF46HA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYh38rtX8JgT2cWqZoCE9aSBR2w66TQclHLckjNHvqzQqFECtNzWw5Yb6QmqgIf6tV_g/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
     const PROD_SYSTEMS = ["Cocopeat", "Rockwool", "NFT", "DWC", "Aquaponic", "Aggregates"];
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
     let currentZone = "E2", savedGreenhouses = [], currentEditRecord = null, isAdmin = false, currentLoggedInUser = "", efficiencyChart = null, areaOutlookChart = null, currentActiveCrop = "Tomato", planningData = [];
+    let rawCultivatedData = null, rawHarvestableData = null, currentFilter = "All";
     const CROP_CYCLES = { "Tomato": { preHarvestMonths: 2.5, harvestDurationMonths: 5 }, "Sweet Pepper": { preHarvestMonths: 2.5, harvestDurationMonths: 5 }, "English Cucumber": { preHarvestMonths: 1.5, harvestDurationMonths: 3 } };
     function determineTomatoType(variety) { if (!variety) return "Cooking"; let v = variety.toLowerCase(); if (v.includes("salad")) return "Salad"; if (v.includes("cooking")) return "Cooking"; return "Cooking"; }
     function getCategory(crop, variety) { if (crop === "English Cucumber") return "English Cucumber"; if (crop === "Sweet Pepper") return "Sweet Pepper"; if (crop === "Tomato") { let type = determineTomatoType(variety); return type === "Salad" ? "Tomato (Salad)" : "Tomato (Cooking)"; } return null; }
@@ -222,27 +216,47 @@
                     if (monthStart >= startHarvest && monthStart < endHarvest) harvestableData[category][i] += area;
                 }
             }
-            const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: 'numeric' }));
-            const colorMap = { "Tomato (Cooking)": "#d35400", "Tomato (Salad)": "#f1c40f", "Sweet Pepper": "#e74c3c", "English Cucumber": "#2ecc71" };
-            let datasets = [];
-            for (let cat of categories) {
-                datasets.push({ label: `🌱 Cultivated: ${cat}`, data: cultivatedData[cat], borderColor: colorMap[cat], backgroundColor: "transparent", borderWidth: 2.5, fill: false, tension: 0.2, pointRadius: 3, pointHoverRadius: 5 });
-                datasets.push({ label: `✂️ Harvestable: ${cat}`, data: harvestableData[cat], borderColor: colorMap[cat], borderDash: [6, 5], borderWidth: 2.5, fill: false, tension: 0.2, pointRadius: 2, pointBackgroundColor: colorMap[cat] });
-            }
-            // Optional trend line (total cultivated sum)
-            let totalPerMonth = new Array(12).fill(0);
-            for (let cat of categories) for (let i=0;i<12;i++) totalPerMonth[i] += cultivatedData[cat][i];
-            let n = 12, sumX=0,sumY=0,sumXY=0,sumX2=0;
-            for (let i=0;i<n;i++) { sumX+=i; sumY+=totalPerMonth[i]; sumXY+=i*totalPerMonth[i]; sumX2+=i*i; }
-            let slope = (n*sumXY - sumX*sumY) / (n*sumX2 - sumX*sumX);
-            let intercept = (sumY - slope*sumX)/n;
-            let trendData = totalPerMonth.map((_,i) => intercept + slope*i);
-            datasets.push({ label: "📈 Trend (Total Cultivated)", data: trendData, borderColor: "#9b59b6", borderWidth: 2, borderDash: [2, 8], fill: false, pointRadius: 0, tension: 0 });
-            if (areaOutlookChart) areaOutlookChart.destroy();
-            const ctx = document.getElementById('areaOutlookChart').getContext('2d');
-            areaOutlookChart = new Chart(ctx, { type: 'line', data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { mode: 'index', intersect: false, callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(1)} m²` } }, legend: { position: 'top', labels: { font: { size: 11 } } } }, scales: { y: { title: { display: true, text: 'Area (m²)' }, beginAtZero: true }, x: { title: { display: true, text: 'Month (2026)' }, ticks: { maxRotation: 35, minRotation: 35 } } } } });
+            rawCultivatedData = cultivatedData;
+            rawHarvestableData = harvestableData;
+            renderFilteredChart(currentFilter);
             loadingDiv.classList.add('hidden');
         } catch(e) { console.error(e); errorDiv.innerText = 'Error: ' + e.message; errorDiv.classList.remove('hidden'); loadingDiv.classList.add('hidden'); }
+    }
+
+    function renderFilteredChart(filter) {
+        if (!rawCultivatedData || !rawHarvestableData) return;
+        const months = Array.from({ length: 12 }, (_, i) => new Date(2026, i, 1));
+        const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: 'numeric' }));
+        let datasets = [];
+        const colorMap = { "Tomato (Cooking)": "#d35400", "Tomato (Salad)": "#f1c40f", "Sweet Pepper": "#e74c3c", "English Cucumber": "#2ecc71" };
+        if (filter === "All") {
+            for (let cat of ["Tomato (Cooking)", "Tomato (Salad)", "Sweet Pepper", "English Cucumber"]) {
+                datasets.push({ label: `🌱 Cultivated: ${cat}`, data: rawCultivatedData[cat], borderColor: colorMap[cat], backgroundColor: "transparent", borderWidth: 2.5, fill: false, tension: 0.2, pointRadius: 3 });
+                datasets.push({ label: `✂️ Harvestable: ${cat}`, data: rawHarvestableData[cat], borderColor: colorMap[cat], borderDash: [6, 5], borderWidth: 2.5, fill: false, tension: 0.2, pointRadius: 2 });
+            }
+        } 
+        else if (filter === "Tomato") {
+            // combine Cooking + Salad
+            let combinedCultivated = new Array(12).fill(0);
+            let combinedHarvestable = new Array(12).fill(0);
+            for (let i=0;i<12;i++) {
+                combinedCultivated[i] = (rawCultivatedData["Tomato (Cooking)"][i] || 0) + (rawCultivatedData["Tomato (Salad)"][i] || 0);
+                combinedHarvestable[i] = (rawHarvestableData["Tomato (Cooking)"][i] || 0) + (rawHarvestableData["Tomato (Salad)"][i] || 0);
+            }
+            datasets.push({ label: `🌱 Cultivated: Tomato (Total)`, data: combinedCultivated, borderColor: "#e67e22", backgroundColor: "transparent", borderWidth: 3, fill: false, tension: 0.2, pointRadius: 4 });
+            datasets.push({ label: `✂️ Harvestable: Tomato (Total)`, data: combinedHarvestable, borderColor: "#e67e22", borderDash: [6, 5], borderWidth: 3, fill: false, tension: 0.2, pointRadius: 3 });
+        } 
+        else if (filter === "Sweet Pepper") {
+            datasets.push({ label: `🌱 Cultivated: Sweet Pepper`, data: rawCultivatedData["Sweet Pepper"], borderColor: "#e74c3c", backgroundColor: "transparent", borderWidth: 3, fill: false, tension: 0.2, pointRadius: 4 });
+            datasets.push({ label: `✂️ Harvestable: Sweet Pepper`, data: rawHarvestableData["Sweet Pepper"], borderColor: "#e74c3c", borderDash: [6, 5], borderWidth: 3, fill: false, tension: 0.2, pointRadius: 3 });
+        } 
+        else if (filter === "English Cucumber") {
+            datasets.push({ label: `🌱 Cultivated: English Cucumber`, data: rawCultivatedData["English Cucumber"], borderColor: "#2ecc71", backgroundColor: "transparent", borderWidth: 3, fill: false, tension: 0.2, pointRadius: 4 });
+            datasets.push({ label: `✂️ Harvestable: English Cucumber`, data: rawHarvestableData["English Cucumber"], borderColor: "#2ecc71", borderDash: [6, 5], borderWidth: 3, fill: false, tension: 0.2, pointRadius: 3 });
+        }
+        if (areaOutlookChart) areaOutlookChart.destroy();
+        const ctx = document.getElementById('areaOutlookChart').getContext('2d');
+        areaOutlookChart = new Chart(ctx, { type: 'line', data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { mode: 'index', intersect: false, callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(1)} m²` } }, legend: { position: 'top', labels: { font: { size: 11 } } } }, scales: { y: { title: { display: true, text: 'Area (m²)' }, beginAtZero: true }, x: { title: { display: true, text: 'Month (2026)' }, ticks: { maxRotation: 35, minRotation: 35 } } } } });
     }
 
     // ========== REMAINING ORIGINAL FUNCTIONS (login, dashboard, profile, etc) ==========
@@ -252,7 +266,6 @@
     function getStoredLogin(){ return { loggedIn: sessionStorage.getItem('hydroponic_loggedIn')==='true', username: sessionStorage.getItem('hydroponic_username'), admin: sessionStorage.getItem('hydroponic_isAdmin')==='true' }; }
     function getCurrentMauritiusISOString(){ let now=new Date(); let utc=now.getTime()+(now.getTimezoneOffset()*60000); return new Date(utc+(4*3600000)).toISOString().replace('Z','+04:00'); }
     function formatToMauritiusTime(ts){ if(!ts) return '—'; try{ let d=new Date(ts); if(isNaN(d.getTime())) return ts.substring(0,16); return new Intl.DateTimeFormat('en-MU',{timeZone:'Indian/Mauritius', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false}).format(d); }catch(e){ return ts; } }
-
     const loginOverlay=document.getElementById('loginOverlay'), mainApp=document.getElementById('mainApp'), growerName=document.getElementById('growerName'), localitySelect=document.getElementById('localitySelect'), totalAreaInput=document.getElementById('totalArea'), cropRecordsGrid=document.getElementById('cropRecordsGrid'), logoutBtn=document.getElementById('logoutBtn'), refreshPageBtn=document.getElementById('refreshPageBtn'), editModal=document.getElementById('editRecordModal'), loggedInUsernameSpan=document.getElementById('loggedInUsername'), adminBadge=document.getElementById('adminBadge');
     function initZoneHeader(){ let zones=Object.keys(ZONE_LOCALITIES); let container=document.getElementById('zonePillsHeader'); container.innerHTML=zones.map(z=>`<button class="zone-pill ${z===currentZone?'active':''}" data-zone="${z}">Zone ${z}</button>`).join(''); document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn=>btn.addEventListener('click',(e)=>{ setZone(btn.dataset.zone); updateLocalityDropdown(); toast(`Zone switched to ${btn.dataset.zone}`); })); }
     function setZone(zone){ currentZone=zone; document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn=>btn.classList.toggle('active',btn.dataset.zone===currentZone)); updateLocalityDropdown(); }
@@ -286,8 +299,9 @@
     document.getElementById('cancelEditBtn').onclick=()=>{ editModal.style.display='none'; document.body.style.overflow=''; };
     document.getElementById('saveEditBtn').onclick=saveFullRecordUpdate;
     window.onclick=(e)=>{ if(e.target===editModal){ editModal.style.display='none'; document.body.style.overflow=''; } };
-    function initEfficiencyFilter(){ document.querySelectorAll('.crop-filter-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ document.querySelectorAll('.crop-filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentActiveCrop=btn.dataset.crop; loadEfficiencyChart(currentActiveCrop); }); }); }
-    initZoneHeader(); updateLocalityDropdown(); document.getElementById('greenhouseSection').classList.add('hidden'); initEfficiencyFilter(); restoreSession();
+    function initEfficiencyFilter(){ document.querySelectorAll('#cropFilterButtons .crop-filter-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ document.querySelectorAll('#cropFilterButtons .crop-filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentActiveCrop=btn.dataset.crop; loadEfficiencyChart(currentActiveCrop); }); }); }
+    function initCropOutlineFilters(){ const btns = document.querySelectorAll('[data-crop-filter]'); btns.forEach(btn=>{ btn.addEventListener('click',()=>{ btns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cropFilter; renderFilteredChart(currentFilter); }); }); }
+    initZoneHeader(); updateLocalityDropdown(); document.getElementById('greenhouseSection').classList.add('hidden'); initEfficiencyFilter(); initCropOutlineFilters(); restoreSession();
 </script>
 </body>
 </html>
