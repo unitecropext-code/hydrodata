@@ -46,7 +46,6 @@
         .top-crops-table, .data-table, .efficiency-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
         .top-crops-table th, .data-table th, .efficiency-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
         .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
-        /* Center the efficiency range values */
         .efficiency-table td:nth-child(3) { text-align: center; }
         .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
         .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
@@ -147,7 +146,6 @@
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
             <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
             
-            <!-- Greenhouse registration form appears here when clicked -->
             <div id="greenhouseSection" class="greenhouse-form-container hidden">
                 <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%); margin-top: 1rem; padding: 1rem;">
                     <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
@@ -161,7 +159,6 @@
             </div>
         </div>
 
-        <!-- Projected Monthly Cultivated Area (moved above efficiency chart) -->
         <div class="glass-card" id="areaOutlookSection">
             <div class="stat-title">
                 <i class="fas fa-chart-line"></i> 📅 Projected Monthly Cultivated Area (m²) by Crop Type (Jan–Dec 2026)
@@ -175,7 +172,6 @@
             <div id="areaOutlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
         </div>
 
-        <!-- Monthly Yield Efficiency Chart (smaller, moved down) -->
         <div class="glass-card">
             <div class="stat-title">
                 <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
@@ -191,18 +187,12 @@
             <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
         </div>
         
-        <!-- Zonal Yield Efficiency Table with range (min–max) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-table-list"></i> 📊 Zonal Yield Efficiency Reference</div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
                     <thead>
-                        <tr>
-                            <th>Crop</th>
-                            <th>Type / Variety</th>
-                            <th>Avg Yield Efficiency Range (m²)</th>
-                            <th>Units</th>
-                        </tr>
+                        <tr><th>Crop</th><th>Type / Variety</th><th>Avg Yield Efficiency Range (m²)</th><th>Units</th></tr>
                     </thead>
                     <tbody>
                         <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>32 – 62</td><td>unit</td></tr>
@@ -250,8 +240,8 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    // !!! REPLACE WITH YOUR ACTUAL WEB APP URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3utle4Gnys8lvGa9GGfc--hBYUhNvY8qGWvflArMRbtHtRFNYT6ShOJ14Em1zVX7ydQ/exec';
+    // REPLACE WITH YOUR ACTUAL WEB APP URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVmc-TfHUqmqMSGBhHmHcVwPkpGpsw6FPQzU_77C2wbdMZ3pCnBx8LkZblRGuwGZ9QiA/exec';
     
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -275,7 +265,6 @@
         "English Cucumber": { preHarvestMonths: 1.5, harvestDurationMonths: 3 }
     };
 
-    // Category mapping for area outlook
     function getCategory(crop, variety, tomatoType) {
         if (crop === "English Cucumber") return "English Cucumber";
         if (crop === "Sweet Pepper") return "Sweet Pepper";
@@ -291,7 +280,6 @@
         return null;
     }
 
-    // ========== SESSION ==========
     function saveLoginState(username, admin) {
         sessionStorage.setItem('hydroponic_loggedIn', 'true');
         sessionStorage.setItem('hydroponic_username', username);
@@ -440,7 +428,7 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY (LINE CHART, JAN-DEC 2026) ==========
+    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY ==========
     async function loadPlanningData() {
         const username = isAdmin ? "" : currentLoggedInUser;
         const res = await fetch(`${SCRIPT_URL}?action=getCropPlanningData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -470,12 +458,9 @@
                 loadingDiv.classList.add('hidden');
                 return;
             }
-            // Fixed months: Jan 2026 to Dec 2026
             const startYear = 2026;
             const months = [];
-            for (let i = 0; i < 12; i++) {
-                months.push(new Date(startYear, i, 1)); // Jan 2026 = month 0
-            }
+            for (let i = 0; i < 12; i++) months.push(new Date(startYear, i, 1));
             const categories = ["Tomato (Cooking)", "Tomato (Salad)", "Sweet Pepper", "English Cucumber"];
             const categoryColors = {
                 "Tomato (Cooking)": "#d35400",
@@ -496,11 +481,8 @@
                 if (crop === "Tomato") {
                     const tomatoType = determineTomatoType(variety);
                     category = tomatoType === "Salad" ? "Tomato (Salad)" : "Tomato (Cooking)";
-                } else if (crop === "Sweet Pepper") {
-                    category = "Sweet Pepper";
-                } else if (crop === "English Cucumber") {
-                    category = "English Cucumber";
-                }
+                } else if (crop === "Sweet Pepper") category = "Sweet Pepper";
+                else if (crop === "English Cucumber") category = "English Cucumber";
                 if (!category) continue;
                 
                 const cycle = CROP_CYCLES[crop];
@@ -516,11 +498,9 @@
             }
             
             const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: 'numeric' }));
-            // Prepare line datasets
             const lineDatasets = categories.map(cat => ({
                 label: cat,
                 data: datasets[cat],
-                backgroundColor: categoryColors[cat],
                 borderColor: categoryColors[cat],
                 borderWidth: 2,
                 fill: false,
@@ -528,21 +508,13 @@
                 pointRadius: 4,
                 pointHoverRadius: 6
             }));
-            // Add trend line (linear regression on total area per month)
             let totalPerMonth = new Array(12).fill(0);
             for (let i = 0; i < 12; i++) {
-                for (let cat of categories) {
-                    totalPerMonth[i] += datasets[cat][i];
-                }
+                for (let cat of categories) totalPerMonth[i] += datasets[cat][i];
             }
-            // Calculate linear regression (x = month index)
-            let n = 12;
-            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            let n = 12, sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
             for (let i = 0; i < n; i++) {
-                sumX += i;
-                sumY += totalPerMonth[i];
-                sumXY += i * totalPerMonth[i];
-                sumX2 += i * i;
+                sumX += i; sumY += totalPerMonth[i]; sumXY += i * totalPerMonth[i]; sumX2 += i * i;
             }
             let slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
             let intercept = (sumY - slope * sumX) / n;
@@ -566,14 +538,8 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: {
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(0)} m²` } },
-                        legend: { position: 'top' }
-                    },
-                    scales: {
-                        y: { title: { display: true, text: 'Cultivated Area (m²)' }, beginAtZero: true },
-                        x: { title: { display: true, text: 'Month (2026)' }, ticks: { maxRotation: 45, minRotation: 45 } }
-                    }
+                    plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(0)} m²` } }, legend: { position: 'top' } },
+                    scales: { y: { title: { display: true, text: 'Cultivated Area (m²)' }, beginAtZero: true }, x: { title: { display: true, text: 'Month (2026)' }, ticks: { maxRotation: 45, minRotation: 45 } } }
                 }
             });
             loadingDiv.classList.add('hidden');
@@ -585,7 +551,7 @@
         }
     }
 
-    // ========== EXISTING USER DATA, EDIT, PROFILE ==========
+    // ========== USER DATA AND EDIT FUNCTIONALITY (FIXED) ==========
     async function loadUserPreviousData(username) {
         if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
         try {
@@ -664,6 +630,7 @@
         document.body.style.overflow = 'hidden';
     }
 
+    // FIXED: Combined save function that updates both monthly columns and CropUpdates
     async function saveFullRecordUpdate() {
         if (!currentEditRecord) { toast("No record selected", true); return; }
         const saveBtn = document.getElementById('saveEditBtn');
@@ -687,26 +654,45 @@
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
             const cropName = row[cropIdx] || "";
             
-            const mainPayload = { action: 'updateFullRecord', username: username, timestamp: timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths };
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mainPayload) });
-            for (let i = 0; i < 12; i++) {
-                const harvestValue = newMonthly[i];
-                if (harvestValue !== 0 && !isNaN(harvestValue)) {
-                    const monthName = MONTHS[i];
-                    const monthlyPayload = { action: 'recordMonthlyHarvest', grower: username, crop: cropName, greenhouseArea: totalGreenhouseArea, month: monthName, harvestAmount: harvestValue, unit: newUnit };
-                    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(monthlyPayload) });
-                }
-            }
-            toast("✅ Update sent! Main record updated and monthly harvests logged.");
-            editModal.style.display = 'none';
-            document.body.style.overflow = '';
-            setTimeout(async () => {
+            // Send combined update request
+            const payload = {
+                action: 'updateFullRecordWithMonthly',
+                username: username,
+                timestamp: timestamp,
+                stage: newStage,
+                area: newArea,
+                variety: newVariety,
+                weeklyYield: newWeeklyYield,
+                weeklyUnit: newUnit,
+                harvestMonths: newHarvestMonths,
+                monthlyYields: newMonthly,
+                totalGreenhouseArea: totalGreenhouseArea,
+                crop: cropName
+            };
+            const response = await fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload) 
+            });
+            const result = await response.json();
+            if (result.success) {
+                toast("✅ Record updated successfully!");
+                editModal.style.display = 'none';
+                document.body.style.overflow = '';
+                // Refresh data
                 await loadUserPreviousData(username);
                 await loadDashboard();
                 await computeAndRenderAreaOutlook();
-                toast("Data refreshed.");
-            }, 2000);
-        } catch(e) { console.error(e); toast("Request sent but could not verify. Please refresh manually.", true); } finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
+            } else {
+                throw new Error(result.error || "Update failed");
+            }
+        } catch(e) { 
+            console.error(e); 
+            toast("Error updating record: " + e.message, true); 
+        } finally { 
+            saveBtn.innerHTML = originalHtml; 
+            saveBtn.disabled = false; 
+        }
     }
 
     async function logAreaUpdate() {
@@ -960,9 +946,7 @@
         else { 
             const greenhouseDiv = document.getElementById('greenhouseSection');
             greenhouseDiv.classList.toggle('hidden');
-            if (!greenhouseDiv.classList.contains('hidden')) {
-                renderActiveForm();
-            }
+            if (!greenhouseDiv.classList.contains('hidden')) renderActiveForm();
         } 
     };
     document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
