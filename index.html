@@ -191,9 +191,7 @@
             <div class="stat-title"><i class="fas fa-table-list"></i> 📊 Zonal Yield Efficiency Reference</div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
-                    <thead>
-                        <tr><th>Crop</th><th>Type / Variety</th><th>Avg Yield Efficiency Range (m²)</th><th>Units</th></tr>
-                    </thead>
+                    <thead><tr><th>Crop</th><th>Type / Variety</th><th>Avg Yield Efficiency Range (m²)</th><th>Units</th></tr></thead>
                     <tbody>
                         <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>32 – 62</td><td>unit</td></tr>
                         <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.80 – 18.40</td><td>kg</td></tr>
@@ -241,7 +239,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // REPLACE WITH YOUR ACTUAL WEB APP URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVmc-TfHUqmqMSGBhHmHcVwPkpGpsw6FPQzU_77C2wbdMZ3pCnBx8LkZblRGuwGZ9QiA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxD-NdsF2Feg7xshFKiUkCFFXQEgfYAPIEpc3z5M9YdBu1OH3HWdcmTAH1t23oNDWF4Rw/exec';
     
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -428,7 +426,7 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY ==========
+    // ========== PROJECTED MONTHLY CULTIVATED AREA ==========
     async function loadPlanningData() {
         const username = isAdmin ? "" : currentLoggedInUser;
         const res = await fetch(`${SCRIPT_URL}?action=getCropPlanningData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -551,7 +549,7 @@
         }
     }
 
-    // ========== USER DATA AND EDIT FUNCTIONALITY (FIXED) ==========
+    // ========== USER DATA AND EDIT FUNCTIONALITY ==========
     async function loadUserPreviousData(username) {
         if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
         try {
@@ -630,7 +628,6 @@
         document.body.style.overflow = 'hidden';
     }
 
-    // FIXED: Combined save function that updates both monthly columns and CropUpdates
     async function saveFullRecordUpdate() {
         if (!currentEditRecord) { toast("No record selected", true); return; }
         const saveBtn = document.getElementById('saveEditBtn');
@@ -654,7 +651,6 @@
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
             const cropName = row[cropIdx] || "";
             
-            // Send combined update request
             const payload = {
                 action: 'updateFullRecordWithMonthly',
                 username: username,
@@ -669,30 +665,19 @@
                 totalGreenhouseArea: totalGreenhouseArea,
                 crop: cropName
             };
-            const response = await fetch(SCRIPT_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload) 
-            });
+            const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const result = await response.json();
             if (result.success) {
                 toast("✅ Record updated successfully!");
                 editModal.style.display = 'none';
                 document.body.style.overflow = '';
-                // Refresh data
                 await loadUserPreviousData(username);
                 await loadDashboard();
                 await computeAndRenderAreaOutlook();
             } else {
                 throw new Error(result.error || "Update failed");
             }
-        } catch(e) { 
-            console.error(e); 
-            toast("Error updating record: " + e.message, true); 
-        } finally { 
-            saveBtn.innerHTML = originalHtml; 
-            saveBtn.disabled = false; 
-        }
+        } catch(e) { console.error(e); toast("Error updating record: " + e.message, true); } finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
     }
 
     async function logAreaUpdate() {
@@ -721,18 +706,8 @@
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             if (profRes.ok) {
                 const prof = await profRes.json();
-                if (prof.totalArea && !isNaN(parseFloat(prof.totalArea)) && parseFloat(prof.totalArea) > 0) { totalAreaInput.value = parseFloat(prof.totalArea); }
-                else {
-                    const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-                    const data = await dataRes.json();
-                    if (data.rows && data.rows.length) {
-                        let sumArea = 0;
-                        const headers = data.headers.map(h => h.toString().toLowerCase());
-                        let areaIdx = -1;
-                        for (let i=0; i<headers.length; i++) { if (headers[i].includes('area') && !headers[i].includes('total')) { areaIdx = i; break; } }
-                        if (areaIdx !== -1) { for (let row of data.rows) { let a = parseFloat(row[areaIdx]); if (!isNaN(a)) sumArea += a; } }
-                        if (sumArea > 0) totalAreaInput.value = sumArea;
-                    }
+                if (prof.totalArea && !isNaN(parseFloat(prof.totalArea)) && parseFloat(prof.totalArea) > 0) {
+                    totalAreaInput.value = parseFloat(prof.totalArea);
                 }
             }
             const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -740,12 +715,24 @@
             if (data.rows && data.rows.length) {
                 const headers = data.headers.map(h => h.toString().toLowerCase());
                 const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
+                const zoneCol = headers.findIndex(h => h === 'zone');
                 if (localityCol !== -1 && data.rows[0][localityCol]) {
                     const locVal = data.rows[0][localityCol];
-                    setTimeout(() => { if (localitySelect.querySelector(`option[value="${locVal}"]`)) localitySelect.value = locVal; }, 200);
+                    let optionExists = false;
+                    for (let i = 0; i < localitySelect.options.length; i++) {
+                        if (localitySelect.options[i].value === locVal) { optionExists = true; break; }
+                    }
+                    if (!optionExists) {
+                        const newOption = document.createElement('option');
+                        newOption.value = locVal;
+                        newOption.textContent = locVal;
+                        localitySelect.appendChild(newOption);
+                    }
+                    localitySelect.value = locVal;
                 }
-                const zoneCol = headers.findIndex(h => h === 'zone');
-                if (zoneCol !== -1 && data.rows[0][zoneCol] && ZONE_LOCALITIES[data.rows[0][zoneCol]]) { setZone(data.rows[0][zoneCol]); }
+                if (zoneCol !== -1 && data.rows[0][zoneCol] && ZONE_LOCALITIES[data.rows[0][zoneCol]]) {
+                    setZone(data.rows[0][zoneCol]);
+                }
             }
         } catch(e) { console.warn("Auto-fill failed", e); }
     }
