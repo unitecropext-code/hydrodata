@@ -46,6 +46,8 @@
         .top-crops-table, .data-table, .efficiency-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
         .top-crops-table th, .data-table th, .efficiency-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
         .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
+        /* Center the efficiency range values */
+        .efficiency-table td:nth-child(3) { text-align: center; }
         .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
         .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
         .crop-records-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 1rem; }
@@ -102,6 +104,7 @@
         .area-outlook-wrapper { overflow-x: auto; margin-top: 1rem; }
         canvas#areaOutlookChart { max-height: 400px; width: 100%; }
         .zonal-table-wrapper { overflow-x: auto; }
+        .greenhouse-form-container { margin-top: 1rem; transition: all 0.3s ease; }
     </style>
 </head>
 <body>
@@ -142,12 +145,37 @@
             <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" placeholder="Enter grower name" style="background:#f4f9f0;"></div>
             <div class="profile-row"><label>Locality:</label><select id="localitySelect" style="flex:2;"></select></div>
             <div class="profile-row"><label>Total Greenhouse Area (m²):</label><input type="number" id="totalArea" step="0.01" style="flex:2;"><button id="updateAreaBtn" class="update-area-btn"><i class="fas fa-save"></i> Update Area</button></div>
-            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details </button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
+            <div class="profile-row"><button id="accessTrackerBtn" class="btn"><i class="fas fa-plus-circle"></i> Register Greenhouse Details</button><button id="refreshProfileBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh Dashboard</button></div>
+            
+            <!-- Greenhouse registration form appears here when clicked -->
+            <div id="greenhouseSection" class="greenhouse-form-container hidden">
+                <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%); margin-top: 1rem; padding: 1rem;">
+                    <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
+                    <div id="activeGreenhouseForm"></div>
+                    <div style="display: flex; gap: 12px; margin-top: 1.2rem; flex-wrap: wrap;">
+                        <button id="addGreenhouseBtn" class="btn-secondary" style="background:#378f2c; color:white;"><i class="fas fa-plus-circle"></i> Add to List</button>
+                        <button id="submitDataBtn" class="btn"><i class="fas fa-cloud-upload-alt"></i> Submit All New Data</button>
+                    </div>
+                    <div id="savedList" style="margin-top: 1.2rem;"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
-        
-        <!-- Monthly Yield Efficiency Chart (smaller) -->
+        <!-- Projected Monthly Cultivated Area (moved above efficiency chart) -->
+        <div class="glass-card" id="areaOutlookSection">
+            <div class="stat-title">
+                <i class="fas fa-chart-line"></i> 📅 Projected Monthly Cultivated Area (m²) by Crop Type (Jan–Dec 2026)
+                <span style="font-size:0.8rem; margin-left:1rem;">Based on transplant dates & crop cycles</span>
+                <button id="refreshAreaOutlookBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
+            </div>
+            <div class="area-outlook-wrapper">
+                <canvas id="areaOutlookChart" width="800" height="400" style="max-width:100%; height:auto;"></canvas>
+            </div>
+            <div id="areaOutlookLoading" class="hidden" style="text-align:center; padding:1rem;">Loading area forecast...</div>
+            <div id="areaOutlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
+        </div>
+
+        <!-- Monthly Yield Efficiency Chart (smaller, moved down) -->
         <div class="glass-card">
             <div class="stat-title">
                 <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
@@ -177,12 +205,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>32 – 60</td><td>unit</td></tr>
-                        <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.8 – 18.40</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>Salad</td><td>9.3 – 14.90</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>Roma</td><td>7.95 – 12.70</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>Jupiter</td><td>5.50 – 7.20</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>THN 988</td><td>7.5 – 16.50</td><td>kg</td></tr>
+                        <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>30 – 58</td><td>unit</td></tr>
+                        <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.8 – 18.4</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Salad</td><td>9.3 – 14.88</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Roma</td><td>7.95 – 12.72</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Jupiter</td><td>5.52 – 7.36</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>THN 988</td><td>11.05 – 16.57</td><td>kg</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -193,32 +221,6 @@
             <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div></div>
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
-
-        <!-- Projected Monthly Cultivated Area – split by category (stacked bar) -->
-        <div class="glass-card" id="areaOutlookSection">
-            <div class="stat-title">
-                <i class="fas fa-chart-line"></i> 📅 Projected Monthly Cultivated Area (m²) by Crop Type
-                <span style="font-size:0.8rem; margin-left:1rem;">Based on transplant dates & crop cycles</span>
-                <button id="refreshAreaOutlookBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
-            </div>
-            <div class="area-outlook-wrapper">
-                <canvas id="areaOutlookChart" width="800" height="400" style="max-width:100%; height:auto;"></canvas>
-            </div>
-            <div id="areaOutlookLoading" class="hidden" style="text-align:center; padding:1rem;">Loading area forecast...</div>
-            <div id="areaOutlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
-        </div>
-
-        <div id="greenhouseSection" class="hidden">
-            <div class="glass-card" style="background: linear-gradient(115deg, #ffffff 0%, #fef9ef 100%);">
-                <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
-                <div id="activeGreenhouseForm"></div>
-                <div style="display: flex; gap: 12px; margin-top: 1.2rem; flex-wrap: wrap;">
-                    <button id="addGreenhouseBtn" class="btn-secondary" style="background:#378f2c; color:white;"><i class="fas fa-plus-circle"></i> Add to List</button>
-                    <button id="submitDataBtn" class="btn"><i class="fas fa-cloud-upload-alt"></i> Submit All New Data</button>
-                </div>
-                <div id="savedList" style="margin-top: 1.2rem;"></div>
-            </div>
-        </div>
 
         <div id="prevSubmissionsSection" class="glass-card" style="display: none;">
             <div class="stat-title"><i class="fas fa-history"></i> 📋 Your Crop Records</div>
@@ -250,7 +252,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL WEB APP URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby698NXuVMmkSkxB7OgUCGRm0srql0vId5jsbk37Ud_b2LIoSYDfZDHy_HlgJlu8shVuA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkRg3NyIKQ5KDgG6r1V2XdrmOQ9he7u8VWZnjmio-WOb3xn7Cm_8qwYrZfXQzfTSOP0Q/exec';
     
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -279,14 +281,12 @@
         if (crop === "English Cucumber") return "English Cucumber";
         if (crop === "Sweet Pepper") return "Sweet Pepper";
         if (crop === "Tomato") {
-            // Use tomatoType if available, else check variety string
             let type = (tomatoType || "").toLowerCase();
             if (type.includes("salad")) return "Tomato (Salad)";
             if (type.includes("cooking")) return "Tomato (Cooking)";
             let varLower = (variety || "").toLowerCase();
             if (varLower.includes("salad")) return "Tomato (Salad)";
             if (varLower.includes("cooking")) return "Tomato (Cooking)";
-            // Default to Cooking
             return "Tomato (Cooking)";
         }
         return null;
@@ -416,7 +416,7 @@
             let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             if (data.topVarieties?.tomato?.length) {
                 data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
-            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td></tr>`; }
+            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td>`; }
             tomatoHtml += `</tbody></table></div>`;
             let otherCropsHtml = `<div><h4>🌾 Other Key Crops</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             const targetOther = ["Sweet Pepper", "English Cucumber"];
@@ -441,7 +441,7 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY (STACKED) ==========
+    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY (LINE CHART, JAN-DEC 2026) ==========
     async function loadPlanningData() {
         const username = isAdmin ? "" : currentLoggedInUser;
         const res = await fetch(`${SCRIPT_URL}?action=getCropPlanningData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -449,10 +449,6 @@
         planningData = data;
     }
 
-    // Helper to get tomato type from the original row if available – we need to fetch full data?
-    // Since getCropPlanningData_ doesn't return tomatoType, we may need to enhance backend.
-    // For now, we rely on variety string. We'll also try to fetch full user data if needed.
-    // Simpler: use variety field to detect "Salad" vs "Cooking". Default to Cooking.
     function determineTomatoType(variety) {
         if (!variety) return "Cooking";
         const v = variety.toLowerCase();
@@ -475,37 +471,27 @@
                 loadingDiv.classList.add('hidden');
                 return;
             }
-            // Define categories and colours
+            // Fixed months: Jan 2026 to Dec 2026
+            const startYear = 2026;
+            const months = [];
+            for (let i = 0; i < 12; i++) {
+                months.push(new Date(startYear, i, 1)); // Jan 2026 = month 0
+            }
             const categories = ["Tomato (Cooking)", "Tomato (Salad)", "Sweet Pepper", "English Cucumber"];
             const categoryColors = {
-                "Tomato (Cooking)": "#e67e22",
-                "Tomato (Salad)": "#f39c12",
+                "Tomato (Cooking)": "#d35400",
+                "Tomato (Salad)": "#f1c40f",
                 "Sweet Pepper": "#e74c3c",
                 "English Cucumber": "#2ecc71"
             };
-            
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const startDate = new Date(today);
-            startDate.setMonth(today.getMonth() + 1); // next month
-            const endDate = new Date(today);
-            endDate.setMonth(today.getMonth() + 13); // 12 months ahead
-            let months = [];
-            let cursor = new Date(startDate);
-            while (cursor <= endDate) {
-                months.push(new Date(cursor));
-                cursor.setMonth(cursor.getMonth() + 1);
-            }
-            
-            // Initialize dataset arrays
             let datasets = {};
-            categories.forEach(cat => { datasets[cat] = new Array(months.length).fill(0); });
+            categories.forEach(cat => { datasets[cat] = new Array(12).fill(0); });
             
             for (let cropPlan of planningData) {
                 const transplantDate = new Date(cropPlan.transplantDate);
                 if (isNaN(transplantDate.getTime())) continue;
                 const crop = cropPlan.crop;
-                if (!CROP_CYCLES[crop]) continue; // only tomato, sweet pepper, cucumber
+                if (!CROP_CYCLES[crop]) continue;
                 const variety = cropPlan.variety;
                 let category = null;
                 if (crop === "Tomato") {
@@ -530,21 +516,54 @@
                 }
             }
             
-            // Prepare chart data
-            const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: '2-digit' }));
-            const chartDatasets = categories.map(cat => ({
+            const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: 'numeric' }));
+            // Prepare line datasets
+            const lineDatasets = categories.map(cat => ({
                 label: cat,
                 data: datasets[cat],
                 backgroundColor: categoryColors[cat],
-                borderWidth: 0,
-                stack: 'area'
+                borderColor: categoryColors[cat],
+                borderWidth: 2,
+                fill: false,
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }));
+            // Add trend line (linear regression on total area per month)
+            let totalPerMonth = new Array(12).fill(0);
+            for (let i = 0; i < 12; i++) {
+                for (let cat of categories) {
+                    totalPerMonth[i] += datasets[cat][i];
+                }
+            }
+            // Calculate linear regression (x = month index)
+            let n = 12;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            for (let i = 0; i < n; i++) {
+                sumX += i;
+                sumY += totalPerMonth[i];
+                sumXY += i * totalPerMonth[i];
+                sumX2 += i * i;
+            }
+            let slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            let intercept = (sumY - slope * sumX) / n;
+            let trendData = totalPerMonth.map((_, i) => intercept + slope * i);
+            lineDatasets.push({
+                label: 'Trend Line (Total Area)',
+                data: trendData,
+                borderColor: '#9b59b6',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                fill: false,
+                pointRadius: 0,
+                tension: 0
+            });
             
             if (areaOutlookChart) areaOutlookChart.destroy();
             const ctx = document.getElementById('areaOutlookChart').getContext('2d');
             areaOutlookChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: labels, datasets: chartDatasets },
+                type: 'line',
+                data: { labels: labels, datasets: lineDatasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
@@ -553,8 +572,8 @@
                         legend: { position: 'top' }
                     },
                     scales: {
-                        x: { stacked: true, title: { display: true, text: 'Month' }, ticks: { maxRotation: 45, minRotation: 45 } },
-                        y: { stacked: true, title: { display: true, text: 'Cultivated Area (m²)' }, beginAtZero: true }
+                        y: { title: { display: true, text: 'Cultivated Area (m²)' }, beginAtZero: true },
+                        x: { title: { display: true, text: 'Month (2026)' }, ticks: { maxRotation: 45, minRotation: 45 } }
                     }
                 }
             });
@@ -937,7 +956,16 @@
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
     logoutBtn.onclick = () => { clearLoginState(); mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; toast("Logged out"); };
     refreshPageBtn.onclick = () => { window.location.reload(); };
-    document.getElementById('accessTrackerBtn').onclick = () => { if(!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); else { document.getElementById('greenhouseSection').classList.remove('hidden'); renderActiveForm(); } };
+    document.getElementById('accessTrackerBtn').onclick = () => { 
+        if(!growerName.value.trim() || !localitySelect.value || !totalAreaInput.value) toast("Complete profile (grower name, locality & area)", true); 
+        else { 
+            const greenhouseDiv = document.getElementById('greenhouseSection');
+            greenhouseDiv.classList.toggle('hidden');
+            if (!greenhouseDiv.classList.contains('hidden')) {
+                renderActiveForm();
+            }
+        } 
+    };
     document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
     document.getElementById('submitDataBtn').onclick = submitAllNewData;
     document.getElementById('updateAreaBtn').onclick = logAreaUpdate;
