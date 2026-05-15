@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Projected Area Outlook</title>
+    <title>Hydroponic Smart Tracker | Category Area Outlook</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -74,7 +74,7 @@
         .stage-progress-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.8rem; font-weight: 500; }
         .stage-progress-bar-bg { background: #e9f3e4; border-radius: 1rem; height: 12px; overflow: hidden; }
         .stage-progress-fill { background: linear-gradient(90deg, #2e8b57, #4cae4c); height: 100%; border-radius: 1rem; width: 0%; }
-        .stat-title { font-weight: 800; font-size: 1.2rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .stat-title { font-weight: 800; font-size: 1.2rem; color: #1b5e1f; border-left: 5px solid #2e8b57; padding-left: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
         .live-dashboard-title { font-size: 1.5rem; font-weight: 800; color: #1b5e1f; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px dashed #b8daa8; display: flex; align-items: center; gap: 10px; }
         .grid-2col { display: grid; gap: 1rem; }
         @media (min-width: 640px) { .grid-2col { grid-template-columns: repeat(2, 1fr); } }
@@ -97,13 +97,10 @@
         .action-buttons { display: flex; gap: 8px; align-items: center; }
         .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
         .crop-filter-btn.active { background: #2c7a2a; }
-        /* Smaller efficiency chart */
         .efficiency-chart-wrapper { max-width: 100%; margin: 0 auto; }
         canvas#efficiencyChart { max-height: 200px; width: 100%; }
-        /* Area outlook chart */
         .area-outlook-wrapper { overflow-x: auto; margin-top: 1rem; }
-        canvas#areaOutlookChart { max-height: 350px; width: 100%; }
-        /* Zonal efficiency table */
+        canvas#areaOutlookChart { max-height: 400px; width: 100%; }
         .zonal-table-wrapper { overflow-x: auto; }
     </style>
 </head>
@@ -166,7 +163,7 @@
             <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
         </div>
         
-        <!-- Zonal Yield Efficiency Table (as per image) -->
+        <!-- Zonal Yield Efficiency Table with range (min–max) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-table-list"></i> 📊 Zonal Yield Efficiency Reference</div>
             <div class="zonal-table-wrapper">
@@ -175,17 +172,17 @@
                         <tr>
                             <th>Crop</th>
                             <th>Type / Variety</th>
-                            <th>Avg Yield Efficiency (kg/m²)</th>
+                            <th>Avg Yield Efficiency Range (kg/m²)</th>
                             <th>Units</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>30</td><td>unit</td></tr>
-                        <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.8</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>Salad</td><td>9.3</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>Roma</td><td>7.95</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>Jupiter</td><td>5.52</td><td>kg</td></tr>
-                        <tr><td>Tomato</td><td>THN 988</td><td>11.05</td><td>kg</td></tr>
+                        <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>30 – 58</td><td>unit</td></tr>
+                        <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.8 – 18.4</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Salad</td><td>9.3 – 14.88</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Roma</td><td>7.95 – 12.72</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Jupiter</td><td>5.52 – 7.36</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>THN 988</td><td>11.05 – 16.57</td><td>kg</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -197,15 +194,15 @@
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
 
-        <!-- NEW: Projected Monthly Cultivated Area (m²) based on transplant dates -->
+        <!-- Projected Monthly Cultivated Area – split by category (stacked bar) -->
         <div class="glass-card" id="areaOutlookSection">
             <div class="stat-title">
-                <i class="fas fa-chart-line"></i> 📅 Projected Monthly Cultivated Area (m²)
+                <i class="fas fa-chart-line"></i> 📅 Projected Monthly Cultivated Area (m²) by Crop Type
                 <span style="font-size:0.8rem; margin-left:1rem;">Based on transplant dates & crop cycles</span>
                 <button id="refreshAreaOutlookBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
             </div>
             <div class="area-outlook-wrapper">
-                <canvas id="areaOutlookChart" width="800" height="300" style="max-width:100%; height:auto;"></canvas>
+                <canvas id="areaOutlookChart" width="800" height="400" style="max-width:100%; height:auto;"></canvas>
             </div>
             <div id="areaOutlookLoading" class="hidden" style="text-align:center; padding:1rem;">Loading area forecast...</div>
             <div id="areaOutlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
@@ -253,7 +250,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL WEB APP URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzX4vT8W_frcqfcu5s6-rq7lzLoxavcu14ojY62FSYnCQGzccBwQ6T3Kxc7srvj1x861g/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby698NXuVMmkSkxB7OgUCGRm0srql0vId5jsbk37Ud_b2LIoSYDfZDHy_HlgJlu8shVuA/exec';
     
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -276,6 +273,24 @@
         "Sweet Pepper": { preHarvestMonths: 2.5, harvestDurationMonths: 5 },
         "English Cucumber": { preHarvestMonths: 1.5, harvestDurationMonths: 3 }
     };
+
+    // Category mapping for area outlook
+    function getCategory(crop, variety, tomatoType) {
+        if (crop === "English Cucumber") return "English Cucumber";
+        if (crop === "Sweet Pepper") return "Sweet Pepper";
+        if (crop === "Tomato") {
+            // Use tomatoType if available, else check variety string
+            let type = (tomatoType || "").toLowerCase();
+            if (type.includes("salad")) return "Tomato (Salad)";
+            if (type.includes("cooking")) return "Tomato (Cooking)";
+            let varLower = (variety || "").toLowerCase();
+            if (varLower.includes("salad")) return "Tomato (Salad)";
+            if (varLower.includes("cooking")) return "Tomato (Cooking)";
+            // Default to Cooking
+            return "Tomato (Cooking)";
+        }
+        return null;
+    }
 
     // ========== SESSION ==========
     function saveLoginState(username, admin) {
@@ -401,7 +416,7 @@
             let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             if (data.topVarieties?.tomato?.length) {
                 data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
-            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td>`; }
+            } else { tomatoHtml += `<tr><td colspan="2">No tomato data yet</td></tr>`; }
             tomatoHtml += `</tbody></table></div>`;
             let otherCropsHtml = `<div><h4>🌾 Other Key Crops</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             const targetOther = ["Sweet Pepper", "English Cucumber"];
@@ -426,12 +441,24 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    // ========== PROJECTED MONTHLY CULTIVATED AREA ==========
+    // ========== PROJECTED MONTHLY CULTIVATED AREA BY CATEGORY (STACKED) ==========
     async function loadPlanningData() {
         const username = isAdmin ? "" : currentLoggedInUser;
         const res = await fetch(`${SCRIPT_URL}?action=getCropPlanningData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
         const data = await res.json();
         planningData = data;
+    }
+
+    // Helper to get tomato type from the original row if available – we need to fetch full data?
+    // Since getCropPlanningData_ doesn't return tomatoType, we may need to enhance backend.
+    // For now, we rely on variety string. We'll also try to fetch full user data if needed.
+    // Simpler: use variety field to detect "Salad" vs "Cooking". Default to Cooking.
+    function determineTomatoType(variety) {
+        if (!variety) return "Cooking";
+        const v = variety.toLowerCase();
+        if (v.includes("salad")) return "Salad";
+        if (v.includes("cooking")) return "Cooking";
+        return "Cooking";
     }
 
     async function computeAndRenderAreaOutlook() {
@@ -448,11 +475,19 @@
                 loadingDiv.classList.add('hidden');
                 return;
             }
-            // Aggregate monthly cultivated area (m²) for the next 12 months from today
+            // Define categories and colours
+            const categories = ["Tomato (Cooking)", "Tomato (Salad)", "Sweet Pepper", "English Cucumber"];
+            const categoryColors = {
+                "Tomato (Cooking)": "#e67e22",
+                "Tomato (Salad)": "#f39c12",
+                "Sweet Pepper": "#e74c3c",
+                "English Cucumber": "#2ecc71"
+            };
+            
             const today = new Date();
             today.setHours(0,0,0,0);
             const startDate = new Date(today);
-            startDate.setMonth(today.getMonth() + 1); // start from next month
+            startDate.setMonth(today.getMonth() + 1); // next month
             const endDate = new Date(today);
             endDate.setMonth(today.getMonth() + 13); // 12 months ahead
             let months = [];
@@ -461,48 +496,65 @@
                 months.push(new Date(cursor));
                 cursor.setMonth(cursor.getMonth() + 1);
             }
-            let monthlyArea = new Array(months.length).fill(0);
+            
+            // Initialize dataset arrays
+            let datasets = {};
+            categories.forEach(cat => { datasets[cat] = new Array(months.length).fill(0); });
+            
             for (let cropPlan of planningData) {
                 const transplantDate = new Date(cropPlan.transplantDate);
                 if (isNaN(transplantDate.getTime())) continue;
-                const cropType = cropPlan.crop;
-                if (!CROP_CYCLES[cropType]) continue;
-                const cycle = CROP_CYCLES[cropType];
+                const crop = cropPlan.crop;
+                if (!CROP_CYCLES[crop]) continue; // only tomato, sweet pepper, cucumber
+                const variety = cropPlan.variety;
+                let category = null;
+                if (crop === "Tomato") {
+                    const tomatoType = determineTomatoType(variety);
+                    category = tomatoType === "Salad" ? "Tomato (Salad)" : "Tomato (Cooking)";
+                } else if (crop === "Sweet Pepper") {
+                    category = "Sweet Pepper";
+                } else if (crop === "English Cucumber") {
+                    category = "English Cucumber";
+                }
+                if (!category) continue;
+                
+                const cycle = CROP_CYCLES[crop];
                 const endDateActive = new Date(transplantDate);
                 endDateActive.setMonth(endDateActive.getMonth() + cycle.preHarvestMonths + cycle.harvestDurationMonths);
                 const area = cropPlan.area;
                 for (let i = 0; i < months.length; i++) {
                     const m = months[i];
                     if (m >= transplantDate && m <= endDateActive) {
-                        monthlyArea[i] += area;
+                        datasets[category][i] += area;
                     }
                 }
             }
+            
+            // Prepare chart data
             const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: '2-digit' }));
+            const chartDatasets = categories.map(cat => ({
+                label: cat,
+                data: datasets[cat],
+                backgroundColor: categoryColors[cat],
+                borderWidth: 0,
+                stack: 'area'
+            }));
+            
             if (areaOutlookChart) areaOutlookChart.destroy();
             const ctx = document.getElementById('areaOutlookChart').getContext('2d');
             areaOutlookChart = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Cultivated Area (m²)',
-                        data: monthlyArea,
-                        backgroundColor: '#2e8b57',
-                        borderRadius: 8,
-                        borderWidth: 0
-                    }]
-                },
+                data: { labels: labels, datasets: chartDatasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
                     plugins: {
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(0)} m²` } },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(0)} m²` } },
                         legend: { position: 'top' }
                     },
                     scales: {
-                        y: { title: { display: true, text: 'Square Meters (m²)' }, beginAtZero: true },
-                        x: { title: { display: true, text: 'Month' }, ticks: { maxRotation: 45, minRotation: 45 } }
+                        x: { stacked: true, title: { display: true, text: 'Month' }, ticks: { maxRotation: 45, minRotation: 45 } },
+                        y: { stacked: true, title: { display: true, text: 'Cultivated Area (m²)' }, beginAtZero: true }
                     }
                 }
             });
@@ -633,7 +685,7 @@
             setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
-                await computeAndRenderAreaOutlook(); // refresh area outlook after update
+                await computeAndRenderAreaOutlook();
                 toast("Data refreshed.");
             }, 2000);
         } catch(e) { console.error(e); toast("Request sent but could not verify. Please refresh manually.", true); } finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
