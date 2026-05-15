@@ -97,7 +97,6 @@
         .action-buttons { display: flex; gap: 8px; align-items: center; }
         .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
         .crop-filter-btn.active { background: #2c7a2a; }
-        /* Gantt specific */
         .gantt-row { transition: background 0.2s; }
         .transplant-slider { cursor: pointer; }
     </style>
@@ -165,7 +164,7 @@
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
 
-        <!-- NEW: Interactive Crop Timeline (Gantt) -->
+        <!-- Interactive Crop Timeline (Gantt) -->
         <div class="glass-card" id="timelineSection" style="margin-top: 1.5rem;">
             <div class="stat-title">
                 <i class="fas fa-chalkboard-user"></i> 📅 Interactive Crop Timeline (Gantt)
@@ -225,7 +224,9 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSSwgMI0NfyY_GLJB0AeFN_zXBnmzwgl7ZZqW7maTd4ooOlj7MkOlsLeiTsbtYs3zmgQ/exec'; // <-- REPLACE WITH YOUR WEB APP URL
+    // !!! REPLACE WITH YOUR ACTUAL WEB APP URL !!!
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFxhNC4LGig1rmBVCUlHQjOXWQntemed4Lwp0qvGtwmbjU_nYVzdljFbStJe12l4hs7A/exec';
+    
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -243,14 +244,13 @@
     let planningData = [];
     let timelineDragTimeout = null;
 
-    // Crop cycles for forecasting
     const CROP_CYCLES = {
         "Tomato": { preHarvestMonths: 2.5, harvestDurationMonths: 5, color: "#2e8b57" },
         "Sweet Pepper": { preHarvestMonths: 2.5, harvestDurationMonths: 5, color: "#e6b422" },
         "English Cucumber": { preHarvestMonths: 1.5, harvestDurationMonths: 3, color: "#e67e22" }
     };
 
-    // ========== SESSION PERSISTENCE ==========
+    // ========== SESSION ==========
     function saveLoginState(username, admin) {
         sessionStorage.setItem('hydroponic_loggedIn', 'true');
         sessionStorage.setItem('hydroponic_username', username);
@@ -341,7 +341,6 @@
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
 
-    // Efficiency chart (existing)
     async function loadEfficiencyChart(activeCrop = currentActiveCrop) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getMonthlyEfficiency&_=${Date.now()}`);
@@ -400,7 +399,7 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    // ========== NEW: Timeline Gantt Functions ==========
+    // ========== TIMELINE FUNCTIONS ==========
     async function loadEfficiencyMap() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getYieldEfficiencyMap&_=${Date.now()}`);
@@ -528,7 +527,7 @@
         } catch(e) { toast("Failed to update transplant date", true); }
     }
 
-    // ========== Existing user data, edit, profile etc. ==========
+    // ========== EXISTING USER DATA, EDIT, PROFILE ==========
     async function loadUserPreviousData(username) {
         if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
         try {
@@ -828,7 +827,7 @@
         } catch(e) { toast("Submit error", true); } 
     }
 
-    // ---------- LOGIN & AUTO‑RESTORE ----------
+    // ---------- LOGIN ----------
     async function login(username, password) {
         const errorDiv = document.getElementById('loginError');
         errorDiv.innerText = '';
