@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* ========== STYLES (same as before – keep all) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%); min-height: 100vh; padding: 16px; }
         .container { max-width: 1400px; margin: 0 auto; width: 100%; }
@@ -29,8 +30,6 @@
         .top-crops-table, .data-table, .efficiency-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 300px; }
         .top-crops-table th, .data-table th, .efficiency-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
         .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
-        .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
-        .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
         .crop-records-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 1rem; }
         @media (min-width: 480px) { .crop-records-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
         .record-card { background: #ffffff; border-radius: 1.5rem; padding: 1rem; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #e0f0d8; }
@@ -159,19 +158,13 @@
             <div id="areaByStageContainer"></div>
         </div>
 
-        <!-- 2. Stage Breakdown per Crop -->
-        <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> 🌿 Stage Breakdown per Crop</div>
-            <div id="stageByCropContainer" class="stage-breakdown-wrapper"></div>
-        </div>
-
-        <!-- 3. Top Crop Areas & Varieties (Tomato + Sweet Pepper + English Cucumber summary) -->
+        <!-- 2. Top Crop Areas & Varieties (Tomato + Sweet Pepper + English Cucumber summary) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-table-list metric-icon"></i> 🏆 Top Crop Areas & Varieties</div>
             <div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div>
         </div>
 
-        <!-- 4. Interactive Crop Timeline -->
+        <!-- 3. Interactive Crop Timeline -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-line metric-icon"></i> 📅 Interactive Crop Timeline (Stage-wise Area)</div>
             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="timelineCropButtons">
@@ -183,14 +176,14 @@
             <div id="noTimelineData" class="hidden" style="text-align:center; padding:2rem;">No timeline data available.</div>
         </div>
 
-        <!-- 5. Zonal Yield Efficiency -->
+        <!-- 4. Zonal Yield Efficiency -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-map-marked-alt"></i> 🗺️ Zonal Yield Efficiency (kg/m²)</div>
             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="zoneEfficiencyButtons"></div>
             <div id="zonalEfficiencyTable"></div>
         </div>
 
-        <!-- 6. Comparative Forecast 2026 -->
+        <!-- 5. Comparative Forecast 2026 -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-simple"></i> 📊 Comparative Forecast 2026: Cultivated vs Harvestable Area (m²)</div>
             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="forecastCropButtons">
@@ -210,7 +203,7 @@
                     <thead><tr><th>Crop</th><th>Type / Variety</th><th>Avg Yield Efficiency Range (kg/m²)</th><th>Units</th></tr></thead>
                     <tbody>
                         <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>32 – 62</td><td>units</td></tr>
-                        <tr>}<td>Sweet Pepper</td><td>Blocky</td><td>13.80 – 18.40</td><td>kg</td></tr>
+                        <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.80 – 18.40</td><td>kg</td></tr>
                         <tr><td>Tomato</td><td>Salad</td><td>11.75 – 18.90</td><td>kg</td></tr>
                         <tr><td>Tomato</td><td>Roma / Round</td><td>9.95 – 19.72</td><td>kg</td></tr>
                         <tr><td>Tomato</td><td>THN 988</td><td>10.20 – 19.50</td><td>kg</td></tr>
@@ -251,7 +244,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL APPS SCRIPT URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwfqTpE5v1-t7THp19NYhtWwIa4fcQHMCLp1rqq9eM388RFVq8JhFZdiKlXvE0tBDZTXA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0WfGN9P8S-fU5E5veVWrEUoKmiaSWV1XRNlxD5uV5Ot7_GDHDQ8c35S-jGx8Xrj2S/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -271,7 +264,7 @@
     let currentZoneEfficiency = "E2";
     let greenhouseSectionVisible = false;
     let currentStageAreaFilter = "all";
-    let dashboardStats = null; // store latest stats for area by stage filtering
+    let dashboardStats = null;
 
     // DOM element references
     const loginOverlay = document.getElementById('loginOverlay');
@@ -317,7 +310,6 @@
         if (filterCrop === "all") {
             areaByStage = stats.areaByStageTotal || {};
         } else {
-            // get area by stage for specific crop from areaByStageByCrop
             const cropData = (stats.areaByStageByCrop && stats.areaByStageByCrop[filterCrop]) || {};
             areaByStage = cropData;
         }
@@ -335,12 +327,13 @@
     async function loadDashboard() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             dashboardStats = data;
             renderAreaByStage(data, currentStageAreaFilter);
             
-            // Top Crop Areas & Varieties (Tomato + Sweet Pepper + English Cucumber summary)
+            // Top Crop Areas & Varieties
             let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
             if (data.topVarieties?.tomato?.length) {
                 data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
@@ -360,24 +353,16 @@
             sweetCucHtml += `</tbody></table></div>`;
             document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + sweetCucHtml;
             
-            // Stage breakdown per crop
-            let stageCropHtml = '';
-            const cropIcons = { "Tomato": "🍅", "Sweet Pepper": "🌶️", "English Cucumber": "🥒" };
-            for (let crop of ["Tomato","Sweet Pepper","English Cucumber"]) {
-                let stagesData = (data.areaByStageByCrop && data.areaByStageByCrop[crop]) || {};
-                stageCropHtml += `<div class="stage-crop-card"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:2px solid #e0efd4; padding-bottom:8px;"><span style="font-size:2rem;">${cropIcons[crop] || '🌱'}</span><span style="font-weight:800; font-size:1.2rem;">${crop}</span></div>${STAGES.map(s => `<div style="display:flex; justify-content:space-between; padding:6px 0;"><span><i class="fas fa-chart-simple"></i> ${s}</span><span><strong>${(stagesData[s] || 0).toFixed(1)}</strong> m²</span></div>`).join('')}</div>`;
-            }
-            document.getElementById('stageByCropContainer').innerHTML = stageCropHtml;
-            
             await loadZonalEfficiency(currentZoneEfficiency);
             await loadTimelineChart(currentTimelineCrop);
             await loadForecastChart(currentForecastCrop);
-        } catch(e) { console.error(e); toast("Error loading dashboard", true); }
+        } catch(e) { console.error(e); toast("Error loading dashboard: " + e.message, true); }
     }
 
     async function loadZonalEfficiency(zone) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if (!data[zone]) { document.getElementById('zonalEfficiencyTable').innerHTML = `<p>No efficiency data for zone ${zone}</p>`; return; }
             let html = `<table class="efficiency-table"><thead><tr><th>Crop</th><th>Efficiency (kg/m²)</th></tr></thead><tbody>`;
@@ -392,6 +377,7 @@
     async function loadTimelineChart(crop) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if (!data.datasets || data.datasets.length === 0) { document.getElementById('noTimelineData').classList.remove('hidden'); if(timelineChart) timelineChart.destroy(); return; }
             document.getElementById('noTimelineData').classList.add('hidden');
@@ -408,6 +394,7 @@
     async function loadForecastChart(crop) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if (!data.cultivated || data.cultivated.length === 0) { document.getElementById('noForecastData').classList.remove('hidden'); if(forecastChart) forecastChart.destroy(); return; }
             document.getElementById('noForecastData').classList.add('hidden');
@@ -426,6 +413,7 @@
         if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const headers = data.headers.map(h => h.toString().toLowerCase());
@@ -496,21 +484,21 @@
             const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
             const cropName = row[cropIdx] || "";
             
-            // Step 1: Update the main record in Sheet1
+            // Step 1: Update main record
             const mainPayload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths };
             let response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mainPayload) });
             if (!response.ok) throw new Error(`HTTP ${response.status} - ${await response.text()}`);
             let result = await response.json();
             if (result.error) throw new Error(result.error);
             
-            // Step 2: Record monthly harvests in CropUpdates sheet
+            // Step 2: Record monthly harvests
             for (let i = 0; i < 12; i++) {
                 const harvestValue = newMonthly[i];
                 if (harvestValue !== 0 && !isNaN(harvestValue)) {
                     const monthName = MONTHS[i];
                     const monthlyPayload = { action: 'recordMonthlyHarvest', grower: username, crop: cropName, greenhouseArea: totalGreenhouseArea, month: monthName, harvestAmount: harvestValue, unit: newUnit };
                     let resp = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(monthlyPayload) });
-                    if (!resp.ok) console.warn(`Failed to log monthly harvest for ${monthName}`);
+                    if (!resp.ok) console.warn(`Failed to log monthly harvest for ${monthName}: ${await resp.text()}`);
                 }
             }
             toast("✅ Update sent! Main record updated and monthly harvests logged.");
@@ -546,6 +534,9 @@
     async function autoFillProfileFromRecords(username) {
         if (isAdmin) return;
         try {
+            // First ensure locality dropdown is populated (it will be after init)
+            // Wait a short time for dropdown to be ready
+            await new Promise(r => setTimeout(r, 200));
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             if (profRes.ok) {
                 const prof = await profRes.json();
@@ -553,29 +544,39 @@
                     totalAreaInput.value = parseFloat(prof.totalArea);
                 } else {
                     const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-                    const data = await dataRes.json();
-                    if (data.rows && data.rows.length) {
-                        let sumArea = 0;
-                        const headers = data.headers.map(h => h.toString().toLowerCase());
-                        let areaIdx = headers.findIndex(h => h.includes('area') && !h.includes('total'));
-                        if (areaIdx !== -1) {
-                            for (let row of data.rows) { let a = parseFloat(row[areaIdx]); if (!isNaN(a)) sumArea += a; }
+                    if (dataRes.ok) {
+                        const data = await dataRes.json();
+                        if (data.rows && data.rows.length) {
+                            let sumArea = 0;
+                            const headers = data.headers.map(h => h.toString().toLowerCase());
+                            let areaIdx = headers.findIndex(h => h.includes('area') && !h.includes('total'));
+                            if (areaIdx !== -1) {
+                                for (let row of data.rows) { let a = parseFloat(row[areaIdx]); if (!isNaN(a)) sumArea += a; }
+                            }
+                            if (sumArea > 0) totalAreaInput.value = sumArea;
                         }
-                        if (sumArea > 0) totalAreaInput.value = sumArea;
                     }
                 }
             }
-            const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-            const data = await dataRes.json();
-            if (data.rows && data.rows.length) {
-                const headers = data.headers.map(h => h.toString().toLowerCase());
-                const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
-                if (localityCol !== -1 && data.rows[0][localityCol]) {
-                    const locVal = data.rows[0][localityCol];
-                    setTimeout(() => { if (localitySelect.querySelector(`option[value="${locVal}"]`)) localitySelect.value = locVal; }, 200);
+            // Now get locality and zone from user's first record
+            const dataRes2 = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+            if (dataRes2.ok) {
+                const data = await dataRes2.json();
+                if (data.rows && data.rows.length) {
+                    const headers = data.headers.map(h => h.toString().toLowerCase());
+                    const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
+                    if (localityCol !== -1 && data.rows[0][localityCol]) {
+                        const locVal = data.rows[0][localityCol];
+                        // Set locality after dropdown is populated
+                        if (localitySelect.querySelector(`option[value="${locVal}"]`)) {
+                            localitySelect.value = locVal;
+                        }
+                    }
+                    const zoneCol = headers.findIndex(h => h === 'zone');
+                    if (zoneCol !== -1 && data.rows[0][zoneCol] && ZONE_LOCALITIES[data.rows[0][zoneCol]]) {
+                        setZone(data.rows[0][zoneCol]);
+                    }
                 }
-                const zoneCol = headers.findIndex(h => h === 'zone');
-                if (zoneCol !== -1 && data.rows[0][zoneCol] && ZONE_LOCALITIES[data.rows[0][zoneCol]]) { setZone(data.rows[0][zoneCol]); }
             }
         } catch(e) { console.warn("Auto-fill failed", e); }
     }
@@ -724,6 +725,7 @@
         const loginBtn = document.getElementById('loginBtn'); const original = loginBtn.innerHTML; loginBtn.disabled = true; loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
         try {
             const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if (!data.success) { errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; }
             isAdmin = data.isAdmin === true; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username;
@@ -760,7 +762,6 @@
 
     // Filter buttons
     function initFilters() {
-        // Area by stage filter buttons
         const stageAreaBtns = document.querySelectorAll('#stageAreaButtons .crop-filter-btn');
         stageAreaBtns.forEach(btn => {
             btn.addEventListener('click', () => {
