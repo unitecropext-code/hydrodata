@@ -146,7 +146,7 @@
         <!-- DASHBOARD SECTIONS -->
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
 
-        <!-- 1. Area by Stage (interactive with buttons) -->
+        <!-- 1. Area by Stage (interactive) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> 📐 Area by Stage</div>
             <div class="stage-area-buttons" id="stageAreaButtons">
@@ -203,7 +203,7 @@
                     <thead><tr><th>Crop</th><th>Type / Variety</th><th>Avg Yield Efficiency Range (kg/m²)</th><th>Units</th></tr></thead>
                     <tbody>
                         <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>32 – 62</td><td>units</td></tr>
-                        <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.80 – 18.40</td><td>kg</td></tr>
+                        <tr>}<td>Sweet Pepper</td><td>Blocky</td><td>13.80 – 18.40</td><td>kg</td></tr>
                         <tr><td>Tomato</td><td>Salad</td><td>11.75 – 18.90</td><td>kg</td></tr>
                         <tr><td>Tomato</td><td>Roma / Round</td><td>9.95 – 19.72</td><td>kg</td></tr>
                         <tr><td>Tomato</td><td>THN 988</td><td>10.20 – 19.50</td><td>kg</td></tr>
@@ -244,7 +244,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL APPS SCRIPT URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0WfGN9P8S-fU5E5veVWrEUoKmiaSWV1XRNlxD5uV5Ot7_GDHDQ8c35S-jGx8Xrj2S/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzB8vOmn5mTEAOoB6_IVR03EDldHMWRr56OoWFqEQuyhpd6C3VKMPueR41uek4LKewymA/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -266,7 +266,7 @@
     let currentStageAreaFilter = "all";
     let dashboardStats = null;
 
-    // DOM element references
+    // DOM elements
     const loginOverlay = document.getElementById('loginOverlay');
     const mainApp = document.getElementById('mainApp');
     const growerNameInput = document.getElementById('growerName');
@@ -304,7 +304,6 @@
     function setZone(zone) { currentZone = zone; document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone)); updateLocalityDropdown(); }
     function updateLocalityDropdown() { const locs = ZONE_LOCALITIES[currentZone] || []; localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); }
 
-    // Render area by stage with progress bars & icons, filtered by crop
     function renderAreaByStage(stats, filterCrop = "all") {
         let areaByStage = {};
         if (filterCrop === "all") {
@@ -534,8 +533,6 @@
     async function autoFillProfileFromRecords(username) {
         if (isAdmin) return;
         try {
-            // First ensure locality dropdown is populated (it will be after init)
-            // Wait a short time for dropdown to be ready
             await new Promise(r => setTimeout(r, 200));
             const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             if (profRes.ok) {
@@ -558,7 +555,6 @@
                     }
                 }
             }
-            // Now get locality and zone from user's first record
             const dataRes2 = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             if (dataRes2.ok) {
                 const data = await dataRes2.json();
@@ -567,7 +563,6 @@
                     const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
                     if (localityCol !== -1 && data.rows[0][localityCol]) {
                         const locVal = data.rows[0][localityCol];
-                        // Set locality after dropdown is populated
                         if (localitySelect.querySelector(`option[value="${locVal}"]`)) {
                             localitySelect.value = locVal;
                         }
@@ -701,7 +696,6 @@
         } catch(e) { toast("Submit error: " + e.message, true); console.error(e); } 
     }
 
-    // Toggle greenhouse section
     function toggleGreenhouseSection() {
         if (greenhouseSectionVisible) {
             greenhouseSection.classList.add('hidden');
@@ -760,7 +754,6 @@
     saveEditBtn.onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
 
-    // Filter buttons
     function initFilters() {
         const stageAreaBtns = document.querySelectorAll('#stageAreaButtons .crop-filter-btn');
         stageAreaBtns.forEach(btn => {
