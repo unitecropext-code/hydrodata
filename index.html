@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Projected Harvest Outlook</title>
+    <title>Hydroponic Smart Tracker | Projected Area Outlook</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -43,9 +43,9 @@
         .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         @media (min-width: 768px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
-        .top-crops-table, .data-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
-        .top-crops-table th, .data-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
-        .top-crops-table td, .data-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
+        .top-crops-table, .data-table, .efficiency-table { width: 100%; border-collapse: collapse; border-radius: 1rem; min-width: 400px; }
+        .top-crops-table th, .data-table th, .efficiency-table th { background: #2c5e2a; color: white; padding: 12px 8px; text-align: left; white-space: nowrap; }
+        .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 8px; border-bottom: 1px solid #e0efd4; vertical-align: middle; }
         .stage-breakdown-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
         .stage-crop-card { background: linear-gradient(135deg, #ffffff, #fef7e0); border-radius: 1.5rem; padding: 1rem; border: 1px solid #e0efd4; flex: 1 1 200px; min-width: 180px; }
         .crop-records-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 1rem; }
@@ -97,9 +97,14 @@
         .action-buttons { display: flex; gap: 8px; align-items: center; }
         .crop-filter-btn { background: #6c757d; color: white; border: none; border-radius: 2rem; padding: 0.4rem 1rem; cursor: pointer; transition: 0.2s; }
         .crop-filter-btn.active { background: #2c7a2a; }
-        /* Outlook chart container */
-        .outlook-chart-container { max-width: 100%; overflow-x: auto; margin-top: 1rem; }
-        canvas#outlookChart { max-height: 400px; width: 100%; }
+        /* Smaller efficiency chart */
+        .efficiency-chart-wrapper { max-width: 100%; margin: 0 auto; }
+        canvas#efficiencyChart { max-height: 200px; width: 100%; }
+        /* Area outlook chart */
+        .area-outlook-wrapper { overflow-x: auto; margin-top: 1rem; }
+        canvas#areaOutlookChart { max-height: 350px; width: 100%; }
+        /* Zonal efficiency table */
+        .zonal-table-wrapper { overflow-x: auto; }
     </style>
 </head>
 <body>
@@ -145,7 +150,7 @@
 
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
         
-        <!-- Monthly Yield Efficiency Chart -->
+        <!-- Monthly Yield Efficiency Chart (smaller) -->
         <div class="glass-card">
             <div class="stat-title">
                 <i class="fas fa-chart-line"></i> 📈 Monthly Yield Efficiency (kg/m²) – Jan to Apr
@@ -155,28 +160,55 @@
                 <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
                 <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
             </div>
-            <canvas id="efficiencyChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
+            <div class="efficiency-chart-wrapper">
+                <canvas id="efficiencyChart" width="400" height="180" style="max-width:100%; height:auto;"></canvas>
+            </div>
             <div id="noEfficiencyData" class="hidden" style="text-align:center; padding:2rem;">No efficiency data available for Jan–Apr (ensure yields and areas are recorded).</div>
         </div>
         
+        <!-- Zonal Yield Efficiency Table (as per image) -->
+        <div class="glass-card">
+            <div class="stat-title"><i class="fas fa-table-list"></i> 📊 Zonal Yield Efficiency Reference</div>
+            <div class="zonal-table-wrapper">
+                <table class="efficiency-table">
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th>Type / Variety</th>
+                            <th>Avg Yield Efficiency (kg/m²)</th>
+                            <th>Units</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>30</td><td>unit</td></tr>
+                        <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.8</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Salad</td><td>9.3</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Roma</td><td>7.95</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>Jupiter</td><td>5.52</td><td>kg</td></tr>
+                        <tr><td>Tomato</td><td>THN 988</td><td>11.05</td><td>kg</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="dashboard-grid">
             <div class="stat-card"><div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> Area by Stage</div><div id="areaByStageContainer"></div></div>
             <div class="stat-card"><div class="stat-title"><i class="fas fa-table-list metric-icon"></i> Top Crop Areas</div><div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div></div>
         </div>
         <div class="glass-card"><div class="stat-title"><i class="fas fa-layer-group metric-icon"></i> Stage Breakdown per Crop</div><div id="stageByCropContainer" class="stage-breakdown-wrapper"></div></div>
 
-        <!-- NEW: Projected Harvest Outlook (kg) based on transplant dates -->
-        <div class="glass-card" id="outlookSection">
+        <!-- NEW: Projected Monthly Cultivated Area (m²) based on transplant dates -->
+        <div class="glass-card" id="areaOutlookSection">
             <div class="stat-title">
-                <i class="fas fa-chart-line"></i> 📅 Projected Monthly Harvest Outlook (kg)
+                <i class="fas fa-chart-line"></i> 📅 Projected Monthly Cultivated Area (m²)
                 <span style="font-size:0.8rem; margin-left:1rem;">Based on transplant dates & crop cycles</span>
-                <button id="refreshOutlookBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
+                <button id="refreshAreaOutlookBtn" class="btn-secondary" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Refresh Timeline</button>
             </div>
-            <div class="outlook-chart-container">
-                <canvas id="outlookChart" width="800" height="350" style="max-width:100%; height:auto;"></canvas>
+            <div class="area-outlook-wrapper">
+                <canvas id="areaOutlookChart" width="800" height="300" style="max-width:100%; height:auto;"></canvas>
             </div>
-            <div id="outlookLoading" class="hidden" style="text-align:center; padding:1rem;">Loading forecast...</div>
-            <div id="outlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
+            <div id="areaOutlookLoading" class="hidden" style="text-align:center; padding:1rem;">Loading area forecast...</div>
+            <div id="areaOutlookError" class="hidden" style="color:#c0392b; text-align:center; padding:1rem;"></div>
         </div>
 
         <div id="greenhouseSection" class="hidden">
@@ -221,7 +253,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL WEB APP URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFxhNC4LGig1rmBVCUlHQjOXWQntemed4Lwp0qvGtwmbjU_nYVzdljFbStJe12l4hs7A/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzX4vT8W_frcqfcu5s6-rq7lzLoxavcu14ojY62FSYnCQGzccBwQ6T3Kxc7srvj1x861g/exec';
     
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -235,15 +267,14 @@
     let isAdmin = false;
     let currentLoggedInUser = "";
     let efficiencyChart = null;
-    let outlookChart = null;
+    let areaOutlookChart = null;
     let currentActiveCrop = "Tomato";
-    let efficiencyMap = {};
     let planningData = [];
 
     const CROP_CYCLES = {
-        "Tomato": { preHarvestMonths: 2.5, harvestDurationMonths: 5, color: "#2e8b57" },
-        "Sweet Pepper": { preHarvestMonths: 2.5, harvestDurationMonths: 5, color: "#e6b422" },
-        "English Cucumber": { preHarvestMonths: 1.5, harvestDurationMonths: 3, color: "#e67e22" }
+        "Tomato": { preHarvestMonths: 2.5, harvestDurationMonths: 5 },
+        "Sweet Pepper": { preHarvestMonths: 2.5, harvestDurationMonths: 5 },
+        "English Cucumber": { preHarvestMonths: 1.5, harvestDurationMonths: 3 }
     };
 
     // ========== SESSION ==========
@@ -395,39 +426,29 @@
         } catch(e) { console.error(e); document.getElementById('areaByStageContainer').innerHTML = `<div class="badge">⚠️ Stats error</div>`; }
     }
 
-    // ========== PROJECTED HARVEST OUTLOOK ==========
-    async function loadEfficiencyMap() {
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=getYieldEfficiencyMap&_=${Date.now()}`);
-            const data = await res.json();
-            efficiencyMap = data;
-        } catch(e) { console.warn("Efficiency map error", e); }
-    }
-
+    // ========== PROJECTED MONTHLY CULTIVATED AREA ==========
     async function loadPlanningData() {
-        // For outlook, we want all growers if admin, else only current grower
         const username = isAdmin ? "" : currentLoggedInUser;
         const res = await fetch(`${SCRIPT_URL}?action=getCropPlanningData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
         const data = await res.json();
         planningData = data;
     }
 
-    async function computeAndRenderOutlook() {
-        const loadingDiv = document.getElementById('outlookLoading');
-        const errorDiv = document.getElementById('outlookError');
+    async function computeAndRenderAreaOutlook() {
+        const loadingDiv = document.getElementById('areaOutlookLoading');
+        const errorDiv = document.getElementById('areaOutlookError');
         loadingDiv.classList.remove('hidden');
         errorDiv.classList.add('hidden');
         try {
-            await loadEfficiencyMap();
             await loadPlanningData();
             if (!planningData.length) {
                 errorDiv.innerText = 'No crop records with transplant dates found. Please add transplant dates to your crops.';
                 errorDiv.classList.remove('hidden');
-                if (outlookChart) outlookChart.destroy();
+                if (areaOutlookChart) areaOutlookChart.destroy();
                 loadingDiv.classList.add('hidden');
                 return;
             }
-            // Aggregate monthly harvest (kg) for the next 12 months from today
+            // Aggregate monthly cultivated area (m²) for the next 12 months from today
             const today = new Date();
             today.setHours(0,0,0,0);
             const startDate = new Date(today);
@@ -440,40 +461,33 @@
                 months.push(new Date(cursor));
                 cursor.setMonth(cursor.getMonth() + 1);
             }
-            // For each month, accumulate kg
-            let monthlyTotals = new Array(months.length).fill(0);
+            let monthlyArea = new Array(months.length).fill(0);
             for (let cropPlan of planningData) {
                 const transplantDate = new Date(cropPlan.transplantDate);
                 if (isNaN(transplantDate.getTime())) continue;
                 const cropType = cropPlan.crop;
                 if (!CROP_CYCLES[cropType]) continue;
                 const cycle = CROP_CYCLES[cropType];
-                const harvestStart = new Date(transplantDate);
-                harvestStart.setMonth(harvestStart.getMonth() + cycle.preHarvestMonths);
-                const harvestEnd = new Date(harvestStart);
-                harvestEnd.setMonth(harvestEnd.getMonth() + cycle.harvestDurationMonths);
+                const endDateActive = new Date(transplantDate);
+                endDateActive.setMonth(endDateActive.getMonth() + cycle.preHarvestMonths + cycle.harvestDurationMonths);
                 const area = cropPlan.area;
-                const baseEfficiency = efficiencyMap[cropType] || (cropType === "English Cucumber" ? 12 : 10); // lifetime kg/m²
-                const monthlyKg = (baseEfficiency * area) / cycle.harvestDurationMonths;
                 for (let i = 0; i < months.length; i++) {
                     const m = months[i];
-                    if (m >= harvestStart && m <= harvestEnd) {
-                        monthlyTotals[i] += monthlyKg;
+                    if (m >= transplantDate && m <= endDateActive) {
+                        monthlyArea[i] += area;
                     }
                 }
             }
-            // Prepare labels and data for chart
             const labels = months.map(m => m.toLocaleString('default', { month: 'short', year: '2-digit' }));
-            const data = monthlyTotals;
-            if (outlookChart) outlookChart.destroy();
-            const ctx = document.getElementById('outlookChart').getContext('2d');
-            outlookChart = new Chart(ctx, {
+            if (areaOutlookChart) areaOutlookChart.destroy();
+            const ctx = document.getElementById('areaOutlookChart').getContext('2d');
+            areaOutlookChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Projected Harvest (kg)',
-                        data: data,
+                        label: 'Cultivated Area (m²)',
+                        data: monthlyArea,
                         backgroundColor: '#2e8b57',
                         borderRadius: 8,
                         borderWidth: 0
@@ -483,11 +497,11 @@
                     responsive: true,
                     maintainAspectRatio: true,
                     plugins: {
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(0)} kg` } },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(0)} m²` } },
                         legend: { position: 'top' }
                     },
                     scales: {
-                        y: { title: { display: true, text: 'Kilograms (kg)' }, beginAtZero: true },
+                        y: { title: { display: true, text: 'Square Meters (m²)' }, beginAtZero: true },
                         x: { title: { display: true, text: 'Month' }, ticks: { maxRotation: 45, minRotation: 45 } }
                     }
                 }
@@ -495,7 +509,7 @@
             loadingDiv.classList.add('hidden');
         } catch(e) {
             console.error(e);
-            errorDiv.innerText = 'Error loading outlook: ' + e.message;
+            errorDiv.innerText = 'Error loading area forecast: ' + e.message;
             errorDiv.classList.remove('hidden');
             loadingDiv.classList.add('hidden');
         }
@@ -619,7 +633,7 @@
             setTimeout(async () => {
                 await loadUserPreviousData(username);
                 await loadDashboard();
-                await computeAndRenderOutlook(); // refresh outlook after update
+                await computeAndRenderAreaOutlook(); // refresh area outlook after update
                 toast("Data refreshed.");
             }, 2000);
         } catch(e) { console.error(e); toast("Request sent but could not verify. Please refresh manually.", true); } finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
@@ -689,9 +703,9 @@
         if (user) {
             await loadUserPreviousData(user);
             await loadDashboard();
-            await computeAndRenderOutlook();
+            await computeAndRenderAreaOutlook();
             if (!isAdmin) await autoFillProfileFromRecords(user);
-            toast("📊 Dashboard & outlook refreshed");
+            toast("📊 Dashboard & area outlook refreshed");
         } else { toast("No active user", true); }
         refreshBtn.innerHTML = originalText;
         refreshBtn.classList.remove('btn-loading');
@@ -795,7 +809,7 @@
             renderActiveForm(); 
             await loadUserPreviousData(grower); 
             await loadDashboard(); 
-            await computeAndRenderOutlook();
+            await computeAndRenderAreaOutlook();
             if (!isAdmin) await autoFillProfileFromRecords(grower);
         } catch(e) { toast("Submit error", true); } 
     }
@@ -830,7 +844,7 @@
             }
             await loadUserPreviousData(isAdmin ? '' : username);
             await loadDashboard();
-            await computeAndRenderOutlook();
+            await computeAndRenderAreaOutlook();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             saveLoginState(username, isAdmin);
@@ -859,7 +873,7 @@
             }
             await loadUserPreviousData(isAdmin ? '' : username);
             await loadDashboard();
-            await computeAndRenderOutlook();
+            await computeAndRenderAreaOutlook();
             loginOverlay.style.display = 'none';
             mainApp.style.display = 'block';
             toast(`Welcome back ${username}${isAdmin ? ' (Admin)' : ''}!`, false);
@@ -876,7 +890,7 @@
     document.getElementById('submitDataBtn').onclick = submitAllNewData;
     document.getElementById('updateAreaBtn').onclick = logAreaUpdate;
     document.getElementById('refreshProfileBtn').onclick = refreshFullData;
-    document.getElementById('refreshOutlookBtn').onclick = () => { computeAndRenderOutlook(); toast("Refreshing harvest outlook..."); };
+    document.getElementById('refreshAreaOutlookBtn').onclick = () => { computeAndRenderAreaOutlook(); toast("Refreshing area outlook..."); };
     document.getElementById('cancelEditBtn').onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
