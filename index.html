@@ -214,7 +214,7 @@
             <div id="cropRecordsGrid" class="crop-records-grid"></div>
         </div>
     </div>
-    <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker</div>
+    <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker| All Rights Reserved</div>
 </div>
 
 <div id="editRecordModal" class="modal-overlay">
@@ -238,8 +238,8 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    // REPLACE WITH YOUR ACTUAL WEB APP URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxD-NdsF2Feg7xshFKiUkCFFXQEgfYAPIEpc3z5M9YdBu1OH3HWdcmTAH1t23oNDWF4Rw/exec';
+    // !!! REPLACE WITH YOUR ACTUAL WEB APP URL !!!
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwWuNzs2YtbiT-3hca8BYk87eJe64l_F9b0yOX_aXzumcqYj5brMXk1OKaMmWt0vxGlQ/exec';
     
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -549,60 +549,134 @@
         }
     }
 
-    // ========== USER DATA AND EDIT FUNCTIONALITY ==========
+    // ========== FIXED: USER DATA AND EDIT FUNCTIONALITY ==========
     async function loadUserPreviousData(username) {
-        if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+        if (!username) {
+            console.log("loadUserPreviousData: no username, hiding section");
+            document.getElementById('prevSubmissionsSection').style.display = 'none';
+            return false;
+        }
         try {
+            console.log(`Fetching data for user: ${username}`);
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
             const data = await res.json();
-            if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+            console.log("Raw user data response:", data);
+
+            if (!data.rows || data.rows.length === 0) {
+                console.log("No rows found for user");
+                document.getElementById('prevSubmissionsSection').style.display = 'none';
+                return false;
+            }
+
             const headers = data.headers.map(h => h.toString().toLowerCase());
-            let areaIdx = -1;
-            for (let i = 0; i < headers.length; i++) {
-                const h = headers[i];
-                if ((h === 'area (m²)' || h === 'area (m2)' || h === 'area' || h.includes('area (m²)')) && !h.includes('total')) { areaIdx = i; break; }
-            }
-            if (areaIdx === -1) {
-                for (let i = 0; i < headers.length; i++) { if (headers[i].includes('area') && !headers[i].includes('total')) { areaIdx = i; break; } }
-            }
-            if (areaIdx === -1 && headers.length > 9) areaIdx = 9;
-            
-            const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
+            console.log("Headers (lowercase):", headers);
+
+            const getColIndex = (patterns) => {
+                for (let p of patterns) {
+                    let idx = headers.findIndex(h => h.includes(p.toLowerCase()));
+                    if (idx !== -1) return idx;
+                }
+                return -1;
+            };
+
+            // Try to find required columns; if missing, show records but disable edit
             const stageIdx = getColIndex(['stage']);
             const cropIdx = getColIndex(['crop']);
+            const areaIdx = getColIndex(['area', 'area (m2)', 'area (m²)']);
             const varietyIdx = getColIndex(['variety']);
             const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']);
             const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']);
             const harvestMonthsIdx = getColIndex(['harvest months']);
             const timestampIdx = getColIndex(['timestamp', 'date']);
             const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
-            
-            if (stageIdx === -1) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
-            
+
+            console.log("Column indices:", { stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices });
+
+            // If stage column is missing, log error but still show records (without edit button)
+            if (stageIdx === -1) {
+                console.error("CRITICAL: 'Crop Stage' column not found in headers. Editing disabled.");
+                // Show a warning banner inside the grid area
+                const warningDiv = document.createElement('div');
+                warningDiv.className = 'badge';
+                warningDiv.style.background = "#f0ad4e";
+                warningDiv.style.color = "#fff";
+                warningDiv.style.padding = "8px";
+                warningDiv.style.marginBottom = "10px";
+                warningDiv.innerHTML = "⚠️ 'Crop Stage' column missing in spreadsheet. Editing disabled. Please check column names.";
+                cropRecordsGrid.innerHTML = '';
+                cropRecordsGrid.appendChild(warningDiv);
+            }
+
             cropRecordsGrid.innerHTML = '';
+
             for (let row of data.rows) {
                 if (!row[cropIdx]) continue;
                 const cropVal = row[cropIdx];
-                const stageVal = (row[stageIdx] || "").toString();
+                const stageVal = (stageIdx !== -1 ? (row[stageIdx] || "") : "Unknown").toString();
                 const areaVal = (areaIdx !== -1 && areaIdx < row.length) ? parseFloat(row[areaIdx]) || 0 : 0;
                 const varietyVal = row[varietyIdx] || "—";
                 const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
                 const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg";
                 const harvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
-                
-                const card = document.createElement('div'); card.className = 'record-card';
-                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div><div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div><div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
-                const btn = card.querySelector('.edit-btn-card');
-                btn.addEventListener('click', () => {
-                    const rec = JSON.parse(btn.getAttribute('data-record'));
-                    currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices };
-                    openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices);
-                });
+
+                const card = document.createElement('div');
+                card.className = 'record-card';
+                card.innerHTML = `
+                    <div class="record-header">
+                        <div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div>
+                        <div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div>
+                    </div>
+                    <div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
+                    <div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div>
+                    <div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div>
+                    <div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div>
+                `;
+
+                // Only add Edit button if stage column exists AND we have a timestamp
+                if (stageIdx !== -1 && timestampIdx !== -1 && row[timestampIdx]) {
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'edit-btn-card';
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Record';
+                    editBtn.onclick = (function(r, sIdx, cIdx, aIdx, vIdx, wyIdx, wuIdx, hmIdx, tsIdx, mIndices) {
+                        return function() {
+                            currentEditRecord = {
+                                row: r,
+                                headers: headers,
+                                stageIdx: sIdx,
+                                cropIdx: cIdx,
+                                areaIdx: aIdx,
+                                varietyIdx: vIdx,
+                                weeklyYieldIdx: wyIdx,
+                                weeklyUnitIdx: wuIdx,
+                                harvestMonthsIdx: hmIdx,
+                                timestampIdx: tsIdx,
+                                monthIndices: mIndices
+                            };
+                            openEditModal(r, sIdx, cIdx, aIdx, vIdx, wyIdx, wuIdx, hmIdx, mIndices);
+                        };
+                    })(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices);
+                    card.appendChild(editBtn);
+                } else if (stageIdx === -1) {
+                    const disabledBtn = document.createElement('button');
+                    disabledBtn.className = 'edit-btn-card';
+                    disabledBtn.disabled = true;
+                    disabledBtn.style.background = "#aaa";
+                    disabledBtn.style.cursor = "not-allowed";
+                    disabledBtn.innerHTML = '<i class="fas fa-ban"></i> Edit unavailable (missing Stage column)';
+                    card.appendChild(disabledBtn);
+                }
+
                 cropRecordsGrid.appendChild(card);
             }
+
             document.getElementById('prevSubmissionsSection').style.display = 'block';
             return true;
-        } catch(e) { console.error(e); document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+        } catch (e) {
+            console.error("loadUserPreviousData error:", e);
+            toast("Error loading crop records: " + e.message, true);
+            document.getElementById('prevSubmissionsSection').style.display = 'none';
+            return false;
+        }
     }
 
     function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) {
@@ -957,4 +1031,4 @@
     restoreSession();
 </script>
 </body>
-</html>
+</html> 
