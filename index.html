@@ -484,7 +484,7 @@
             const cropName = row[cropIdx] || "";
             
             // Step 1: Update main record
-            const mainPayload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly:newmonthly };
+            const mainPayload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly:newMonthly };
             let response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mainPayload) });
             if (!response.ok) throw new Error(`HTTP ${response.status} - ${await response.text()}`);
             let result = await response.json();
