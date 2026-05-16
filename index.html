@@ -760,70 +760,81 @@
         document.querySelectorAll('.remove-pending').forEach(btn => { btn.addEventListener('click', (e) => { let idx = parseInt(btn.dataset.idx); savedGreenhouses.splice(idx,1); updateSavedListDisplay(); }); });
     }
     
-    async function submitAllNewData() { 
+    async function submitAllNewData() {
     const grower = growerNameInput.value.trim();
     const locality = localitySelect.value;
     const totalArea = parseFloat(totalAreaInput.value);
-    if (!grower || !locality || totalArea <= 0 || savedGreenhouses.length === 0) { 
-        toast("Complete profile (grower name, locality, area) & add greenhouses", true); 
-        return; 
-    } 
-    let rows = []; 
-    let counter = 1; 
-    for (let gh of savedGreenhouses) { 
-        // Build monthly yields array (12 values)
-        let monthlyArr = MONTHS.map(m => gh.monthly?.[m] || 0);
-        
-        // IMPORTANT: The order must match Sheet1 columns 1..28 (after timestamp is prepended by script)
-        // Columns: Grower Name, Locality, Zone, Total Greenhouse Area (m²), GH Number, Crop, Variety, 
-        //          Crop Stage, Area (m²), Date Transplanted, Week Yield, Av Yield Per month (empty), 
-        //          Harvest Months, Substrate Type, Tomato Type (empty), January..December, Yield Unit
-        const row = [
-            grower,                    // col1
-            locality,                  // col2
-            currentZone,               // col3
-            totalArea,                 // col4
-            counter++,                 // col5 – GH Number
-            gh.crop,                   // col6
-            gh.variety || '',          // col7
-            gh.stage,                  // col8
-            gh.area,                   // col9
-            gh.transplantDate || '',   // col10
-            gh.weeklyYield || 0,       // col11
-            '',                        // col12 – Av Yield Per month (unused)
-            gh.harvestMonths || 0,     // col13
-            gh.prodSystem || 'Cocopeat', // col14 – Substrate Type
-            '',                        // col15 – Tomato Type (empty unless needed)
-            ...monthlyArr,             // col16..col27 – January to December
-            gh.weeklyUnit || 'kg'      // col28 – Yield Unit
-        ];
-        rows.push(row);
-    } 
-    try { 
+    if (!grower || !locality || totalArea <= 0 || savedGreenhouses.length === 0) {
+        toast("Complete profile (grower name, locality, area) & add greenhouses", true);
+        return;
+    }
+
+    // Disable submit button and show spinner
+    const submitBtn = document.getElementById('submitDataBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
+    submitBtn.disabled = true;
+
+    try {
+        let rows = [];
+        let counter = 1;
+        for (let gh of savedGreenhouses) {
+            let monthlyArr = MONTHS.map(m => gh.monthly?.[m] || 0);
+            const row = [
+                grower,                    // col1
+                locality,                  // col2
+                currentZone,               // col3
+                totalArea,                 // col4
+                counter++,                 // col5 – GH Number
+                gh.crop,                   // col6
+                gh.variety || '',          // col7
+                gh.stage,                  // col8
+                gh.area,                   // col9
+                gh.transplantDate || '',   // col10
+                gh.weeklyYield || 0,       // col11
+                '',                        // col12 – Av Yield Per month (unused)
+                gh.harvestMonths || 0,     // col13
+                gh.prodSystem || 'Cocopeat', // col14 – Substrate Type
+                '',                        // col15 – Tomato Type (empty unless needed)
+                ...monthlyArr,             // col16..col27 – January to December
+                gh.weeklyUnit || 'kg'      // col28 – Yield Unit
+            ];
+            rows.push(row);
+        }
+
         console.log("Submitting to:", SCRIPT_URL);
         console.log("Number of rows:", rows.length);
-     const response = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'data=' + encodeURIComponent(JSON.stringify({ rows }))
-});
+
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify({ rows }))
+        });
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
         }
+
         const result = await response.json();
         if (result.error) throw new Error(result.error);
-        toast("✅ Data submitted to Google Sheet", false); 
-        savedGreenhouses = []; 
-        updateSavedListDisplay(); 
-        renderActiveForm(); 
-        await loadUserPreviousData(grower); 
-        await loadDashboard(); 
+
+        // Success – clear pending list and refresh data
+        toast("✅ Data submitted successfully to Google Sheet!");
+        savedGreenhouses = [];
+        updateSavedListDisplay();
+        renderActiveForm();
+        await loadUserPreviousData(grower);
+        await loadDashboard();
         if (!isAdmin) await autoFillProfileFromRecords(grower);
-    } catch(e) { 
+    } catch (e) {
         console.error("Submit error:", e);
-        toast("Submit error: " + e.message, true); 
-    } 
+        toast("❌ Submission failed: " + e.message, true);
+    } finally {
+        // Always re-enable button and restore original text
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
 }
     function toggleGreenhouseSection() {
         if (greenhouseSectionVisible) {
