@@ -509,27 +509,30 @@
     }
 
     async function logAreaUpdate() {
-        const username = growerNameInput.value.trim();
-        const locality = localitySelect.value;
-        const currentArea = parseFloat(totalAreaInput.value) || 0;
-        let newArea = prompt("Enter new total greenhouse area (m²):", currentArea);
-        if (newArea === null) return;
-        newArea = parseFloat(newArea);
-        if (isNaN(newArea) || newArea <= 0) { toast("Invalid area value", true); return; }
-        const updateBtn = document.getElementById('updateAreaBtn');
-        const originalText = updateBtn.innerHTML;
-        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>';
-        updateBtn.disabled = true;
-        try {
-            const payload = { action: 'logAreaUpdate', username, currentArea, newArea, locality };
-            const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (!response.ok) throw new Error(await response.text());
-            totalAreaInput.value = newArea;
-            toast("✅ Area updated successfully! Log saved.");
-        } catch(e) { toast("Error: " + e.message, true); }
-        finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
-    }
-
+    const username = growerNameInput.value.trim();
+    const locality = localitySelect.value;
+    const currentArea = parseFloat(totalAreaInput.value) || 0;
+    let newArea = prompt("Enter new total greenhouse area (m²):", currentArea);
+    if (newArea === null) return;
+    newArea = parseFloat(newArea);
+    if (isNaN(newArea) || newArea <= 0) { toast("Invalid area value", true); return; }
+    const updateBtn = document.getElementById('updateAreaBtn');
+    const originalText = updateBtn.innerHTML;
+    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>';
+    updateBtn.disabled = true;
+    try {
+        const payload = { action: 'logAreaUpdate', username, currentArea, newArea, locality };
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify(payload))
+        });
+        if (!response.ok) throw new Error(await response.text());
+        totalAreaInput.value = newArea;
+        toast("✅ Area updated successfully! Log saved.");
+    } catch(e) { toast("Error: " + e.message, true); }
+    finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
+}
    async function autoFillProfileFromRecords(username) {
   if (isAdmin) return; // Admin can manually edit any grower
   try {
