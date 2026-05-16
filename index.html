@@ -489,6 +489,7 @@
         const username = growerNameInput.value.trim(); const locality = localitySelect.value; const currentArea = parseFloat(totalAreaInput.value) || 0; let newArea = prompt("Enter new total greenhouse area (m²):", currentArea); if (newArea === null) return; newArea = parseFloat(newArea); if (isNaN(newArea) || newArea <= 0) { toast("Invalid area value", true); return; } const updateBtn = document.getElementById('updateAreaBtn'); const originalText = updateBtn.innerHTML; updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>'; updateBtn.disabled = true; try { const payload = { action: 'logAreaUpdate', username, currentArea, newArea, locality }; const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify(payload)) }); if (!response.ok) throw new Error(await response.text()); totalAreaInput.value = newArea; toast("✅ Area updated successfully!"); } catch(e) { toast("Error: " + e.message, true); } finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
 
+    // FIXED: autoFillProfileFromRecords sets zone FIRST then locality
     async function autoFillProfileFromRecords(username) {
         if (isAdmin) return;
         try {
@@ -497,16 +498,39 @@
             const data = await dataRes.json();
             if (data.rows && data.rows.length > 0) {
                 const headers = data.headers.map(h => h.toString().toLowerCase());
-                const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
-                if (localityCol !== -1) { const latestLocality = data.rows[0][localityCol]; if (latestLocality && localitySelect.querySelector(`option[value="${latestLocality}"]`)) localitySelect.value = latestLocality; }
+                // 1. Find zone and locality values from the most recent record (first row)
                 const zoneCol = headers.findIndex(h => h === 'zone');
-                if (zoneCol !== -1) { const zone = data.rows[0][zoneCol]; if (zone && ZONE_LOCALITIES[zone]) setZone(zone); }
+                let zoneFromRecord = null;
+                if (zoneCol !== -1 && data.rows[0][zoneCol]) zoneFromRecord = data.rows[0][zoneCol];
+                
+                const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
+                let localityFromRecord = null;
+                if (localityCol !== -1 && data.rows[0][localityCol]) localityFromRecord = data.rows[0][localityCol];
+                
+                // 2. Set zone FIRST (this rebuilds the locality dropdown with correct options)
+                if (zoneFromRecord && ZONE_LOCALITIES[zoneFromRecord]) {
+                    setZone(zoneFromRecord);
+                } else {
+                    // Keep current zone (default E2) but ensure dropdown is populated
+                    updateLocalityDropdown();
+                }
+                
+                // 3. Now set locality value (dropdown already has the correct options)
+                if (localityFromRecord && localitySelect.querySelector(`option[value="${localityFromRecord}"]`)) {
+                    localitySelect.value = localityFromRecord;
+                }
+                
+                // 4. Handle total area (unchanged)
                 const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
                 let totalArea = 0;
                 if (profRes.ok) { const prof = await profRes.json(); if (prof.totalArea && !isNaN(parseFloat(prof.totalArea)) && parseFloat(prof.totalArea) > 0) totalArea = parseFloat(prof.totalArea); }
                 if (totalArea === 0) { const areaIdx = headers.findIndex(h => h.includes('area (m²)') || h.includes('area (m2)') || h === 'area'); if (areaIdx !== -1) { let sumArea = 0; for (let row of data.rows) { let a = parseFloat(row[areaIdx]); if (!isNaN(a)) sumArea += a; } totalArea = sumArea; } }
                 if (totalArea > 0) totalAreaInput.value = totalArea; else totalAreaInput.value = '';
-            } else { localitySelect.value = ''; totalAreaInput.value = ''; }
+            } else {
+                // No records – keep defaults
+                updateLocalityDropdown();
+                totalAreaInput.value = '';
+            }
         } catch (e) { console.warn("Auto-fill failed", e); }
     }
 
