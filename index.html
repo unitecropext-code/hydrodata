@@ -244,7 +244,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL APPS SCRIPT URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhAlmhw3GDj-0Ww58CfPmamV9O1Lo5C6bqj9rAZMdO9D34CQ3TOfgotE1MgJ7Dy7rdJg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlvVS5ii6ViATXXaJBbi0itmcIF0RCugImRXPw2EdI5YZx-mv4CTulHXvEIi2eVsICDg/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -530,51 +530,83 @@
         finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
 
-    async function autoFillProfileFromRecords(username) {
-        if (isAdmin) return;
-        try {
-            await new Promise(r => setTimeout(r, 200));
-            const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-            if (profRes.ok) {
-                const prof = await profRes.json();
-                if (prof.totalArea && !isNaN(parseFloat(prof.totalArea)) && parseFloat(prof.totalArea) > 0) {
-                    totalAreaInput.value = parseFloat(prof.totalArea);
-                } else {
-                    const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-                    if (dataRes.ok) {
-                        const data = await dataRes.json();
-                        if (data.rows && data.rows.length) {
-                            let sumArea = 0;
-                            const headers = data.headers.map(h => h.toString().toLowerCase());
-                            let areaIdx = headers.findIndex(h => h.includes('area') && !h.includes('total'));
-                            if (areaIdx !== -1) {
-                                for (let row of data.rows) { let a = parseFloat(row[areaIdx]); if (!isNaN(a)) sumArea += a; }
-                            }
-                            if (sumArea > 0) totalAreaInput.value = sumArea;
-                        }
-                    }
-                }
+   async function autoFillProfileFromRecords(username) {
+  if (isAdmin) return; // Admin can manually edit any grower
+  try {
+    // 1. Fetch the user's latest data from Sheet1
+    const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+    if (!dataRes.ok) throw new Error("Failed to fetch user data");
+    const data = await dataRes.json();
+    
+    if (data.rows && data.rows.length > 0) {
+      const headers = data.headers.map(h => h.toString().toLowerCase());
+      
+      // ---- Locality ----
+      const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
+      if (localityCol !== -1) {
+        // Get the most recent record's locality (first row is latest if sorted by timestamp desc? Usually rows are in insertion order)
+        const latestLocality = data.rows[0][localityCol];
+        if (latestLocality && localitySelect.querySelector(`option[value="${latestLocality}"]`)) {
+          localitySelect.value = latestLocality;
+        } else {
+          // Try to find any record with a valid locality
+          for (let row of data.rows) {
+            const loc = row[localityCol];
+            if (loc && localitySelect.querySelector(`option[value="${loc}"]`)) {
+              localitySelect.value = loc;
+              break;
             }
-            const dataRes2 = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-            if (dataRes2.ok) {
-                const data = await dataRes2.json();
-                if (data.rows && data.rows.length) {
-                    const headers = data.headers.map(h => h.toString().toLowerCase());
-                    const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
-                    if (localityCol !== -1 && data.rows[0][localityCol]) {
-                        const locVal = data.rows[0][localityCol];
-                        if (localitySelect.querySelector(`option[value="${locVal}"]`)) {
-                            localitySelect.value = locVal;
-                        }
-                    }
-                    const zoneCol = headers.findIndex(h => h === 'zone');
-                    if (zoneCol !== -1 && data.rows[0][zoneCol] && ZONE_LOCALITIES[data.rows[0][zoneCol]]) {
-                        setZone(data.rows[0][zoneCol]);
-                    }
-                }
-            }
-        } catch(e) { console.warn("Auto-fill failed", e); }
+          }
+        }
+      }
+      
+      // ---- Zone (E1/E2 etc.) ----
+      const zoneCol = headers.findIndex(h => h === 'zone');
+      if (zoneCol !== -1) {
+        const zone = data.rows[0][zoneCol];
+        if (zone && ZONE_LOCALITIES[zone]) {
+          setZone(zone);
+        }
+      }
+      
+      // ---- Total Greenhouse Area ----
+      // First try to get the saved total from grower_profiles sheet
+      const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+      let totalArea = 0;
+      if (profRes.ok) {
+        const prof = await profRes.json();
+        if (prof.totalArea && !isNaN(parseFloat(prof.totalArea)) && parseFloat(prof.totalArea) > 0) {
+          totalArea = parseFloat(prof.totalArea);
+        }
+      }
+      
+      // If no profile area, sum all crop areas from records
+      if (totalArea === 0) {
+        const areaIdx = headers.findIndex(h => h.includes('area (m²)') || h.includes('area (m2)') || h === 'area');
+        if (areaIdx !== -1) {
+          let sumArea = 0;
+          for (let row of data.rows) {
+            let a = parseFloat(row[areaIdx]);
+            if (!isNaN(a)) sumArea += a;
+          }
+          totalArea = sumArea;
+        }
+      }
+      
+      if (totalArea > 0) {
+        totalAreaInput.value = totalArea;
+      } else {
+        totalAreaInput.value = '';
+      }
+    } else {
+      // No records found – clear fields (user is new)
+      localitySelect.value = '';
+      totalAreaInput.value = '';
     }
+  } catch (e) {
+    console.warn("Auto-fill failed", e);
+  }
+}
 
     async function refreshFullData() {
         const refreshBtn = document.getElementById('refreshProfileBtn');
