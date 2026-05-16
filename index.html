@@ -460,53 +460,110 @@
         document.body.style.overflow = 'hidden';
     }
 
-    async function saveFullRecordUpdate() {
-        if (!currentEditRecord) { toast("No record selected", true); return; }
-        const saveBtn = document.getElementById('saveEditBtn');
-        const originalHtml = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Saving...';
-        saveBtn.disabled = true;
-        try {
-            const { row, timestampIdx, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices } = currentEditRecord;
-            const timestamp = row[timestampIdx];
-            if (!timestamp) { toast("Invalid timestamp", true); return; }
-            const newStage = document.getElementById('editStage').value;
-            const newArea = parseFloat(document.getElementById('editArea').value);
-            const newVariety = document.getElementById('editVariety').value;
-            const newWeeklyYield = parseFloat(document.getElementById('editWeeklyYield').value);
-            const newUnit = document.getElementById('editUnit').value;
-            const newHarvestMonths = parseFloat(document.getElementById('editHarvestMonths').value);
-            let newMonthly = Array(12).fill(0);
-            for (let i=0; i<12; i++) newMonthly[i] = parseFloat(document.getElementById(`edit_month_${i}`).value) || 0;
-            if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
-            const username = growerNameInput.value.trim();
-            const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
-            const cropName = row[cropIdx] || "";
-            
-            // Step 1: Update main record
-            const mainPayload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly:newMonthly };
-            let response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mainPayload) });
-            if (!response.ok) throw new Error(`HTTP ${response.status} - ${await response.text()}`);
-            let result = await response.json();
-            if (result.error) throw new Error(result.error);
-            
-            // Step 2: Record monthly harvests
-            for (let i = 0; i < 12; i++) {
-                const harvestValue = newMonthly[i];
-                if (harvestValue !== 0 && !isNaN(harvestValue)) {
-                    const monthName = MONTHS[i];
-                    const monthlyPayload = { action: 'recordMonthlyHarvest', grower: username, crop: cropName, greenhouseArea: totalGreenhouseArea, month: monthName, harvestAmount: harvestValue, unit: newUnit };
-                    let resp = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(monthlyPayload) });
-                    if (!resp.ok) console.warn(`Failed to log monthly harvest for ${monthName}: ${await resp.text()}`);
+   async function saveFullRecordUpdate() {
+    if (!currentEditRecord) { toast("No record selected", true); return; }
+    const saveBtn = document.getElementById('saveEditBtn');
+    const originalHtml = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Saving...';
+    saveBtn.disabled = true;
+    try {
+        const { row, timestampIdx, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices } = currentEditRecord;
+        const timestamp = row[timestampIdx];
+        if (!timestamp) { toast("Invalid record timestamp — cannot save", true); return; }
+        const newStage = document.getElementById('editStage').value;
+        const newArea = parseFloat(document.getElementById('editArea').value);
+        const newVariety = document.getElementById('editVariety').value.trim();
+        const newWeeklyYield = parseFloat(document.getElementById('editWeeklyYield').value) || 0;
+        const newUnit = document.getElementById('editUnit').value;
+        const newHarvestMonths = parseFloat(document.getElementById('editHarvestMonths').value) || 0;
+        let newMonthly = Array(12).fill(0);
+        for (let i = 0; i < 12; i++) {
+            newMonthly[i] = parseFloat(document.getElementById(`edit_month_${i}`).value) || 0;
+        }
+        if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
+        const username = growerNameInput.value.trim();
+        const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0;
+        const cropName = row[cropIdx] || "";
+
+        // ── Step 1: Update Sheet1 columns (Q:AB) via form-encoded POST ──
+        const mainPayload = {
+            action: 'updateFullRecord',
+            username,
+            timestamp,
+            stage: newStage,
+            area: newArea,
+            variety: newVariety,
+            weeklyYield: newWeeklyYield,
+            weeklyUnit: newUnit,
+            harvestMonths: newHarvestMonths,
+            monthly: newMonthly
+        };
+        const mainRes = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify(mainPayload))
+        });
+        if (!mainRes.ok) {
+            const errText = await mainRes.text();
+            throw new Error(`Step 1 HTTP ${mainRes.status}: ${errText.substring(0, 300)}`);
+        }
+        let mainResult;
+        try { mainResult = await mainRes.json(); } catch(jsonErr) { throw new Error("Step 1 response was not valid JSON — check Apps Script doPost handler"); }
+        if (mainResult && mainResult.error) throw new Error("Step 1 script error: " + mainResult.error);
+
+        // ── Step 2: Batch-write ALL monthly harvests in ONE request to CropUpdates sheet ──
+        const monthlyEntries = [];
+        for (let i = 0; i < 12; i++) {
+            if (newMonthly[i] !== 0 && !isNaN(newMonthly[i])) {
+                monthlyEntries.push({ month: MONTHS[i], harvestAmount: newMonthly[i] });
+            }
+        }
+        if (monthlyEntries.length > 0) {
+            const batchPayload = {
+                action: 'recordMonthlyHarvestBatch',
+                grower: username,
+                crop: cropName,
+                greenhouseArea: totalGreenhouseArea,
+                unit: newUnit,
+                entries: monthlyEntries
+            };
+            const batchRes = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'data=' + encodeURIComponent(JSON.stringify(batchPayload))
+            });
+            if (!batchRes.ok) {
+                console.warn(`Step 2 (CropUpdates batch) HTTP ${batchRes.status}:`, await batchRes.text());
+                toast("⚠️ Main record saved, but CropUpdates batch had an issue — check Apps Script logs.", true);
+            } else {
+                let batchResult;
+                try { batchResult = await batchRes.json(); } catch(_) {}
+                if (batchResult && batchResult.error) {
+                    console.warn("Step 2 script error:", batchResult.error);
+                    toast("⚠️ Main record saved. CropUpdates error: " + batchResult.error, true);
+                } else {
+                    toast("✅ Record updated! Sheet1 columns & CropUpdates sheet both saved.");
                 }
             }
-            toast("✅ Update sent! Main record updated and monthly harvests logged.");
-            editModal.style.display = 'none';
-            document.body.style.overflow = '';
-            setTimeout(async () => { await loadUserPreviousData(username); await loadDashboard(); toast("Data refreshed."); }, 2000);
-        } catch(e) { console.error(e); toast("Save failed: " + e.message, true); }
-        finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
+        } else {
+            toast("✅ Record updated! (No non-zero monthly values to log in CropUpdates.)");
+        }
+
+        editModal.style.display = 'none';
+        document.body.style.overflow = '';
+        setTimeout(async () => {
+            await loadUserPreviousData(username);
+            await loadDashboard();
+            toast("📊 Dashboard refreshed.");
+        }, 2000);
+    } catch(e) {
+        console.error("saveFullRecordUpdate error:", e);
+        toast("❌ Save failed: " + e.message, true);
+    } finally {
+        saveBtn.innerHTML = originalHtml;
+        saveBtn.disabled = false;
     }
+}
 
     async function logAreaUpdate() {
     const username = growerNameInput.value.trim();
