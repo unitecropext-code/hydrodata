@@ -851,7 +851,7 @@
             const data = await res.json();
             if (!data.success) { errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; }
             isAdmin = data.isAdmin === true; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username;
-            if (isAdmin) { adminBadge.classList.remove('hidden'); growerNameInput.value = ''; growerNameInput.placeholder = 'Enter target grower name'; growerNameInput.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerNameInput.readOnly = true; growerNameInput.value = username; await autoFillProfileFromRecords(username); }
+            if (isAdmin) { adminBadge.classList.remove('hidden'); growerNameInput.value = ''; growerNameInput.placeholder = 'Enter target grower name'; growerNameInput.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerNameInput.readOnly = true; growerNameInput.value = username;updateLocalityDropdown(); await autoFillProfileFromRecords(username); }
             await loadUserPreviousData(isAdmin ? '' : username); await loadDashboard();
             loginOverlay.style.display = 'none'; mainApp.style.display = 'block'; saveLoginState(username, isAdmin); toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}!`);
         } catch (err) { errorDiv.innerText = `Network error: ${err.message}`; console.error(err); }
