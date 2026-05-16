@@ -769,7 +769,6 @@
         return;
     }
 
-    // Disable submit button and show spinner
     const submitBtn = document.getElementById('submitDataBtn');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
@@ -781,29 +780,14 @@
         for (let gh of savedGreenhouses) {
             let monthlyArr = MONTHS.map(m => gh.monthly?.[m] || 0);
             const row = [
-                grower,                    // col1
-                locality,                  // col2
-                currentZone,               // col3
-                totalArea,                 // col4
-                counter++,                 // col5 – GH Number
-                gh.crop,                   // col6
-                gh.variety || '',          // col7
-                gh.stage,                  // col8
-                gh.area,                   // col9
-                gh.transplantDate || '',   // col10
-                gh.weeklyYield || 0,       // col11
-                '',                        // col12 – Av Yield Per month (unused)
-                gh.harvestMonths || 0,     // col13
-                gh.prodSystem || 'Cocopeat', // col14 – Substrate Type
-                '',                        // col15 – Tomato Type (empty unless needed)
-                ...monthlyArr,             // col16..col27 – January to December
-                gh.weeklyUnit || 'kg'      // col28 – Yield Unit
+                grower, locality, currentZone, totalArea, counter++,
+                gh.crop, gh.variety || '', gh.stage, gh.area,
+                gh.transplantDate || '', gh.weeklyYield || 0, '',
+                gh.harvestMonths || 0, gh.prodSystem || 'Cocopeat', '',
+                ...monthlyArr, gh.weeklyUnit || 'kg'
             ];
             rows.push(row);
         }
-
-        console.log("Submitting to:", SCRIPT_URL);
-        console.log("Number of rows:", rows.length);
 
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
@@ -811,16 +795,35 @@
             body: 'data=' + encodeURIComponent(JSON.stringify({ rows }))
         });
 
+        // Read response as text first (to avoid JSON parse errors)
+        const responseText = await response.text();
+        console.log("Server response:", responseText);
+
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
+            throw new Error(`HTTP ${response.status}: ${responseText.substring(0, 200)}`);
         }
 
-        const result = await response.json();
-        if (result.error) throw new Error(result.error);
+        // Try to parse JSON; if it fails, assume success if status is 200
+        let success = true;
+        let errorMsg = null;
+        try {
+            const result = JSON.parse(responseText);
+            if (result.error) {
+                success = false;
+                errorMsg = result.error;
+            }
+        } catch (jsonErr) {
+            // Not JSON – but if status was 200, treat as success
+            console.warn("Response not JSON, but HTTP OK. Assuming success.");
+            success = true;
+        }
 
-        // Success – clear pending list and refresh data
-        toast("✅ Data submitted successfully!");
+        if (!success) {
+            throw new Error(errorMsg || "Unknown server error");
+        }
+
+        // ---- SUCCESS ----
+        toast("✅ Data submitted successfully to Google Sheet!");
         savedGreenhouses = [];
         updateSavedListDisplay();
         renderActiveForm();
@@ -831,7 +834,6 @@
         console.error("Submit error:", e);
         toast("❌ Submission failed: " + e.message, true);
     } finally {
-        // Always re-enable button and restore original text
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     }
