@@ -244,7 +244,7 @@
 <script>
     // ==================== CONFIGURATION ====================
     // !!! REPLACE WITH YOUR ACTUAL APPS SCRIPT URL !!!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbAWLkY63ZUYQBNQiDuHUlgCynvI6UyiE76x743TqIE6rNZkxLAFSTy3wCmB52OnmncA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhAlmhw3GDj-0Ww58CfPmamV9O1Lo5C6bqj9rAZMdO9D34CQ3TOfgotE1MgJ7Dy7rdJg/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
     const EXTENDED_CROPS = ["Bean","Cabbage","Cauliflower","Chillies","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
@@ -709,11 +709,11 @@
     try { 
         console.log("Submitting to:", SCRIPT_URL);
         console.log("Number of rows:", rows.length);
-        const response = await fetch(SCRIPT_URL, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ rows }) 
-        });
+     const response = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'data=' + encodeURIComponent(JSON.stringify({ rows }))
+});
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
