@@ -457,10 +457,11 @@
                 const btn = card.querySelector('.edit-btn-card');
                 btn.addEventListener('click', () => { const rec = JSON.parse(btn.getAttribute('data-record')); currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices }; openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices); });
 
-                // Bulb toggle button — visual-only feedback for now; status update requires a backend action
-                const bulbBtn = card.querySelector('.toggle-status-btn');
-                bulbBtn.addEventListener('click', () => {
-                    toast(`Cycle is currently "${cycleStatus}". To change status, use the Edit Record form.`);
+                // Bulb toggle button — calls toggleCycleStatus with the row's timestamp
+                const toggleBtn = card.querySelector('.toggle-status-btn');
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleCycleStatus(toggleBtn.dataset.timestamp);
                 });
 
                 grid.appendChild(card);
