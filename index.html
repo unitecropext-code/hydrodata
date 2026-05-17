@@ -84,6 +84,109 @@
         .efficiency-table { width: 100%; min-width: 600px;}
         .zonal-table-wrapper { overflow-x: auto; margin-bottom: 1rem;}
         .admin-only-section { display: block; }
+
+        /* ===== INTERACTIVE CROP TIMELINE (grower-side, Sheet1 column I stage) ===== */
+        #cropTimelineCard { display: none; }
+        .ctl-header {
+            display: flex; flex-wrap: wrap; align-items: center;
+            justify-content: space-between; gap: 10px; margin-bottom: 0.9rem;
+        }
+        .ctl-marker-controls {
+            display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+            background: #f4f9f0; padding: 0.4rem 1rem; border-radius: 60px;
+            border: 1px solid #d4e8c4;
+        }
+        .ctl-reset-btn {
+            background: #e34d4d; border: none; color: white;
+            font-size: 0.7rem; padding: 0.3rem 0.9rem; border-radius: 30px;
+            cursor: pointer; font-weight: 600; transition: background 0.15s;
+        }
+        .ctl-reset-btn:hover { background: #c03939; }
+        .ctl-date-display {
+            background: white; padding: 0.2rem 0.9rem; border-radius: 30px;
+            font-size: 0.72rem; font-family: monospace; font-weight: 700;
+            border: 1px solid #cde0c2; color: #1b5e1f;
+        }
+        .ctl-hint { font-size: 0.65rem; color: #5b7845; }
+        .ctl-legend {
+            display: flex; gap: 0.6rem; flex-wrap: wrap; font-size: 0.68rem; font-weight: 500;
+        }
+        .ctl-legend-dot {
+            width: 11px; height: 11px; border-radius: 50%;
+            display: inline-block; margin-right: 3px; vertical-align: middle;
+        }
+        .ctl-scroll { overflow-x: auto; padding-bottom: 0.5rem; }
+        .ctl-wrapper { position: relative; min-width: 680px; }
+        .ctl-row {
+            background: #fefef7; border-radius: 1rem;
+            border: 1px solid #e2edd4; margin-bottom: 0.8rem; overflow: visible;
+        }
+        .ctl-row-header {
+            display: flex; flex-wrap: wrap; align-items: center;
+            justify-content: space-between; padding: 0.5rem 0.9rem;
+            background: #fafcf5; border-bottom: 1px solid #e9f0e0; gap: 8px;
+        }
+        .ctl-info { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+        .ctl-name {
+            font-weight: 700; font-size: 0.82rem;
+            background: #eef3e6; padding: 0.22rem 0.85rem;
+            border-radius: 30px; color: #2c5e2a;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .ctl-area {
+            background: #fff2df; padding: 0.18rem 0.75rem;
+            border-radius: 30px; font-size: 0.7rem;
+        }
+        .ctl-stage-badge {
+            background: #e1ecfa; padding: 0.22rem 0.9rem; border-radius: 30px;
+            font-size: 0.74rem; font-weight: 700; color: #1f4f82;
+            display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+        }
+        .ctl-transplant {
+            font-size: 0.68rem; color: #5b7845; font-family: monospace;
+            background: #f3f8ee; padding: 0.15rem 0.6rem; border-radius: 20px;
+        }
+        .ctl-track {
+            position: relative; margin: 0.6rem 0.9rem 0.8rem 0.9rem;
+            height: 40px; background: #eaeedf; border-radius: 28px;
+            overflow: visible; cursor: crosshair; user-select: none;
+        }
+        .ctl-segment {
+            position: absolute; height: 100%; top: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.67rem; font-weight: 700; color: rgba(0,0,0,0.6);
+            white-space: nowrap; overflow: hidden; padding: 0 4px;
+            border-right: 1.5px solid rgba(255,255,240,0.45);
+            transition: filter 0.1s;
+        }
+        .ctl-segment:first-child { border-radius: 28px 0 0 28px; }
+        .ctl-segment:last-child { border-radius: 0 28px 28px 0; border-right: none; }
+        .ctl-segment:hover { filter: brightness(0.91); }
+        /* Today marker */
+        .ctl-today-marker {
+            position: absolute; top: -10px; bottom: -10px;
+            width: 3px; background: #e34d4d;
+            z-index: 30; box-shadow: 0 0 0 2px rgba(227,77,77,0.35);
+            border-radius: 2px; cursor: ew-resize;
+        }
+        .ctl-today-marker::before {
+            content: "📅 TODAY"; position: absolute;
+            top: -26px; left: 50%; transform: translateX(-50%);
+            background: #e34d4d; color: white; font-size: 0.58rem;
+            font-weight: 800; padding: 2px 7px; border-radius: 20px;
+            white-space: nowrap; pointer-events: none;
+        }
+        .ctl-drag-handle {
+            position: absolute; top: -14px; bottom: -14px;
+            width: 20px; left: -9px;
+            cursor: ew-resize; z-index: 41; touch-action: none;
+        }
+        .ctl-axis {
+            position: relative; margin: 0 0.9rem 0.3rem 0.9rem;
+            height: 20px; font-size: 0.6rem; color: #5b6e4a; font-family: monospace;
+        }
+        .ctl-axis-mark { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+        .ctl-empty { padding: 1.5rem; text-align: center; color: #7e946b; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -147,6 +250,30 @@
 
         <!-- DASHBOARD SECTIONS -->
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
+
+        <!-- INTERACTIVE CROP TIMELINE (live, grower-specific, drag today marker) -->
+        <div id="cropTimelineCard" class="glass-card">
+            <div class="ctl-header">
+                <div class="stat-title" style="margin-bottom:0;">
+                    <i class="fas fa-calendar-alt"></i> 🌱 Interactive Crop Timeline
+                </div>
+                <div class="ctl-marker-controls">
+                    <button class="ctl-reset-btn" id="ctlResetBtn">📍 Reset to Real Today</button>
+                    <div class="ctl-date-display" id="ctlDateDisplay">—</div>
+                    <span class="ctl-hint">← drag red marker →</span>
+                </div>
+            </div>
+            <div class="ctl-legend" id="ctlLegend">
+                <span><span class="ctl-legend-dot" style="background:#b8e1b0;"></span>Seedling</span>
+                <span><span class="ctl-legend-dot" style="background:#80c56e;"></span>Vegetative</span>
+                <span><span class="ctl-legend-dot" style="background:#fdde6c;"></span>Flowering</span>
+                <span><span class="ctl-legend-dot" style="background:#ffb347;"></span>Fruiting</span>
+                <span><span class="ctl-legend-dot" style="background:#e68a6e;"></span>Harvesting</span>
+            </div>
+            <div class="ctl-scroll" id="ctlScroll">
+                <div class="ctl-wrapper" id="ctlWrapper"></div>
+            </div>
+        </div>
 
         <!-- 1. Area by Stage (interactive) -->
         <div class="glass-card">
@@ -718,6 +845,312 @@ async function toggleCycleStatus(timestamp) {
     }
 
     initZoneHeader(); updateLocalityDropdown(); greenhouseSection.classList.add('hidden'); initFilters(); restoreSession();
+
+    // =====================================================================
+    // INTERACTIVE CROP TIMELINE — reads Sheet1 column I (stage) + transplant
+    // Displayed just above Area by Stage; shows all greenhouses for the user.
+    // =====================================================================
+    (function() {
+        // ── Stage palette — must match Sheet1 stage names exactly ──
+        const CTL_STAGE_DEFS = {
+            "Seedling":   { days: 7,  color: "#b8e1b0" },
+            "Vegetative": { days: 21, color: "#80c56e" },
+            "Flowering":  { days: 14, color: "#fdde6c" },
+            "Fruiting":   { days: 30, color: "#ffb347" },
+            "Harvesting": { days: 27, color: "#e68a6e" }
+        };
+        const CTL_STAGE_ORDER = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
+
+        // Per-crop full-cycle durations (days per stage).
+        // Falls back to tomato durations for unlisted crops.
+        const CTL_CROP_STAGES = {
+            "Tomato":           [7,21,14,30,27],
+            "Sweet Pepper":     [10,25,15,35,25],
+            "English Cucumber": [5,15,10,25,30],
+            "Eggplant":         [10,20,12,30,28],
+            "Chillies":         [10,20,14,28,28],
+            "Lettuce":          [5,18,0,0,7],
+            "Melon":            [7,18,10,30,20],
+            "Okra":             [7,20,10,20,28],
+            "Bean":             [5,15,7,18,15],
+            "Cabbage":          [7,20,0,0,21],
+            "Cauliflower":      [7,20,0,0,21],
+            "Greens":           [5,15,0,0,10],
+            "Shallot":          [7,30,0,0,14]
+        };
+
+        // Returns array of {name,days,color} for a crop (skips 0-day stages)
+        function ctlGetStages(crop) {
+            const days = CTL_CROP_STAGES[crop] || CTL_CROP_STAGES["Tomato"];
+            return CTL_STAGE_ORDER
+                .map((name,i) => ({ name, days: days[i] || 0, color: CTL_STAGE_DEFS[name].color }))
+                .filter(s => s.days > 0);
+        }
+        function ctlTotalDays(crop) { return ctlGetStages(crop).reduce((s,a)=>s+a.days,0); }
+
+        // ── Date helpers ──
+        function ctlFmt(d) { return d.toISOString().slice(0,10); }
+        function ctlAddDays(dateStr, n) { const d=new Date(dateStr); d.setDate(d.getDate()+n); return ctlFmt(d); }
+        function ctlDaysDiff(aStr, bStr) { return (new Date(bStr)-new Date(aStr))/864e5; }
+        function ctlDateToPercent(dateStr, gMin, spanDays) {
+            return (ctlDaysDiff(gMin, dateStr) / spanDays) * 100;
+        }
+        function ctlPercentToDate(pct, gMin, spanDays) {
+            const d = new Date(gMin); d.setDate(d.getDate() + Math.round((pct/100)*spanDays)); return d;
+        }
+
+        // ── State ──
+        let ctlGreenhouses = [];   // [{id,crop,variety,area,transplant,stage}]
+        let ctlSimToday = new Date();
+
+        // ── Derive current stage at simulated today ──
+        function ctlStageAt(transplant, crop, todayStr) {
+            const start = new Date(transplant), target = new Date(todayStr);
+            if (target < start) return "Pending";
+            const elapsed = Math.floor((target-start)/864e5);
+            let cum = 0;
+            for (const s of ctlGetStages(crop)) {
+                if (elapsed < cum+s.days) return s.name;
+                cum += s.days;
+            }
+            return "Completed";
+        }
+
+        // ── Compute global date range across all greenhouses ──
+        function ctlDateRange() {
+            let mn=null, mx=null;
+            ctlGreenhouses.forEach(gh=>{
+                const s=gh.transplant, e=ctlAddDays(s, ctlTotalDays(gh.crop)-1);
+                if(!mn||s<mn) mn=s; if(!mx||e>mx) mx=e;
+            });
+            if(!mn){ const t=ctlFmt(new Date()); mn=t; mx=ctlAddDays(t,120); }
+            const mnD=new Date(mn), mxD=new Date(mx);
+            mnD.setDate(mnD.getDate()-3); mxD.setDate(mxD.getDate()+3);
+            return {min:ctlFmt(mnD), max:ctlFmt(mxD)};
+        }
+
+        // ── Full render ──
+        function ctlRender() {
+            const wrapper = document.getElementById('ctlWrapper');
+            const card    = document.getElementById('cropTimelineCard');
+            if (!wrapper) return;
+
+            if (ctlGreenhouses.length === 0) {
+                card.style.display = 'none';
+                wrapper.innerHTML = '';
+                return;
+            }
+            card.style.display = 'block';
+
+            const {min:gMin, max:gMax} = ctlDateRange();
+            const spanDays = ctlDaysDiff(gMin, gMax);
+            const todayStr = ctlFmt(ctlSimToday);
+
+            // Build rows HTML
+            let html = '';
+            ctlGreenhouses.forEach(gh=>{
+                const stage = ctlStageAt(gh.transplant, gh.crop, todayStr);
+                html += `
+                <div class="ctl-row">
+                  <div class="ctl-row-header">
+                    <div class="ctl-info">
+                      <span class="ctl-name">🌿 ${gh.crop}${gh.variety ? ' · '+gh.variety : ''}</span>
+                      <span class="ctl-area">📐 ${parseFloat(gh.area||0).toFixed(1)} m²</span>
+                      <span class="ctl-stage-badge" id="ctlBadge_${gh.id}">🌱 ${stage}</span>
+                    </div>
+                    <span class="ctl-transplant">📅 Transplant: ${gh.transplant}</span>
+                  </div>
+                  <div class="ctl-track" id="ctlTrack_${gh.id}"></div>
+                </div>`;
+            });
+            wrapper.innerHTML = html;
+
+            // Populate segments
+            ctlGreenhouses.forEach(gh=>{
+                const track = document.getElementById('ctlTrack_'+gh.id);
+                if (!track) return;
+                let cur = gh.transplant;
+                ctlGetStages(gh.crop).forEach(s=>{
+                    const segStart = cur;
+                    const segEnd   = ctlAddDays(cur, s.days);
+                    const lPct = Math.max(0, ctlDateToPercent(segStart, gMin, spanDays));
+                    const rPct = Math.max(0, ctlDateToPercent(segEnd,   gMin, spanDays));
+                    let w = rPct - lPct; if (w < 0.3) w = 0.3;
+                    const seg = document.createElement('div');
+                    seg.className = 'ctl-segment';
+                    seg.style.cssText = `left:${lPct}%;width:${w}%;background:${s.color};`;
+                    seg.textContent = w > 6 ? s.name : '';
+                    seg.title = `${s.name}: ${segStart} → ${ctlAddDays(cur, s.days-1)} (${s.days}d)`;
+                    track.appendChild(seg);
+                    cur = segEnd;
+                });
+            });
+
+            // Today marker
+            const existing = document.getElementById('ctlTodayMarker');
+            if (existing) existing.remove();
+            const tPct = Math.min(100, Math.max(0, ctlDateToPercent(todayStr, gMin, spanDays)));
+            const marker = document.createElement('div');
+            marker.id = 'ctlTodayMarker';
+            marker.className = 'ctl-today-marker';
+            marker.style.left = tPct + '%';
+            const handle = document.createElement('div');
+            handle.className = 'ctl-drag-handle';
+            marker.appendChild(handle);
+            wrapper.appendChild(marker);
+
+            // Axis
+            const existAxis = document.getElementById('ctlAxis');
+            if (existAxis) existAxis.remove();
+            const axis = document.createElement('div');
+            axis.id = 'ctlAxis'; axis.className = 'ctl-axis';
+            const fmt = d => { const dd=new Date(d); return (dd.getMonth()+1)+'/'+dd.getDate(); };
+            const midStr = ctlAddDays(gMin, Math.round(spanDays/2));
+            axis.innerHTML = `
+              <div class="ctl-axis-mark" style="left:0%">${fmt(gMin)}</div>
+              <div class="ctl-axis-mark" style="left:50%">${fmt(midStr)}</div>
+              <div class="ctl-axis-mark" style="left:100%">${fmt(gMax)}</div>`;
+            const scroll = document.getElementById('ctlScroll');
+            scroll.appendChild(axis);
+
+            // Date display
+            document.getElementById('ctlDateDisplay').textContent = todayStr;
+
+            // Attach drag
+            ctlAttachDrag(marker, wrapper, gMin, spanDays);
+        }
+
+        // ── Drag logic (mouse + touch) ──
+        function ctlAttachDrag(marker, wrapper, gMin, spanDays) {
+            let dragging = false;
+
+            function move(clientX) {
+                const rect = wrapper.getBoundingClientRect();
+                const pct = Math.min(100, Math.max(0, ((clientX-rect.left)/rect.width)*100));
+                ctlSimToday = ctlPercentToDate(pct, gMin, spanDays);
+                // Fast-path: update marker + badges without full re-render
+                marker.style.left = pct + '%';
+                const ts = ctlFmt(ctlSimToday);
+                document.getElementById('ctlDateDisplay').textContent = ts;
+                ctlGreenhouses.forEach(gh => {
+                    const badge = document.getElementById('ctlBadge_'+gh.id);
+                    if (badge) badge.textContent = '🌱 ' + ctlStageAt(gh.transplant, gh.crop, ts);
+                });
+            }
+
+            marker.addEventListener('mousedown',  e=>{ e.preventDefault(); dragging=true; });
+            document.addEventListener('mousemove', e=>{ if(dragging) move(e.clientX); });
+            document.addEventListener('mouseup',   ()=>{ dragging=false; });
+
+            marker.addEventListener('touchstart', e=>{ e.preventDefault(); dragging=true; }, {passive:false});
+            document.addEventListener('touchmove', e=>{ if(dragging) move(e.touches[0].clientX); }, {passive:false});
+            document.addEventListener('touchend',  ()=>{ dragging=false; });
+
+            // Click on wrapper background to jump
+            wrapper.addEventListener('click', e=>{
+                if (e.target===marker || marker.contains(e.target)) return;
+                move(e.clientX);
+            });
+        }
+
+        // ── Public: build timeline from loadUserPreviousData response ──
+        // Called after user data is fetched; receives {rows, headers} (lowercase headers)
+        function ctlBuildFromData(rows, headers) {
+            // Column indices — Sheet1 column I = index 8 = "stage" (0-based)
+            const cropIdx      = headers.findIndex(h => h === 'crop');
+            const stageIdx     = headers.findIndex(h => h === 'stage');            // col I
+            const areaIdx      = headers.findIndex(h => (h.includes('area') && !h.includes('total')));
+            const varietyIdx   = headers.findIndex(h => h === 'variety');
+            const transplantIdx= headers.findIndex(h => h.includes('transplant'));
+
+            ctlGreenhouses = [];
+            if (!rows || rows.length === 0 || cropIdx === -1 || stageIdx === -1) {
+                ctlRender(); return;
+            }
+
+            rows.forEach((row, ri) => {
+                const crop = (row[cropIdx] || '').toString().trim();
+                if (!crop) return;
+
+                // Transplant date: prefer explicit transplant column; fall back to today
+                let transplant = transplantIdx !== -1 ? (row[transplantIdx]||'').toString().trim() : '';
+                if (!transplant || !/^\d{4}-\d{2}-\d{2}/.test(transplant)) {
+                    // Try to parse loosely (e.g. "17/5/2026")
+                    if (transplant) {
+                        const parts = transplant.split(/[\/\-\.]/);
+                        if (parts.length === 3) {
+                            let y,m,d;
+                            if (parts[0].length===4) { [y,m,d]=parts; }
+                            else { [d,m,y]=parts; }
+                            transplant = `${y.padStart(4,'0')}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+                        }
+                    }
+                    // If still invalid, derive from stage + today
+                    if (!transplant || isNaN(new Date(transplant).getTime())) {
+                        const stageVal = (row[stageIdx]||'Seedling').toString().trim();
+                        // Work backward from today to estimate transplant
+                        let daysBefore = 0;
+                        for (const s of ctlGetStages(crop)) {
+                            if (s.name === stageVal) break;
+                            daysBefore += s.days;
+                        }
+                        const est = new Date(); est.setDate(est.getDate() - daysBefore);
+                        transplant = ctlFmt(est);
+                    }
+                }
+
+                const area    = areaIdx !== -1 ? (parseFloat(row[areaIdx])||0) : 0;
+                const variety = varietyIdx !== -1 ? (row[varietyIdx]||'') : '';
+                const stage   = stageIdx !== -1 ? (row[stageIdx]||'') : '';
+
+                ctlGreenhouses.push({
+                    id: `ctl_${ri}_${Date.now()}`,
+                    crop, variety, area, transplant, stage
+                });
+            });
+
+            ctlSimToday = new Date(); // reset to real today on each data load
+            ctlRender();
+        }
+
+        // ── Wire reset button ──
+        document.addEventListener('DOMContentLoaded', () => {
+            const rb = document.getElementById('ctlResetBtn');
+            if (rb) rb.addEventListener('click', ()=>{ ctlSimToday=new Date(); ctlRender(); });
+        });
+        // Also works if DOM already loaded
+        const rb = document.getElementById('ctlResetBtn');
+        if (rb) rb.addEventListener('click', ()=>{ ctlSimToday=new Date(); ctlRender(); });
+
+        // ── Expose for integration ──
+        window._ctlBuildFromData = ctlBuildFromData;
+        window._ctlRender = ctlRender;
+
+    })(); // end IIFE
+
+    // ── Patch loadUserPreviousData to also feed the crop timeline ──
+    const _origLoadUserPrev = loadUserPreviousData;
+    async function loadUserPreviousData(username) {
+        const result = await _origLoadUserPrev(username);
+        // Re-fetch the data to build the timeline (same endpoint, cached by browser mostly)
+        if (username) {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_ctl=${Date.now()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.rows && data.rows.length > 0) {
+                        const hdrs = data.headers.map(h => h.toString().toLowerCase().trim());
+                        window._ctlBuildFromData(data.rows, hdrs);
+                    } else {
+                        document.getElementById('cropTimelineCard').style.display = 'none';
+                    }
+                }
+            } catch(e) { console.warn('Timeline build failed:', e); }
+        } else {
+            document.getElementById('cropTimelineCard').style.display = 'none';
+        }
+        return result;
+    }
 </script>
 </body>
 </html>
