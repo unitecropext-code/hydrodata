@@ -425,13 +425,44 @@
             const stageIdx = getColIndex(['stage']); const cropIdx = getColIndex(['crop']); const varietyIdx = getColIndex(['variety']); const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']); const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']); const harvestMonthsIdx = getColIndex(['harvest months']); const timestampIdx = getColIndex(['timestamp', 'date']); const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
             if (stageIdx === -1) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const grid = document.getElementById('cropRecordsGrid');
-            grid.innerHTML = '';
+            grid.innerHTML = ''; 
+            // Resolve "Cycle Status" column index once, outside the row loop.
+            // Works on both old sheets (column absent → -1) and new sheets (col30, index 29).
+            const statusIndex = headers.findIndex(h => h === "cycle status" || h === "Cycle Status".toLowerCase());
+
             for (let row of data.rows) {
                 if (!row[cropIdx]) continue;
                 const cropVal = row[cropIdx]; const stageVal = (row[stageIdx] || "").toString(); const areaVal = (areaIdx !== -1 && areaIdx < row.length) ? parseFloat(row[areaIdx]) || 0 : 0; const varietyVal = row[varietyIdx] || "—"; const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0; const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg"; const harvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
+
+                // Read Cycle Status; default to "Active" for old rows where the column doesn't exist yet.
+                const cycleStatus = (statusIndex !== -1 && row[statusIndex]) ? row[statusIndex].toString().trim() : "Active";
+                // 💡 lit bulb = Active cycle   🔘 dim bulb = Completed cycle
+                const bulbIcon = cycleStatus === "Active" ? "💡" : "🔘";
+
                 const card = document.createElement('div'); card.className = 'record-card';
-                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div><div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div><div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
-                const btn = card.querySelector('.edit-btn-card'); btn.addEventListener('click', () => { const rec = JSON.parse(btn.getAttribute('data-record')); currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices }; openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices); });
+                card.innerHTML = `
+                    <div class="record-header">
+                        <div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div>
+                        <div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div>
+                        <button class="toggle-status-btn" title="Cycle status: ${cycleStatus}" data-timestamp="${row[timestampIdx]}" style="background:none; border:none; font-size:1.5rem; cursor:pointer; line-height:1;" aria-label="Cycle status: ${cycleStatus}">${bulbIcon}</button>
+                    </div>
+                    <div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
+                    <div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div>
+                    <div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div>
+                    <div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div>
+                    <div class="record-detail"><span>🔄 Cycle Status:</span><span style="font-weight:600; color:${cycleStatus === 'Active' ? '#1f6e1f' : '#888'}">${cycleStatus}</span></div>
+                    <button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
+
+                // Edit button — unchanged behaviour
+                const btn = card.querySelector('.edit-btn-card');
+                btn.addEventListener('click', () => { const rec = JSON.parse(btn.getAttribute('data-record')); currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices }; openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices); });
+
+                // Bulb toggle button — visual-only feedback for now; status update requires a backend action
+                const bulbBtn = card.querySelector('.toggle-status-btn');
+                bulbBtn.addEventListener('click', () => {
+                    toast(`Cycle is currently "${cycleStatus}". To change status, use the Edit Record form.`);
+                });
+
                 grid.appendChild(card);
             }
             document.getElementById('prevSubmissionsSection').style.display = 'block';
@@ -484,7 +515,36 @@
         } catch(e) { toast("❌ Save failed: " + e.message, true); }
         finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
     }
-
+async function toggleCycleStatus(timestamp) {
+    const username = growerNameInput.value.trim();
+    const payload = {
+        action: 'toggleCycleStatus',
+        username: username,
+        timestamp: timestamp
+    };
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify(payload))
+        });
+        const result = await response.json();
+        if (result.success) {
+            const newStatus = result.newStatus;
+            const bulbText = newStatus === "Active" ? "💡" : "🔘";
+            // Find the clicked button and update its text
+            const btn = event.currentTarget;
+            btn.innerHTML = bulbText;
+            toast(`Cycle marked as ${newStatus}. Dashboard will update.`);
+            // Optionally refresh dashboard after a short delay
+            setTimeout(() => refreshFullData(), 1000);
+        } else {
+            toast("Toggle failed: " + result.error, true);
+        }
+    } catch(e) {
+        toast("Network error: " + e.message, true);
+    }
+}
     async function logAreaUpdate() {
         const username = growerNameInput.value.trim(); const locality = localitySelect.value; const currentArea = parseFloat(totalAreaInput.value) || 0; let newArea = prompt("Enter new total greenhouse area (m²):", currentArea); if (newArea === null) return; newArea = parseFloat(newArea); if (isNaN(newArea) || newArea <= 0) { toast("Invalid area value", true); return; } const updateBtn = document.getElementById('updateAreaBtn'); const originalText = updateBtn.innerHTML; updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>'; updateBtn.disabled = true; try { const payload = { action: 'logAreaUpdate', username, currentArea, newArea, locality }; const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify(payload)) }); if (!response.ok) throw new Error(await response.text()); totalAreaInput.value = newArea; toast("✅ Area updated successfully!"); } catch(e) { toast("Error: " + e.message, true); } finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
     }
