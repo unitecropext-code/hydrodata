@@ -594,8 +594,20 @@
                 grid.appendChild(card);
             }
             document.getElementById('prevSubmissionsSection').style.display = 'block';
+
+            // ── Feed interactive crop timeline — data already in hand, no second fetch ──
+            try {
+                if (window._ctlBuildFromData) window._ctlBuildFromData(data.rows, headers);
+            } catch(ctlErr) { console.warn('CTL build error:', ctlErr); }
+
             return true;
-        } catch(e) { console.error(e); document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+        } catch(e) {
+            console.error(e);
+            document.getElementById('prevSubmissionsSection').style.display = 'none';
+            const ctlCard = document.getElementById('cropTimelineCard');
+            if (ctlCard) ctlCard.style.display = 'none';
+            return false;
+        }
     }
 
     function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) {
@@ -1128,29 +1140,7 @@ async function toggleCycleStatus(timestamp) {
 
     })(); // end IIFE
 
-    // ── Patch loadUserPreviousData to also feed the crop timeline ──
-    const _origLoadUserPrev = loadUserPreviousData;
-    async function loadUserPreviousData(username) {
-        const result = await _origLoadUserPrev(username);
-        // Re-fetch the data to build the timeline (same endpoint, cached by browser mostly)
-        if (username) {
-            try {
-                const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_ctl=${Date.now()}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.rows && data.rows.length > 0) {
-                        const hdrs = data.headers.map(h => h.toString().toLowerCase().trim());
-                        window._ctlBuildFromData(data.rows, hdrs);
-                    } else {
-                        document.getElementById('cropTimelineCard').style.display = 'none';
-                    }
-                }
-            } catch(e) { console.warn('Timeline build failed:', e); }
-        } else {
-            document.getElementById('cropTimelineCard').style.display = 'none';
-        }
-        return result;
-    }
+    // Timeline is fed directly inside loadUserPreviousData above — no patch needed.
 </script>
 </body>
 </html>
