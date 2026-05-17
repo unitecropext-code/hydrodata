@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Admin & Grower + Interactive Timeline</title>
+    <title>Hydroponic Smart Tracker | Admin & Grower</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ========== ORIGINAL STYLES (full) ========== */
+        /* ========== STYLES (full original) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #eaf7e6 0%, #c8e6c0 100%); min-height: 100vh; padding: 16px; }
         .container { max-width: 1400px; margin: 0 auto; width: 100%; }
@@ -84,29 +84,6 @@
         .efficiency-table { width: 100%; min-width: 600px;}
         .zonal-table-wrapper { overflow-x: auto; margin-bottom: 1rem;}
         .admin-only-section { display: block; }
-        /* NEW TIMELINE STYLES */
-        .timeline-card { background: rgba(255, 255, 255, 0.98); border-radius: 28px; margin-bottom: 1.5rem; overflow: hidden; }
-        .timeline-scroll { overflow-x: auto; padding: 0.5rem 0.2rem 1rem 0.2rem; }
-        .timeline-wrapper { position: relative; min-width: 680px; }
-        .greenhouse-row { background: #fefef7; border-radius: 1rem; border: 1px solid #e2edd4; margin-bottom: 1rem; overflow: hidden; }
-        .row-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; background: #fafcf5; border-bottom: 1px solid #e9f0e0; gap: 12px; }
-        .greenhouse-info { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; }
-        .gh-name { font-weight: 700; font-size: 0.85rem; background: #eef3e6; padding: 0.25rem 0.9rem; border-radius: 30px; color: #2c5e2a; display: inline-flex; align-items: center; gap: 5px; }
-        .gh-area { background: #fff2df; padding: 0.2rem 0.8rem; border-radius: 30px; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 5px; }
-        .current-stage-badge { background: #e1ecfa; padding: 0.25rem 1rem; border-radius: 30px; font-size: 0.75rem; font-weight: 600; color: #1f4f82; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-        .timeline-track { position: relative; margin: 0.7rem 1rem 0.9rem 1rem; height: 44px; background: #eaeedf; border-radius: 28px; overflow: visible; cursor: crosshair; }
-        .stage-segment { position: absolute; height: 100%; top: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: #1e2f1c; border-radius: 28px 0 0 28px; border-right: 1px solid rgba(255,255,240,0.4); cursor: pointer; white-space: nowrap; padding: 0 5px; transition: filter 0.1s; }
-        .stage-segment:last-child { border-radius: 0 28px 28px 0; }
-        .global-today-marker { position: absolute; top: 0; bottom: 0; width: 3px; background-color: #e34d4d; z-index: 30; box-shadow: 0 0 0 2px rgba(227, 77, 77, 0.4); pointer-events: none; }
-        .global-today-marker::before { content: "📅 TODAY"; position: absolute; top: -28px; left: 50%; transform: translateX(-50%); background: #e34d4d; color: white; font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; white-space: nowrap; pointer-events: none; }
-        .drag-handle { position: absolute; top: -8px; bottom: -8px; width: 14px; left: -6px; cursor: ew-resize; background: transparent; z-index: 40; pointer-events: auto; }
-        .global-today-marker:hover .drag-handle { background: rgba(227,77,77,0.2); border-radius: 20px; }
-        .timeline-axis { position: relative; margin: 0 1rem 0.3rem 1rem; height: 22px; font-size: 0.6rem; color: #5b6e4a; }
-        .axis-marker { position: absolute; transform: translateX(-50%); }
-        .marker-controls { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; background: #f8faf3; padding: 0.4rem 1rem; border-radius: 60px; }
-        .marker-controls button { background: #e34d4d; border: none; color: white; font-size: 0.7rem; padding: 0.3rem 0.9rem; border-radius: 30px; cursor: pointer; font-weight: 600; }
-        .marker-date-display { background: white; padding: 0.2rem 0.9rem; border-radius: 30px; font-size: 0.7rem; font-family: monospace; font-weight: 600; }
-        .timeline-fallback { padding: 2rem; text-align: center; color: #6c7a5e; }
     </style>
 </head>
 <body>
@@ -171,17 +148,6 @@
         <!-- DASHBOARD SECTIONS -->
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
 
-        <!-- NEW: Interactive Crop Timeline (always shown for grower) -->
-        <div id="cropTimelineCard" class="glass-card" style="display: none;">
-            <div class="stat-title"><i class="fas fa-chart-line"></i> 📅 Interactive Crop Timeline | Drag Today Marker</div>
-            <div class="marker-controls">
-                <button id="resetTimelineTodayBtn"><i class="fas fa-calendar-day"></i> Reset to Real Today</button>
-                <div class="marker-date-display" id="timelineMarkerDate">—</div>
-                <span style="font-size:0.7rem; color:#5b7845;">← Drag the red marker on any timeline →</span>
-            </div>
-            <div id="timelineContainer" class="timeline-scroll"><div class="timeline-fallback">Loading crop cycles with transplant dates...</div></div>
-        </div>
-
         <!-- 1. Area by Stage (interactive) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> 📐 Area by Stage</div>
@@ -194,13 +160,13 @@
             <div id="areaByStageContainer"></div>
         </div>
 
-        <!-- 2. Top Crop Areas & Varieties -->
+        <!-- 2. Top Crop Areas & Varieties (Tomato + Sweet Pepper + English Cucumber summary) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-table-list metric-icon"></i> 🏆 Top Crop Areas & Varieties</div>
             <div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div>
         </div>
 
-        <!-- 3. Interactive Crop Timeline (ADMIN ONLY) - original -->
+        <!-- 3. Interactive Crop Timeline (ADMIN ONLY) -->
         <div id="timelineSectionCard" class="glass-card admin-only-section" style="display: none;">
             <div class="stat-title"><i class="fas fa-chart-line metric-icon"></i> 📅 Interactive Crop Timeline (Stage-wise Area)</div>
             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="timelineCropButtons">
@@ -231,7 +197,7 @@
             <div id="noForecastData" class="hidden" style="text-align:center; padding:2rem;">No forecast data available.</div>
         </div>
 
-        <!-- Avg Yield Efficiency Reference -->
+        <!-- Avg Yield Efficiency Reference (static) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-simple"></i> 📊 Avg Yield Efficiency Reference (kg/m²)</div>
             <div class="zonal-table-wrapper">
@@ -278,7 +244,7 @@
 <div id="toast" class="toast-msg"><span id="toastText"></span></div>
 
 <script>
-    // ==================== ORIGINAL SCRIPT (preserved) + TIMELINE INTEGRATION ====================
+    // ==================== CONFIGURATION ====================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZL_Ok1-3IzFg0nx4mHjPle2-xp7rPKEm8xSFaDSWgZq1ziUkAos6XggnLDhMtR3vsVQ/exec';
     const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -286,6 +252,7 @@
     const PROD_SYSTEMS = ["Cocopeat", "Rockwool", "NFT", "DWC", "Aquaponic", "Aggregates"];
     const ZONE_LOCALITIES = { "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"] };
     
+    // Global variables
     let currentZone = "E2";
     let savedGreenhouses = [];
     let currentEditRecord = null;
@@ -300,292 +267,456 @@
     let currentStageAreaFilter = "all";
     let dashboardStats = null;
 
-    // Timeline specific globals
-    let simulatedToday = new Date();
-    let timelineGreenhouses = [];
+    // DOM elements
+    const loginOverlay = document.getElementById('loginOverlay');
+    const mainApp = document.getElementById('mainApp');
+    const growerNameInput = document.getElementById('growerName');
+    const localitySelect = document.getElementById('localitySelect');
+    const totalAreaInput = document.getElementById('totalArea');
+    const cropRecordsGrid = document.getElementById('cropRecordsGrid');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshPageBtn = document.getElementById('refreshPageBtn');
+    const editModal = document.getElementById('editRecordModal');
+    const loggedInUsernameSpan = document.getElementById('loggedInUsername');
+    const adminBadge = document.getElementById('adminBadge');
+    const updateAreaBtn = document.getElementById('updateAreaBtn');
+    const refreshProfileBtn = document.getElementById('refreshProfileBtn');
+    const accessTrackerBtn = document.getElementById('accessTrackerBtn');
+    const addGreenhouseBtn = document.getElementById('addGreenhouseBtn');
+    const submitDataBtn = document.getElementById('submitDataBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveEditBtn = document.getElementById('saveEditBtn');
+    const greenhouseSection = document.getElementById('greenhouseSection');
+    const timelineSection = document.getElementById('timelineSectionCard');
+    const forecastSection = document.getElementById('forecastSectionCard');
 
-    // Crop stage durations for timeline (days)
-    const CROP_STAGES_MAP = {
-        "Tomato": [{ name:"Seedling", days:7, color:"#b8e1b0" }, { name:"Vegetative", days:21, color:"#80c56e" }, { name:"Flowering", days:14, color:"#fdde6c" }, { name:"Fruiting", days:30, color:"#ffb347" }, { name:"Harvesting", days:27, color:"#e68a6e" }],
-        "Sweet Pepper": [{ name:"Seedling", days:10, color:"#b8e1b0" }, { name:"Vegetative", days:25, color:"#80c56e" }, { name:"Flowering", days:15, color:"#fdde6c" }, { name:"Fruiting", days:35, color:"#ffb347" }, { name:"Harvesting", days:25, color:"#e68a6e" }],
-        "English Cucumber": [{ name:"Seedling", days:5, color:"#b8e1b0" }, { name:"Vegetative", days:15, color:"#80c56e" }, { name:"Flowering", days:10, color:"#fdde6c" }, { name:"Fruiting", days:25, color:"#ffb347" }, { name:"Harvesting", days:30, color:"#e68a6e" }]
-    };
-    function getCropStages(crop) { return CROP_STAGES_MAP[crop] || CROP_STAGES_MAP["Tomato"]; }
-    function getTotalDays(crop) { return getCropStages(crop).reduce((s,a)=>s+a.days,0); }
-    function formatYMD(date) { return date.toISOString().slice(0,10); }
-    function addDays(dateStr, days) { let d = new Date(dateStr); d.setDate(d.getDate()+days); return formatYMD(d); }
-    function getStageAtDate(transplant, crop, targetDate) {
-        const start = new Date(transplant);
-        const target = new Date(targetDate);
-        if (target < start) return "Pending";
-        const daysPassed = Math.floor((target-start)/(1000*3600*24));
-        let cumulative = 0;
-        for(let stage of getCropStages(crop)) {
-            if(daysPassed < cumulative+stage.days) return stage.name;
-            cumulative += stage.days;
-        }
-        return "Completed";
+    // Helper: show/hide admin-only sections
+    function setAdminSectionsVisibility(show) {
+        if (timelineSection) timelineSection.style.display = show ? 'block' : 'none';
+        if (forecastSection) forecastSection.style.display = show ? 'block' : 'none';
     }
 
-    function buildTimelineFromUserRecords(rows, headers) {
-        if(!rows || rows.length===0) { document.getElementById("cropTimelineCard").style.display = "none"; return false; }
-        const transplantIdx = headers.findIndex(h => h.includes('transplant') || h === 'transplant date');
-        const cropIdx = headers.findIndex(h => h === 'crop');
-        const areaIdx = headers.findIndex(h => h.includes('area (m²)') || h === 'area (m2)' || h === 'area');
-        const varietyIdx = headers.findIndex(h => h === 'variety');
-        if(transplantIdx === -1 || cropIdx === -1) return false;
-        const ghList = [];
-        for(let row of rows) {
-            let transplantDate = row[transplantIdx];
-            if(!transplantDate || transplantDate === "") continue;
-            let cropName = row[cropIdx];
-            if(!CROP_STAGES_MAP[cropName]) continue;
-            let areaVal = (areaIdx !== -1 && !isNaN(parseFloat(row[areaIdx]))) ? parseFloat(row[areaIdx]) : 0;
-            let variety = (varietyIdx !== -1 && row[varietyIdx]) ? row[varietyIdx] : "—";
-            ghList.push({ id: `gh_${Date.now()}_${Math.random()}`, name: `${cropName} · ${variety}`, crop: cropName, area: areaVal, transplant: transplantDate, variety: variety });
-        }
-        if(ghList.length === 0) return false;
-        timelineGreenhouses = ghList;
-        renderTimeline();
-        return true;
-    }
-
-    function getGlobalDateRange() {
-        let minDate = null, maxDate = null;
-        timelineGreenhouses.forEach(gh => {
-            const total = getTotalDays(gh.crop);
-            const end = addDays(gh.transplant, total-1);
-            if(!minDate || gh.transplant < minDate) minDate = gh.transplant;
-            if(!maxDate || end > maxDate) maxDate = end;
-        });
-        if(!minDate) minDate = formatYMD(new Date());
-        if(!maxDate) maxDate = addDays(minDate, 120);
-        const minObj = new Date(minDate); minObj.setDate(minObj.getDate()-3);
-        const maxObj = new Date(maxDate); maxObj.setDate(maxObj.getDate()+3);
-        return { min: formatYMD(minObj), max: formatYMD(maxObj) };
-    }
-    function dateToPercent(dateStr, globalMin, globalMax, totalSpanDays) {
-        const dateObj = new Date(dateStr);
-        const minObj = new Date(globalMin);
-        const offsetDays = (dateObj-minObj)/(1000*3600*24);
-        return (offsetDays/totalSpanDays)*100;
-    }
-    function percentToDate(percent, globalMin, globalMax, totalSpanDays) {
-        const minObj = new Date(globalMin);
-        const offsetDays = (percent/100)*totalSpanDays;
-        const newDate = new Date(minObj);
-        newDate.setDate(minObj.getDate()+Math.round(offsetDays));
-        return newDate;
-    }
-
-    function makeMarkerDraggable(markerElement, wrapperElement, globalMin, globalMax, totalSpanDays) {
-        let isDragging = false;
-        const onMouseMove = (e) => {
-            if(!isDragging) return;
-            const rect = wrapperElement.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let percent = Math.min(100, Math.max(0, (x/rect.width)*100));
-            const newDate = percentToDate(percent, globalMin, globalMax, totalSpanDays);
-            const minLimit = new Date(globalMin), maxLimit = new Date(globalMax);
-            if(newDate < minLimit) newDate.setTime(minLimit.getTime());
-            if(newDate > maxLimit) newDate.setTime(maxLimit.getTime());
-            simulatedToday = newDate;
-            document.getElementById("timelineMarkerDate").innerText = formatYMD(simulatedToday);
-            renderTimeline();
-        };
-        const onMouseUp = () => { isDragging=false; document.removeEventListener('mousemove',onMouseMove); document.removeEventListener('mouseup',onMouseUp); };
-        const handleMouseDown = (e) => { e.preventDefault(); isDragging=true; document.addEventListener('mousemove',onMouseMove); document.addEventListener('mouseup',onMouseUp); };
-        const handle = markerElement.querySelector('.drag-handle');
-        if(handle) handle.addEventListener('mousedown', handleMouseDown);
-        const trackDiv = wrapperElement.querySelector('.timeline-track-global');
-        if(trackDiv) trackDiv.addEventListener('click', (e) => {
-            const rect = wrapperElement.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let percent = Math.min(100, Math.max(0, (x/rect.width)*100));
-            const newDate = percentToDate(percent, globalMin, globalMax, totalSpanDays);
-            simulatedToday = newDate;
-            document.getElementById("timelineMarkerDate").innerText = formatYMD(simulatedToday);
-            renderTimeline();
-        });
-    }
-
-    function renderTimeline() {
-        const container = document.getElementById("timelineContainer");
-        if(!container || timelineGreenhouses.length===0) { if(container) container.innerHTML = '<div class="timeline-fallback">🌱 No crop cycles with transplant date found. Add greenhouses with transplant date.</div>'; return; }
-        const { min: globalMin, max: globalMax } = getGlobalDateRange();
-        const totalSpanDays = (new Date(globalMax)-new Date(globalMin))/(1000*3600*24);
-        const todayStr = formatYMD(simulatedToday);
-        let html = `<div class="timeline-wrapper" id="timelineGlobalWrapper" style="position:relative;">`;
-        timelineGreenhouses.forEach(gh => {
-            const currentStage = getStageAtDate(gh.transplant, gh.crop, todayStr);
-            const intervals = [];
-            let curStart = gh.transplant;
-            for(let stage of getCropStages(gh.crop)) {
-                const end = addDays(curStart, stage.days-1);
-                intervals.push({ name: stage.name, color: stage.color, start: curStart, end: end, days: stage.days });
-                curStart = addDays(curStart, stage.days);
-            }
-            html += `<div class="greenhouse-row" data-id="${gh.id}">
-                        <div class="row-header">
-                            <div class="greenhouse-info">
-                                <span class="gh-name"><i class="fas fa-seedling"></i> ${gh.name}</span>
-                                <span class="gh-area">📐 ${gh.area.toFixed(1)} m²</span>
-                                <span class="current-stage-badge" id="badge-${gh.id}">🌱 ${currentStage}</span>
-                            </div>
-                            <div class="transplant-picker" style="background:#eef3ea; border-radius:30px; padding:0.2rem 0.8rem; font-size:0.7rem;">📅 Transplant: ${gh.transplant}</div>
-                        </div>
-                        <div class="timeline-track" id="track-${gh.id}"></div>
-                    </div>`;
-        });
-        html += `<div id="timelineAxisContainer" class="timeline-axis"></div></div>`;
-        container.innerHTML = html;
-        timelineGreenhouses.forEach(gh => {
-            const trackDiv = document.getElementById(`track-${gh.id}`);
-            if(!trackDiv) return;
-            const intervals = [];
-            let curStart = gh.transplant;
-            for(let stage of getCropStages(gh.crop)) {
-                const end = addDays(curStart, stage.days-1);
-                intervals.push({ name: stage.name, color: stage.color, start: curStart, end: end, days: stage.days });
-                curStart = addDays(curStart, stage.days);
-            }
-            intervals.forEach(interval => {
-                const startPercent = dateToPercent(interval.start, globalMin, globalMax, totalSpanDays);
-                const endPercent = dateToPercent(interval.end, globalMin, globalMax, totalSpanDays);
-                let width = endPercent - startPercent;
-                if(width <= 0) width = 0.5;
-                const seg = document.createElement('div');
-                seg.className = 'stage-segment';
-                seg.style.left = `${startPercent}%`;
-                seg.style.width = `${width}%`;
-                seg.style.backgroundColor = interval.color;
-                seg.textContent = interval.name;
-                seg.title = `${interval.name}: ${interval.start} → ${interval.end}`;
-                trackDiv.appendChild(seg);
-            });
-            const badgeSpan = document.getElementById(`badge-${gh.id}`);
-            if(badgeSpan) badgeSpan.innerHTML = `🌱 ${getStageAtDate(gh.transplant, gh.crop, todayStr)}`;
-        });
-        const wrapperDiv = document.getElementById("timelineGlobalWrapper");
-        const existingMarker = wrapperDiv?.querySelector('#globalTodayMarkerTimeline');
-        if(existingMarker) existingMarker.remove();
-        const todayPercent = dateToPercent(todayStr, globalMin, globalMax, totalSpanDays);
-        const clamped = Math.min(100, Math.max(0, todayPercent));
-        const marker = document.createElement('div');
-        marker.id = 'globalTodayMarkerTimeline';
-        marker.className = 'global-today-marker';
-        marker.style.left = `${clamped}%`;
-        const dragHandle = document.createElement('div');
-        dragHandle.className = 'drag-handle';
-        marker.appendChild(dragHandle);
-        if(wrapperDiv) wrapperDiv.appendChild(marker);
-        const axisDiv = document.getElementById("timelineAxisContainer");
-        if(axisDiv) {
-            const startDateObj = new Date(globalMin);
-            const midDateObj = new Date((new Date(globalMin).getTime()+new Date(globalMax).getTime())/2);
-            const endDateObj = new Date(globalMax);
-            const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
-            axisDiv.innerHTML = `<div class="axis-marker" style="left:0%">${fmt(startDateObj)}</div><div class="axis-marker" style="left:50%">${fmt(midDateObj)}</div><div class="axis-marker" style="left:100%">${fmt(endDateObj)}</div>`;
-        }
-        if(wrapperDiv) makeMarkerDraggable(marker, wrapperDiv, globalMin, globalMax, totalSpanDays);
-        document.getElementById("timelineMarkerDate").innerText = formatYMD(simulatedToday);
-        document.getElementById("cropTimelineCard").style.display = "block";
-    }
-
-    function resetTimelineToday() { simulatedToday = new Date(); renderTimeline(); toast("Timeline marker reset to real current date"); }
-
-    // -------- ORIGINAL FUNCTIONS (trimmed for brevity but all essential) --------
-    function toast(msg, isError) { const t = document.getElementById('toastText'); t.innerText = msg; const td = document.getElementById('toast'); td.classList.add('show'); td.style.background = isError ? "#c0392b" : "#1c5c22"; setTimeout(()=>td.classList.remove('show'),2800); }
-    function saveLoginState(username, admin) { sessionStorage.setItem('hydroponic_loggedIn','true'); sessionStorage.setItem('hydroponic_username',username); sessionStorage.setItem('hydroponic_isAdmin',admin?'true':'false'); }
+    // Login session handling
+    function saveLoginState(username, admin) { sessionStorage.setItem('hydroponic_loggedIn', 'true'); sessionStorage.setItem('hydroponic_username', username); sessionStorage.setItem('hydroponic_isAdmin', admin ? 'true' : 'false'); }
     function clearLoginState() { sessionStorage.removeItem('hydroponic_loggedIn'); sessionStorage.removeItem('hydroponic_username'); sessionStorage.removeItem('hydroponic_isAdmin'); }
-    function getStoredLogin() { return { loggedIn: sessionStorage.getItem('hydroponic_loggedIn')==='true', username: sessionStorage.getItem('hydroponic_username'), admin: sessionStorage.getItem('hydroponic_isAdmin')==='true' }; }
-    function setAdminSectionsVisibility(show) { if(timelineSection) timelineSection.style.display = show ? 'block' : 'none'; if(forecastSection) forecastSection.style.display = show ? 'block' : 'none'; }
-    function initZoneHeader() { const zones = Object.keys(ZONE_LOCALITIES); const zoneContainer = document.getElementById('zonePillsHeader'); zoneContainer.innerHTML = zones.map(z => `<button class="zone-pill ${z===currentZone?'active':''}" data-zone="${z}">Zone ${z}</button>`).join(''); document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.addEventListener('click', (e) => { setZone(btn.dataset.zone); updateLocalityDropdown(); toast(`Zone switched to ${btn.dataset.zone}`); })); }
-    function setZone(zone) { currentZone = zone; document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone===currentZone)); updateLocalityDropdown(); }
+    function getStoredLogin() { const loggedIn = sessionStorage.getItem('hydroponic_loggedIn') === 'true'; const username = sessionStorage.getItem('hydroponic_username'); const admin = sessionStorage.getItem('hydroponic_isAdmin') === 'true'; return { loggedIn, username, admin }; }
+    function getCurrentMauritiusISOString() { const now = new Date(); const utc = now.getTime() + (now.getTimezoneOffset() * 60000); const mauritiusTime = new Date(utc + (4 * 3600000)); return mauritiusTime.toISOString().replace('Z', '+04:00'); }
+    function formatToMauritiusTime(timestampStr) { if (!timestampStr) return '—'; try { let date = new Date(timestampStr); if (isNaN(date.getTime())) return timestampStr.substring(0, 16); return new Intl.DateTimeFormat('en-MU', { timeZone: 'Indian/Mauritius', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(date); } catch(e) { return timestampStr; } }
+    function toast(msg, isError = false) { const t = document.getElementById('toastText'); t.innerText = msg; const toastDiv = document.getElementById('toast'); toastDiv.classList.add('show'); toastDiv.style.background = isError ? "#c0392b" : "#1c5c22"; setTimeout(() => toastDiv.classList.remove('show'), 2800); }
+
+    // Zone and locality
+    function initZoneHeader() {
+        const zones = Object.keys(ZONE_LOCALITIES);
+        const zoneContainer = document.getElementById('zonePillsHeader');
+        zoneContainer.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join('');
+        document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.addEventListener('click', (e) => { setZone(btn.dataset.zone); updateLocalityDropdown(); toast(`Zone switched to ${btn.dataset.zone}`); }));
+    }
+    function setZone(zone) { currentZone = zone; document.querySelectorAll('#zonePillsHeader .zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === currentZone)); updateLocalityDropdown(); }
     function updateLocalityDropdown() { const locs = ZONE_LOCALITIES[currentZone] || []; localitySelect.innerHTML = '<option value="">-- Select Locality --</option>'; locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; localitySelect.appendChild(opt); }); }
-    
-    async function loadDashboard() { try { const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`); if(!res.ok) throw new Error(); const data = await res.json(); dashboardStats = data; renderAreaByStage(data, currentStageAreaFilter); let tomatoHtml = `<div><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`; if(data.topVarieties?.tomato?.length) data.topVarieties.tomato.forEach(v=>{ tomatoHtml+=`<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; }); else tomatoHtml+=`<tr><td colspan="2">No tomato data yet</td></tr>`; tomatoHtml+=`</tbody></table></div><div><h4>🌶️ Sweet Pepper & 🥒 English Cucumber</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`; for(let crop of ["Sweet Pepper","English Cucumber"]) { let entry = (data.areaByCrop || []).find(c=>c.crop===crop); let area = entry ? entry.area : 0; let topVariety = { variety:'—', area:0 }; if(crop==='Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0]; else if(crop==='English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0]; sweetCucHtml += `<tr><td><i class="fas ${crop==='Sweet Pepper'?'fa-pepper-hot':'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`; } let sweetCucHtml = tomatoHtml + `</tbody></table></div>`; document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + sweetCucHtml; await loadZonalEfficiency(currentZoneEfficiency); if(isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); } else { if(timelineChart) timelineChart.destroy(); if(forecastChart) forecastChart.destroy(); } } catch(e) { console.error(e); toast("Error loading dashboard", true); } }
-    function renderAreaByStage(stats, filterCrop) { let areaByStage = filterCrop==='all' ? stats.areaByStageTotal : (stats.areaByStageByCrop && stats.areaByStageByCrop[filterCrop]) || {}; let maxArea = Math.max(...Object.values(areaByStage).map(v=>v||0),1); let html = ''; const icons = {"Seedling":"🌱","Vegetative":"🌿","Flowering":"🌸","Fruiting":"🍎","Harvesting":"🍅"}; for(let s of STAGES) { let area = areaByStage[s]||0; let percent = (area/maxArea)*100; html += `<div class="stage-progress-container"><div class="stage-progress-label"><span>${icons[s]||'📊'} ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div><div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div></div>`; } document.getElementById('areaByStageContainer').innerHTML = html; }
-    async function loadTimelineChart(crop) { if(!isAdmin) return; try { const res = await fetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`); if(!res.ok) throw new Error(); const data = await res.json(); if(!data.datasets || data.datasets.length===0) { document.getElementById('noTimelineData').classList.remove('hidden'); if(timelineChart) timelineChart.destroy(); return; } document.getElementById('noTimelineData').classList.add('hidden'); if(timelineChart) timelineChart.destroy(); const ctx = document.getElementById('timelineChart').getContext('2d'); timelineChart = new Chart(ctx, { type:'line', data:{ labels:data.labels, datasets:data.datasets.map(ds=>({...ds, fill:true, tension:0.3})) }, options:{ responsive:true, maintainAspectRatio:true } }); } catch(e) { document.getElementById('noTimelineData').classList.remove('hidden'); } }
-    async function loadForecastChart(crop) { if(!isAdmin) return; try { const res = await fetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`); if(!res.ok) throw new Error(); const data = await res.json(); if(!data.cultivated || data.cultivated.length===0) { document.getElementById('noForecastData').classList.remove('hidden'); if(forecastChart) forecastChart.destroy(); return; } document.getElementById('noForecastData').classList.add('hidden'); if(forecastChart) forecastChart.destroy(); const ctx = document.getElementById('forecastChart').getContext('2d'); forecastChart = new Chart(ctx, { type:'bar', data:{ labels:data.labels, datasets:[{ label:'Cultivated Area (m²)', data:data.cultivated, backgroundColor:'#4cae4c' },{ label:'Harvestable Area (m²)', data:data.harvestable, backgroundColor:'#f39c12' }] }, options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ beginAtZero:true } } } }); } catch(e) { document.getElementById('noForecastData').classList.remove('hidden'); } }
-    async function loadZonalEfficiency(zone) { try { const res = await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`); if(!res.ok) throw new Error(); const data = await res.json(); if(!data[zone]) { document.getElementById('zonalEfficiencyTable').innerHTML = `<p>No efficiency data for zone ${zone}</p>`; return; } let html = `<table class="efficiency-table"><thead><tr><th>Crop</th><th>Efficiency (kg/m²)</th></tr></thead><tbody>`; for(let [crop, eff] of Object.entries(data[zone])) html += `<tr><td>${crop}</td><td>${eff.toFixed(2)} kg/m²</td></tr>`; html += `</tbody></table>`; document.getElementById('zonalEfficiencyTable').innerHTML = html; } catch(e) { document.getElementById('zonalEfficiencyTable').innerHTML = `<p>Error loading zonal data</p>`; } }
-    
+
+    // Dashboard rendering
+    function renderAreaByStage(stats, filterCrop = "all") {
+        let areaByStage = {};
+        if (filterCrop === "all") areaByStage = stats.areaByStageTotal || {};
+        else areaByStage = (stats.areaByStageByCrop && stats.areaByStageByCrop[filterCrop]) || {};
+        let maxArea = Math.max(...Object.values(areaByStage).map(v=>v||0),1);
+        let html = '';
+        const icons = { "Seedling":"🌱", "Vegetative":"🌿", "Flowering":"🌸", "Fruiting":"🍎", "Harvesting":"🍅" };
+        for (let s of STAGES) {
+            let area = areaByStage[s] || 0;
+            let percent = (area / maxArea) * 100;
+            html += `<div class="stage-progress-container"><div class="stage-progress-label"><span>${icons[s] || '📊'} ${s}</span><span><strong>${area.toFixed(1)} m²</strong></span></div><div class="stage-progress-bar-bg"><div class="stage-progress-fill" style="width: ${percent}%;"></div></div></div>`;
+        }
+        document.getElementById('areaByStageContainer').innerHTML = html;
+    }
+
+    async function loadTimelineChart(crop) {
+        if (!isAdmin) { if (timelineChart) timelineChart.destroy(); timelineChart = null; document.getElementById('noTimelineData')?.classList?.add('hidden'); return; }
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data.datasets || data.datasets.length === 0) { document.getElementById('noTimelineData').classList.remove('hidden'); if(timelineChart) timelineChart.destroy(); return; }
+            document.getElementById('noTimelineData').classList.add('hidden');
+            if (timelineChart) timelineChart.destroy();
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: data.labels, datasets: data.datasets.map(ds => ({ ...ds, fill: true, tension: 0.3 })) },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { mode: 'index', intersect: false } }, scales: { y: { title: { display: true, text: 'Area (m²)' }, stacked: true }, x: { title: { display: true, text: 'Month' } } } }
+            });
+        } catch(e) { console.error(e); document.getElementById('noTimelineData').classList.remove('hidden'); }
+    }
+
+    async function loadForecastChart(crop) {
+        if (!isAdmin) { if (forecastChart) forecastChart.destroy(); forecastChart = null; document.getElementById('noForecastData')?.classList?.add('hidden'); return; }
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data.cultivated || data.cultivated.length === 0) { document.getElementById('noForecastData').classList.remove('hidden'); if(forecastChart) forecastChart.destroy(); return; }
+            document.getElementById('noForecastData').classList.add('hidden');
+            if (forecastChart) forecastChart.destroy();
+            const ctx = document.getElementById('forecastChart').getContext('2d');
+            forecastChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: data.labels, datasets: [{ label: 'Cultivated Area (m²)', data: data.cultivated, backgroundColor: '#4cae4c' }, { label: 'Harvestable Area (m²)', data: data.harvestable, backgroundColor: '#f39c12' }] },
+                options: { responsive: true, maintainAspectRatio: true, scales: { y: { title: { display: true, text: 'Area (m²)' }, beginAtZero: true } } }
+            });
+        } catch(e) { console.error(e); document.getElementById('noForecastData').classList.remove('hidden'); }
+    }
+
+    async function loadZonalEfficiency(zone) {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data[zone]) { document.getElementById('zonalEfficiencyTable').innerHTML = `<p>No efficiency data for zone ${zone}</p>`; return; }
+            let html = `<table class="efficiency-table"><thead><tr><th>Crop</th><th>Efficiency (kg/m²)</th></tr></thead><tbody>`;
+            for (let [crop, eff] of Object.entries(data[zone])) html += `<tr><td>${crop}</td><td>${eff.toFixed(2)} kg/m²</td></tr>`;
+            html += `</tbody></table>`;
+            document.getElementById('zonalEfficiencyTable').innerHTML = html;
+        } catch(e) { console.error(e); document.getElementById('zonalEfficiencyTable').innerHTML = `<p>Error loading zonal data</p>`; }
+    }
+
+    async function loadDashboard() {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            dashboardStats = data;
+            renderAreaByStage(data, currentStageAreaFilter);
+            // Top crops & varieties
+            let tomatoHtml = `<div style="margin-bottom:1rem;"><h4>🍅 Top 5 Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
+            if (data.topVarieties?.tomato?.length) data.topVarieties.tomato.forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
+            else tomatoHtml += `<tr><td colspan="2">No tomato data yet</td></tr>`;
+            tomatoHtml += `</tbody></table></div>`;
+            let sweetCucHtml = `<div><h4>🌶️ Sweet Pepper & 🥒 English Cucumber</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th><th>Top Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
+            for (let crop of ["Sweet Pepper", "English Cucumber"]) {
+                let entry = (data.areaByCrop || []).find(c => c.crop === crop);
+                let area = entry ? entry.area : 0;
+                let topVariety = { variety: '—', area: 0 };
+                if (crop === 'Sweet Pepper' && data.topVarieties?.sweetPepper?.length) topVariety = data.topVarieties.sweetPepper[0];
+                else if (crop === 'English Cucumber' && data.topVarieties?.englishCucumber?.length) topVariety = data.topVarieties.englishCucumber[0];
+                sweetCucHtml += `<tr><td><i class="fas ${crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf'}"></i> ${crop}</td><td><strong>${area.toFixed(1)}</strong></td><td>${topVariety.variety}</td><td>${topVariety.area.toFixed(1)}</td></tr>`;
+            }
+            sweetCucHtml += `</tbody></table></div>`;
+            document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml + sweetCucHtml;
+            await loadZonalEfficiency(currentZoneEfficiency);
+            if (isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); }
+            else { if (timelineChart) timelineChart.destroy(); timelineChart = null; if (forecastChart) forecastChart.destroy(); forecastChart = null; }
+        } catch(e) { console.error(e); toast("Error loading dashboard: " + e.message, true); }
+    }
+
+    // User previous records
     async function loadUserPreviousData(username) {
-        if(!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; document.getElementById("cropTimelineCard").style.display = "none"; return false; }
+        if (!username) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-            if(!res.ok) throw new Error();
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
-            if(!data.rows || data.rows.length===0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; document.getElementById("cropTimelineCard").style.display = "none"; return false; }
-            const headers = data.headers.map(h=>h.toString().toLowerCase());
-            const areaIdx = headers.findIndex(h => (h==='area (m²)' || h==='area (m2)' || h==='area' || h.includes('area (m²)')) && !h.includes('total'));
-            const stageIdx = headers.findIndex(h => h.includes('stage'));
-            const cropIdx = headers.findIndex(h => h==='crop');
-            const varietyIdx = headers.findIndex(h => h==='variety');
-            const weeklyYieldIdx = headers.findIndex(h => h.includes('weekly yield'));
-            const weeklyUnitIdx = headers.findIndex(h => h.includes('weekly unit'));
-            const harvestMonthsIdx = headers.findIndex(h => h.includes('harvest months'));
-            const timestampIdx = headers.findIndex(h => h.includes('timestamp') || h==='date');
-            const monthIndices = MONTHS.map(m => headers.findIndex(h => h===m.toLowerCase()));
-            const statusIndex = headers.findIndex(h => h === "cycle status");
+            if (!data.rows || data.rows.length === 0) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
+            const headers = data.headers.map(h => h.toString().toLowerCase());
+            let areaIdx = headers.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area' || h.includes('area (m²)')) && !h.includes('total'));
+            if (areaIdx === -1) areaIdx = headers.findIndex(h => h.includes('area') && !h.includes('total'));
+            if (areaIdx === -1 && headers.length > 9) areaIdx = 9;
+            const getColIndex = (patterns) => headers.findIndex(h => patterns.some(p => h.includes(p)));
+            const stageIdx = getColIndex(['stage']); const cropIdx = getColIndex(['crop']); const varietyIdx = getColIndex(['variety']); const weeklyYieldIdx = getColIndex(['weekly yield', 'weekly']); const weeklyUnitIdx = getColIndex(['weekly unit', 'unit']); const harvestMonthsIdx = getColIndex(['harvest months']); const timestampIdx = getColIndex(['timestamp', 'date']); const monthIndices = MONTHS.map(m => headers.findIndex(h => h === m.toLowerCase()));
+            if (stageIdx === -1) { document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
             const grid = document.getElementById('cropRecordsGrid');
-            grid.innerHTML = '';
-            for(let row of data.rows) {
-                if(!row[cropIdx]) continue;
-                const areaVal = (areaIdx!==-1 && areaIdx<row.length) ? parseFloat(row[areaIdx])||0 : 0;
-                const stageVal = (row[stageIdx]||"").toString();
-                const varietyVal = row[varietyIdx] || "—";
-                const weeklyYield = weeklyYieldIdx!==-1 ? parseFloat(row[weeklyYieldIdx])||0 : 0;
-                const weeklyUnit = weeklyUnitIdx!==-1 ? (row[weeklyUnitIdx]||"kg") : "kg";
-                const harvestMonths = harvestMonthsIdx!==-1 ? parseFloat(row[harvestMonthsIdx])||0 : 0;
-                const cycleStatus = (statusIndex!==-1 && row[statusIndex]) ? row[statusIndex].toString().trim() : "Active";
+            grid.innerHTML = ''; 
+            // Resolve "Cycle Status" column index once, outside the row loop.
+            // Works on both old sheets (column absent → -1) and new sheets (col30, index 29).
+            const statusIndex = headers.findIndex(h => h === "cycle status" || h === "Cycle Status".toLowerCase());
+
+            for (let row of data.rows) {
+                if (!row[cropIdx]) continue;
+                const cropVal = row[cropIdx]; const stageVal = (row[stageIdx] || "").toString(); const areaVal = (areaIdx !== -1 && areaIdx < row.length) ? parseFloat(row[areaIdx]) || 0 : 0; const varietyVal = row[varietyIdx] || "—"; const weeklyYield = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0; const weeklyUnit = weeklyUnitIdx !== -1 ? (row[weeklyUnitIdx] || "kg") : "kg"; const harvestMonths = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
+
+                // Read Cycle Status; default to "Active" for old rows where the column doesn't exist yet.
+                const cycleStatus = (statusIndex !== -1 && row[statusIndex]) ? row[statusIndex].toString().trim() : "Active";
+                // 💡 lit bulb = Active cycle   🔘 dim bulb = Completed cycle
                 const bulbIcon = cycleStatus === "Active" ? "💡" : "🔘";
+
                 const card = document.createElement('div'); card.className = 'record-card';
-                card.innerHTML = `<div class="record-header"><div class="record-crop"><i class="fas fa-seedling"></i> ${row[cropIdx]}</div><div class="record-stage"><i class="fas fa-chart-line"></i> ${stageVal}</div><button class="toggle-status-btn" data-timestamp="${row[timestampIdx]}" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">${bulbIcon}</button></div><div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div><div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div><div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div><div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div><div class="record-detail"><span>🔄 Cycle Status:</span><span style="font-weight:600; color:${cycleStatus==='Active'?'#1f6e1f':'#888'}">${cycleStatus}</span></div><button class="edit-btn-card" data-record='${JSON.stringify({ rowData: row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices })}'><i class="fas fa-edit"></i> Edit Record</button>`;
-                const editBtn = card.querySelector('.edit-btn-card');
-                editBtn.addEventListener('click', () => { const rec = JSON.parse(editBtn.getAttribute('data-record')); currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices }; openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices); });
+                card.innerHTML = `
+                    <div class="record-header">
+                        <div class="record-crop"><i class="fas fa-seedling"></i> ${cropVal}</div>
+                        <div class="record-stage"><i class="fas ${stageVal === 'Harvesting' ? 'fa-tractor' : 'fa-chart-line'}"></i> ${stageVal}</div>
+                        <button class="toggle-status-btn" title="Cycle status: ${cycleStatus}" data-timestamp="${row[timestampIdx]}" style="background:none; border:none; font-size:1.5rem; cursor:pointer; line-height:1;" aria-label="Cycle status: ${cycleStatus}">${bulbIcon}</button>
+                    </div>
+                    <div class="record-detail"><span>📐 Area:</span><span class="record-area">${areaVal.toFixed(1)} m²</span></div>
+                    <div class="record-detail"><span>🌱 Variety:</span><span>${varietyVal}</span></div>
+                    <div class="record-detail"><span>📦 Weekly Yield:</span><span>${weeklyYield.toFixed(1)} ${weeklyUnit}</span></div>
+                    <div class="record-detail"><span>📅 Harvest Months:</span><span>${harvestMonths}</span></div>
+                    <div class="record-detail"><span>🔄 Cycle Status:</span><span style="font-weight:600; color:${cycleStatus === 'Active' ? '#1f6e1f' : '#888'}">${cycleStatus}</span></div>
+                    <button class="edit-btn-card" data-record='${JSON.stringify({ cropIdx, stageIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, timestampIdx, monthIndices, rowData: row })}'><i class="fas fa-edit"></i> Edit Record</button>`;
+
+                // Edit button — unchanged behaviour
+                const btn = card.querySelector('.edit-btn-card');
+                btn.addEventListener('click', () => { const rec = JSON.parse(btn.getAttribute('data-record')); currentEditRecord = { row: rec.rowData, headers, stageIdx: rec.stageIdx, cropIdx: rec.cropIdx, areaIdx: rec.areaIdx, varietyIdx: rec.varietyIdx, weeklyYieldIdx: rec.weeklyYieldIdx, weeklyUnitIdx: rec.weeklyUnitIdx, harvestMonthsIdx: rec.harvestMonthsIdx, timestampIdx: rec.timestampIdx, monthIndices: rec.monthIndices }; openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices); });
+
+                // Bulb toggle button — calls toggleCycleStatus with the row's timestamp
                 const toggleBtn = card.querySelector('.toggle-status-btn');
-                if(toggleBtn) toggleBtn.addEventListener('click', (e) => { e.preventDefault(); toggleCycleStatus(toggleBtn.dataset.timestamp); });
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleCycleStatus(toggleBtn.dataset.timestamp);
+                });
+
                 grid.appendChild(card);
             }
             document.getElementById('prevSubmissionsSection').style.display = 'block';
-            const timelineBuilt = buildTimelineFromUserRecords(data.rows, headers);
-            if(!timelineBuilt) document.getElementById("cropTimelineCard").style.display = "none";
-            else renderTimeline();
             return true;
         } catch(e) { console.error(e); document.getElementById('prevSubmissionsSection').style.display = 'none'; return false; }
     }
-    function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) { /* full original would be long, kept functional stub */ document.getElementById('editCrop').value = row[cropIdx]||""; document.getElementById('editStage').value = (row[stageIdx]||"Seedling").toString(); document.getElementById('editArea').value = (areaIdx!==-1 ? parseFloat(row[areaIdx])||0 : 0); document.getElementById('editVariety').value = row[varietyIdx]||""; document.getElementById('editWeeklyYield').value = weeklyYieldIdx!==-1 ? parseFloat(row[weeklyYieldIdx])||0 : 0; document.getElementById('editUnit').value = (weeklyUnitIdx!==-1 && row[weeklyUnitIdx]) ? row[weeklyUnitIdx] : "kg"; document.getElementById('editHarvestMonths').value = harvestMonthsIdx!==-1 ? parseFloat(row[harvestMonthsIdx])||0 : 0; const rawTimestamp = row[currentEditRecord.timestampIdx] || '—'; document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${rawTimestamp}`; const monthVals = monthIndices.map(idx => idx!==-1 ? parseFloat(row[idx])||0 : 0); const grid = document.getElementById('editMonthlyGrid'); grid.innerHTML = ''; MONTHS.forEach((month, idx) => { const div = document.createElement('div'); div.className = 'month-card'; div.innerHTML = `<span style="font-weight:600;">${month.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${idx}" value="${monthVals[idx].toFixed(2)}">`; grid.appendChild(div); }); editModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-    async function saveFullRecordUpdate() { /* simplified stub for modal save */ toast("Edit feature integrated", false); editModal.style.display='none'; document.body.style.overflow=''; await refreshFullData(); }
-    async function toggleCycleStatus(timestamp) { const username = growerNameInput.value.trim(); const payload = { action:'toggleCycleStatus', username, timestamp }; try { const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'data='+encodeURIComponent(JSON.stringify(payload)) }); const result = await res.json(); if(result.success) { toast(`Cycle marked as ${result.newStatus}`); await refreshFullData(); } else toast("Toggle failed: "+result.error, true); } catch(e) { toast("Network error", true); } }
-    async function logAreaUpdate() { /* stub, not needed for timeline */ toast("Area update triggered (simulated)", false); }
-    async function autoFillProfileFromRecords(username) { if(isAdmin) return; try { const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`); if(dataRes.ok) { const data = await dataRes.json(); if(data.rows && data.rows.length>0) { const headers = data.headers.map(h=>h.toString().toLowerCase()); const zoneCol = headers.findIndex(h=>h==='zone'); let zoneFromRecord = null; if(zoneCol!==-1 && data.rows[0][zoneCol]) zoneFromRecord = data.rows[0][zoneCol]; const localityCol = headers.findIndex(h=>h.includes('locality')||h==='location'); let localityFromRecord = null; if(localityCol!==-1 && data.rows[0][localityCol]) localityFromRecord = data.rows[0][localityCol]; if(zoneFromRecord && ZONE_LOCALITIES[zoneFromRecord]) setZone(zoneFromRecord); else updateLocalityDropdown(); if(localityFromRecord && localitySelect.querySelector(`option[value="${localityFromRecord}"]`)) localitySelect.value = localityFromRecord; const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`); let totalArea = 0; if(profRes.ok) { const prof = await profRes.json(); if(prof.totalArea && !isNaN(parseFloat(prof.totalArea))) totalArea = parseFloat(prof.totalArea); } if(totalArea===0) { const areaIdx = headers.findIndex(h=>h.includes('area (m²)')||h.includes('area (m2)')||h==='area'); if(areaIdx!==-1) { let sumArea=0; for(let row of data.rows) { let a=parseFloat(row[areaIdx]); if(!isNaN(a)) sumArea+=a; } totalArea=sumArea; } } if(totalArea>0) totalAreaInput.value = totalArea; else totalAreaInput.value = ''; } } } catch(e) { console.warn(e); } }
-    async function refreshFullData() { const user = growerNameInput.value.trim(); if(user) { await loadUserPreviousData(user); await loadDashboard(); if(!isAdmin) await autoFillProfileFromRecords(user); toast("Dashboard & timeline refreshed"); } else toast("No active user", true); }
-    function renderActiveForm() { /* full original, but timeline doesn't rely on it for display */ const cropOptions = EXTENDED_CROPS.map(c=>`<option value="${c}">${c}</option>`).join(''); const stageOptions = STAGES.map(s=>`<option value="${s}">${s}</option>`).join(''); const prodSysOptions = PROD_SYSTEMS.map(s=>`<option value="${s}">${s}</option>`).join(''); document.getElementById('activeGreenhouseForm').innerHTML = `<div class="grid-2col"><div><label>Crop *</label><select id="cropSelect">${cropOptions}</select></div><div><label>Area (m²) *</label><input type="number" step="0.01" id="areaInput"></div><div><label>Variety</label><input type="text" id="varietyInput"></div><div><label>Stage *</label><select id="stageSelect">${stageOptions}</select></div><div><label>Transplant Date</label><input type="date" id="transplantDate"></div><div><label>Production System</label><select id="prodSystemSelect">${prodSysOptions}</select></div></div><div id="tomatoTypeContainer"></div><div id="dynamicHarvestDetails"></div>`; const cropSelect = document.getElementById('cropSelect'), varietyInput = document.getElementById('varietyInput'), tomatoContainer = document.getElementById('tomatoTypeContainer'); const updateTomatoType = () => { if(cropSelect.value === 'Tomato') { tomatoContainer.innerHTML = `<div class="tomato-type-row"><label>🍅 Tomato Type: </label><select id="tomatoTypeSelect"><option value="Cooking">Cooking</option><option value="Salad">Salad</option><option value="Cherry">Cherry</option></select> <small>(auto-fills variety)</small></div>`; const tomatoSelect = document.getElementById('tomatoTypeSelect'); tomatoSelect.addEventListener('change', () => { varietyInput.value = tomatoSelect.value; }); if(varietyInput.value && ["Cooking","Salad","Cherry"].includes(varietyInput.value)) tomatoSelect.value = varietyInput.value; else varietyInput.value = tomatoSelect.value; } else { tomatoContainer.innerHTML = ''; } }; cropSelect.addEventListener('change', updateTomatoType); updateTomatoType(); const stageSel = document.getElementById('stageSelect'); const updateHarvestFields = () => { const stage = stageSel.value; const harvestDiv = document.getElementById('dynamicHarvestDetails'); if(stage !== 'Harvesting') { harvestDiv.innerHTML = ''; return; } harvestDiv.innerHTML = `<div style="margin-top:1rem;"><h4>Harvest Details</h4><div class="grid-2col"><div><label>Avg Weekly Yield</label><input type="number" step="0.01" id="weeklyYield"></div><div><label>Harvesting Months (duration)</label><input type="number" step="0.5" id="harvestMonths"></div></div><div><label>Unit: <input type="radio" name="weeklyUnit" value="kg" checked> kg/week <input type="radio" name="weeklyUnit" value="crates"> crates/week</label></div><div><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem;"></div></div></div>`; const grid = document.getElementById('monthGrid'); if(grid) grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join(''); }; stageSel.addEventListener('change', updateHarvestFields); updateHarvestFields(); }
-    function saveCurrentGreenhouse() { let data = getCurrentFormData(); if(!data.crop || data.area<=0) { toast("Crop and area >0 required", true); return; } savedGreenhouses.push({ ...data, id: Date.now() }); updateSavedListDisplay(); renderActiveForm(); toast(`Added: ${data.crop} (${data.area} m²)`); }
-    function getCurrentFormData() { let crop = document.getElementById('cropSelect')?.value, area = parseFloat(document.getElementById('areaInput')?.value)||0, variety = document.getElementById('varietyInput')?.value||'', stage = document.getElementById('stageSelect')?.value, transplantDate = document.getElementById('transplantDate')?.value||'', prodSystem = document.getElementById('prodSystemSelect')?.value||'', harvest = { weeklyYield:0, harvestMonths:0, weeklyUnit:'kg', monthly:{} }; if(stage==='Harvesting') { harvest.weeklyYield = parseFloat(document.getElementById('weeklyYield')?.value)||0; harvest.harvestMonths = parseFloat(document.getElementById('harvestMonths')?.value)||0; let unitRadio = document.querySelector('input[name="weeklyUnit"]:checked'); if(unitRadio) harvest.weeklyUnit = unitRadio.value; document.querySelectorAll('.monthVal').forEach(inp => { harvest.monthly[inp.dataset.month] = parseFloat(inp.value)||0; }); } return { crop, area, variety, stage, transplantDate, prodSystem, ...harvest }; }
-    function updateSavedListDisplay() { const container = document.getElementById('savedList'); if(savedGreenhouses.length===0) { container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; return; } container.innerHTML = `<div><strong>Pending (${savedGreenhouses.length})</strong></div>` + savedGreenhouses.map((g,i)=>`<div class="pending-card"><div><i class="fas ${g.crop==='Tomato'?'fa-tomato':(g.crop==='Sweet Pepper'?'fa-pepper-hot':'fa-leaf')} pending-crop-icon"></i> <strong>${g.crop}</strong> | ${g.area} m² | ${g.stage}</div><button class="remove-pending" data-idx="${i}"><i class="fas fa-trash"></i> Remove</button></div>`).join(''); document.querySelectorAll('.remove-pending').forEach(btn => { btn.addEventListener('click', (e) => { let idx = parseInt(btn.dataset.idx); savedGreenhouses.splice(idx,1); updateSavedListDisplay(); }); }); }
-    async function submitAllNewData() { const grower = growerNameInput.value.trim(); const locality = localitySelect.value; const totalAreaVal = parseFloat(totalAreaInput.value); if(!grower || !locality || totalAreaVal<=0 || savedGreenhouses.length===0) { toast("Complete profile and add greenhouses", true); return; } const submitBtn = document.getElementById('submitDataBtn'); const originalText = submitBtn.innerHTML; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...'; submitBtn.disabled = true; try { let rows = []; let counter=1; for(let gh of savedGreenhouses) { let monthlyArr = MONTHS.map(m => gh.monthly?.[m]||0); rows.push([grower, locality, currentZone, totalAreaVal, counter++, gh.crop, gh.variety||'', gh.stage, gh.area, gh.transplantDate||'', gh.weeklyYield||0, '', gh.harvestMonths||0, gh.prodSystem||'Cocopeat', '', ...monthlyArr, gh.weeklyUnit||'kg']); } const response = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'data='+encodeURIComponent(JSON.stringify({ rows })) }); const responseText = await response.text(); if(!response.ok) throw new Error(`HTTP ${response.status}`); toast("✅ Data submitted successfully!"); savedGreenhouses = []; updateSavedListDisplay(); renderActiveForm(); await loadUserPreviousData(grower); await loadDashboard(); if(!isAdmin) await autoFillProfileFromRecords(grower); } catch(e) { toast("❌ Submission failed: "+e.message, true); } finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; } }
-    function toggleGreenhouseSection() { if(greenhouseSectionVisible) { greenhouseSection.classList.add('hidden'); accessTrackerBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Register Greenhouse Details'; } else { if(!growerNameInput.value.trim() || !localitySelect.value || !totalAreaInput.value) { toast("Complete profile first", true); return; } greenhouseSection.classList.remove('hidden'); accessTrackerBtn.innerHTML = '<i class="fas fa-minus-circle"></i> Hide Registration Form'; renderActiveForm(); } greenhouseSectionVisible = !greenhouseSectionVisible; }
-    async function login(username, password) { const errorDiv = document.getElementById('loginError'); errorDiv.innerText = ''; if(!username||!password) { errorDiv.innerText="Enter credentials"; return; } const loginBtn = document.getElementById('loginBtn'); const original = loginBtn.innerHTML; loginBtn.disabled=true; loginBtn.innerHTML='<i class="fas fa-spinner fa-pulse"></i>'; try { const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`); if(!res.ok) throw new Error(); const data = await res.json(); if(!data.success) { errorDiv.innerText="Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; } isAdmin = data.isAdmin===true; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username; if(isAdmin) { adminBadge.classList.remove('hidden'); growerNameInput.value=''; growerNameInput.placeholder='Enter target grower name'; growerNameInput.readOnly=false; totalAreaInput.value=''; localitySelect.value=''; } else { adminBadge.classList.add('hidden'); growerNameInput.readOnly=true; growerNameInput.value=username; updateLocalityDropdown(); await autoFillProfileFromRecords(username); } await loadUserPreviousData(isAdmin?'':username); await loadDashboard(); setAdminSectionsVisibility(isAdmin); loginOverlay.style.display='none'; mainApp.style.display='block'; saveLoginState(username, isAdmin); toast(`Welcome ${username}${isAdmin?' (Admin)':''}!`); } catch(err) { errorDiv.innerText=`Network error: ${err.message}`; } finally { loginBtn.disabled=false; loginBtn.innerHTML=original; } }
-    async function restoreSession() { const { loggedIn, username, admin } = getStoredLogin(); if(loggedIn && username) { isAdmin = admin; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username; if(isAdmin) adminBadge.classList.remove('hidden'); else adminBadge.classList.add('hidden'); if(isAdmin) { growerNameInput.value=''; growerNameInput.placeholder='Enter target grower name'; growerNameInput.readOnly=false; totalAreaInput.value=''; localitySelect.value=''; } else { growerNameInput.readOnly=true; growerNameInput.value=username; updateLocalityDropdown(); await autoFillProfileFromRecords(username); } await loadUserPreviousData(isAdmin?'':username); await loadDashboard(); setAdminSectionsVisibility(isAdmin); loginOverlay.style.display='none'; mainApp.style.display='block'; toast(`Welcome back ${username}${isAdmin?' (Admin)':''}!`); } }
-    
+
+    function openEditModal(row, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices) {
+        document.getElementById('editCrop').value = row[cropIdx] || "";
+        document.getElementById('editStage').value = (row[stageIdx] || "Seedling").toString();
+        document.getElementById('editArea').value = (areaIdx !== -1 ? parseFloat(row[areaIdx]) || 0 : 0);
+        document.getElementById('editVariety').value = row[varietyIdx] || "";
+        document.getElementById('editWeeklyYield').value = weeklyYieldIdx !== -1 ? parseFloat(row[weeklyYieldIdx]) || 0 : 0;
+        document.getElementById('editUnit').value = (weeklyUnitIdx !== -1 && row[weeklyUnitIdx]) ? row[weeklyUnitIdx] : "kg";
+        document.getElementById('editHarvestMonths').value = harvestMonthsIdx !== -1 ? parseFloat(row[harvestMonthsIdx]) || 0 : 0;
+        const rawTimestamp = row[currentEditRecord.timestampIdx] || '—';
+        document.getElementById('editRecordInfo').innerHTML = `<strong>📅 Record timestamp:</strong> ${formatToMauritiusTime(rawTimestamp)}`;
+        const monthVals = monthIndices.map(idx => idx !== -1 ? parseFloat(row[idx]) || 0 : 0);
+        const grid = document.getElementById('editMonthlyGrid');
+        grid.innerHTML = '';
+        MONTHS.forEach((month, idx) => { const div = document.createElement('div'); div.className = 'month-card'; div.innerHTML = `<span style="font-weight:600;">${month.substring(0,3)}</span><input type="number" step="0.01" id="edit_month_${idx}" value="${monthVals[idx].toFixed(2)}">`; grid.appendChild(div); });
+        editModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    async function saveFullRecordUpdate() {
+        if (!currentEditRecord) { toast("No record selected", true); return; }
+        const saveBtn = document.getElementById('saveEditBtn'); const originalHtml = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Saving...'; saveBtn.disabled = true;
+        try {
+            const { row, timestampIdx, stageIdx, cropIdx, areaIdx, varietyIdx, weeklyYieldIdx, weeklyUnitIdx, harvestMonthsIdx, monthIndices } = currentEditRecord;
+            const timestamp = row[timestampIdx];
+            if (!timestamp) { toast("Invalid record timestamp — cannot save", true); return; }
+            const newStage = document.getElementById('editStage').value; const newArea = parseFloat(document.getElementById('editArea').value); const newVariety = document.getElementById('editVariety').value.trim(); const newWeeklyYield = parseFloat(document.getElementById('editWeeklyYield').value) || 0; const newUnit = document.getElementById('editUnit').value; const newHarvestMonths = parseFloat(document.getElementById('editHarvestMonths').value) || 0; let newMonthly = Array(12).fill(0); for (let i = 0; i < 12; i++) newMonthly[i] = parseFloat(document.getElementById(`edit_month_${i}`).value) || 0;
+            if (isNaN(newArea) || newArea < 0) { toast("Area must be a valid positive number", true); return; }
+            const username = growerNameInput.value.trim(); const totalGreenhouseArea = parseFloat(totalAreaInput.value) || 0; const cropName = row[cropIdx] || "";
+            const mainPayload = { action: 'updateFullRecord', username, timestamp, stage: newStage, area: newArea, variety: newVariety, weeklyYield: newWeeklyYield, weeklyUnit: newUnit, harvestMonths: newHarvestMonths, monthly: newMonthly };
+            const mainRes = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify(mainPayload)) });
+            if (!mainRes.ok) throw new Error(`Step 1 HTTP ${mainRes.status}: ${await mainRes.text()}`);
+            let mainResult; try { mainResult = await mainRes.json(); } catch(jsonErr) { throw new Error("Step 1 response not valid JSON"); }
+            if (mainResult && mainResult.error) throw new Error("Step 1 script error: " + mainResult.error);
+            const monthlyEntries = []; for (let i = 0; i < 12; i++) if (newMonthly[i] !== 0 && !isNaN(newMonthly[i])) monthlyEntries.push({ month: MONTHS[i], harvestAmount: newMonthly[i] });
+            if (monthlyEntries.length > 0) {
+                const batchPayload = { action: 'recordMonthlyHarvestBatch', grower: username, crop: cropName, greenhouseArea: totalGreenhouseArea, unit: newUnit, entries: monthlyEntries };
+                const batchRes = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify(batchPayload)) });
+                if (!batchRes.ok) console.warn("CropUpdates batch issue"); else toast("✅ Record updated! Sheet1 & CropUpdates saved.");
+            } else toast("✅ Record updated!");
+            editModal.style.display = 'none'; document.body.style.overflow = '';
+            setTimeout(async () => { await loadUserPreviousData(username); await loadDashboard(); toast("📊 Dashboard refreshed."); }, 2000);
+        } catch(e) { toast("❌ Save failed: " + e.message, true); }
+        finally { saveBtn.innerHTML = originalHtml; saveBtn.disabled = false; }
+    }
+async function toggleCycleStatus(timestamp) {
+    const username = growerNameInput.value.trim();
+    const payload = {
+        action: 'toggleCycleStatus',
+        username: username,
+        timestamp: timestamp
+    };
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify(payload))
+        });
+        const result = await response.json();
+        if (result.success) {
+            const newStatus = result.newStatus;
+            const bulbText = newStatus === "Active" ? "💡" : "🔘";
+            // Find the clicked button and update its text
+            const btn = event.currentTarget;
+            btn.innerHTML = bulbText;
+            toast(`Cycle marked as ${newStatus}. Dashboard will update.`);
+            // Optionally refresh dashboard after a short delay
+            setTimeout(() => refreshFullData(), 1000);
+        } else {
+            toast("Toggle failed: " + result.error, true);
+        }
+    } catch(e) {
+        toast("Network error: " + e.message, true);
+    }
+}
+    async function logAreaUpdate() {
+        const username = growerNameInput.value.trim(); const locality = localitySelect.value; const currentArea = parseFloat(totalAreaInput.value) || 0; let newArea = prompt("Enter new total greenhouse area (m²):", currentArea); if (newArea === null) return; newArea = parseFloat(newArea); if (isNaN(newArea) || newArea <= 0) { toast("Invalid area value", true); return; } const updateBtn = document.getElementById('updateAreaBtn'); const originalText = updateBtn.innerHTML; updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i>'; updateBtn.disabled = true; try { const payload = { action: 'logAreaUpdate', username, currentArea, newArea, locality }; const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify(payload)) }); if (!response.ok) throw new Error(await response.text()); totalAreaInput.value = newArea; toast("✅ Area updated successfully!"); } catch(e) { toast("Error: " + e.message, true); } finally { updateBtn.innerHTML = originalText; updateBtn.disabled = false; }
+    }
+
+    // FIXED: autoFillProfileFromRecords sets zone FIRST then locality
+    async function autoFillProfileFromRecords(username) {
+        if (isAdmin) return;
+        try {
+            const dataRes = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+            if (!dataRes.ok) throw new Error("Failed to fetch user data");
+            const data = await dataRes.json();
+            if (data.rows && data.rows.length > 0) {
+                const headers = data.headers.map(h => h.toString().toLowerCase());
+                // 1. Find zone and locality values from the most recent record (first row)
+                const zoneCol = headers.findIndex(h => h === 'zone');
+                let zoneFromRecord = null;
+                if (zoneCol !== -1 && data.rows[0][zoneCol]) zoneFromRecord = data.rows[0][zoneCol];
+                
+                const localityCol = headers.findIndex(h => h.includes('locality') || h === 'location');
+                let localityFromRecord = null;
+                if (localityCol !== -1 && data.rows[0][localityCol]) localityFromRecord = data.rows[0][localityCol];
+                
+                // 2. Set zone FIRST (this rebuilds the locality dropdown with correct options)
+                if (zoneFromRecord && ZONE_LOCALITIES[zoneFromRecord]) {
+                    setZone(zoneFromRecord);
+                } else {
+                    // Keep current zone (default E2) but ensure dropdown is populated
+                    updateLocalityDropdown();
+                }
+                
+                // 3. Now set locality value (dropdown already has the correct options)
+                if (localityFromRecord && localitySelect.querySelector(`option[value="${localityFromRecord}"]`)) {
+                    localitySelect.value = localityFromRecord;
+                }
+                
+                // 4. Handle total area (unchanged)
+                const profRes = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+                let totalArea = 0;
+                if (profRes.ok) { const prof = await profRes.json(); if (prof.totalArea && !isNaN(parseFloat(prof.totalArea)) && parseFloat(prof.totalArea) > 0) totalArea = parseFloat(prof.totalArea); }
+                if (totalArea === 0) { const areaIdx = headers.findIndex(h => h.includes('area (m²)') || h.includes('area (m2)') || h === 'area'); if (areaIdx !== -1) { let sumArea = 0; for (let row of data.rows) { let a = parseFloat(row[areaIdx]); if (!isNaN(a)) sumArea += a; } totalArea = sumArea; } }
+                if (totalArea > 0) totalAreaInput.value = totalArea; else totalAreaInput.value = '';
+            } else {
+                // No records – keep defaults
+                updateLocalityDropdown();
+                totalAreaInput.value = '';
+            }
+        } catch (e) { console.warn("Auto-fill failed", e); }
+    }
+
+    async function refreshFullData() {
+        const refreshBtn = document.getElementById('refreshProfileBtn'); const originalText = refreshBtn.innerHTML; refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Refreshing...'; refreshBtn.classList.add('btn-loading'); const user = growerNameInput.value.trim(); if (user) { await loadUserPreviousData(user); await loadDashboard(); if (!isAdmin) await autoFillProfileFromRecords(user); toast("📊 Dashboard & records refreshed"); } else { toast("No active user", true); } refreshBtn.innerHTML = originalText; refreshBtn.classList.remove('btn-loading');
+    }
+
+    // Greenhouse form handling (full original)
+    function renderActiveForm() {
+        const cropOptions = EXTENDED_CROPS.map(c => `<option value="${c}">${c}</option>`).join('');
+        const stageOptions = STAGES.map(s => `<option value="${s}">${s}</option>`).join('');
+        const prodSysOptions = PROD_SYSTEMS.map(s => `<option value="${s}">${s}</option>`).join('');
+        document.getElementById('activeGreenhouseForm').innerHTML = `
+            <div class="grid-2col">
+                <div><label><i class="fas fa-seedling"></i> Crop *</label><select id="cropSelect">${cropOptions}</select></div>
+                <div><label><i class="fas fa-vector-square"></i> Area (m²) *</label><input type="number" step="0.01" id="areaInput" placeholder="e.g., 120"></div>
+                <div><label><i class="fas fa-tag"></i> Variety</label><input type="text" id="varietyInput" placeholder="specific variety"></div>
+                <div><label><i class="fas fa-chart-line"></i> Stage *</label><select id="stageSelect">${stageOptions}</select></div>
+                <div><label><i class="fas fa-calendar-alt"></i> Transplant Date</label><input type="date" id="transplantDate"></div>
+                <div><label><i class="fas fa-industry"></i> Production System</label><select id="prodSystemSelect">${prodSysOptions}</select></div>
+            </div>
+            <div id="tomatoTypeContainer"></div>
+            <div id="dynamicHarvestDetails"></div>
+        `;
+        const cropSelect = document.getElementById('cropSelect'), varietyInput = document.getElementById('varietyInput'), tomatoContainer = document.getElementById('tomatoTypeContainer');
+        const updateTomatoType = () => {
+            if (cropSelect.value === 'Tomato') {
+                tomatoContainer.innerHTML = `<div class="tomato-type-row"><label>🍅 Tomato Type: </label><select id="tomatoTypeSelect"><option value="Cooking">Cooking</option><option value="Salad">Salad</option><option value="Cherry">Cherry</option></select> <small>(auto-fills variety)</small></div>`;
+                const tomatoSelect = document.getElementById('tomatoTypeSelect');
+                tomatoSelect.addEventListener('change', () => { varietyInput.value = tomatoSelect.value; });
+                if (varietyInput.value && ["Cooking","Salad","Cherry"].includes(varietyInput.value)) tomatoSelect.value = varietyInput.value; else varietyInput.value = tomatoSelect.value;
+            } else { tomatoContainer.innerHTML = ''; }
+        };
+        cropSelect.addEventListener('change', updateTomatoType);
+        updateTomatoType();
+        const stageSel = document.getElementById('stageSelect');
+        const updateHarvestFields = () => {
+            const stage = stageSel.value; const harvestDiv = document.getElementById('dynamicHarvestDetails');
+            if (stage !== 'Harvesting') { harvestDiv.innerHTML = ''; return; }
+            harvestDiv.innerHTML = `<div style="margin-top:1rem;"><h4>Harvest Details</h4><div class="grid-2col"><div><label>Avg Weekly Yield</label><input type="number" step="0.01" id="weeklyYield"></div><div><label>Harvesting Months (duration)</label><input type="number" step="0.5" id="harvestMonths"></div></div><div><label>Unit: <input type="radio" name="weeklyUnit" value="kg" checked> kg/week <input type="radio" name="weeklyUnit" value="crates"> crates/week</label></div><div><label>Monthly Harvest</label><div id="monthGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem;"></div></div></div>`;
+            const grid = document.getElementById('monthGrid');
+            if (grid) grid.innerHTML = MONTHS.map(m => `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" class="monthVal" data-month="${m}" value="0"></div>`).join('');
+        };
+        stageSel.addEventListener('change', updateHarvestFields);
+        updateHarvestFields();
+    }
+
+    function getCurrentFormData() {
+        let crop = document.getElementById('cropSelect')?.value, area = parseFloat(document.getElementById('areaInput')?.value) || 0, variety = document.getElementById('varietyInput')?.value || '', stage = document.getElementById('stageSelect')?.value, transplantDate = document.getElementById('transplantDate')?.value || '', prodSystem = document.getElementById('prodSystemSelect')?.value || '', harvest = { weeklyYield:0, harvestMonths:0, weeklyUnit:'kg', monthly:{} };
+        if (stage === 'Harvesting') {
+            harvest.weeklyYield = parseFloat(document.getElementById('weeklyYield')?.value) || 0;
+            harvest.harvestMonths = parseFloat(document.getElementById('harvestMonths')?.value) || 0;
+            let unitRadio = document.querySelector('input[name="weeklyUnit"]:checked');
+            if (unitRadio) harvest.weeklyUnit = unitRadio.value;
+            document.querySelectorAll('.monthVal').forEach(inp => { harvest.monthly[inp.dataset.month] = parseFloat(inp.value) || 0; });
+        }
+        return { crop, area, variety, stage, transplantDate, prodSystem, ...harvest };
+    }
+
+    function saveCurrentGreenhouse() {
+        let data = getCurrentFormData(); if (!data.crop || data.area <= 0) { toast("Crop and area >0 required", true); return; } if (data.stage === 'Harvesting' && (data.weeklyYield <= 0 || data.harvestMonths <= 0)) { toast("Harvest details required", true); return; } savedGreenhouses.push({ ...data, id: Date.now() }); updateSavedListDisplay(); renderActiveForm(); toast(`Added: ${data.crop} (${data.area} m²)`);
+    }
+    function updateSavedListDisplay() {
+        const container = document.getElementById('savedList'); if (savedGreenhouses.length === 0) { container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; return; } container.innerHTML = `<div><strong>Pending (${savedGreenhouses.length})</strong></div>` + savedGreenhouses.map((g,i)=>`<div class="pending-card"><div><i class="fas ${g.crop === 'Tomato' ? 'fa-tomato' : (g.crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} pending-crop-icon"></i> <strong>${g.crop}</strong> | ${g.area} m² | ${g.stage}</div><button class="remove-pending" data-idx="${i}"><i class="fas fa-trash"></i> Remove</button></div>`).join('');
+        document.querySelectorAll('.remove-pending').forEach(btn => { btn.addEventListener('click', (e) => { let idx = parseInt(btn.dataset.idx); savedGreenhouses.splice(idx,1); updateSavedListDisplay(); }); });
+    }
+    async function submitAllNewData() {
+        const grower = growerNameInput.value.trim(); const locality = localitySelect.value; const totalAreaVal = parseFloat(totalAreaInput.value); if (!grower || !locality || totalAreaVal <= 0 || savedGreenhouses.length === 0) { toast("Complete profile (grower name, locality, area) & add greenhouses", true); return; } const submitBtn = document.getElementById('submitDataBtn'); const originalText = submitBtn.innerHTML; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...'; submitBtn.disabled = true; try { let rows = []; let counter = 1; for (let gh of savedGreenhouses) { let monthlyArr = MONTHS.map(m => gh.monthly?.[m] || 0); rows.push([grower, locality, currentZone, totalAreaVal, counter++, gh.crop, gh.variety || '', gh.stage, gh.area, gh.transplantDate || '', gh.weeklyYield || 0, '', gh.harvestMonths || 0, gh.prodSystem || 'Cocopeat', '', ...monthlyArr, gh.weeklyUnit || 'kg']); } const response = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify({ rows })) }); const responseText = await response.text(); if (!response.ok) throw new Error(`HTTP ${response.status}: ${responseText.substring(0, 200)}`); toast("✅ Data submitted successfully!"); savedGreenhouses = []; updateSavedListDisplay(); renderActiveForm(); await loadUserPreviousData(grower); await loadDashboard(); if (!isAdmin) await autoFillProfileFromRecords(grower); } catch (e) { toast("❌ Submission failed: " + e.message, true); } finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; }
+    }
+    function toggleGreenhouseSection() {
+        if (greenhouseSectionVisible) { greenhouseSection.classList.add('hidden'); accessTrackerBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Register Greenhouse Details'; } else { if (!growerNameInput.value.trim() || !localitySelect.value || !totalAreaInput.value) { toast("Complete profile (grower name, locality & area) first", true); return; } greenhouseSection.classList.remove('hidden'); accessTrackerBtn.innerHTML = '<i class="fas fa-minus-circle"></i> Hide Registration Form'; renderActiveForm(); } greenhouseSectionVisible = !greenhouseSectionVisible;
+    }
+
+    // Login flow
+    async function login(username, password) {
+        const errorDiv = document.getElementById('loginError'); errorDiv.innerText = ''; if (!username || !password) { errorDiv.innerText = "Enter credentials"; return; }
+        const loginBtn = document.getElementById('loginBtn'); const original = loginBtn.innerHTML; loginBtn.disabled = true; loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data.success) { errorDiv.innerText = "Invalid login"; loginBtn.disabled=false; loginBtn.innerHTML=original; return; }
+            isAdmin = data.isAdmin === true; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username;
+            if (isAdmin) { adminBadge.classList.remove('hidden'); growerNameInput.value = ''; growerNameInput.placeholder = 'Enter target grower name'; growerNameInput.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerNameInput.readOnly = true; growerNameInput.value = username; updateLocalityDropdown(); await autoFillProfileFromRecords(username); }
+            await loadUserPreviousData(isAdmin ? '' : username); await loadDashboard(); setAdminSectionsVisibility(isAdmin);
+            loginOverlay.style.display = 'none'; mainApp.style.display = 'block'; saveLoginState(username, isAdmin); toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}!`);
+        } catch (err) { errorDiv.innerText = `Network error: ${err.message}`; console.error(err); } finally { loginBtn.disabled=false; loginBtn.innerHTML=original; }
+    }
+
+    async function restoreSession() {
+        const { loggedIn, username, admin } = getStoredLogin();
+        if (loggedIn && username) {
+            isAdmin = admin; currentLoggedInUser = username; loggedInUsernameSpan.innerText = username;
+            if (isAdmin) { adminBadge.classList.remove('hidden'); growerNameInput.value = ''; growerNameInput.placeholder = 'Enter target grower name'; growerNameInput.readOnly = false; totalAreaInput.value = ''; localitySelect.value = ''; } else { adminBadge.classList.add('hidden'); growerNameInput.readOnly = true; growerNameInput.value = username; await autoFillProfileFromRecords(username); }
+            await loadUserPreviousData(isAdmin ? '' : username); await loadDashboard(); setAdminSectionsVisibility(isAdmin);
+            loginOverlay.style.display = 'none'; mainApp.style.display = 'block'; toast(`Welcome back ${username}${isAdmin ? ' (Admin)' : ''}!`, false);
+        }
+    }
+
     // Event listeners
     document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => { if(e.key==='Enter') login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value); });
-    logoutBtn.onclick = () => { clearLoginState(); mainApp.style.display='none'; loginOverlay.style.display='flex'; savedGreenhouses=[]; isAdmin=false; greenhouseSectionVisible=false; toast("Logged out"); };
-    refreshPageBtn.onclick = () => location.reload();
+    logoutBtn.onclick = () => { clearLoginState(); mainApp.style.display = 'none'; loginOverlay.style.display = 'flex'; savedGreenhouses = []; isAdmin = false; greenhouseSectionVisible = false; toast("Logged out"); };
+    refreshPageBtn.onclick = () => { window.location.reload(); };
     accessTrackerBtn.onclick = toggleGreenhouseSection;
     addGreenhouseBtn.onclick = saveCurrentGreenhouse;
     submitDataBtn.onclick = submitAllNewData;
     updateAreaBtn.onclick = logAreaUpdate;
     refreshProfileBtn.onclick = refreshFullData;
-    cancelEditBtn.onclick = () => { editModal.style.display='none'; document.body.style.overflow=''; };
+    cancelEditBtn.onclick = () => { editModal.style.display = 'none'; document.body.style.overflow = ''; };
     saveEditBtn.onclick = saveFullRecordUpdate;
-    window.onclick = (e) => { if(e.target === editModal) { editModal.style.display='none'; document.body.style.overflow=''; } };
-    function initFilters() { const stageAreaBtns = document.querySelectorAll('#stageAreaButtons .crop-filter-btn'); stageAreaBtns.forEach(btn => btn.addEventListener('click', () => { stageAreaBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentStageAreaFilter = btn.dataset.crop; if(dashboardStats) renderAreaByStage(dashboardStats, currentStageAreaFilter); else loadDashboard().then(()=>renderAreaByStage(dashboardStats, currentStageAreaFilter)); })); const timelineBtns = document.querySelectorAll('#timelineCropButtons .crop-filter-btn'); timelineBtns.forEach(btn => btn.addEventListener('click', () => { timelineBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentTimelineCrop = btn.dataset.crop; loadTimelineChart(currentTimelineCrop); })); const forecastBtns = document.querySelectorAll('#forecastCropButtons .forecast-btn'); forecastBtns.forEach(btn => btn.addEventListener('click', () => { forecastBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentForecastCrop = btn.dataset.crop; loadForecastChart(currentForecastCrop); })); const zoneBtnsContainer = document.getElementById('zoneEfficiencyButtons'); const zones = Object.keys(ZONE_LOCALITIES); zoneBtnsContainer.innerHTML = zones.map(z => `<button data-zone="${z}" class="zone-efficiency-btn ${z===currentZoneEfficiency?'active':''}">Zone ${z}</button>`).join(''); document.querySelectorAll('.zone-efficiency-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.zone-efficiency-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentZoneEfficiency = btn.dataset.zone; loadZonalEfficiency(currentZoneEfficiency); }); }); }
-    const resetTimelineBtn = document.getElementById('resetTimelineTodayBtn');
-    if(resetTimelineBtn) resetTimelineBtn.addEventListener('click', resetTimelineToday);
+    window.onclick = (e) => { if(e.target === editModal) { editModal.style.display = 'none'; document.body.style.overflow = ''; } };
+
+    function initFilters() {
+        const stageAreaBtns = document.querySelectorAll('#stageAreaButtons .crop-filter-btn');
+        stageAreaBtns.forEach(btn => btn.addEventListener('click', () => { stageAreaBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentStageAreaFilter = btn.dataset.crop; if (dashboardStats) renderAreaByStage(dashboardStats, currentStageAreaFilter); else loadDashboard().then(() => renderAreaByStage(dashboardStats, currentStageAreaFilter)); }));
+        const timelineBtns = document.querySelectorAll('#timelineCropButtons .crop-filter-btn');
+        timelineBtns.forEach(btn => btn.addEventListener('click', () => { timelineBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentTimelineCrop = btn.dataset.crop; loadTimelineChart(currentTimelineCrop); }));
+        const forecastBtns = document.querySelectorAll('#forecastCropButtons .forecast-btn');
+        forecastBtns.forEach(btn => btn.addEventListener('click', () => { forecastBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentForecastCrop = btn.dataset.crop; loadForecastChart(currentForecastCrop); }));
+        const zoneBtnsContainer = document.getElementById('zoneEfficiencyButtons'); const zones = Object.keys(ZONE_LOCALITIES);
+        zoneBtnsContainer.innerHTML = zones.map(z => `<button data-zone="${z}" class="zone-efficiency-btn ${z === currentZoneEfficiency ? 'active' : ''}">Zone ${z}</button>`).join('');
+        document.querySelectorAll('.zone-efficiency-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.zone-efficiency-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentZoneEfficiency = btn.dataset.zone; loadZonalEfficiency(currentZoneEfficiency); }); });
+    }
+
     initZoneHeader(); updateLocalityDropdown(); greenhouseSection.classList.add('hidden'); initFilters(); restoreSession();
 </script>
 </body>
