@@ -442,6 +442,7 @@
             <div class="admin-tabs">
                 <button class="admin-tab-btn active" data-tab="searchTab"><i class="fas fa-search"></i> Search Grower Records</button>
                 <button class="admin-tab-btn" data-tab="registerTab"><i class="fas fa-user-plus"></i> Register New User</button>
+                <button class="admin-tab-btn" data-tab="adminGHTab"><i class="fas fa-seedling"></i> Register Greenhouse Details</button>
             </div>
 
             <!-- TAB: Search Grower -->
@@ -545,6 +546,41 @@
                 <div id="recentRegUsersWrap" class="hidden">
                     <div class="section-divider"><span>RECENTLY REGISTERED THIS SESSION</span></div>
                     <div id="recentRegUsersList" class="registered-users-list"></div>
+                </div>
+            </div>
+
+            <!-- TAB: Admin Register Greenhouse -->
+            <div id="adminGHTab" class="admin-tab-content">
+                <div class="register-grower-title">
+                    <i class="fas fa-seedling" style="color:var(--green-600);"></i>
+                    Register New Greenhouse Crop (Admin)
+                </div>
+                <!-- Admin grower selector -->
+                <div class="register-grid" style="margin-bottom:0.9rem;">
+                    <div class="form-group">
+                        <label>Grower Username *</label>
+                        <input type="text" id="adminGH_grower" placeholder="Enter grower username">
+                    </div>
+                    <div class="form-group">
+                        <label>Locality</label>
+                        <select id="adminGH_locality">
+                            <option value="">-- Select Locality --</option>
+                            ${Object.values(ZONE_LOCALITIES).flat().sort().map(l=>`<option value="${l}">${l}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Greenhouse Area (m²)</label>
+                        <input type="number" id="adminGH_totalArea" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="greenhouse-section-inner">
+                    <div id="adminGHForm"></div>
+                    <div class="greenhouse-actions">
+                        <button onclick="saveCurrentGreenhouse('adminGHForm')" class="btn"><i class="fas fa-plus-circle"></i> Add to List</button>
+                        <button onclick="submitAdminGHData()" class="btn" style="background:linear-gradient(100deg,var(--teal),#2e9b74);"><i class="fas fa-cloud-upload-alt"></i> Submit All Data</button>
+                        <button onclick="clearAdminGHQueue()" class="btn-secondary"><i class="fas fa-times"></i> Clear</button>
+                    </div>
+                    <div id="adminSavedList" style="margin-top:1rem;"></div>
                 </div>
             </div>
         </div>
@@ -688,7 +724,9 @@ const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
 const ZONE_LOCALITIES = {
     "E2": ["Balance John","Beau Bois","Bel Etang","Belvédère","Bon Accueil","Bonne Mere","Brisée Verdière","Camp de Masque","Camp Thorel","Fuel","Gaulettes Serrées","Gibraltar","Grand Bas Fond","Lallmatie","Latapie","L'Unité","Médine Camp de Masque","Melrose","Mission Cross Rd","Mont Ida","Montagne Blanche","Pellegrin","Petit Paquet","Pont Bon Dieu","Providence","Quatre Bords","Queen Victoria","Riche Fond","Salazie","Salazie Rd","Sans Soucis","St Julien d'Hotman","St Julien Village"]
 };
-const CROPS = ["Tomato","Sweet Pepper","English Cucumber"];
+const CROPS = ["Cabbage","Cauliflower","Eggplant","English Cucumber","Greens","Lettuce","Melon","Okra","Shallot","Sweet Pepper","Tomato"];
+const TOMATO_TYPES = ["Cooking","Salad","Cherry"];
+const SUBSTRATE_TYPES = ["Cocopeat","Sand","Aggregates","NFT","DFT","Aquaponics"];
 
 // ==================== STATE ====================
 let currentZone = "E2";
@@ -1021,14 +1059,12 @@ function renderRecentRegistrations() {
 async function loadActiveMemberCount() {
     try {
         const res = await fetch(`${SCRIPT_URL}?action=getActiveMemberCount&_=${Date.now()}`);
-        if (!res.ok) return;
+        if (!res.ok) { document.getElementById('activeMemberCount').textContent = 'N/A'; return; }
         const data = await res.json();
         const count = data.count ?? data.activeMemberCount ?? data.memberCount ?? null;
-        if (count !== null) {
-            document.getElementById('activeMemberCount').textContent = count;
-        }
+        document.getElementById('activeMemberCount').textContent = (count !== null) ? count : 'N/A';
     } catch(e) {
-        // Silently fail — show dash
+        document.getElementById('activeMemberCount').textContent = 'N/A';
     }
 }
 
@@ -1165,46 +1201,119 @@ async function saveFullRecordUpdate() {
 }
 
 // ==================== GREENHOUSE FORM ====================
-function renderActiveForm() {
-    document.getElementById('activeGreenhouseForm').innerHTML = `
+function renderActiveForm(containerId) {
+    const target = containerId || 'activeGreenhouseForm';
+    document.getElementById(target).innerHTML = `
         <div class="grid-2col">
+            <div class="form-group"><label>GH Number</label>
+                <input type="text" id="ghNumberInput_${target}" placeholder="e.g. GH-01">
+            </div>
             <div class="form-group"><label>Crop *</label>
-                <select id="cropSelect">
+                <select id="cropSelect_${target}" onchange="onCropChange('${target}')">
                     <option value="">-- Select Crop --</option>
                     ${CROPS.map(c=>`<option value="${c}">${c}</option>`).join('')}
                 </select>
             </div>
-            <div class="form-group"><label>Variety</label><input type="text" id="varietyInput" placeholder="e.g. Fabiola, Starlite"></div>
-            <div class="form-group"><label>Area (m²) *</label><input type="number" id="areaInput" step="0.01" min="0.01" placeholder="0.00"></div>
+            <div class="form-group" id="tomatoTypeRow_${target}" style="display:none;"><label>Tomato Type</label>
+                <select id="tomatoTypeInput_${target}">
+                    <option value="">-- Select Type --</option>
+                    ${TOMATO_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}
+                </select>
+            </div>
+            <div class="form-group"><label>Variety</label>
+                <input type="text" id="varietyInput_${target}" placeholder="e.g. Fabiola, Starlite">
+            </div>
+            <div class="form-group"><label>Area (m²) *</label>
+                <input type="number" id="areaInput_${target}" step="0.01" min="0.01" placeholder="0.00">
+            </div>
             <div class="form-group"><label>Stage</label>
-                <select id="stageInput">
+                <select id="stageInput_${target}" onchange="onStageChange('${target}')">
                     ${STAGES.map(s=>`<option>${s}</option>`).join('')}
                 </select>
             </div>
-            <div class="form-group"><label>Weekly Yield (kg)</label><input type="number" id="weeklyYieldInput" step="0.01" min="0" placeholder="0.00"></div>
-            <div class="form-group"><label>Harvest Duration (months)</label><input type="number" id="harvestMonthsInput" step="0.5" min="0" placeholder="0"></div>
+            <div class="form-group"><label>Production System (Substrate)</label>
+                <select id="substrateInput_${target}">
+                    <option value="">-- Select --</option>
+                    ${SUBSTRATE_TYPES.map(s=>`<option value="${s}">${s}</option>`).join('')}
+                </select>
+            </div>
+            <div class="form-group"><label>Date Transplanted</label>
+                <input type="date" id="dateTrans_${target}">
+            </div>
+            <div class="form-group"><label>Weekly Yield</label>
+                <input type="number" id="weeklyYieldInput_${target}" step="0.01" min="0" placeholder="0.00">
+            </div>
+            <div class="form-group"><label>Yield Unit</label>
+                <select id="yieldUnitInput_${target}">
+                    <option value="kg/week">kg/week</option>
+                    <option value="crates/week">crates/week</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Avg Yield Per Month</label>
+                <input type="number" id="avgYieldPerMonthInput_${target}" step="0.01" min="0" placeholder="0.00">
+            </div>
+            <div class="form-group"><label>Harvest Duration (months)</label>
+                <input type="number" id="harvestMonthsInput_${target}" step="0.5" min="0" placeholder="0">
+            </div>
+        </div>
+        <div id="monthlyHarvestSection_${target}" style="display:none;margin-top:1rem;">
+            <div class="modal-section-title"><i class="fas fa-calendar-alt"></i> Monthly Harvest Yield (kg) — Jan to Dec</div>
+            <div class="update-grid">
+                ${MONTHS.map((m,i)=>`<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" id="month_${i}_${target}" placeholder="0"></div>`).join('')}
+            </div>
         </div>`;
 }
 
-function getCurrentFormData() {
+function onCropChange(target) {
+    const crop = document.getElementById(`cropSelect_${target}`)?.value;
+    const tomatoRow = document.getElementById(`tomatoTypeRow_${target}`);
+    if (tomatoRow) tomatoRow.style.display = (crop === 'Tomato') ? '' : 'none';
+}
+
+function onStageChange(target) {
+    const stage = document.getElementById(`stageInput_${target}`)?.value;
+    const monthSec = document.getElementById(`monthlyHarvestSection_${target}`);
+    if (monthSec) monthSec.style.display = (stage === 'Harvesting') ? '' : 'none';
+}
+
+function getCurrentFormData(target) {
+    target = target || 'activeGreenhouseForm';
+    const monthly = MONTHS.map((_,i) => parseFloat(document.getElementById(`month_${i}_${target}`)?.value)||0);
     return {
-        crop: document.getElementById('cropSelect')?.value||'',
-        variety: document.getElementById('varietyInput')?.value||'',
-        area: parseFloat(document.getElementById('areaInput')?.value)||0,
-        stage: document.getElementById('stageInput')?.value||'Seedling',
-        weeklyYield: parseFloat(document.getElementById('weeklyYieldInput')?.value)||0,
-        harvestMonths: parseFloat(document.getElementById('harvestMonthsInput')?.value)||0
+        ghNumber:        document.getElementById(`ghNumberInput_${target}`)?.value||'',
+        crop:            document.getElementById(`cropSelect_${target}`)?.value||'',
+        tomatoType:      document.getElementById(`tomatoTypeInput_${target}`)?.value||'',
+        variety:         document.getElementById(`varietyInput_${target}`)?.value||'',
+        area:            parseFloat(document.getElementById(`areaInput_${target}`)?.value)||0,
+        stage:           document.getElementById(`stageInput_${target}`)?.value||'Seedling',
+        substrate:       document.getElementById(`substrateInput_${target}`)?.value||'',
+        dateTrans:       document.getElementById(`dateTrans_${target}`)?.value||'',
+        weeklyYield:     parseFloat(document.getElementById(`weeklyYieldInput_${target}`)?.value)||0,
+        yieldUnit:       document.getElementById(`yieldUnitInput_${target}`)?.value||'kg/week',
+        avgYieldPerMonth:parseFloat(document.getElementById(`avgYieldPerMonthInput_${target}`)?.value)||0,
+        harvestMonths:   parseFloat(document.getElementById(`harvestMonthsInput_${target}`)?.value)||0,
+        monthly:         monthly
     };
 }
 
-function saveCurrentGreenhouse() {
-    const d = getCurrentFormData();
+function saveCurrentGreenhouse(target) {
+    target = target || 'activeGreenhouseForm';
+    const d = getCurrentFormData(target);
     if (!d.crop) { toast('Select a crop', true); return; }
     if (!d.area||d.area<=0) { toast('Enter a valid area (m²)', true); return; }
     savedGreenhouses.push(d);
     updateSavedListDisplay();
     toast(`Added: ${d.crop} — ${d.area} m²`);
-    ['cropSelect','varietyInput','areaInput','weeklyYieldInput','harvestMonthsInput'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    // Reset key fields
+    ['ghNumberInput','cropSelect','tomatoTypeInput','varietyInput','areaInput','weeklyYieldInput','avgYieldPerMonthInput','harvestMonthsInput','dateTrans','substrateInput'].forEach(base => {
+        const el = document.getElementById(`${base}_${target}`);
+        if (el) el.value = '';
+    });
+    const tRow = document.getElementById(`tomatoTypeRow_${target}`);
+    if (tRow) tRow.style.display='none';
+    const mSec = document.getElementById(`monthlyHarvestSection_${target}`);
+    if (mSec) mSec.style.display='none';
+    MONTHS.forEach((_,i)=>{ const el=document.getElementById(`month_${i}_${target}`); if(el) el.value=''; });
 }
 
 function updateSavedListDisplay() {
@@ -1213,7 +1322,8 @@ function updateSavedListDisplay() {
     list.innerHTML = `<div style="font-weight:700;font-size:0.88rem;color:#555;margin-bottom:0.5rem;"><i class="fas fa-list"></i> Queued for submission (${savedGreenhouses.length})</div>` +
         savedGreenhouses.map((g,i) => `
             <div class="saved-item">
-                <span class="saved-item-info"><i class="fas fa-seedling" style="color:var(--green-600);"></i> ${g.crop} | ${g.stage} | ${g.area} m² | ${g.variety||'—'} | ${g.weeklyYield} kg/wk</span>
+                <span class="saved-item-info"><i class="fas fa-seedling" style="color:var(--green-600);"></i>
+                ${g.ghNumber?`[${g.ghNumber}] `:''}<strong>${g.crop}</strong>${g.tomatoType?` (${g.tomatoType})`:''} | ${g.stage} | ${g.area} m² | ${g.variety||'—'} | ${g.weeklyYield} ${g.yieldUnit||'kg/week'} | ${g.substrate||'—'}</span>
                 <button class="remove-saved-btn" onclick="savedGreenhouses.splice(${i},1);updateSavedListDisplay()"><i class="fas fa-times"></i> Remove</button>
             </div>`).join('');
 }
@@ -1222,12 +1332,46 @@ async function submitAllNewData() {
     if (!savedGreenhouses.length) { toast('No greenhouses queued for submission', true); return; }
     const username = document.getElementById('growerName').value.trim();
     if (!username) { toast('Grower name is required', true); return; }
+    const localityVal = document.getElementById('localitySelect')?.value||'';
+    const totalAreaVal = parseFloat(document.getElementById('totalArea')?.value)||0;
     const btn = document.getElementById('submitDataBtn');
     const origHTML = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
     try {
-        const payload = { action:'submitGreenhouseData', username, data: savedGreenhouses, timestamp: new Date().toISOString() };
+        // Build rows in sheet column order (cols B–AD)
+        const rows = savedGreenhouses.map(g => ({
+            growerName:       username,          // col B
+            locality:         localityVal,        // col C
+            zone:             currentZone,        // col D
+            totalGHArea:      totalAreaVal,       // col E
+            ghNumber:         g.ghNumber,         // col F
+            crop:             g.crop,             // col G
+            variety:          g.variety,          // col H
+            cropStage:        g.stage,            // col I
+            area:             g.area,             // col J
+            dateTrans:        g.dateTrans,        // col K
+            weeklyYield:      g.weeklyYield,      // col L
+            avgYieldPerMonth: g.avgYieldPerMonth, // col M
+            harvestMonths:    g.harvestMonths,    // col N
+            substrate:        g.substrate,        // col O
+            tomatoType:       g.tomatoType,       // col P
+            january:          g.monthly[0],       // col Q
+            february:         g.monthly[1],       // col R
+            march:            g.monthly[2],       // col S
+            april:            g.monthly[3],       // col T
+            may:              g.monthly[4],       // col U
+            june:             g.monthly[5],       // col V
+            july:             g.monthly[6],       // col W
+            august:           g.monthly[7],       // col X
+            september:        g.monthly[8],       // col Y
+            october:          g.monthly[9],       // col Z
+            november:         g.monthly[10],      // col AA
+            december:         g.monthly[11],      // col AB
+            yieldUnit:        g.yieldUnit,        // col AC
+            cycleStatus:      'Active'            // col AD
+        }));
+        const payload = { action:'submitGreenhouseData', username, data: rows, timestamp: new Date().toISOString() };
         await fetch(SCRIPT_URL, {
             method:'POST', mode:'no-cors',
             headers:{'Content-Type':'application/x-www-form-urlencoded'},
@@ -1238,7 +1382,7 @@ async function submitAllNewData() {
         document.getElementById('greenhouseSection').classList.add('hidden');
         await loadDashboard();
         await loadUserPreviousData(username);
-        toast('✅ All greenhouse data submitted!');
+        toast('✅ All greenhouse data submitted to Sheet 1!');
     } catch(e) { toast('Submit failed: '+e.message, true); }
     finally { btn.disabled=false; btn.innerHTML=origHTML; }
 }
@@ -1246,7 +1390,7 @@ async function submitAllNewData() {
 function toggleGreenhouseSection() {
     const sec = document.getElementById('greenhouseSection');
     const isHidden = sec.classList.contains('hidden');
-    if (isHidden) { renderActiveForm(); sec.classList.remove('hidden'); }
+    if (isHidden) { renderActiveForm('activeGreenhouseForm'); sec.classList.remove('hidden'); }
     else sec.classList.add('hidden');
 }
 
@@ -1358,7 +1502,30 @@ async function autoFillProfileFromRecords(username) {
         if (res.ok) {
             const data = await res.json();
             if (data.totalArea) document.getElementById('totalArea').value = data.totalArea;
-            if (data.locality) document.getElementById('localitySelect').value = data.locality;
+            if (data.locality) {
+                // Ensure locality is in dropdown, add if missing
+                const sel = document.getElementById('localitySelect');
+                if (sel) {
+                    let found = Array.from(sel.options).some(o => o.value === data.locality);
+                    if (!found) {
+                        const opt = document.createElement('option');
+                        opt.value = opt.textContent = data.locality;
+                        sel.appendChild(opt);
+                    }
+                    sel.value = data.locality;
+                }
+            }
+            if (data.zone) {
+                currentZone = data.zone;
+                updateLocalityDropdown();
+                // Re-set locality after repopulating dropdown
+                if (data.locality) {
+                    setTimeout(() => {
+                        const sel = document.getElementById('localitySelect');
+                        if (sel) sel.value = data.locality;
+                    }, 50);
+                }
+            }
         }
     } catch(e) { console.warn('Auto-fill profile failed', e); }
 }
@@ -1535,7 +1702,7 @@ document.getElementById('refreshProfileBtn').onclick = () => {
     toast('Dashboard refreshed');
 };
 document.getElementById('accessTrackerBtn').onclick = toggleGreenhouseSection;
-document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
+document.getElementById('addGreenhouseBtn').onclick = () => saveCurrentGreenhouse('activeGreenhouseForm');
 document.getElementById('submitDataBtn').onclick = submitAllNewData;
 document.getElementById('closeGreenhouseBtn').onclick = () => {
     document.getElementById('greenhouseSection').classList.add('hidden');
