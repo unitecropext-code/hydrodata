@@ -360,7 +360,7 @@
             </div>
             <div class="login-input-wrap" style="position:relative;">
                 <i class="fas fa-lock"></i>
-                <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" id="loginPasswordField">
+                <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
                 <span class="password-toggle" id="pwToggle" title="Show/hide password"><i class="fas fa-eye"></i></span>
             </div>
             <button id="loginBtn" class="btn" style="width:100%; justify-content:center; font-size:1rem; padding:13px;">
@@ -381,7 +381,6 @@
                     <div class="header-sub">
                         <span><i class="fas fa-chart-line"></i> Real-Time Insights &amp; Analytics</span>
                         <span style="color:#bbb;">|</span>
-                        <!-- Active Members Banner -->
                         <div class="members-banner" id="membersBanner" title="Active registered members">
                             <i class="fas fa-users"></i>
                             <span>Active Members:</span>
@@ -400,7 +399,7 @@
                         <span id="loggedInUsername"></span>
                         <span id="adminBadge" class="admin-badge hidden">ADMIN</span>
                     </span>
-                    <button id="refreshPageBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> <span class="hidden" id="refreshText">Refresh</span></button>
+                    <button id="refreshPageBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> <span>Refresh</span></button>
                     <button id="logoutBtn" class="btn-secondary" style="color:#c0392b; border-color:#f8caca;"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
@@ -449,14 +448,9 @@
             <div id="searchTab" class="admin-tab-content active">
                 <div class="admin-search-panel">
                     <div class="admin-search-row">
-                        <input type="text" id="adminSearchInput" class="admin-search-input"
-                            placeholder="Enter grower username to search..." autocomplete="off">
-                        <button id="adminSearchBtn" class="admin-search-btn">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                        <button id="adminClearSearchBtn" class="admin-clear-btn">
-                            <i class="fas fa-times"></i> Clear
-                        </button>
+                        <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter grower username to search..." autocomplete="off">
+                        <button id="adminSearchBtn" class="admin-search-btn"><i class="fas fa-search"></i> Search</button>
+                        <button id="adminClearSearchBtn" class="admin-clear-btn"><i class="fas fa-times"></i> Clear</button>
                     </div>
                 </div>
                 <div id="adminSearchResults" style="display:none;">
@@ -542,7 +536,6 @@
                 <div id="regSuccessMsg" style="display:none; margin-top:0.8rem; background:#d4edda; border:1px solid #7ec891; border-radius:1rem; padding:0.8rem 1rem; color:#155724; font-size:0.88rem; font-weight:600;"></div>
                 <div id="regErrorMsg" style="display:none; margin-top:0.8rem; background:#f8d7da; border:1px solid #f5c6cb; border-radius:1rem; padding:0.8rem 1rem; color:#721c24; font-size:0.88rem; font-weight:600;"></div>
 
-                <!-- Recently registered users (local session only) -->
                 <div id="recentRegUsersWrap" class="hidden">
                     <div class="section-divider"><span>RECENTLY REGISTERED THIS SESSION</span></div>
                     <div id="recentRegUsersList" class="registered-users-list"></div>
@@ -555,7 +548,6 @@
                     <i class="fas fa-seedling" style="color:var(--green-600);"></i>
                     Register New Greenhouse Crop (Admin)
                 </div>
-                <!-- Admin grower selector -->
                 <div class="register-grid" style="margin-bottom:0.9rem;">
                     <div class="form-group">
                         <label>Grower Username *</label>
@@ -565,7 +557,6 @@
                         <label>Locality</label>
                         <select id="adminGH_locality">
                             <option value="">-- Select Locality --</option>
-                            ${Object.values(ZONE_LOCALITIES).flat().sort().map(l=>`<option value="${l}">${l}</option>`).join('')}
                         </select>
                     </div>
                     <div class="form-group">
@@ -576,16 +567,16 @@
                 <div class="greenhouse-section-inner">
                     <div id="adminGHForm"></div>
                     <div class="greenhouse-actions">
-                        <button onclick="saveCurrentGreenhouse('adminGHForm')" class="btn"><i class="fas fa-plus-circle"></i> Add to List</button>
-                        <button onclick="submitAdminGHData()" class="btn" style="background:linear-gradient(100deg,var(--teal),#2e9b74);"><i class="fas fa-cloud-upload-alt"></i> Submit All Data</button>
-                        <button onclick="clearAdminGHQueue()" class="btn-secondary"><i class="fas fa-times"></i> Clear</button>
+                        <button id="adminAddToListBtn" class="btn"><i class="fas fa-plus-circle"></i> Add to List</button>
+                        <button id="adminSubmitAllBtn" class="btn" style="background:linear-gradient(100deg,var(--teal),#2e9b74);"><i class="fas fa-cloud-upload-alt"></i> Submit All Data</button>
+                        <button id="adminClearQueueBtn" class="btn-secondary"><i class="fas fa-times"></i> Clear</button>
                     </div>
                     <div id="adminSavedList" style="margin-top:1rem;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- GREENHOUSE SECTION (toggled) -->
+        <!-- GREENHOUSE SECTION (toggled for grower) -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card">
                 <div class="stat-title"><i class="fas fa-seedling"></i> Register New Greenhouse Crop</div>
@@ -674,10 +665,9 @@
                         <tr><td>🥒 English Cucumber</td><td>Acylia / Boncanale RZ</td><td><strong>32 – 62</strong></td></tr>
                         <tr><td>🌶️ Sweet Pepper</td><td>Blocky</td><td><strong>13.80 – 18.40</strong></td></tr>
                         <tr><td>🍅 Tomato</td><td>Salad</td><td><strong>11.75 – 18.90</strong></td></tr>
-                        <tr><td>🍅 Tomato</td><td>Roma/Round</td><td>9.95 – 19.72<strong></td></tr>
-                        <tr><td>🍅 Tomato</td><td>THN 988</td><td>10.20 – 19.50<strong></td></tr>
-                               
-                             </tbody>
+                        <tr><td>🍅 Tomato</td><td>Roma/Round</td><td>9.95 – 19.72<strong></strong></td></tr>
+                        <tr><td>🍅 Tomato</td><td>THN 988</td><td>10.20 – 19.50<strong></strong></td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -741,6 +731,9 @@ let timelineChart = null, forecastChart = null;
 let dashboardStats = null;
 let recentlyRegistered = [];
 
+// Admin specific greenhouse queue
+let adminSavedGreenhouses = [];
+
 // ==================== HELPERS ====================
 function toast(msg, isError=false) {
     const t = document.getElementById('toastText');
@@ -793,6 +786,13 @@ function setZone(z) {
     document.querySelectorAll('.zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone===z));
     updateLocalityDropdown();
     updateRegLocalityDropdown();
+    // Also update adminGH_locality dropdown
+    const adminLocalitySel = document.getElementById('adminGH_locality');
+    if (adminLocalitySel) {
+        const locs = ZONE_LOCALITIES[currentZone] || [];
+        adminLocalitySel.innerHTML = '<option value="">-- Select Locality --</option>';
+        locs.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; adminLocalitySel.appendChild(o); });
+    }
 }
 
 function updateLocalityDropdown() {
@@ -812,7 +812,7 @@ function updateRegLocalityDropdown() {
     locs.forEach(l => { const o = document.createElement('option'); o.value=o.textContent=l; sel.appendChild(o); });
 }
 
-// ==================== RECORD CARDS (shared grower & admin) ====================
+// ==================== RECORD CARDS (shared) ====================
 function renderRecordCards(gridEl, rows, headers, usernameForActions) {
     gridEl.innerHTML = '';
     const hdr = headers.map(h => h.toString().toLowerCase());
@@ -896,7 +896,6 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions) {
             </div>
         `;
 
-        // Edit btn
         card.querySelector('.edit-btn-card').addEventListener('click', function() {
             const rec = JSON.parse(this.getAttribute('data-record').replace(/&#39;/g,"'"));
             currentEditRecord = {
@@ -910,7 +909,6 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions) {
             openEditModal(rec.rowData, rec.stageIdx, rec.cropIdx, rec.areaIdx, rec.varietyIdx, rec.weeklyYieldIdx, rec.weeklyUnitIdx, rec.harvestMonthsIdx, rec.monthIndices);
         });
 
-        // Cycle toggle btn
         card.querySelector('.cycle-toggle-btn').addEventListener('click', function() {
             toggleCycleStatus(this.dataset.timestamp, this, card, this.dataset.username);
         });
@@ -1002,7 +1000,6 @@ async function registerNewUser() {
             body: 'data=' + encodeURIComponent(JSON.stringify(payload))
         });
 
-        // Register in local session list
         recentlyRegistered.unshift({ fullname, username, role, zone, locality, registeredAt: new Date().toLocaleString() });
         renderRecentRegistrations();
 
@@ -1010,10 +1007,7 @@ async function registerNewUser() {
         successMsg.style.display = 'block';
         toast(`✅ User "${username}" registered!`);
 
-        // Update member count
         loadActiveMemberCount();
-
-        // Clear form
         clearRegForm(false);
     } catch(e) {
         errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Registration failed: ' + e.message;
@@ -1085,7 +1079,6 @@ async function toggleCycleStatus(timestamp, btnEl, cardEl, overrideUsername) {
         });
         if (btnEl && cardEl) {
             const badge    = cardEl.querySelector('.status-badge-active,.status-badge-completed');
-            const areaSpan = cardEl.querySelector('.record-area-value');
             if (newStatus==='Completed') {
                 cardEl.classList.add('completed');
                 btnEl.className = 'cycle-toggle-btn completed-btn';
@@ -1203,10 +1196,10 @@ async function saveFullRecordUpdate() {
     finally { saveBtn.innerHTML=origHTML; saveBtn.disabled=false; }
 }
 
-// ==================== GREENHOUSE FORM ====================
-function renderActiveForm(containerId) {
-    const target = containerId || 'activeGreenhouseForm';
-    document.getElementById(target).innerHTML = `
+// ==================== GREENHOUSE FORM (shared rendering) ====================
+function renderGreenhouseForm(containerId, targetSuffix) {
+    const target = targetSuffix || containerId;
+    document.getElementById(containerId).innerHTML = `
         <div class="grid-2col">
             <div class="form-group"><label>GH Number</label>
                 <input type="text" id="ghNumberInput_${target}" placeholder="e.g. GH-01">
@@ -1280,7 +1273,6 @@ function onStageChange(target) {
 }
 
 function getCurrentFormData(target) {
-    target = target || 'activeGreenhouseForm';
     const monthly = MONTHS.map((_,i) => parseFloat(document.getElementById(`month_${i}_${target}`)?.value)||0);
     return {
         ghNumber:        document.getElementById(`ghNumberInput_${target}`)?.value||'',
@@ -1299,15 +1291,16 @@ function getCurrentFormData(target) {
     };
 }
 
-function saveCurrentGreenhouse(target) {
-    target = target || 'activeGreenhouseForm';
+// ==================== GROWER GREENHOUSE FUNCTIONS ====================
+function saveCurrentGreenhouse() {
+    const target = 'activeGreenhouseForm';
     const d = getCurrentFormData(target);
     if (!d.crop) { toast('Select a crop', true); return; }
     if (!d.area||d.area<=0) { toast('Enter a valid area (m²)', true); return; }
     savedGreenhouses.push(d);
     updateSavedListDisplay();
     toast(`Added: ${d.crop} — ${d.area} m²`);
-    // Reset key fields
+    // Reset fields
     ['ghNumberInput','cropSelect','tomatoTypeInput','varietyInput','areaInput','weeklyYieldInput','avgYieldPerMonthInput','harvestMonthsInput','dateTrans','substrateInput'].forEach(base => {
         const el = document.getElementById(`${base}_${target}`);
         if (el) el.value = '';
@@ -1342,39 +1335,18 @@ async function submitAllNewData() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
     try {
-        // Build rows in sheet column order (cols B–AD)
         const rows = savedGreenhouses.map(g => ({
-            growerName:       username,          // col B
-            locality:         localityVal,        // col C
-            zone:             currentZone,        // col D
-            totalGHArea:      totalAreaVal,       // col E
-            ghNumber:         g.ghNumber,         // col F
-            crop:             g.crop,             // col G
-            variety:          g.variety,          // col H
-            cropStage:        g.stage,            // col I
-            area:             g.area,             // col J
-            dateTrans:        g.dateTrans,        // col K
-            weeklyYield:      g.weeklyYield,      // col L
-            avgYieldPerMonth: g.avgYieldPerMonth, // col M
-            harvestMonths:    g.harvestMonths,    // col N
-            substrate:        g.substrate,        // col O
-            tomatoType:       g.tomatoType,       // col P
-            january:          g.monthly[0],       // col Q
-            february:         g.monthly[1],       // col R
-            march:            g.monthly[2],       // col S
-            april:            g.monthly[3],       // col T
-            may:              g.monthly[4],       // col U
-            june:             g.monthly[5],       // col V
-            july:             g.monthly[6],       // col W
-            august:           g.monthly[7],       // col X
-            september:        g.monthly[8],       // col Y
-            october:          g.monthly[9],       // col Z
-            november:         g.monthly[10],      // col AA
-            december:         g.monthly[11],      // col AB
-            yieldUnit:        g.yieldUnit,        // col AC
-            cycleStatus:      'Active'            // col AD
+            growerName: username, locality: localityVal, zone: currentZone,
+            totalGHArea: totalAreaVal, ghNumber: g.ghNumber, crop: g.crop,
+            variety: g.variety, cropStage: g.stage, area: g.area, dateTrans: g.dateTrans,
+            weeklyYield: g.weeklyYield, avgYieldPerMonth: g.avgYieldPerMonth, harvestMonths: g.harvestMonths,
+            substrate: g.substrate, tomatoType: g.tomatoType,
+            january: g.monthly[0], february: g.monthly[1], march: g.monthly[2], april: g.monthly[3],
+            may: g.monthly[4], june: g.monthly[5], july: g.monthly[6], august: g.monthly[7],
+            september: g.monthly[8], october: g.monthly[9], november: g.monthly[10], december: g.monthly[11],
+            yieldUnit: g.yieldUnit, cycleStatus: 'Active'
         }));
-        const payload = { action:'submitGreenhouseData', username, data: rows, timestamp: new Date().toISOString() };
+        const payload = { action:'submitGreenhouseData', username, data: rows };
         await fetch(SCRIPT_URL, {
             method:'POST', mode:'no-cors',
             headers:{'Content-Type':'application/x-www-form-urlencoded'},
@@ -1393,8 +1365,121 @@ async function submitAllNewData() {
 function toggleGreenhouseSection() {
     const sec = document.getElementById('greenhouseSection');
     const isHidden = sec.classList.contains('hidden');
-    if (isHidden) { renderActiveForm('activeGreenhouseForm'); sec.classList.remove('hidden'); }
+    if (isHidden) { renderGreenhouseForm('activeGreenhouseForm', 'activeGreenhouseForm'); sec.classList.remove('hidden'); }
     else sec.classList.add('hidden');
+}
+
+// ==================== ADMIN GREENHOUSE FUNCTIONS ====================
+function renderAdminGHForm() {
+    renderGreenhouseForm('adminGHForm', 'adminGHForm');
+}
+
+function adminSaveCurrentGreenhouse() {
+    const target = 'adminGHForm';
+    const d = getCurrentFormData(target);
+    if (!d.crop) { toast('Select a crop', true); return; }
+    if (!d.area||d.area<=0) { toast('Enter a valid area (m²)', true); return; }
+    adminSavedGreenhouses.push(d);
+    updateAdminSavedListDisplay();
+    toast(`Added: ${d.crop} — ${d.area} m²`);
+    // Reset fields
+    ['ghNumberInput','cropSelect','tomatoTypeInput','varietyInput','areaInput','weeklyYieldInput','avgYieldPerMonthInput','harvestMonthsInput','dateTrans','substrateInput'].forEach(base => {
+        const el = document.getElementById(`${base}_${target}`);
+        if (el) el.value = '';
+    });
+    const tRow = document.getElementById(`tomatoTypeRow_${target}`);
+    if (tRow) tRow.style.display='none';
+    const mSec = document.getElementById(`monthlyHarvestSection_${target}`);
+    if (mSec) mSec.style.display='none';
+    MONTHS.forEach((_,i)=>{ const el=document.getElementById(`month_${i}_${target}`); if(el) el.value=''; });
+}
+
+function updateAdminSavedListDisplay() {
+    const list = document.getElementById('adminSavedList');
+    if (!adminSavedGreenhouses.length) { list.innerHTML = ''; return; }
+    list.innerHTML = `<div style="font-weight:700;font-size:0.88rem;margin-bottom:0.5rem;"><i class="fas fa-list"></i> Queued for submission (${adminSavedGreenhouses.length})</div>` +
+        adminSavedGreenhouses.map((g,i) => `
+            <div class="saved-item">
+                <span class="saved-item-info"><i class="fas fa-seedling" style="color:var(--green-600);"></i>
+                ${g.ghNumber?`[${g.ghNumber}] `:''}<strong>${g.crop}</strong>${g.tomatoType?` (${g.tomatoType})`:''} | ${g.stage} | ${g.area} m² | ${g.variety||'—'} | ${g.weeklyYield} ${g.yieldUnit} | ${g.substrate||'—'}</span>
+                <button class="remove-saved-btn" onclick="adminSavedGreenhouses.splice(${i},1);updateAdminSavedListDisplay()"><i class="fas fa-times"></i> Remove</button>
+            </div>`).join('');
+}
+
+async function submitAdminGHData() {
+    const growerUsername = document.getElementById('adminGH_grower').value.trim();
+    const locality = document.getElementById('adminGH_locality').value;
+    const totalAreaVal = parseFloat(document.getElementById('adminGH_totalArea').value) || 0;
+
+    if (!growerUsername) { toast('Grower Username is required', true); return; }
+    if (!adminSavedGreenhouses.length) { toast('No greenhouse data to submit', true); return; }
+
+    const rows = adminSavedGreenhouses.map(g => ({
+        growerName: growerUsername,
+        locality: locality,
+        zone: currentZone,
+        totalGHArea: totalAreaVal,
+        ghNumber: g.ghNumber,
+        crop: g.crop,
+        variety: g.variety,
+        cropStage: g.stage,
+        area: g.area,
+        dateTrans: g.dateTrans,
+        weeklyYield: g.weeklyYield,
+        avgYieldPerMonth: g.avgYieldPerMonth,
+        harvestMonths: g.harvestMonths,
+        substrate: g.substrate,
+        tomatoType: g.tomatoType,
+        january: g.monthly[0],
+        february: g.monthly[1],
+        march: g.monthly[2],
+        april: g.monthly[3],
+        may: g.monthly[4],
+        june: g.monthly[5],
+        july: g.monthly[6],
+        august: g.monthly[7],
+        september: g.monthly[8],
+        october: g.monthly[9],
+        november: g.monthly[10],
+        december: g.monthly[11],
+        yieldUnit: g.yieldUnit,
+        cycleStatus: 'Active'
+    }));
+
+    const btn = document.getElementById('adminSubmitAllBtn');
+    const origHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
+
+    try {
+        const payload = { action: 'submitGreenhouseData', username: growerUsername, data: rows };
+        await fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify(payload))
+        });
+        adminSavedGreenhouses = [];
+        updateAdminSavedListDisplay();
+        toast(`✅ Greenhouse data submitted for ${growerUsername}`);
+        await loadDashboard();
+        // If we just searched for this grower, refresh search results
+        if (document.getElementById('adminSearchInput').value === growerUsername) await adminSearchGrower();
+    } catch (e) {
+        toast('Submit failed: ' + e.message, true);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+    }
+}
+
+function clearAdminGHQueue() {
+    if (adminSavedGreenhouses.length) {
+        adminSavedGreenhouses = [];
+        updateAdminSavedListDisplay();
+        toast('Cleared all queued greenhouse entries');
+    } else {
+        toast('Queue is already empty');
+    }
 }
 
 // ==================== DASHBOARD ====================
@@ -1506,7 +1591,6 @@ async function autoFillProfileFromRecords(username) {
             const data = await res.json();
             if (data.totalArea) document.getElementById('totalArea').value = data.totalArea;
             if (data.locality) {
-                // Ensure locality is in dropdown, add if missing
                 const sel = document.getElementById('localitySelect');
                 if (sel) {
                     let found = Array.from(sel.options).some(o => o.value === data.locality);
@@ -1521,7 +1605,6 @@ async function autoFillProfileFromRecords(username) {
             if (data.zone) {
                 currentZone = data.zone;
                 updateLocalityDropdown();
-                // Re-set locality after repopulating dropdown
                 if (data.locality) {
                     setTimeout(() => {
                         const sel = document.getElementById('localitySelect');
@@ -1572,6 +1655,8 @@ async function login(username, password) {
             document.getElementById('growerProfileCard').style.display = 'none';
             document.getElementById('adminSearchSection').style.display = 'block';
             setAdminSectionsVisibility(true);
+            // Render admin greenhouse form
+            renderAdminGHForm();
         } else {
             document.getElementById('adminBadge').classList.add('hidden');
             document.getElementById('adminSearchSection').style.display = 'none';
@@ -1613,13 +1698,18 @@ function initAdminTabs() {
             document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById(btn.dataset.tab).classList.add('active');
+            // Re-render admin greenhouse form when that tab is activated
+            if (btn.dataset.tab === 'adminGHTab') {
+                renderAdminGHForm();
+                // Reset admin queue display
+                updateAdminSavedListDisplay();
+            }
         });
     });
 }
 
 // ==================== BUTTON FILTER WIRING ====================
 function wireFilterButtons() {
-    // Stage/area crop filter
     document.querySelectorAll('#stageAreaButtons .crop-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#stageAreaButtons .crop-filter-btn').forEach(b=>b.classList.remove('active'));
@@ -1628,7 +1718,6 @@ function wireFilterButtons() {
         });
     });
 
-    // Timeline crop filter
     document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(b=>b.classList.remove('active'));
@@ -1638,7 +1727,6 @@ function wireFilterButtons() {
         });
     });
 
-    // Forecast crop filter
     document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(b=>b.classList.remove('active'));
@@ -1648,11 +1736,10 @@ function wireFilterButtons() {
         });
     });
 
-    // Zone efficiency filter
     const zoneContainer = document.getElementById('zoneEfficiencyButtons');
     const zones = Object.keys(ZONE_LOCALITIES);
     zoneContainer.innerHTML = zones.map(z =>
-        `<button data-zone="${z}" class="zone-efficiency-btn ${z===currentZone?'active':''}">${z === 'E2' ? '🗺️ ' : ''}Zone ${z}</button>`
+        `<button data-zone="${z}" class="zone-efficiency-btn ${z===currentZone?'active':''}">Zone ${z}</button>`
     ).join('');
     zoneContainer.querySelectorAll('.zone-efficiency-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1664,16 +1751,10 @@ function wireFilterButtons() {
 }
 
 // ==================== EVENT LISTENERS ====================
-document.getElementById('loginBtn').onclick = () =>
-    login(document.getElementById('loginUsername').value.trim(), document.getElementById('loginPassword').value);
-document.getElementById('loginPassword').addEventListener('keypress', e => {
-    if (e.key==='Enter') login(document.getElementById('loginUsername').value.trim(), document.getElementById('loginPassword').value);
-});
-document.getElementById('loginUsername').addEventListener('keypress', e => {
-    if (e.key==='Enter') document.getElementById('loginPassword').focus();
-});
-document.getElementById('pwToggle').onclick = () =>
-    togglePassVis('loginPassword', document.querySelector('#pwToggle i').parentElement);
+document.getElementById('loginBtn').onclick = () => login(document.getElementById('loginUsername').value.trim(), document.getElementById('loginPassword').value);
+document.getElementById('loginPassword').addEventListener('keypress', e => { if (e.key==='Enter') login(document.getElementById('loginUsername').value.trim(), document.getElementById('loginPassword').value); });
+document.getElementById('loginUsername').addEventListener('keypress', e => { if (e.key==='Enter') document.getElementById('loginPassword').focus(); });
+document.getElementById('pwToggle').onclick = () => togglePassVis('loginPassword', document.querySelector('#pwToggle i').parentElement);
 
 document.getElementById('logoutBtn').onclick = () => { sessionStorage.clear(); location.reload(); };
 document.getElementById('refreshPageBtn').onclick = () => location.reload();
@@ -1682,34 +1763,21 @@ document.getElementById('adminSearchBtn').addEventListener('click', adminSearchG
 document.getElementById('adminClearSearchBtn').addEventListener('click', adminClearSearch);
 document.getElementById('adminSearchInput').addEventListener('keypress', e => { if(e.key==='Enter') adminSearchGrower(); });
 
-document.getElementById('cancelEditBtn').onclick = () => {
-    document.getElementById('editModalOverlay').style.display = 'none';
-    document.body.style.overflow = '';
-};
-document.getElementById('editModalOverlay').addEventListener('click', e => {
-    if (e.target===document.getElementById('editModalOverlay')) {
-        document.getElementById('editModalOverlay').style.display = 'none';
-        document.body.style.overflow = '';
-    }
-});
+document.getElementById('cancelEditBtn').onclick = () => { document.getElementById('editModalOverlay').style.display = 'none'; document.body.style.overflow = ''; };
+document.getElementById('editModalOverlay').addEventListener('click', e => { if (e.target===document.getElementById('editModalOverlay')) { document.getElementById('editModalOverlay').style.display = 'none'; document.body.style.overflow = ''; } });
 document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
 
-document.getElementById('updateAreaBtn').onclick = () => {
-    const area = document.getElementById('totalArea').value;
-    if (!area || parseFloat(area)<=0) { toast('Enter a valid area', true); return; }
-    toast(`Greenhouse area set to ${parseFloat(area).toFixed(1)} m²`);
-};
-document.getElementById('refreshProfileBtn').onclick = () => {
-    loadDashboard();
-    loadUserPreviousData(document.getElementById('growerName').value);
-    toast('Dashboard refreshed');
-};
+document.getElementById('updateAreaBtn').onclick = () => { const area = document.getElementById('totalArea').value; if (!area || parseFloat(area)<=0) { toast('Enter a valid area', true); return; } toast(`Greenhouse area set to ${parseFloat(area).toFixed(1)} m²`); };
+document.getElementById('refreshProfileBtn').onclick = () => { loadDashboard(); loadUserPreviousData(document.getElementById('growerName').value); toast('Dashboard refreshed'); };
 document.getElementById('accessTrackerBtn').onclick = toggleGreenhouseSection;
-document.getElementById('addGreenhouseBtn').onclick = () => saveCurrentGreenhouse('activeGreenhouseForm');
+document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
 document.getElementById('submitDataBtn').onclick = submitAllNewData;
-document.getElementById('closeGreenhouseBtn').onclick = () => {
-    document.getElementById('greenhouseSection').classList.add('hidden');
-};
+document.getElementById('closeGreenhouseBtn').onclick = () => { document.getElementById('greenhouseSection').classList.add('hidden'); };
+
+// Admin greenhouse buttons
+document.getElementById('adminAddToListBtn').onclick = adminSaveCurrentGreenhouse;
+document.getElementById('adminSubmitAllBtn').onclick = submitAdminGHData;
+document.getElementById('adminClearQueueBtn').onclick = clearAdminGHQueue;
 
 document.getElementById('registerUserBtn').onclick = registerNewUser;
 document.getElementById('clearRegFormBtn').onclick  = () => clearRegForm(true);
@@ -1734,10 +1802,13 @@ initAdminTabs();
     });
 })();
 
+// Also populate adminGH_locality initially
+setZone(currentZone);
+
 // Clear stale session on load
 window.addEventListener('load', () => {
     sessionStorage.removeItem('hydroponic_loggedIn');
 });
 </script>
 </body>
-</html> 
+</html>
