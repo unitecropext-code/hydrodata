@@ -133,7 +133,7 @@
             </div>
         </div>
 
-        <!-- Grower Profile (for normal growers) -->
+        <!-- Grower Profile (for normal growers) - hidden for admin -->
         <div class="glass-card" id="growerProfileCard">
             <div class="stat-title"><i class="fas fa-user-edit"></i> Grower Profile</div>
             <div class="profile-row"><label>Grower:</label><input type="text" id="growerName" placeholder="Enter grower name" style="background:#f4f9f0;"></div>
@@ -181,10 +181,15 @@
             </div>
         </div>
 
-        <!-- Greenhouse Form (toggled) - FULLY RESTORED -->
+        <!-- Greenhouse Form (toggled) - available for both growers and admins -->
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card">
                 <div class="stat-title"><i class="fas fa-seedling"></i> 🌱 Register New Greenhouse</div>
+                <!-- For admin: extra field to choose target grower -->
+                <div id="adminGrowerSelector" style="margin-bottom:1rem; display:none;">
+                    <label><i class="fas fa-user"></i> Target Grower (Admin only):</label>
+                    <input type="text" id="adminTargetGrower" class="admin-search-input" placeholder="Enter grower username" style="width:100%; margin-top:5px;">
+                </div>
                 <div id="activeGreenhouseForm"></div>
                 <div style="display: flex; gap: 12px; margin-top: 1.2rem; flex-wrap: wrap;">
                     <button id="addGreenhouseBtn" class="btn-secondary" style="background:#378f2c; color:white;"><i class="fas fa-plus-circle"></i> Add to List</button>
@@ -208,7 +213,7 @@
         <!-- LIVE DASHBOARD -->
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
 
-        <!-- Area by Stage -->
+        <!-- Area by Stage (Interactive filter buttons) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-simple metric-icon"></i> 📐 Area by Stage</div>
             <div class="stage-area-buttons" id="stageAreaButtons">
@@ -238,7 +243,7 @@
             <div id="noTimelineData" class="hidden" style="text-align:center; padding:2rem;">No timeline data available.</div>
         </div>
 
-        <!-- Zonal Efficiency -->
+        <!-- Zonal Yield Efficiency (Dynamic zone buttons) -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-map-marked-alt"></i> 🗺️ Zonal Yield Efficiency (kg/m²)</div>
             <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;" id="zoneEfficiencyButtons"></div>
@@ -260,10 +265,7 @@
         <!-- Efficiency Reference Table -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-chart-simple"></i> 📊 Avg Yield Efficiency Reference (kg/m²)</div>
-            <div class="zonal-table-wrapper"><table class="efficiency-table"><thead><tr><th>Crop</th><th>Type</th><th>Range (kg/m²)</th></tr></thead><tbody><tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>32 – 62</td></tr>
-                <tr><td>Sweet Pepper</td><td>Blocky</td><td>13.80 – 18.40</td></tr>
-                <tr><td>Tomato</td><td>Salad</td><td>11.75 – 18.90</td></tr>
-            </tbody></table></div>
+            <div class="zonal-table-wrapper"><table class="efficiency-table"><thead><tr><th>Crop</th><th>Type</th><th>Range (kg/m²)</th></tr></thead><tbody><tr><td>English Cucumber</td><td>Acylia / Boncanale RZ</td><td>32 – 62</td></tr><tr><td>Sweet Pepper</td><td>Blocky</td><td>13.80 – 18.40</td></tr><tr><td>Tomato</td><td>Salad</td><td>11.75 – 18.90</td></tr></tbody></table></div>
         </div>
     </div>
     <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker | All Rights Reserved</div>
@@ -307,7 +309,6 @@
     let timelineChart = null, forecastChart = null;
     let dashboardStats = null;
 
-    // Helper functions
     function toast(msg, isError=false) { const t=document.getElementById('toastText'); t.innerText=msg; const toastDiv=document.getElementById('toast'); toastDiv.classList.add('show'); toastDiv.style.background=isError?"#c0392b":"#1c5c22"; setTimeout(()=>toastDiv.classList.remove('show'),2800); }
     function formatToMauritiusTime(ts){ if(!ts) return '—'; try{ let d=new Date(ts); if(isNaN(d.getTime())) return ts.substring(0,16); return new Intl.DateTimeFormat('en-MU',{timeZone:'Indian/Mauritius',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(d); }catch(e){return ts;} }
     
@@ -372,31 +373,90 @@
         return { crop, area, variety, stage, transplantDate, prodSystem, ...harvest };
     }
 
-    function saveCurrentGreenhouse() {
-        let data = getCurrentFormData(); if (!data.crop || data.area <= 0) { toast("Crop and area >0 required", true); return; } if (data.stage === 'Harvesting' && (data.weeklyYield <= 0 || data.harvestMonths <= 0)) { toast("Harvest details required", true); return; } savedGreenhouses.push({ ...data, id: Date.now() }); updateSavedListDisplay(); renderActiveForm(); toast(`Added: ${data.crop} (${data.area} m²)`);
+    function getTargetGrower() {
+        if (isAdmin) {
+            const adminTarget = document.getElementById('adminTargetGrower').value.trim();
+            if (adminTarget) return adminTarget;
+        }
+        return growerNameInput.value.trim();
     }
+
+    function saveCurrentGreenhouse() {
+        let data = getCurrentFormData(); 
+        if (!data.crop || data.area <= 0) { toast("Crop and area >0 required", true); return; } 
+        if (data.stage === 'Harvesting' && (data.weeklyYield <= 0 || data.harvestMonths <= 0)) { toast("Harvest details required", true); return; } 
+        savedGreenhouses.push({ ...data, id: Date.now() }); 
+        updateSavedListDisplay(); 
+        renderActiveForm(); 
+        toast(`Added: ${data.crop} (${data.area} m²)`);
+    }
+    
     function updateSavedListDisplay() {
-        const container = document.getElementById('savedList'); if (savedGreenhouses.length === 0) { container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; return; } container.innerHTML = `<div><strong>Pending (${savedGreenhouses.length})</strong></div>` + savedGreenhouses.map((g,i)=>`<div class="pending-card"><div><i class="fas ${g.crop === 'Tomato' ? 'fa-tomato' : (g.crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} pending-crop-icon"></i> <strong>${g.crop}</strong> | ${g.area} m² | ${g.stage}</div><button class="remove-pending" data-idx="${i}"><i class="fas fa-trash"></i> Remove</button></div>`).join('');
+        const container = document.getElementById('savedList'); 
+        if (savedGreenhouses.length === 0) { container.innerHTML = '<div class="badge">📋 No greenhouses added yet.</div>'; return; } 
+        container.innerHTML = `<div><strong>Pending (${savedGreenhouses.length})</strong></div>` + savedGreenhouses.map((g,i)=>`<div class="pending-card"><div><i class="fas ${g.crop === 'Tomato' ? 'fa-tomato' : (g.crop === 'Sweet Pepper' ? 'fa-pepper-hot' : 'fa-leaf')} pending-crop-icon"></i> <strong>${g.crop}</strong> | ${g.area} m² | ${g.stage}</div><button class="remove-pending" data-idx="${i}"><i class="fas fa-trash"></i> Remove</button></div>`).join('');
         document.querySelectorAll('.remove-pending').forEach(btn => { btn.addEventListener('click', (e) => { let idx = parseInt(btn.dataset.idx); savedGreenhouses.splice(idx,1); updateSavedListDisplay(); }); });
     }
+    
     async function submitAllNewData() {
-        const grower = growerNameInput.value.trim(); const locality = localitySelect.value; const totalAreaVal = parseFloat(totalAreaInput.value); if (!grower || !locality || totalAreaVal <= 0 || savedGreenhouses.length === 0) { toast("Complete profile (grower name, locality, area) & add greenhouses", true); return; } const submitBtn = document.getElementById('submitDataBtn'); const originalText = submitBtn.innerHTML; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...'; submitBtn.disabled = true; try { let rows = []; let counter = 1; for (let gh of savedGreenhouses) { let monthlyArr = MONTHS.map(m => gh.monthly?.[m] || 0); rows.push([grower, locality, currentZone, totalAreaVal, counter++, gh.crop, gh.variety || '', gh.stage, gh.area, gh.transplantDate || '', gh.weeklyYield || 0, '', gh.harvestMonths || 0, gh.prodSystem || 'Cocopeat', '', ...monthlyArr, gh.weeklyUnit || 'kg']); } await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify({ rows })) }); toast("✅ Data submitted successfully!"); savedGreenhouses = []; updateSavedListDisplay(); renderActiveForm(); await loadUserPreviousData(grower); await loadDashboard(); if (!isAdmin) await autoFillProfileFromRecords(grower); } catch (e) { toast("❌ Submission failed: " + e.message, true); } finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; }
+        let targetGrower = getTargetGrower();
+        const locality = localitySelect.value; 
+        const totalAreaVal = parseFloat(totalAreaInput.value); 
+        if (!targetGrower || !locality || totalAreaVal <= 0 || savedGreenhouses.length === 0) { 
+            toast("Complete profile (grower name, locality, area) & add greenhouses", true); 
+            if (isAdmin && !targetGrower) toast("Admin: please enter target grower in the field above", true);
+            return; 
+        }
+        const submitBtn = document.getElementById('submitDataBtn'); 
+        const originalText = submitBtn.innerHTML; 
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...'; 
+        submitBtn.disabled = true; 
+        try { 
+            let rows = []; 
+            let counter = 1; 
+            for (let gh of savedGreenhouses) { 
+                let monthlyArr = MONTHS.map(m => gh.monthly?.[m] || 0); 
+                rows.push([targetGrower, locality, currentZone, totalAreaVal, counter++, gh.crop, gh.variety || '', gh.stage, gh.area, gh.transplantDate || '', gh.weeklyYield || 0, '', gh.harvestMonths || 0, gh.prodSystem || 'Cocopeat', '', ...monthlyArr, gh.weeklyUnit || 'kg']); 
+            } 
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(JSON.stringify({ rows })) }); 
+            toast("✅ Data submitted successfully!"); 
+            savedGreenhouses = []; 
+            updateSavedListDisplay(); 
+            renderActiveForm(); 
+            if (isAdmin && targetGrower !== currentLoggedInUser) {
+                // refresh admin search if that grower was searched
+                if (document.getElementById('adminSearchInput').value === targetGrower) adminSearchGrower();
+            } else {
+                await loadUserPreviousData(targetGrower);
+            }
+            await loadDashboard(); 
+        } catch (e) { toast("❌ Submission failed: " + e.message, true); } 
+        finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; }
     }
+    
     function toggleGreenhouseSection() {
         const sec = document.getElementById('greenhouseSection');
         const btn = document.getElementById('accessTrackerBtn');
         if (sec.classList.contains('hidden')) {
-            if (!growerNameInput.value.trim() || !localitySelect.value || !totalAreaInput.value) { toast("Complete profile (grower name, locality & area) first", true); return; }
+            if (!isAdmin) {
+                if (!growerNameInput.value.trim() || !localitySelect.value || !totalAreaInput.value) { 
+                    toast("Complete profile (grower name, locality & area) first", true); 
+                    return; 
+                }
+            }
             sec.classList.remove('hidden');
             btn.innerHTML = '<i class="fas fa-minus-circle"></i> Hide Registration Form';
             renderActiveForm();
+            // Show/hide admin target field
+            const adminSelector = document.getElementById('adminGrowerSelector');
+            if (adminSelector) adminSelector.style.display = isAdmin ? 'block' : 'none';
         } else {
             sec.classList.add('hidden');
             btn.innerHTML = '<i class="fas fa-plus-circle"></i> Register Greenhouse Details';
         }
     }
 
-    // Shared card renderer (grower & admin) - same as before
+    // Shared card renderer (grower & admin)
     function renderRecordCards(gridEl, rows, headers, usernameForActions) {
         gridEl.innerHTML = '';
         const hdr = headers.map(h => h.toString().toLowerCase());
@@ -666,6 +726,9 @@
                 document.getElementById('growerProfileCard').style.display = 'none';
                 document.getElementById('adminSearchSection').style.display = 'block';
                 setAdminSectionsVisibility(true);
+                // Show admin target field in greenhouse section
+                const adminSelector = document.getElementById('adminGrowerSelector');
+                if (adminSelector) adminSelector.style.display = 'block';
             } else {
                 document.getElementById('adminBadge').classList.add('hidden');
                 document.getElementById('adminSearchSection').style.display = 'none';
@@ -674,6 +737,8 @@
                 document.getElementById('growerName').readOnly = true;
                 setAdminSectionsVisibility(false);
                 await autoFillProfileFromRecords(username);
+                const adminSelector = document.getElementById('adminGrowerSelector');
+                if (adminSelector) adminSelector.style.display = 'none';
             }
             await loadDashboard();
             await loadUserPreviousData(isAdmin ? '' : username);
@@ -695,7 +760,7 @@
         }
     }
 
-    // Dashboard functions (simplified but functional)
+    // Dashboard functions
     async function loadDashboard() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
@@ -711,6 +776,7 @@
             }
         } catch (e) { console.warn("Dashboard load failed", e); }
     }
+    
     function renderAreaByStage(stats, filter) {
         let areaByStage = (filter === 'all') ? stats.areaByStageTotal : (stats.areaByStageByCrop?.[filter] || {});
         let html = '';
@@ -722,16 +788,18 @@
         }
         document.getElementById('areaByStageContainer').innerHTML = html;
     }
+    
     function renderTopCrops(stats) {
         let tomatoHtml = `<div><h4>🍅 Top Tomato Varieties</h4><table class="top-crops-table"><thead><tr><th>Variety</th><th>Area (m²)</th></tr></thead><tbody>`;
         (stats.topVarieties?.tomato || []).forEach(v => { tomatoHtml += `<tr><td>${v.variety}</td><td><strong>${v.area.toFixed(1)}</strong></td></tr>`; });
-        tomatoHtml += `</tbody></table></div><div><h4>🌶️ Sweet Pepper & 🥒 English Cucumber</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th></tr></thead><tbody>`;
+        tomatoHtml += `</tbody></td></div><div><h4>🌶️ Sweet Pepper & 🥒 English Cucumber</h4><table class="top-crops-table"><thead><tr><th>Crop</th><th>Total Area (m²)</th></tr></thead><tbody>`;
         const sweetArea = (stats.areaByCrop || []).find(c => c.crop === 'Sweet Pepper')?.area || 0;
         const cucArea = (stats.areaByCrop || []).find(c => c.crop === 'English Cucumber')?.area || 0;
         tomatoHtml += `<tr><td>Sweet Pepper</td><td>${sweetArea.toFixed(1)}</td></tr><tr><td>English Cucumber</td><td>${cucArea.toFixed(1)}</td></tr>`;
         tomatoHtml += `</tbody></table></div>`;
         document.getElementById('cropAndVarietiesContainer').innerHTML = tomatoHtml;
     }
+    
     async function loadZonalEfficiency(zone) {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
@@ -741,9 +809,12 @@
                 for (let [crop, eff] of Object.entries(data[zone])) html += `<tr><td>${crop}</td><td>${eff.toFixed(2)} kg/m²</td></tr>`;
                 html += `</tbody></table>`;
                 document.getElementById('zonalEfficiencyTable').innerHTML = html;
+            } else {
+                document.getElementById('zonalEfficiencyTable').innerHTML = '<p>No efficiency data for this zone.</p>';
             }
-        } catch(e) { console.warn(e); }
+        } catch(e) { console.warn(e); document.getElementById('zonalEfficiencyTable').innerHTML = '<p>Error loading efficiency data.</p>'; }
     }
+    
     async function loadTimelineChart(crop) {
         if (!isAdmin) return;
         try {
@@ -754,6 +825,7 @@
             timelineChart = new Chart(ctx, { type: 'line', data: { labels: data.labels, datasets: data.datasets.map(ds => ({ ...ds, fill: true, tension: 0.3 })) }, options: { responsive: true, maintainAspectRatio: true } });
         } catch(e) { console.warn(e); }
     }
+    
     async function loadForecastChart(crop) {
         if (!isAdmin) return;
         try {
@@ -765,11 +837,12 @@
         } catch(e) { console.warn(e); }
     }
 
+    // Zone and locality helpers
     function initZoneHeader() {
         const zones = Object.keys(ZONE_LOCALITIES);
         const container = document.getElementById('zonePillsHeader');
         container.innerHTML = zones.map(z => `<button class="zone-pill ${z === currentZone ? 'active' : ''}" data-zone="${z}">Zone ${z}</button>`).join('');
-        document.querySelectorAll('.zone-pill').forEach(btn => btn.addEventListener('click', () => { currentZone = btn.dataset.zone; setZone(currentZone); }));
+        document.querySelectorAll('.zone-pill').forEach(btn => btn.addEventListener('click', () => { currentZone = btn.dataset.zone; setZone(currentZone); updateLocalityDropdown(); loadZonalEfficiency(currentZone); }));
     }
     function setZone(z) { currentZone = z; document.querySelectorAll('.zone-pill').forEach(btn => btn.classList.toggle('active', btn.dataset.zone === z)); updateLocalityDropdown(); }
     function updateLocalityDropdown() { const locs = ZONE_LOCALITIES[currentZone] || []; const sel = document.getElementById('localitySelect'); sel.innerHTML = '<option value="">-- Select Locality --</option>'; locs.forEach(l => { let opt = document.createElement('option'); opt.value = l; opt.textContent = l; sel.appendChild(opt); }); }
@@ -784,13 +857,13 @@
     document.getElementById('saveEditBtn').onclick = saveFullRecordUpdate;
     document.getElementById('logoutBtn').onclick = () => { sessionStorage.clear(); location.reload(); };
     document.getElementById('refreshPageBtn').onclick = () => location.reload();
-    document.getElementById('updateAreaBtn').onclick = () => toast("Area update feature: please implement logAreaUpdate in backend");
-    document.getElementById('refreshProfileBtn').onclick = () => { loadDashboard(); loadUserPreviousData(growerNameInput.value); toast("Dashboard refreshed"); };
+    document.getElementById('updateAreaBtn').onclick = () => toast("Area update feature: implement logAreaUpdate in backend");
+    document.getElementById('refreshProfileBtn').onclick = () => { loadDashboard(); if (!isAdmin) loadUserPreviousData(growerNameInput.value); toast("Dashboard refreshed"); };
     document.getElementById('accessTrackerBtn').onclick = toggleGreenhouseSection;
     document.getElementById('addGreenhouseBtn').onclick = saveCurrentGreenhouse;
     document.getElementById('submitDataBtn').onclick = submitAllNewData;
 
-    // Filter buttons
+    // Interactive filter buttons for Area by Stage
     document.querySelectorAll('#stageAreaButtons .crop-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#stageAreaButtons .crop-filter-btn').forEach(b => b.classList.remove('active'));
@@ -798,6 +871,8 @@
             if (dashboardStats) renderAreaByStage(dashboardStats, btn.dataset.crop);
         });
     });
+    
+    // Timeline crop buttons
     document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(b => b.classList.remove('active'));
@@ -806,6 +881,8 @@
             loadTimelineChart(currentTimelineCrop);
         });
     });
+    
+    // Forecast crop buttons
     document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(b => b.classList.remove('active'));
@@ -814,6 +891,8 @@
             loadForecastChart(currentForecastCrop);
         });
     });
+    
+    // Zone efficiency buttons (dynamic)
     const zoneEfficiencyContainer = document.getElementById('zoneEfficiencyButtons');
     const zones = Object.keys(ZONE_LOCALITIES);
     zoneEfficiencyContainer.innerHTML = zones.map(z => `<button data-zone="${z}" class="zone-efficiency-btn ${z === currentZone ? 'active' : ''}">Zone ${z}</button>`).join('');
@@ -833,7 +912,7 @@
     initZoneHeader();
     updateLocalityDropdown();
 
-    // Do not auto-restore session
+    // Clear any stale session
     window.onload = () => {
         sessionStorage.removeItem('hydroponic_loggedIn');
     };
