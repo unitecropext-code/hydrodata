@@ -640,7 +640,7 @@
         <!-- HARVEST DATE PREDICTION -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-calendar-check"></i> Yield Forecasting &amp; Harvest Date Prediction</div>
-            <p style="font-size:0.82rem;color:#888;margin-bottom:1rem;">Based on Date Transplanted. Active cycles only. Tomato &amp; Sweet Pepper = 2.5 months pre-harvest; English Cucumber = 1.5 months.</p>
+            <p style="font-size:0.82rem;color:#888;margin-bottom:1rem;"> Active cycles only. </p>
             <div class="harvest-prediction-grid" id="harvestPredGrid">
                 <div class="harvest-pred-card"><div class="harvest-pred-empty"><i class="fas fa-spinner fa-spin-custom"></i> Loading predictions...</div></div>
             </div>
@@ -684,9 +684,8 @@
 
         <!-- Timeline (admin only) -->
         <div id="timelineSectionCard" class="glass-card" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-line"></i> Crop Timeline — Stage-wise Area (Recalculated Monthly from Transplant Date)</div>
-            <p style="font-size:0.82rem;color:#888;margin-bottom:0.8rem;">Stage durations: Tomato/Sweet Pepper — Seedling 15d, Vegetative 30d, Flowering 30d, Harvesting 120d. English Cucumber — Seedling 10d, Vegetative 20d, Flowering 15d, Harvesting 90d. Active cycles only.</p>
-            <div class="filter-btn-group" id="timelineCropButtons">
+            <div class="stat-title"><i class="fas fa-chart-line"></i> Crop Timeline — Stage-wise Area </div>
+                <div class="filter-btn-group" id="timelineCropButtons">
                 <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
                 <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
                 <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
@@ -716,10 +715,10 @@
 
         <!-- Zonal Reference Table -->
         <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference (kg/m²)</div>
+            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference</div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
-                    <thead><tr><th>Crop</th><th>Type/Variety</th><th>Yield Range (kg/m²)</th></tr></thead>
+                    <thead><tr><th>Crop</th><th>Type/Variety</th><th>Indicative Yield Range (kg/m² or Unit/m²)</th></tr></thead>
                     <tbody>
                         <tr><td>🥒 English Cucumber</td><td>Acylia / Boncanale RZ</td><td><strong>32 – 62</strong></td></tr>
                         <tr><td>🌶️ Sweet Pepper</td><td>Blocky</td><td><strong>13.80 – 18.40</strong></td></tr>
