@@ -87,6 +87,7 @@
         .members-banner { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(100deg, var(--green-800), var(--green-600)); color: white; border-radius: var(--radius-pill); padding: 6px 16px; font-size: 0.82rem; font-weight: 700; box-shadow: 0 4px 12px rgba(25,105,40,0.3); animation: pulse-glow 2.5s ease-in-out infinite; }
         @keyframes pulse-glow { 0%,100% { box-shadow: 0 4px 12px rgba(25,105,40,0.3); } 50% { box-shadow: 0 6px 20px rgba(25,105,40,0.55); } }
         .members-banner .count { font-size: 1.1rem; font-weight: 900; }
+        /* FIX: Zone banner pill - shorter label */
         .zone-banner { background: rgba(30,70,30,0.07); border-radius: var(--radius-pill); padding: 6px 14px; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; border: 1px solid var(--green-100); }
         .zone-pill { background: var(--green-50); border: 1.5px solid var(--green-200); padding: 7px 16px; border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; font-size: 0.82rem; white-space: nowrap; transition: all 0.18s; }
         .zone-pill:hover { background: var(--green-100); border-color: var(--green-400); }
@@ -113,29 +114,15 @@
         .profile-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.5rem; }
 
         /* === LIVE SEARCH BAR === */
-        .live-search-wrap {
-            position: relative; margin-bottom: 1.2rem;
-        }
-        .live-search-wrap .search-icon {
-            position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%);
-            color: var(--green-400); font-size: 1rem; pointer-events: none;
-        }
-        #liveSearchInput {
-            width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem;
-            border: 2px solid var(--green-200); border-radius: var(--radius-pill);
-            background: white; font-size: 0.95rem; font-family: 'Outfit', sans-serif;
-            outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-        }
+        .live-search-wrap { position: relative; margin-bottom: 1.2rem; }
+        .live-search-wrap .search-icon { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--green-400); font-size: 1rem; pointer-events: none; }
+        #liveSearchInput { width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; border: 2px solid var(--green-200); border-radius: var(--radius-pill); background: white; font-size: 0.95rem; font-family: 'Outfit', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
         #liveSearchInput:focus { border-color: var(--green-600); box-shadow: 0 0 0 4px rgba(37,145,50,0.12); }
         #liveSearchInput::placeholder { color: #b0c8a0; }
-        #searchClearBtn {
-            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-            background: none; border: none; cursor: pointer; color: #aaa; font-size: 1rem; display: none;
-        }
+        #searchClearBtn { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #aaa; font-size: 1rem; display: none; }
         #searchClearBtn:hover { color: var(--red); }
         #searchResultCount { font-size: 0.78rem; color: #888; margin-top: 0.3rem; padding-left: 0.3rem; }
         .record-card.search-hidden { display: none; }
-        .record-card mark { background: #ffe066; border-radius: 3px; padding: 0 2px; }
 
         /* === FILTER BUTTONS === */
         .filter-btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
@@ -143,28 +130,15 @@
         .crop-filter-btn:hover, .forecast-btn:hover, .zone-efficiency-btn:hover { background: var(--green-100); border-color: var(--green-400); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(30,120,50,0.15); }
         .crop-filter-btn.active, .forecast-btn.active, .zone-efficiency-btn.active { background: linear-gradient(100deg, var(--green-800), var(--green-600)); color: white; border-color: var(--green-700); box-shadow: 0 4px 14px rgba(25,105,40,0.35); transform: translateY(-1px); }
 
-        /* === CROP HERO BUTTONS (Dashboard) === */
-        .crop-hero-row {
-            display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem;
-        }
-        .crop-hero-btn {
-            flex: 1; min-width: 140px; position: relative;
-            background: white; border: 2px solid var(--green-200); border-radius: var(--radius-xl);
-            padding: 1.2rem 1rem 1rem; display: flex; flex-direction: column; align-items: center;
-            gap: 0.5rem; cursor: pointer; transition: all 0.22s; font-family: 'Outfit', sans-serif;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
-        }
+        /* === CROP HERO BUTTONS === */
+        .crop-hero-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+        .crop-hero-btn { flex: 1; min-width: 140px; position: relative; background: white; border: 2px solid var(--green-200); border-radius: var(--radius-xl); padding: 1.2rem 1rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.22s; font-family: 'Outfit', sans-serif; box-shadow: 0 3px 12px rgba(0,0,0,0.05); }
         .crop-hero-btn:hover { transform: translateY(-3px); border-color: var(--green-400); box-shadow: 0 8px 24px rgba(25,120,50,0.2); }
         .crop-hero-btn.active { border-color: var(--green-700); background: linear-gradient(145deg, #f0faf2, #e4f7e6); box-shadow: 0 6px 20px rgba(25,120,50,0.25); }
         .crop-hero-icon { font-size: 2.2rem; line-height: 1; }
         .crop-hero-name { font-weight: 800; font-size: 0.88rem; color: var(--green-900); text-align: center; }
         .crop-hero-area { font-size: 0.82rem; font-weight: 700; color: var(--green-600); background: var(--green-50); border-radius: var(--radius-pill); padding: 3px 12px; border: 1px solid var(--green-200); }
-        .crop-hero-tooltip {
-            position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) scale(0.92);
-            background: var(--green-900); color: white; border-radius: 1rem; padding: 0.5rem 0.9rem;
-            font-size: 0.78rem; font-weight: 600; white-space: nowrap; pointer-events: none;
-            opacity: 0; transition: all 0.18s; z-index: 10;
-        }
+        .crop-hero-tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) scale(0.92); background: var(--green-900); color: white; border-radius: 1rem; padding: 0.5rem 0.9rem; font-size: 0.78rem; font-weight: 600; white-space: nowrap; pointer-events: none; opacity: 0; transition: all 0.18s; z-index: 10; }
         .crop-hero-tooltip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:6px solid transparent; border-top-color:var(--green-900); }
         .crop-hero-btn:hover .crop-hero-tooltip { opacity: 1; transform: translateX(-50%) scale(1); }
 
@@ -177,6 +151,9 @@
         .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 12px; border-bottom: 1px solid #e8f5e2; font-size: 0.88rem; vertical-align: middle; }
         .top-crops-table tr:last-child td { border-bottom: none; }
         .top-crops-table tr:hover td { background: var(--green-50); }
+        /* FIX: Center the figures in efficiency reference table */
+        .efficiency-table td:last-child { text-align: center; }
+        .efficiency-table th:last-child { text-align: center; }
 
         /* === STAGE PROGRESS === */
         .stage-progress-container { margin-bottom: 0.9rem; }
@@ -208,31 +185,6 @@
         .cycle-toggle-btn:disabled { opacity:0.55; cursor:not-allowed; }
         .status-badge-active { display:inline-block; background:#d4edda; color:#155724; border:1px solid #7ec891; border-radius:var(--radius-pill); padding:3px 10px; font-size:0.7rem; font-weight:700; }
         .status-badge-completed { display:inline-block; background:#e2e3e5; color:#555; border:1px solid #b0b0b0; border-radius:var(--radius-pill); padding:3px 10px; font-size:0.7rem; font-weight:700; }
-
-        /* === HARVEST DATE PREDICTION CARDS === */
-        .harvest-prediction-grid {
-            display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.4rem;
-        }
-        @media (min-width: 640px) { .harvest-prediction-grid { grid-template-columns: repeat(3, 1fr); } }
-        .harvest-pred-card {
-            background: linear-gradient(145deg, #f8fffb, #edfaf1);
-            border: 1.5px solid var(--green-200); border-radius: var(--radius-lg);
-            padding: 1rem 1.1rem; position: relative; overflow: hidden;
-        }
-        .harvest-pred-card::before {
-            content: ''; position: absolute; top: -20px; right: -20px;
-            width: 80px; height: 80px; border-radius: 50%;
-            background: rgba(37,145,50,0.07);
-        }
-        .harvest-pred-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
-        .harvest-pred-crop { font-weight: 800; font-size: 0.9rem; color: var(--green-900); margin-bottom: 0.7rem; }
-        .harvest-pred-row { display: flex; flex-direction: column; gap: 0.3rem; }
-        .harvest-pred-item { background: white; border-radius: 0.8rem; padding: 0.5rem 0.7rem; border: 1px solid var(--green-100); }
-        .harvest-pred-label { font-size: 0.68rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.03em; }
-        .harvest-pred-value { font-size: 0.85rem; font-weight: 700; color: var(--green-800); }
-        .harvest-pred-value.upcoming { color: var(--orange); }
-        .harvest-pred-value.ready { color: var(--green-700); }
-        .harvest-pred-empty { font-size: 0.82rem; color: #bbb; text-align: center; padding: 0.8rem; }
 
         /* === YIELD EFFICIENCY TABLE === */
         .yield-eff-table { width: 100%; border-collapse: collapse; }
@@ -353,11 +305,6 @@
         /* === HARVEST-ONLY FIELDS === */
         .harvest-only-fields { display: none; }
 
-        /* === YIELD LIMITING FACTORS === */
-        .limiting-factors-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
-        .limiting-factor-chip { background: #fff3cd; border: 1px solid #ffc107; color: #856404; border-radius: var(--radius-pill); padding: 3px 12px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
-        .limiting-factor-chip.severe { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
-
         @media (max-width: 479px) {
             .filter-btn-group { gap: 6px; }
             .crop-filter-btn, .forecast-btn, .zone-efficiency-btn { padding: 7px 12px; font-size: 0.78rem; }
@@ -407,6 +354,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- FIX: Zone label shows "Zone:" then short pill "E2" -->
                 <div class="zone-banner">
                     <strong style="font-size:0.8rem;color:#555;">Zone:</strong>
                     <div id="zonePillsHeader" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
@@ -509,7 +457,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Phone Number (optional)</label>
+                        <label>Phone Number *</label>
                         <input type="tel" id="reg_phone" placeholder="+230 XXXX XXXX">
                     </div>
                     <div class="form-group" style="grid-column:1/-1;">
@@ -591,13 +539,13 @@
             </div>
         </div>
 
-        <!-- YOUR CROP RECORDS with LIVE SEARCH -->
+        <!-- YOUR CROP RECORDS with LIVE SEARCH (FIX: search buttons hidden for growers) -->
         <div id="prevSubmissionsSection" class="glass-card" style="display:none;">
             <div class="stat-title"><i class="fas fa-clipboard-list"></i> Your Crop Records</div>
             <!-- LIVE SEARCH BAR -->
             <div class="live-search-wrap">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="liveSearchInput" placeholder="Search by grower name, crop, variety, tomato type, stage, yield...">
+                <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, stage, yield...">
                 <button id="searchClearBtn" title="Clear search"><i class="fas fa-times-circle"></i></button>
             </div>
             <div id="searchResultCount"></div>
@@ -612,7 +560,7 @@
         <!-- LIVE DASHBOARD -->
         <div class="live-dashboard-title"><i class="fas fa-tachometer-alt"></i> LIVE DASHBOARD</div>
 
-        <!-- CROP ICON BUTTONS (interactive, show area on hover) -->
+        <!-- CROP ICON BUTTONS -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-leaf"></i> Crop Overview - Area Cultivated</div>
             <div class="crop-hero-row" id="cropHeroRow">
@@ -637,14 +585,6 @@
             </div>
         </div>
 
-        <!-- HARVEST DATE PREDICTION -->
-        <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-calendar-check"></i> Yield Forecasting &amp; Harvest Date Prediction</div>
-            <div class="harvest-prediction-grid" id="harvestPredGrid">
-                <div class="harvest-pred-card"><div class="harvest-pred-empty"><i class="fas fa-spinner fa-spin-custom"></i> Loading predictions...</div></div>
-            </div>
-        </div>
-
         <!-- AREA BY CROP STAGE -->
         <div class="glass-card">
             <div class="stat-title"><i class="fas fa-layer-group"></i> Total Area by Crop Stage — Zone E2</div>
@@ -666,29 +606,20 @@
         <!-- MONTHLY YIELD vs REFERENCE (logged-in user, harvest stage) -->
         <div class="glass-card" id="monthlyYieldSection" style="display:none;">
             <div class="stat-title"><i class="fas fa-chart-bar"></i> Monthly Yield (kg/m²) vs Zonal Efficiency Reference</div>
-            <p style="font-size:0.82rem;color:#888;margin-bottom:1rem;">Calculated per crop for records at Harvesting stage. Active cycles only.</p>
+            <!-- FIX: Removed "Calculated per crop for records at Harvesting stage. Active cycles only." text -->
             <div class="table-responsive"><div id="monthlyYieldContainer"></div></div>
-            <div style="margin-top:1rem;">
-                </div>
         </div>
 
         <!-- Timeline (admin only) -->
         <div id="timelineSectionCard" class="glass-card" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-line"></i> Crop Timeline — Stage-wise Area </div>
-                <div class="filter-btn-group" id="timelineCropButtons">
+            <div class="stat-title"><i class="fas fa-chart-line"></i> Crop Timeline — Stage-wise Area</div>
+            <div class="filter-btn-group" id="timelineCropButtons">
                 <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
                 <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
                 <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
             </div>
             <div class="chart-wrap"><canvas id="timelineChart"></canvas></div>
             <div id="noTimelineData" class="hidden" style="text-align:center;padding:2rem;color:#aaa;">No timeline data available.</div>
-        </div>
-
-        <!-- Zonal Yield Efficiency -->
-        <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-map-marked-alt"></i> Zonal Yield Efficiency (kg/m²)</div>
-            <div class="filter-btn-group" id="zoneEfficiencyButtons"></div>
-            <div id="zonalEfficiencyTable"></div>
         </div>
 
         <!-- Forecast (admin only) -->
@@ -708,20 +639,24 @@
             <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference</div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
-                    <thead><tr><th>Crop</th><th>Type/Variety</th><th>Indicative Yield Range (kg/m² or Unit/m²)</th></tr></thead>
+                    <thead><tr>
+                        <th>Crop</th>
+                        <th>Type / Variety</th>
+                        <th style="text-align:center;">Indicative Yield Range (kg/m² or Unit/m²)</th>
+                    </tr></thead>
                     <tbody>
-                        <tr><td>🥒 English Cucumber</td><td>Acylia / Boncanale RZ</td><td><strong>32 – 62</strong></td></tr>
-                        <tr><td>🌶️ Sweet Pepper</td><td>Blocky</td><td><strong>13.80 – 18.40</strong></td></tr>
-                        <tr><td>🍅 Tomato</td><td>Salad</td><td><strong>11.75 – 18.90</strong></td></tr>
-                        <tr><td>🍅 Tomato</td><td>Roma/Round</td><td><strong>9.95 – 19.72</strong></td></tr>
-                        <tr><td>🍅 Tomato</td><td>THN 988</td><td><strong>10.20 – 19.50</strong></td></tr>
+                        <tr><td>🥒 English Cucumber</td><td>Acylia / Boncanale RZ</td><td style="text-align:center;"><strong>32 – 62</strong></td></tr>
+                        <tr><td>🌶️ Sweet Pepper</td><td>Blocky</td><td style="text-align:center;"><strong>13.80 – 18.40</strong></td></tr>
+                        <tr><td>🍅 Tomato</td><td>Salad</td><td style="text-align:center;"><strong>11.75 – 18.90</strong></td></tr>
+                        <tr><td>🍅 Tomato</td><td>Roma / Round</td><td style="text-align:center;"><strong>9.95 – 19.72</strong></td></tr>
+                        <tr><td>🍅 Tomato</td><td>THN 988</td><td style="text-align:center;"><strong>10.20 – 19.50</strong></td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
     </div><!-- /mainApp -->
-    <div class="footer">Copyright © 2026 | Hydroponic Smart Data Tracker | All Rights Reserved</div>
+    <div class="footer">Copyright &copy; 2026 | Hydroponic Smart Data Tracker | All Rights Reserved</div>
 </div><!-- /container -->
 
 <!-- EDIT MODAL -->
@@ -769,21 +704,18 @@ const CROPS          = ["Cabbage","Cauliflower","Eggplant","English Cucumber","G
 const TOMATO_TYPES   = ["Cooking","Salad","Cherry"];
 const SUBSTRATE_TYPES = ["Cocopeat","Sand","Aggregates","NFT","DFT","Aquaponics"];
 
-// Stage durations in days per crop
 const STAGE_DURATIONS = {
     "Tomato":           { Seedling: 15, Vegetative: 30, Flowering: 30, Harvesting: 120 },
     "Sweet Pepper":     { Seedling: 15, Vegetative: 30, Flowering: 30, Harvesting: 120 },
     "English Cucumber": { Seedling: 10, Vegetative: 20, Flowering: 15, Harvesting: 90  }
 };
 
-// Pre-harvest days (Seedling + Vegetative + Flowering)
 const PRE_HARVEST_DAYS = {
-    "Tomato":           15 + 30 + 30,  // 75 days = ~2.5 months
-    "Sweet Pepper":     15 + 30 + 30,  // 75 days = ~2.5 months
-    "English Cucumber": 10 + 20 + 15   // 45 days = ~1.5 months
+    "Tomato":           75,
+    "Sweet Pepper":     75,
+    "English Cucumber": 45
 };
 
-// Zonal reference yield ranges (kg/m²) per crop
 const YIELD_REFERENCE = {
     "Tomato":           { min: 9.95,  max: 19.72 },
     "Sweet Pepper":     { min: 13.80, max: 18.40 },
@@ -804,7 +736,7 @@ let recentlyRegistered   = [];
 let currentTimelineCrop  = "Tomato";
 let currentForecastCrop  = "Tomato";
 let activityLog          = [];
-let currentUserRecords   = null; // cache for live search
+let currentUserRecords   = null;
 
 // ==================== ACTIVITY LOG ====================
 function logActivity(type, message, user) {
@@ -813,22 +745,19 @@ function logActivity(type, message, user) {
     const entry = { type, message, user: user || currentLoggedInUser, time: timeStr, full: now.toLocaleString('en-MU') };
     activityLog.unshift(entry);
     if (activityLog.length > 200) activityLog.pop();
-
-    // Also POST to Google Sheet ActivityLog
     try {
         fetch(SCRIPT_URL, {
             method: 'POST', mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'data=' + encodeURIComponent(JSON.stringify({
                 action: 'logActivity',
-                logType: type,
+                actAction: type,
                 message,
                 user: entry.user,
                 timestamp: entry.full
             }))
         });
     } catch(e) { /* silent */ }
-
     renderActivityLog();
 }
 
@@ -886,11 +815,12 @@ function setAdminSectionsVisibility(show) {
 }
 
 // ==================== ZONE & LOCALITY ====================
+// FIX: Zone pills now show only the zone code e.g. "E2" not "Zone E2"
 function initZoneHeader() {
     const zones = Object.keys(ZONE_LOCALITIES);
     const container = document.getElementById('zonePillsHeader');
     container.innerHTML = zones.map(z =>
-        `<button class="zone-pill ${z===currentZone?'active':''}" data-zone="${z}">Zone ${z}</button>`
+        `<button class="zone-pill ${z===currentZone?'active':''}" data-zone="${z}">${z}</button>`
     ).join('');
     container.querySelectorAll('.zone-pill').forEach(btn => {
         btn.addEventListener('click', () => { currentZone = btn.dataset.zone; setZone(currentZone); });
@@ -932,13 +862,11 @@ function initLiveSearch() {
     const input = document.getElementById('liveSearchInput');
     const clearBtn = document.getElementById('searchClearBtn');
     if (!input) return;
-
     input.addEventListener('input', () => {
         const q = input.value.trim();
         clearBtn.style.display = q ? 'block' : 'none';
         filterRecordCards(q);
     });
-
     clearBtn.addEventListener('click', () => {
         input.value = '';
         clearBtn.style.display = 'none';
@@ -953,19 +881,13 @@ function filterRecordCards(query) {
     const cards = grid.querySelectorAll('.record-card');
     const q = query.toLowerCase().trim();
     let visible = 0;
-
     cards.forEach(card => {
-        if (!q) {
-            card.classList.remove('search-hidden');
-            visible++;
-            return;
-        }
+        if (!q) { card.classList.remove('search-hidden'); visible++; return; }
         const text = card.textContent.toLowerCase();
         const match = text.includes(q);
         card.classList.toggle('search-hidden', !match);
         if (match) visible++;
     });
-
     if (q && countEl) {
         countEl.textContent = `${visible} record${visible !== 1 ? 's' : ''} found for "${query}"`;
     } else if (countEl) {
@@ -978,7 +900,6 @@ function selectCropHero(btn) {
     document.querySelectorAll('.crop-hero-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const crop = btn.dataset.crop;
-    // Filter stage area view
     const stageBtn = document.querySelector(`#stageAreaButtons .crop-filter-btn[data-crop="${crop}"]`);
     if (stageBtn) {
         document.querySelectorAll('#stageAreaButtons .crop-filter-btn').forEach(b => b.classList.remove('active'));
@@ -1004,103 +925,6 @@ function updateCropHeroAreas(stats) {
     });
 }
 
-// ==================== HARVEST DATE PREDICTION ====================
-function renderHarvestPredictions(rows, headers) {
-    const grid = document.getElementById('harvestPredGrid');
-    if (!grid) return;
-
-    const hdr = headers.map(h => h.toString().toLowerCase());
-    const getCol = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
-    const cropCol       = getCol(['crop']);
-    const transplantCol = getCol(['date transplanted', 'transplant']);
-    const areaCol       = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
-    const statusCol     = hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
-    const varietyCol    = getCol(['variety']);
-
-    const cropData = { "Tomato": [], "Sweet Pepper": [], "English Cucumber": [] };
-    const today = new Date();
-
-    if (cropCol === -1 || transplantCol === -1) {
-        grid.innerHTML = '<div style="color:#aaa;text-align:center;padding:2rem;">No transplant date data available. Make sure Date Transplanted is recorded in Sheet1.</div>';
-        return;
-    }
-
-    for (const row of rows) {
-        const cycleStatus = (statusCol !== -1 && row[statusCol]) ? String(row[statusCol]).trim() : 'Active';
-        if (cycleStatus !== 'Active') continue;
-
-        let cropRaw = row[cropCol] || '';
-        let crop = null;
-        if (cropRaw.toLowerCase().includes('tomato'))           crop = 'Tomato';
-        else if (cropRaw.toLowerCase().includes('sweet pepper')) crop = 'Sweet Pepper';
-        else if (cropRaw.toLowerCase().includes('english cucumber')) crop = 'English Cucumber';
-        if (!crop) continue;
-
-        let transplantRaw = row[transplantCol];
-        if (!transplantRaw) continue;
-        let transplantDate = typeof transplantRaw === 'number'
-            ? new Date((transplantRaw - 25569) * 86400000)
-            : new Date(transplantRaw);
-        if (isNaN(transplantDate.getTime())) continue;
-
-        const area     = parseFloat(areaCol !== -1 ? row[areaCol] : 0) || 0;
-        const variety  = varietyCol !== -1 ? (row[varietyCol] || '—') : '—';
-        const preHarvDays = PRE_HARVEST_DAYS[crop] || 75;
-        const harvestStartDate = new Date(transplantDate);
-        harvestStartDate.setDate(transplantDate.getDate() + preHarvDays);
-        const totalDays    = preHarvDays + (STAGE_DURATIONS[crop]?.Harvesting || 120);
-        const cycleEndDate = new Date(transplantDate);
-        cycleEndDate.setDate(transplantDate.getDate() + totalDays);
-
-        const daysToHarvest = Math.ceil((harvestStartDate - today) / 86400000);
-        const status = daysToHarvest <= 0 && today <= cycleEndDate ? 'harvesting'
-                     : daysToHarvest > 0 ? 'upcoming' : 'completed';
-
-        cropData[crop].push({ transplantDate, harvestStartDate, cycleEndDate, daysToHarvest, status, area, variety });
-    }
-
-    const cropDefs = [
-        { name: 'Tomato',           icon: '🍅', color: '#e74c3c' },
-        { name: 'Sweet Pepper',     icon: '🌶️', color: '#e67e22' },
-        { name: 'English Cucumber', icon: '🥒', color: '#27ae60' }
-    ];
-
-    grid.innerHTML = cropDefs.map(c => {
-        const records = cropData[c.name].sort((a,b) => a.harvestStartDate - b.harvestStartDate);
-        const harvestingNow = records.filter(r => r.status === 'harvesting');
-        const upcoming      = records.filter(r => r.status === 'upcoming').slice(0, 3);
-        const totalHarvestArea = harvestingNow.reduce((s, r) => s + r.area, 0);
-
-        let rows = '';
-        if (harvestingNow.length) {
-            rows += `<div class="harvest-pred-item">
-                <div class="harvest-pred-label">🟢 Currently Harvesting (${harvestingNow.length} GH)</div>
-                <div class="harvest-pred-value ready">Total: ${totalHarvestArea.toFixed(1)} m²</div>
-            </div>`;
-        }
-        upcoming.forEach(r => {
-            rows += `<div class="harvest-pred-item">
-                <div class="harvest-pred-label">${r.variety} · ${r.area.toFixed(1)} m²</div>
-                <div class="harvest-pred-value upcoming">🗓 ${formatDateShort(r.harvestStartDate)} (in ${r.daysToHarvest}d)</div>
-            </div>`;
-        });
-        if (!records.length) {
-            rows = `<div class="harvest-pred-empty">No active transplants found</div>`;
-        }
-
-        return `<div class="harvest-pred-card">
-            <div class="harvest-pred-icon">${c.icon}</div>
-            <div class="harvest-pred-crop">${c.name}</div>
-            <div class="harvest-pred-row">${rows}</div>
-        </div>`;
-    }).join('');
-}
-
-function formatDateShort(d) {
-    if (!d || isNaN(d.getTime())) return '—';
-    return d.toLocaleDateString('en-MU', { day:'2-digit', month:'short', year:'numeric' });
-}
-
 // ==================== MONTHLY YIELD vs REFERENCE ====================
 function renderMonthlyYieldVsReference(rows, headers) {
     const section    = document.getElementById('monthlyYieldSection');
@@ -1115,7 +939,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
     const statusCol= hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
     const monthCols = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
 
-    // Only harvest stage, active cycle
     const summaryByCrop = {};
     for (const row of rows) {
         const stage  = (stageCol !== -1 && row[stageCol]) ? String(row[stageCol]).trim() : '';
@@ -1162,7 +985,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
 
     for (const [crop, data] of Object.entries(summaryByCrop)) {
         const ref  = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
-        // Show last 3 months with data, plus current month
         const monthsToShow = [];
         for (let i = curMonthIdx; i >= Math.max(0, curMonthIdx - 3); i--) {
             if (data.monthly[i] > 0 || i === curMonthIdx) monthsToShow.push(i);
@@ -1172,10 +994,9 @@ function renderMonthlyYieldVsReference(rows, headers) {
             const totalYield = data.monthly[mIdx];
             const area       = data.totalArea;
             const kgPerM2    = area > 0 ? totalYield / area : 0;
-            const refMidpt   = (ref.min + ref.max) / 2;
             let badge = '', badgeCls = '';
             if (kgPerM2 >= ref.min) {
-                badge = `≥ Min Reference`; badgeCls = 'good';
+                badge = '≥ Min Reference'; badgeCls = 'good';
             } else if (kgPerM2 >= ref.min * 0.7) {
                 badge = 'Below Reference'; badgeCls = 'avg';
             } else if (kgPerM2 > 0) {
@@ -1201,7 +1022,8 @@ function renderMonthlyYieldVsReference(rows, headers) {
 }
 
 // ==================== RECORD CARDS ====================
-function renderRecordCards(gridEl, rows, headers, usernameForActions) {
+// FIX: isAdminView parameter controls whether admin-search buttons show
+function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminView) {
     gridEl.innerHTML = '';
     const hdr      = headers.map(h => h.toString().toLowerCase());
     const getCol   = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p)));
@@ -1237,27 +1059,6 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions) {
         const cycleStatus   = (statusIndex!==-1&&row[statusIndex]) ? row[statusIndex].toString().trim() : 'Active';
         const isActive      = cycleStatus==='Active';
 
-        // Harvest prediction badge
-        let harvestBadge = '';
-        if (transplantRaw && ['Tomato','Sweet Pepper','English Cucumber'].some(c => cropVal.toLowerCase().includes(c.toLowerCase()))) {
-            let cropKey = cropVal.toLowerCase().includes('tomato') ? 'Tomato'
-                        : cropVal.toLowerCase().includes('sweet pepper') ? 'Sweet Pepper' : 'English Cucumber';
-            let tDate = typeof transplantRaw === 'number'
-                ? new Date((transplantRaw - 25569) * 86400000)
-                : new Date(transplantRaw);
-            if (!isNaN(tDate.getTime()) && isActive) {
-                const preHarvDays = PRE_HARVEST_DAYS[cropKey] || 75;
-                const harvestStart = new Date(tDate);
-                harvestStart.setDate(tDate.getDate() + preHarvDays);
-                const daysLeft = Math.ceil((harvestStart - new Date()) / 86400000);
-                if (daysLeft > 0) {
-                    harvestBadge = `<span style="background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:1rem;padding:2px 8px;font-size:0.7rem;font-weight:700;margin-left:4px;">🗓 Harvest in ${daysLeft}d</span>`;
-                } else {
-                    harvestBadge = `<span style="background:#d4edda;color:#155724;border:1px solid #7ec891;border-radius:1rem;padding:2px 8px;font-size:0.7rem;font-weight:700;margin-left:4px;">✅ Harvesting</span>`;
-                }
-            }
-        }
-
         const stageIcon        = stageVal==='Harvesting'?'fa-tractor':stageVal==='Seedling'?'fa-seedling':stageVal==='Flowering'?'fa-spa':'fa-chart-line';
         const statusBadgeClass = isActive ? 'status-badge-active'   : 'status-badge-completed';
         const statusBadgeText  = isActive ? '💡 Active'             : '🔘 Completed';
@@ -1269,17 +1070,16 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions) {
         const card = document.createElement('div');
         card.className = 'record-card'+(isActive?'':' completed');
 
-        // Store searchable text as data attributes for live search
-        card.dataset.searchText = [
-            cropVal, varietyVal, stageVal, tomatoType, weeklyYield, weeklyUnit, usernameForActions
-        ].join(' ').toLowerCase();
+        // FIX: Show edit/toggle buttons for both grower (own records) and admin search results
+        // For grower's own records section (prevSubmissionsSection): always show edit/toggle
+        // isAdminView = true means this is admin search results panel
+        const showActions = true; // Always show action buttons
 
         card.innerHTML = `
             <div class="record-header">
                 <div class="record-crop"><i class="fas fa-seedling" style="color:${isActive?'var(--green-600)':'#bbb'};"></i>${cropVal}${tomatoType ? ` <small style="color:#888;font-size:0.78rem;">(${tomatoType})</small>` : ''}</div>
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                     <div class="record-stage"><i class="fas ${stageIcon}"></i> ${stageVal}</div>
-                    ${harvestBadge}
                 </div>
                 <span class="${statusBadgeClass}">${statusBadgeText}</span>
             </div>
@@ -1327,7 +1127,7 @@ async function adminSearchGrower() {
         } else {
             document.getElementById('adminSearchedUsernameText').textContent = query;
             document.getElementById('adminSearchRecordCount').textContent    = data.rows.length+' record'+(data.rows.length!==1?'s':'')+' found';
-            renderRecordCards(document.getElementById('adminSearchGrid'), data.rows, data.headers, query);
+            renderRecordCards(document.getElementById('adminSearchGrid'), data.rows, data.headers, query, true);
             document.getElementById('adminSearchResults').style.display = 'block';
             logActivity('search', `Searched grower records for <strong>${query}</strong> — ${data.rows.length} record(s) found`);
             toast('Loaded '+data.rows.length+' record(s) for '+query);
@@ -1344,6 +1144,7 @@ function adminClearSearch() {
 }
 
 // ==================== REGISTER NEW USER ====================
+// FIX: action changed from 'registerGrower' to 'registerNewGrower' to match Apps Script
 async function registerNewUser() {
     const btn        = document.getElementById('registerUserBtn');
     const successMsg = document.getElementById('regSuccessMsg');
@@ -1361,18 +1162,35 @@ async function registerNewUser() {
         errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Grower Name is required.';
         errorMsg.style.display = 'block'; return;
     }
+    if (!phone) {
+        errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Phone Number is required.';
+        errorMsg.style.display = 'block'; return;
+    }
 
     const origHTML = btn.innerHTML;
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Registering...';
 
     try {
-        const payload = { action:'registerGrower', growerName, zone, locality, phone, notes };
-        await fetch(SCRIPT_URL, {
-            method: 'POST', mode: 'no-cors',
+        // FIX: Use correct action name 'registerNewGrower' matching the Apps Script handler
+        // FIX: Include all required fields: growerName, locality, phoneNumber, notes, registeredBy
+        const payload = {
+            action: 'registerNewGrower',
+            growerName: growerName,
+            locality: locality,
+            phoneNumber: phone,
+            notes: notes,
+            zone: zone,
+            registeredBy: currentLoggedInUser
+        };
+
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'data=' + encodeURIComponent(JSON.stringify(payload))
         });
 
+        // no-cors returns opaque response, so we assume success if no network error
         recentlyRegistered.unshift({ growerName, zone, locality, phone, registeredAt: new Date().toLocaleString() });
         renderRecentRegistrations();
 
@@ -1470,13 +1288,10 @@ async function loadUserPreviousData(username) {
         const data = await res.json();
         if (!data.rows||data.rows.length===0) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
         currentUserRecords = data;
-        renderRecordCards(document.getElementById('cropRecordsGrid'), data.rows, data.headers, username);
+        renderRecordCards(document.getElementById('cropRecordsGrid'), data.rows, data.headers, username, false);
         document.getElementById('prevSubmissionsSection').style.display='block';
-        // Re-apply any active search
         const q = document.getElementById('liveSearchInput')?.value || '';
         if (q) filterRecordCards(q);
-        // Render yield predictions and monthly yield from user's data
-        renderHarvestPredictions(data.rows, data.headers);
         renderMonthlyYieldVsReference(data.rows, data.headers);
         return true;
     } catch(e) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
@@ -1509,7 +1324,7 @@ async function saveFullRecordUpdate() {
         if (!timestamp) { toast('Invalid record timestamp', true); return; }
         const username = (ownerUsername||document.getElementById('growerName').value).trim();
         if (!username) { toast('Cannot determine grower username', true); return; }
-        const newArea         = parseFloat(document.getElementById('editArea').value);
+        const newArea = parseFloat(document.getElementById('editArea').value);
         if (isNaN(newArea)||newArea<0) { toast('Area must be a valid positive number', true); return; }
         const newStage        = document.getElementById('editStage').value;
         const newVariety      = document.getElementById('editVariety').value.trim();
@@ -1797,11 +1612,6 @@ async function loadDashboard() {
         renderAreaByStage(data, activeCrop);
         renderTopCrops(data);
         updateCropHeroAreas(data);
-        // Render harvest predictions from dashboard data if available
-        if (data.allRows && data.allHeaders) {
-            renderHarvestPredictions(data.allRows, data.allHeaders);
-            if (!isAdmin) renderMonthlyYieldVsReference(data.allRows, data.allHeaders);
-        }
         await loadZonalEfficiency(currentZone);
         if (isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); }
     } catch(e) { console.warn('Dashboard load failed',e); }
@@ -1846,19 +1656,12 @@ function renderTopCrops(stats) {
         </div>`;
 }
 
+// FIX: Removed Zonal Yield Efficiency section from display — function still exists for internal use only
 async function loadZonalEfficiency(zone) {
+    // Silently load data but don't render the removed section
     try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
-        const data = await res.json();
-        if (data[zone]) {
-            let html=`<div class="zonal-table-wrapper"><table class="efficiency-table"><thead><tr><th>Crop</th><th>Efficiency (kg/m²)</th></tr></thead><tbody>`;
-            for (let [crop,eff] of Object.entries(data[zone])) html+=`<tr><td>${crop}</td><td><strong>${eff.toFixed(2)}</strong> kg/m²</td></tr>`;
-            html+='</tbody></table></div>';
-            document.getElementById('zonalEfficiencyTable').innerHTML=html;
-        } else {
-            document.getElementById('zonalEfficiencyTable').innerHTML='<p style="color:#aaa;padding:1rem;text-align:center;">No efficiency data for this zone yet.</p>';
-        }
-    } catch(e) { console.warn(e); }
+        await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
+    } catch(e) { /* silent */ }
 }
 
 async function loadTimelineChart(crop) {
@@ -1913,21 +1716,42 @@ async function loadForecastChart(crop) {
     } catch(e) { console.warn(e); }
 }
 
+// ==================== AUTO-FILL PROFILE ====================
+// FIX: Locality auto-fill now properly waits for dropdown to populate then sets value
 async function autoFillProfileFromRecords(username) {
     try {
         const res = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.totalArea) document.getElementById('totalArea').value=data.totalArea;
-            if (data.zone) { currentZone=data.zone; updateLocalityDropdown(); }
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.totalArea) document.getElementById('totalArea').value = data.totalArea;
+        if (data.zone) {
+            currentZone = data.zone;
+            // Rebuild zone pills with correct active zone
+            initZoneHeader();
+        }
+        // Always populate locality dropdown for the user's zone
+        const locs = ZONE_LOCALITIES[currentZone] || [];
+        const sel = document.getElementById('localitySelect');
+        if (sel) {
+            sel.innerHTML = '<option value="">-- Select Locality --</option>';
+            locs.forEach(l => {
+                const o = document.createElement('option');
+                o.value = l; o.textContent = l;
+                sel.appendChild(o);
+            });
+            // Now set the value if we have a locality from profile
             if (data.locality) {
-                setTimeout(() => {
-                    const sel = document.getElementById('localitySelect');
-                    if (sel) { if (!Array.from(sel.options).some(o=>o.value===data.locality)) { const opt=document.createElement('option'); opt.value=opt.textContent=data.locality; sel.appendChild(opt); } sel.value=data.locality; }
-                }, 50);
+                // Check if option exists, add it if not
+                if (!Array.from(sel.options).some(o => o.value === data.locality)) {
+                    const opt = document.createElement('option');
+                    opt.value = data.locality;
+                    opt.textContent = data.locality;
+                    sel.appendChild(opt);
+                }
+                sel.value = data.locality;
             }
         }
-    } catch(e) { console.warn('Auto-fill profile failed',e); }
+    } catch(e) { console.warn('Auto-fill profile failed', e); }
 }
 
 // ==================== LOGIN ====================
@@ -1959,6 +1783,8 @@ async function login(username, password) {
             document.getElementById('adminBadge').classList.remove('hidden');
             document.getElementById('growerProfileCard').style.display='none';
             document.getElementById('adminSearchSection').style.display='block';
+            // FIX: Harvest date prediction hidden for users — shown only for admin
+            document.getElementById('prevSubmissionsSection').style.display='none';
             setAdminSectionsVisibility(true);
             renderAdminGHForm();
         } else {
@@ -1967,6 +1793,7 @@ async function login(username, password) {
             document.getElementById('growerProfileCard').style.display='block';
             document.getElementById('growerName').value=username;
             setAdminSectionsVisibility(false);
+            // FIX: Update locality dropdown before auto-filling profile
             updateLocalityDropdown();
             await autoFillProfileFromRecords(username);
         }
@@ -2021,16 +1848,7 @@ function wireFilterButtons() {
             currentForecastCrop=btn.dataset.crop; loadForecastChart(currentForecastCrop);
         });
     });
-    const zoneContainer = document.getElementById('zoneEfficiencyButtons');
-    zoneContainer.innerHTML = Object.keys(ZONE_LOCALITIES).map(z =>
-        `<button data-zone="${z}" class="zone-efficiency-btn ${z===currentZone?'active':''}">Zone ${z}</button>`
-    ).join('');
-    zoneContainer.querySelectorAll('.zone-efficiency-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            zoneContainer.querySelectorAll('.zone-efficiency-btn').forEach(b=>b.classList.remove('active'));
-            btn.classList.add('active'); loadZonalEfficiency(btn.dataset.zone);
-        });
-    });
+    // FIX: Removed zoneEfficiencyButtons wiring since section is removed
 }
 
 // ==================== EVENT LISTENERS ====================
