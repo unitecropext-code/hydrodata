@@ -201,7 +201,13 @@
         .legend-bar strong { color:var(--green-800); font-weight:800; }
         .legend-item { display:inline-flex; align-items:center; gap:5px; border-radius:var(--radius-pill); padding:3px 12px; font-weight:700; font-size:0.78rem; }
 
-        /* === ADMIN SEARCH === */
+        /* === ADMIN LIVE FILTER === */
+        .admin-quick-filter-btn { padding: 5px 13px; border-radius: var(--radius-pill); border: 1.5px solid var(--green-200); background: var(--green-50); color: var(--green-800); font-weight: 600; font-size: 0.78rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.15s; white-space: nowrap; }
+        .admin-quick-filter-btn:hover { background: var(--green-100); border-color: var(--green-400); }
+        .admin-quick-filter-btn.active { background: linear-gradient(100deg, var(--green-800), var(--green-600)); color: white; border-color: var(--green-700); }
+        #adminLiveFilterInput:focus { border-color: var(--green-600) !important; box-shadow: 0 0 0 3px rgba(37,145,50,0.12); }
+
+        /* === ADMIN SEARCH (extra) === */
         .admin-search-panel { background: linear-gradient(115deg,#f0faf0,#e6f7df); border:1.5px solid var(--green-200); border-radius:var(--radius-lg); padding:1.1rem 1.2rem; margin-bottom:1.2rem; }
         .admin-search-row { display:flex; gap:0.7rem; flex-wrap:wrap; align-items:center; }
         .admin-search-input { flex:1; min-width:160px; padding:0.75rem 1rem; border-radius:var(--radius-pill); border:1.5px solid var(--green-200); font-size:0.92rem; background:white; outline:none; font-family:'Outfit',sans-serif; transition: border-color 0.2s; }
@@ -319,7 +325,7 @@
         <div class="login-card">
             <div class="login-logo"><i class="fas fa-leaf"></i></div>
             <div class="login-header">MoHydroponic Smart Tracker</div>
-            <div class="login-sub"> Real-Time Crop Insights </div>
+            <div class="login-sub">Real-Time Crop Insights &amp; Management</div>
             <div class="login-input-wrap">
                 <i class="fas fa-user icon"></i>
                 <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
@@ -414,6 +420,30 @@
                         <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter grower username to search..." autocomplete="off">
                         <button id="adminSearchBtn" class="admin-search-btn"><i class="fas fa-search"></i> Search</button>
                         <button id="adminClearSearchBtn" class="admin-clear-btn"><i class="fas fa-times"></i> Clear</button>
+                    </div>
+                    <!-- LIVE FILTER PANEL (shown after search results load) -->
+                    <div id="adminLiveFilterPanel" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1.5px dashed var(--green-200);">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.7rem;flex-wrap:wrap;">
+                            <span style="font-weight:800;font-size:0.85rem;color:var(--green-800);"><i class="fas fa-filter"></i> Live Filter:</span>
+                            <div style="position:relative;flex:1;min-width:200px;">
+                                <i class="fas fa-search" style="position:absolute;left:0.85rem;top:50%;transform:translateY(-50%);color:var(--green-400);font-size:0.85rem;pointer-events:none;"></i>
+                                <input type="text" id="adminLiveFilterInput" placeholder="Type to filter: crop, variety, stage, yield, tomato type..." autocomplete="off"
+                                    style="width:100%;padding:0.65rem 1rem 0.65rem 2.4rem;border:2px solid var(--green-200);border-radius:var(--radius-pill);background:white;font-size:0.88rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s,box-shadow 0.2s;">
+                                <button id="adminLiveFilterClear" title="Clear filter" style="position:absolute;right:0.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:0.95rem;display:none;"><i class="fas fa-times-circle"></i></button>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                            <span style="font-size:0.78rem;font-weight:700;color:#888;">Quick:</span>
+                            <button class="admin-quick-filter-btn" data-filter="">All</button>
+                            <button class="admin-quick-filter-btn" data-filter="tomato">🍅 Tomato</button>
+                            <button class="admin-quick-filter-btn" data-filter="sweet pepper">🌶️ Sweet Pepper</button>
+                            <button class="admin-quick-filter-btn" data-filter="english cucumber">🥒 Cucumber</button>
+                            <button class="admin-quick-filter-btn" data-filter="seedling">Seedling</button>
+                            <button class="admin-quick-filter-btn" data-filter="harvesting">Harvesting</button>
+                            <button class="admin-quick-filter-btn" data-filter="active">💡 Active</button>
+                            <button class="admin-quick-filter-btn" data-filter="completed">🔘 Completed</button>
+                        </div>
+                        <div id="adminFilterResultCount" style="font-size:0.78rem;color:#888;margin-top:0.4rem;padding-left:0.2rem;"></div>
                     </div>
                 </div>
                 <div id="adminSearchResults" style="display:none;">
@@ -545,7 +575,7 @@
             <!-- LIVE SEARCH BAR -->
             <div class="live-search-wrap">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, stage, yield...">
+                <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, stage, tomato type, yield, status...">
                 <button id="searchClearBtn" title="Clear search"><i class="fas fa-times-circle"></i></button>
             </div>
             <div id="searchResultCount"></div>
@@ -605,7 +635,7 @@
 
         <!-- MONTHLY YIELD vs REFERENCE (logged-in user, harvest stage) -->
         <div class="glass-card" id="monthlyYieldSection" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-bar"></i> Monthly Yield (kg/m²) vs Zonal Efficiency Reference</div>
+            <div class="stat-title"><i class="fas fa-chart-bar"></i> Harvest Cycle Yield (kg/m²) vs Zonal Efficiency Reference</div>
             <!-- FIX: Removed "Calculated per crop for records at Harvesting stage. Active cycles only." text -->
             <div class="table-responsive"><div id="monthlyYieldContainer"></div></div>
         </div>
@@ -634,9 +664,9 @@
             <div id="noForecastData" class="hidden" style="text-align:center;padding:2rem;color:#aaa;">No forecast data available.</div>
         </div>
 
-        <!-- Zonal Reference Table -->
-        <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference</div>
+        <!-- Zonal Reference Table — ADMIN ONLY -->
+        <div class="glass-card" id="yieldEfficiencyRefCard" style="display:none;">
+            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference <span class="admin-badge" style="font-size:0.7rem;vertical-align:middle;margin-left:6px;">ADMIN</span></div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
                     <thead><tr>
@@ -808,7 +838,7 @@ function formatToMauritiusTime(ts) {
 }
 
 function setAdminSectionsVisibility(show) {
-    ['timelineSectionCard','forecastSectionCard'].forEach(id => {
+    ['timelineSectionCard','forecastSectionCard','yieldEfficiencyRefCard'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = show ? 'block' : 'none';
     });
@@ -883,13 +913,15 @@ function filterRecordCards(query) {
     let visible = 0;
     cards.forEach(card => {
         if (!q) { card.classList.remove('search-hidden'); visible++; return; }
-        const text = card.textContent.toLowerCase();
-        const match = text.includes(q);
+        // Use data-search attribute first (fast, targeted), fallback to full text
+        const searchTarget = (card.dataset.search || card.textContent).toLowerCase();
+        const match = searchTarget.includes(q);
         card.classList.toggle('search-hidden', !match);
         if (match) visible++;
     });
     if (q && countEl) {
         countEl.textContent = `${visible} record${visible !== 1 ? 's' : ''} found for "${query}"`;
+        countEl.style.color = visible === 0 ? 'var(--red)' : '#888';
     } else if (countEl) {
         countEl.textContent = '';
     }
@@ -925,21 +957,28 @@ function updateCropHeroAreas(stats) {
     });
 }
 
-// ==================== MONTHLY YIELD vs REFERENCE ====================
+// ==================== CYCLE YIELD vs REFERENCE ====================
+// Reference range (min–max kg/m²) represents the TOTAL yield over the full harvest cycle
+// (typically 4–6 months). We must sum ALL monthly harvest data across the entire cycle,
+// divide by area, then compare that cumulative figure against the reference.
 function renderMonthlyYieldVsReference(rows, headers) {
     const section    = document.getElementById('monthlyYieldSection');
     const container  = document.getElementById('monthlyYieldContainer');
     if (!section || !container) return;
 
-    const hdr      = headers.map(h => h.toString().toLowerCase());
-    const getCol   = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
-    const cropCol  = getCol(['crop']);
-    const areaCol  = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
-    const stageCol = getCol(['stage']);
-    const statusCol= hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
-    const monthCols = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
+    const hdr        = headers.map(h => h.toString().toLowerCase());
+    const getCol     = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
+    const cropCol    = getCol(['crop']);
+    const areaCol    = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
+    const stageCol   = getCol(['stage']);
+    const statusCol  = hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
+    const harvestMonthsCol = getCol(['harvest months']);
+    const monthCols  = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
 
+    // Per crop: accumulate total area and total cycle yield (sum of all monthly values)
+    // Also track month-by-month data for the breakdown rows
     const summaryByCrop = {};
+
     for (const row of rows) {
         const stage  = (stageCol !== -1 && row[stageCol]) ? String(row[stageCol]).trim() : '';
         if (!stage.toLowerCase().includes('harvest')) continue;
@@ -948,21 +987,35 @@ function renderMonthlyYieldVsReference(rows, headers) {
 
         let cropRaw = row[cropCol] || '';
         let crop = null;
-        if (cropRaw.toLowerCase().includes('tomato'))             crop = 'Tomato';
-        else if (cropRaw.toLowerCase().includes('sweet pepper'))  crop = 'Sweet Pepper';
-        else if (cropRaw.toLowerCase().includes('english cucumber')) crop = 'English Cucumber';
+        if      (cropRaw.toLowerCase().includes('tomato'))             crop = 'Tomato';
+        else if (cropRaw.toLowerCase().includes('sweet pepper'))       crop = 'Sweet Pepper';
+        else if (cropRaw.toLowerCase().includes('english cucumber'))   crop = 'English Cucumber';
         if (!crop) continue;
 
         const area = parseFloat(areaCol !== -1 ? row[areaCol] : 0) || 0;
         if (area <= 0) continue;
-        if (!summaryByCrop[crop]) summaryByCrop[crop] = { totalArea: 0, monthly: new Array(12).fill(0) };
-        summaryByCrop[crop].totalArea += area;
+
+        // Harvest duration in months (4–6 months typical)
+        const harvestMonths = harvestMonthsCol !== -1 ? (parseFloat(row[harvestMonthsCol]) || 0) : 0;
+
+        // Sum monthly yield values across the entire cycle (all 12 columns that have data)
+        let cycleYieldKg = 0;
+        const monthlyBreakdown = new Array(12).fill(0);
         MONTHS.forEach((_, i) => {
             const col = monthCols[i];
-            if (col !== -1 && row[col]) {
-                summaryByCrop[crop].monthly[i] += parseFloat(row[col]) || 0;
-            }
+            const val = col !== -1 && row[col] ? parseFloat(row[col]) || 0 : 0;
+            cycleYieldKg += val;
+            monthlyBreakdown[i] = val;
         });
+
+        if (!summaryByCrop[crop]) {
+            summaryByCrop[crop] = { totalArea: 0, cycleYieldKg: 0, monthly: new Array(12).fill(0), harvestMonths: 0, recordCount: 0 };
+        }
+        summaryByCrop[crop].totalArea    += area;
+        summaryByCrop[crop].cycleYieldKg += cycleYieldKg;
+        summaryByCrop[crop].harvestMonths = Math.max(summaryByCrop[crop].harvestMonths, harvestMonths);
+        summaryByCrop[crop].recordCount  += 1;
+        MONTHS.forEach((_, i) => { summaryByCrop[crop].monthly[i] += monthlyBreakdown[i]; });
     }
 
     if (!Object.keys(summaryByCrop).length) {
@@ -971,50 +1024,82 @@ function renderMonthlyYieldVsReference(rows, headers) {
     }
     section.style.display = 'block';
 
+    const curYear     = new Date().getFullYear();
     const curMonthIdx = new Date().getMonth();
-    let html = `<table class="yield-eff-table">
+
+    let html = `
+    <div style="background:var(--green-50);border:1px solid var(--green-200);border-radius:1rem;padding:0.65rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:#555;display:flex;align-items:flex-start;gap:8px;">
+        <i class="fas fa-info-circle" style="color:var(--green-600);margin-top:2px;flex-shrink:0;"></i>
+        <span>The <strong>Reference range</strong> (kg/m²) is the <strong>expected total yield over the full harvest cycle</strong> (4–6 months). 
+        The <strong>Cycle Yield (kg/m²)</strong> shown is the cumulative total across all harvest months recorded — compared directly against this reference.</span>
+    </div>
+    <table class="yield-eff-table">
         <thead><tr>
             <th>Crop</th>
-            <th>Month</th>
-            <th>Total Yield (kg)</th>
+            <th>Cycle Total Yield (kg)</th>
             <th>Area (m²)</th>
-            <th>Yield (kg/m²)</th>
-            <th>Reference (kg/m²)</th>
-            <th>Status</th>
+            <th>Cycle Yield (kg/m²)</th>
+            <th>Reference Range (kg/m²)</th>
+            <th>Harvest Months Recorded</th>
+            <th>Status vs Reference</th>
         </tr></thead><tbody>`;
 
     for (const [crop, data] of Object.entries(summaryByCrop)) {
-        const ref  = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
-        const monthsToShow = [];
-        for (let i = curMonthIdx; i >= Math.max(0, curMonthIdx - 3); i--) {
-            if (data.monthly[i] > 0 || i === curMonthIdx) monthsToShow.push(i);
+        const ref        = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
+        const area       = data.totalArea;
+        const totalYield = data.cycleYieldKg;
+        const kgPerM2    = area > 0 ? totalYield / area : 0;
+        const icon       = crop === 'Tomato' ? '🍅' : crop === 'Sweet Pepper' ? '🌶️' : '🥒';
+
+        // Count months with actual harvest data recorded
+        const activeMonths = data.monthly
+            .map((v, i) => ({ v, i }))
+            .filter(m => m.v > 0)
+            .map(m => MONTHS[m.i].substring(0, 3));
+        const monthsRecordedStr = activeMonths.length
+            ? activeMonths.join(', ') + ` <span style="color:#aaa;font-size:0.78rem;">(${activeMonths.length} month${activeMonths.length !== 1 ? 's' : ''})</span>`
+            : '<span style="color:#bbb;">None yet</span>';
+
+        // Status: compare cumulative cycle yield/m² against the full-cycle reference range
+        let badge = '', badgeCls = '', tooltip = '';
+        if (totalYield === 0) {
+            badge = 'No Harvest Data'; badgeCls = 'avg';
+            tooltip = 'No monthly yield values have been recorded yet for this crop cycle.';
+        } else if (kgPerM2 >= ref.max) {
+            badge = '🏆 Exceeds Reference'; badgeCls = 'good';
+            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² exceeds the maximum reference of ${ref.max} kg/m².`;
+        } else if (kgPerM2 >= ref.min) {
+            badge = '✅ Within Reference'; badgeCls = 'good';
+            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² is within the reference range ${ref.min}–${ref.max} kg/m².`;
+        } else if (kgPerM2 >= ref.min * 0.75) {
+            badge = '⚠️ Below Reference'; badgeCls = 'avg';
+            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² is below the minimum reference of ${ref.min} kg/m² but within 75%.`;
+        } else {
+            badge = '🔴 Low Yield'; badgeCls = 'low';
+            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² is significantly below the reference minimum of ${ref.min} kg/m².`;
         }
 
-        monthsToShow.reverse().forEach((mIdx, idx) => {
-            const totalYield = data.monthly[mIdx];
-            const area       = data.totalArea;
-            const kgPerM2    = area > 0 ? totalYield / area : 0;
-            let badge = '', badgeCls = '';
-            if (kgPerM2 >= ref.min) {
-                badge = '≥ Min Reference'; badgeCls = 'good';
-            } else if (kgPerM2 >= ref.min * 0.7) {
-                badge = 'Below Reference'; badgeCls = 'avg';
-            } else if (kgPerM2 > 0) {
-                badge = 'Low Yield'; badgeCls = 'low';
-            } else {
-                badge = 'No Data'; badgeCls = 'avg';
-            }
+        // Progress bar: how far through the reference range (capped at ref.max)
+        const progressPct = ref.max > 0 ? Math.min(100, (kgPerM2 / ref.max) * 100) : 0;
+        const minMarkerPct = ref.max > 0 ? Math.min(100, (ref.min / ref.max) * 100) : 0;
+        const barColor = badgeCls === 'good' ? 'var(--green-600)' : badgeCls === 'avg' ? '#e67e22' : 'var(--red)';
 
-            html += `<tr>
-                ${idx === 0 ? `<td rowspan="${monthsToShow.length}" style="font-weight:800;vertical-align:top;padding-top:14px;">${crop === 'Tomato' ? '🍅' : crop === 'Sweet Pepper' ? '🌶️' : '🥒'} ${crop}</td>` : ''}
-                <td>${MONTHS[mIdx].substring(0,3)} ${new Date().getFullYear()}</td>
-                <td>${totalYield.toFixed(1)} kg</td>
-                <td>${area.toFixed(1)} m²</td>
-                <td><strong>${kgPerM2.toFixed(2)}</strong></td>
-                <td>${ref.min} – ${ref.max}</td>
-                <td><span class="yield-eff-badge ${badgeCls}">${badge}</span></td>
-            </tr>`;
-        });
+        html += `<tr title="${tooltip}">
+            <td style="font-weight:800;">${icon} ${crop}</td>
+            <td><strong>${totalYield.toFixed(1)} kg</strong></td>
+            <td>${area.toFixed(1)} m²</td>
+            <td>
+                <strong style="font-size:1.05rem;color:${barColor};">${kgPerM2.toFixed(2)}</strong>
+                <div style="margin-top:5px;position:relative;background:#eee;border-radius:1rem;height:8px;width:100%;min-width:100px;">
+                    <div style="position:absolute;left:0;top:0;height:8px;border-radius:1rem;width:${progressPct}%;background:${barColor};transition:width 0.5s;"></div>
+                    <div style="position:absolute;top:-3px;height:14px;width:2px;background:var(--green-800);border-radius:1px;left:${minMarkerPct}%;" title="Min reference: ${ref.min}"></div>
+                </div>
+                <div style="font-size:0.68rem;color:#aaa;margin-top:3px;">of ${ref.max} kg/m² max</div>
+            </td>
+            <td><strong>${ref.min} – ${ref.max}</strong> kg/m²</td>
+            <td style="font-size:0.83rem;">${monthsRecordedStr}</td>
+            <td><span class="yield-eff-badge ${badgeCls}" title="${tooltip}">${badge}</span></td>
+        </tr>`;
     }
 
     html += '</tbody></table>';
@@ -1069,6 +1154,12 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminVie
 
         const card = document.createElement('div');
         card.className = 'record-card'+(isActive?'':' completed');
+        // Build searchable data string for fast live filtering
+        const searchData = [
+            cropVal, stageVal, varietyVal, tomatoType, weeklyYield, weeklyUnit,
+            isActive ? 'active' : 'completed', harvestMonths
+        ].join(' ').toLowerCase();
+        card.dataset.search = searchData;
 
         // FIX: Show edit/toggle buttons for both grower (own records) and admin search results
         // For grower's own records section (prevSubmissionsSection): always show edit/toggle
@@ -1108,6 +1199,64 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminVie
     }
 }
 
+// ==================== ADMIN LIVE FILTER ====================
+function initAdminLiveFilter() {
+    const input    = document.getElementById('adminLiveFilterInput');
+    const clearBtn = document.getElementById('adminLiveFilterClear');
+    if (!input) return;
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        clearBtn.style.display = q ? 'block' : 'none';
+        applyAdminLiveFilter(q);
+    });
+    clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.style.display = 'none';
+        // reset quick filter buttons
+        document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === ''));
+        applyAdminLiveFilter('');
+    });
+    // Wire quick filter buttons
+    document.querySelectorAll('.admin-quick-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filterVal = btn.dataset.filter;
+            input.value = filterVal;
+            clearBtn.style.display = filterVal ? 'block' : 'none';
+            applyAdminLiveFilter(filterVal);
+        });
+    });
+    // Set "All" as default active
+    const allBtn = document.querySelector('.admin-quick-filter-btn[data-filter=""]');
+    if (allBtn) allBtn.classList.add('active');
+}
+
+function applyAdminLiveFilter(query) {
+    const grid = document.getElementById('adminSearchGrid');
+    const countEl = document.getElementById('adminFilterResultCount');
+    if (!grid) return;
+    const cards = grid.querySelectorAll('.record-card');
+    const q = query.toLowerCase().trim();
+    let visible = 0;
+    cards.forEach(card => {
+        if (!q) { card.classList.remove('search-hidden'); visible++; return; }
+        // Use data-search attribute first (fast, targeted), fallback to full text
+        const searchTarget = (card.dataset.search || card.textContent).toLowerCase();
+        const match = searchTarget.includes(q);
+        card.classList.toggle('search-hidden', !match);
+        if (match) visible++;
+    });
+    if (countEl) {
+        if (q) {
+            countEl.textContent = `${visible} of ${cards.length} record${cards.length !== 1 ? 's' : ''} match "${query}"`;
+            countEl.style.color = visible === 0 ? 'var(--red)' : '#666';
+        } else {
+            countEl.textContent = '';
+        }
+    }
+}
+
 // ==================== ADMIN SEARCH ====================
 async function adminSearchGrower() {
     const query = document.getElementById('adminSearchInput').value.trim();
@@ -1117,6 +1266,13 @@ async function adminSearchGrower() {
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Searching...';
     document.getElementById('adminSearchResults').style.display = 'none';
     document.getElementById('adminSearchEmpty').style.display   = 'none';
+    document.getElementById('adminLiveFilterPanel').style.display = 'none';
+    // Reset live filter
+    const lfi = document.getElementById('adminLiveFilterInput');
+    if (lfi) lfi.value = '';
+    const lfc = document.getElementById('adminLiveFilterClear');
+    if (lfc) lfc.style.display = 'none';
+    document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === ''));
     try {
         const res  = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1129,6 +1285,9 @@ async function adminSearchGrower() {
             document.getElementById('adminSearchRecordCount').textContent    = data.rows.length+' record'+(data.rows.length!==1?'s':'')+' found';
             renderRecordCards(document.getElementById('adminSearchGrid'), data.rows, data.headers, query, true);
             document.getElementById('adminSearchResults').style.display = 'block';
+            // Show the live filter panel now that there are results
+            document.getElementById('adminLiveFilterPanel').style.display = 'block';
+            document.getElementById('adminFilterResultCount').textContent = '';
             logActivity('search', `Searched grower records for <strong>${query}</strong> — ${data.rows.length} record(s) found`);
             toast('Loaded '+data.rows.length+' record(s) for '+query);
         }
@@ -1141,6 +1300,9 @@ function adminClearSearch() {
     document.getElementById('adminSearchResults').style.display = 'none';
     document.getElementById('adminSearchEmpty').style.display   = 'none';
     document.getElementById('adminSearchGrid').innerHTML        = '';
+    document.getElementById('adminLiveFilterPanel').style.display = 'none';
+    const lfi = document.getElementById('adminLiveFilterInput');
+    if (lfi) lfi.value = '';
 }
 
 // ==================== REGISTER NEW USER ====================
@@ -1924,6 +2086,7 @@ initAdminTabs();
 })();
 
 setZone(currentZone);
-</script>
+initAdminLiveFilter();
+
 </body>
 </html>
