@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Hydroponic Smart Tracker | Admin &amp; Grower</title>
+    <title>MoHydroponic Smart Tracker | Admin &amp; Grower</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -87,6 +87,7 @@
         .members-banner { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(100deg, var(--green-800), var(--green-600)); color: white; border-radius: var(--radius-pill); padding: 6px 16px; font-size: 0.82rem; font-weight: 700; box-shadow: 0 4px 12px rgba(25,105,40,0.3); animation: pulse-glow 2.5s ease-in-out infinite; }
         @keyframes pulse-glow { 0%,100% { box-shadow: 0 4px 12px rgba(25,105,40,0.3); } 50% { box-shadow: 0 6px 20px rgba(25,105,40,0.55); } }
         .members-banner .count { font-size: 1.1rem; font-weight: 900; }
+        /* FIX: Zone banner pill - shorter label */
         .zone-banner { background: rgba(30,70,30,0.07); border-radius: var(--radius-pill); padding: 6px 14px; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; border: 1px solid var(--green-100); }
         .zone-pill { background: var(--green-50); border: 1.5px solid var(--green-200); padding: 7px 16px; border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; font-size: 0.82rem; white-space: nowrap; transition: all 0.18s; }
         .zone-pill:hover { background: var(--green-100); border-color: var(--green-400); }
@@ -150,6 +151,7 @@
         .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 12px; border-bottom: 1px solid #e8f5e2; font-size: 0.88rem; vertical-align: middle; }
         .top-crops-table tr:last-child td { border-bottom: none; }
         .top-crops-table tr:hover td { background: var(--green-50); }
+        /* FIX: Center the figures in efficiency reference table */
         .efficiency-table td:last-child { text-align: center; }
         .efficiency-table th:last-child { text-align: center; }
 
@@ -183,6 +185,9 @@
         .cycle-toggle-btn:disabled { opacity:0.55; cursor:not-allowed; }
         .status-badge-active { display:inline-block; background:#d4edda; color:#155724; border:1px solid #7ec891; border-radius:var(--radius-pill); padding:3px 10px; font-size:0.7rem; font-weight:700; }
         .status-badge-completed { display:inline-block; background:#e2e3e5; color:#555; border:1px solid #b0b0b0; border-radius:var(--radius-pill); padding:3px 10px; font-size:0.7rem; font-weight:700; }
+
+        /* === ADMIN-ONLY SECTIONS === */
+        .admin-only-section { display: none; }
 
         /* === YIELD EFFICIENCY TABLE === */
         .yield-eff-table { width: 100%; border-collapse: collapse; }
@@ -316,7 +321,7 @@
     <div id="loginOverlay" class="login-overlay">
         <div class="login-card">
             <div class="login-logo"><i class="fas fa-leaf"></i></div>
-            <div class="login-header">Hydroponic Smart Tracker</div>
+            <div class="login-header">MoHydroponic Smart Tracker</div>
             <div class="login-sub">Real-Time Crop Insights &amp; Management</div>
             <div class="login-input-wrap">
                 <i class="fas fa-user icon"></i>
@@ -341,7 +346,7 @@
         <div class="glass-card">
             <div class="header-flex">
                 <div class="header-brand">
-                    <h1><i class="fas fa-seedling"></i> Hydroponic Smart Tracker</h1>
+                    <h1><i class="fas fa-seedling"></i>MoHydroponic Smart Tracker</h1>
                     <div class="header-sub">
                         <span><i class="fas fa-chart-line"></i> Real-Time Insights &amp; Analytics</span>
                         <span style="color:#bbb;">|</span>
@@ -352,6 +357,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- FIX: Zone label shows "Zone:" then short pill "E2" -->
                 <div class="zone-banner">
                     <strong style="font-size:0.8rem;color:#555;">Zone:</strong>
                     <div id="zonePillsHeader" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
@@ -408,10 +414,17 @@
             <div id="searchTab" class="admin-tab-content active">
                 <div class="admin-search-panel">
                     <div class="admin-search-row">
-                        <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter grower username to search..." autocomplete="off">
+                        <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter grower username to search records..." autocomplete="off">
                         <button id="adminSearchBtn" class="admin-search-btn"><i class="fas fa-search"></i> Search</button>
                         <button id="adminClearSearchBtn" class="admin-clear-btn"><i class="fas fa-times"></i> Clear</button>
                     </div>
+                    <!-- LIVE FILTER within admin search results -->
+                    <div id="adminLiveSearchWrap" style="display:none;margin-top:0.8rem;position:relative;">
+                        <i class="fas fa-filter" style="position:absolute;left:1.1rem;top:50%;transform:translateY(-50%);color:var(--green-400);font-size:0.9rem;pointer-events:none;"></i>
+                        <input type="text" id="adminLiveFilterInput" class="admin-search-input" placeholder="Filter by: name, crop, variety, tomato type, stage, yield..." style="padding-left:2.8rem;" autocomplete="off">
+                        <button id="adminLiveFilterClear" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:1rem;display:none;" title="Clear filter"><i class="fas fa-times-circle"></i></button>
+                    </div>
+                    <div id="adminFilterCount" style="font-size:0.78rem;color:#888;padding-left:0.3rem;margin-top:0.3rem;"></div>
                 </div>
                 <div id="adminSearchResults" style="display:none;">
                     <div class="admin-search-results-header">
@@ -536,12 +549,13 @@
             </div>
         </div>
 
-        <!-- YOUR CROP RECORDS with LIVE SEARCH -->
+        <!-- YOUR CROP RECORDS with LIVE SEARCH (FIX: search buttons hidden for growers) -->
         <div id="prevSubmissionsSection" class="glass-card" style="display:none;">
             <div class="stat-title"><i class="fas fa-clipboard-list"></i> Your Crop Records</div>
+            <!-- LIVE SEARCH BAR -->
             <div class="live-search-wrap">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, stage, yield...">
+                <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, tomato type, stage, yield, status...">
                 <button id="searchClearBtn" title="Clear search"><i class="fas fa-times-circle"></i></button>
             </div>
             <div id="searchResultCount"></div>
@@ -583,7 +597,7 @@
 
         <!-- AREA BY CROP STAGE -->
         <div class="glass-card">
-            <div class="stat-title"><i class="fas fa-layer-group"></i> Total Area by Crop Stage — Zone E2</div>
+            <div class="stat-title"><i class="fas fa-layer-group"></i> Area by Crop Stage-Zone E2</div>
             <div class="filter-btn-group" id="stageAreaButtons">
                 <button data-crop="all" class="crop-filter-btn active">🌿 All Crops</button>
                 <button data-crop="Tomato" class="crop-filter-btn">🍅 Tomato</button>
@@ -601,13 +615,38 @@
 
         <!-- MONTHLY YIELD vs REFERENCE (logged-in user, harvest stage) -->
         <div class="glass-card" id="monthlyYieldSection" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-bar"></i> Crop Cycle Yield (kg/m²) vs Reference Range</div>
+            <div class="stat-title"><i class="fas fa-chart-bar"></i> Monthly Yield (kg/m²) vs Zonal Efficiency Reference</div>
+            <!-- FIX: Removed "Calculated per crop for records at Harvesting stage. Active cycles only." text -->
             <div class="table-responsive"><div id="monthlyYieldContainer"></div></div>
         </div>
 
-        <!-- Zonal Reference Table - visible only for admin users -->
-        <div class="glass-card" id="zonalRefTable">
-            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference</div>
+        <!-- Timeline (admin only) -->
+        <div id="timelineSectionCard" class="glass-card" style="display:none;">
+            <div class="stat-title"><i class="fas fa-chart-line"></i> Crop Timeline — Stage-wise Area</div>
+            <div class="filter-btn-group" id="timelineCropButtons">
+                <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
+                <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
+                <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
+            </div>
+            <div class="chart-wrap"><canvas id="timelineChart"></canvas></div>
+            <div id="noTimelineData" class="hidden" style="text-align:center;padding:2rem;color:#aaa;">No timeline data available.</div>
+        </div>
+
+        <!-- Forecast (admin only) -->
+        <div id="forecastSectionCard" class="glass-card" style="display:none;">
+            <div class="stat-title"><i class="fas fa-chart-bar"></i> Forecast 2026 — Cultivated vs Harvestable Area (m²)</div>
+            <div class="filter-btn-group" id="forecastCropButtons">
+                <button data-crop="Tomato" class="forecast-btn active">🍅 Tomato</button>
+                <button data-crop="Sweet Pepper" class="forecast-btn">🌶️ Sweet Pepper</button>
+                <button data-crop="English Cucumber" class="forecast-btn">🥒 English Cucumber</button>
+            </div>
+            <div class="chart-wrap"><canvas id="forecastChart"></canvas></div>
+            <div id="noForecastData" class="hidden" style="text-align:center;padding:2rem;color:#aaa;">No forecast data available.</div>
+        </div>
+
+        <!-- Zonal Reference Table — ADMIN ONLY -->
+        <div class="glass-card admin-only-section" id="yieldEfficiencyRefCard">
+            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference <span class="admin-badge" style="font-size:0.72rem;padding:2px 10px;margin-left:8px;">ADMIN ONLY</span></div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
                     <thead><tr>
@@ -779,10 +818,17 @@ function formatToMauritiusTime(ts) {
 }
 
 function setAdminSectionsVisibility(show) {
-    // Timeline and Forecast sections have been removed from the UI
+    ['timelineSectionCard','forecastSectionCard'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = show ? 'block' : 'none';
+    });
+    // Yield Efficiency Reference is ADMIN ONLY
+    const yieldRef = document.getElementById('yieldEfficiencyRefCard');
+    if (yieldRef) yieldRef.style.display = show ? 'block' : 'none';
 }
 
 // ==================== ZONE & LOCALITY ====================
+// FIX: Zone pills now show only the zone code e.g. "E2" not "Zone E2"
 function initZoneHeader() {
     const zones = Object.keys(ZONE_LOCALITIES);
     const container = document.getElementById('zonePillsHeader');
@@ -850,7 +896,8 @@ function filterRecordCards(query) {
     let visible = 0;
     cards.forEach(card => {
         if (!q) { card.classList.remove('search-hidden'); visible++; return; }
-        const text = card.textContent.toLowerCase();
+        // Prefer searchMeta attribute (precise), fallback to full text
+        const text = (card.dataset.searchMeta || card.textContent).toLowerCase();
         const match = text.includes(q);
         card.classList.toggle('search-hidden', !match);
         if (match) visible++;
@@ -894,60 +941,42 @@ function updateCropHeroAreas(stats) {
 
 // ==================== MONTHLY YIELD vs REFERENCE ====================
 function renderMonthlyYieldVsReference(rows, headers) {
-    const section   = document.getElementById('monthlyYieldSection');
-    const container = document.getElementById('monthlyYieldContainer');
+    const section    = document.getElementById('monthlyYieldSection');
+    const container  = document.getElementById('monthlyYieldContainer');
     if (!section || !container) return;
 
-    const hdr       = headers.map(h => h.toString().toLowerCase());
-    const getCol    = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
-    const cropCol   = getCol(['crop']);
-    const stageCol  = getCol(['stage','crop stage']);
-    const statusCol = hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
-    const harvestMonthsCol = getCol(['harvest months']);
-
-    let areaCol = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)') && !h.includes('total'));
-    if (areaCol === -1) areaCol = hdr.findIndex(h => h === 'area' && !h.includes('total'));
-    if (areaCol === -1) areaCol = hdr.findIndex(h => h.includes('area') && !h.includes('total') && !h.includes('greenhouse'));
-
+    const hdr      = headers.map(h => h.toString().toLowerCase());
+    const getCol   = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
+    const cropCol  = getCol(['crop']);
+    const areaCol  = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
+    const stageCol = getCol(['stage']);
+    const statusCol= hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
     const monthCols = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
 
     const summaryByCrop = {};
-
     for (const row of rows) {
-        const stage = (stageCol !== -1 && row[stageCol]) ? String(row[stageCol]).trim() : '';
+        const stage  = (stageCol !== -1 && row[stageCol]) ? String(row[stageCol]).trim() : '';
         if (!stage.toLowerCase().includes('harvest')) continue;
-
         const status = (statusCol !== -1 && row[statusCol]) ? String(row[statusCol]).trim() : 'Active';
         if (status !== 'Active') continue;
 
-        let cropRaw = row[cropCol] ? String(row[cropCol]) : '';
+        let cropRaw = row[cropCol] || '';
         let crop = null;
-        if      (cropRaw.toLowerCase().includes('english cucumber')) crop = 'English Cucumber';
-        else if (cropRaw.toLowerCase().includes('sweet pepper'))     crop = 'Sweet Pepper';
-        else if (cropRaw.toLowerCase().includes('tomato'))           crop = 'Tomato';
+        if (cropRaw.toLowerCase().includes('tomato'))             crop = 'Tomato';
+        else if (cropRaw.toLowerCase().includes('sweet pepper'))  crop = 'Sweet Pepper';
+        else if (cropRaw.toLowerCase().includes('english cucumber')) crop = 'English Cucumber';
         if (!crop) continue;
 
         const area = parseFloat(areaCol !== -1 ? row[areaCol] : 0) || 0;
         if (area <= 0) continue;
-
-        const harvestMonths = harvestMonthsCol !== -1 ? (parseFloat(row[harvestMonthsCol]) || 0) : 0;
-
-        let recordCycleTotal = 0;
-        const breakdown = [];
-        MONTHS.forEach((mName, i) => {
+        if (!summaryByCrop[crop]) summaryByCrop[crop] = { totalArea: 0, monthly: new Array(12).fill(0) };
+        summaryByCrop[crop].totalArea += area;
+        MONTHS.forEach((_, i) => {
             const col = monthCols[i];
-            const val = (col !== -1 && row[col]) ? (parseFloat(row[col]) || 0) : 0;
-            recordCycleTotal += val;
-            if (val > 0) breakdown.push({ month: mName.substring(0, 3), kg: val });
+            if (col !== -1 && row[col]) {
+                summaryByCrop[crop].monthly[i] += parseFloat(row[col]) || 0;
+            }
         });
-
-        if (!summaryByCrop[crop]) {
-            summaryByCrop[crop] = { totalArea: 0, cycleTotal: 0, records: [], monthsWithData: new Set() };
-        }
-        summaryByCrop[crop].totalArea  += area;
-        summaryByCrop[crop].cycleTotal += recordCycleTotal;
-        summaryByCrop[crop].records.push({ area, cycleTotal: recordCycleTotal, breakdown, harvestMonths });
-        breakdown.forEach(b => summaryByCrop[crop].monthsWithData.add(b.month));
     }
 
     if (!Object.keys(summaryByCrop).length) {
@@ -956,114 +985,58 @@ function renderMonthlyYieldVsReference(rows, headers) {
     }
     section.style.display = 'block';
 
-    const cropIcon = { 'Tomato': '🍅', 'Sweet Pepper': '🌶️', 'English Cucumber': '🥒' };
-
-    let html = `
-    <div class="table-responsive">
-    <table class="yield-eff-table">
+    const curMonthIdx = new Date().getMonth();
+    let html = `<table class="yield-eff-table">
         <thead><tr>
             <th>Crop</th>
-            <th style="text-align:right;">Cycle Total Yield (kg)</th>
-            <th style="text-align:right;">Area (m²)</th>
-            <th style="text-align:right;">Cycle Yield (kg/m²)</th>
-            <th style="text-align:center;">Full-Cycle Reference (kg/m²)</th>
-            <th>Harvest Months Recorded</th>
-            <th style="text-align:center;">Status vs Reference</th>
-        </tr></thead>
-        <tbody>`;
+            <th>Month</th>
+            <th>Total Yield (kg)</th>
+            <th>Area (m²)</th>
+            <th>Yield (kg/m²)</th>
+            <th>Reference (kg/m²)</th>
+            <th>Status</th>
+        </tr></thead><tbody>`;
 
-    const cropOrder = ['Tomato', 'Sweet Pepper', 'English Cucumber'];
-    for (const crop of cropOrder) {
-        const d = summaryByCrop[crop];
-        if (!d) continue;
-
-        const ref        = YIELD_REFERENCE[crop] || { min: 0, max: 999 };
-        const cycleKgM2  = d.totalArea > 0 ? d.cycleTotal / d.totalArea : 0;
-        const hasData    = d.cycleTotal > 0;
-
-        let badge = '', badgeCls = '';
-        if (!hasData) {
-            badge = 'No Harvest Data'; badgeCls = 'avg';
-        } else if (cycleKgM2 >= ref.max) {
-            badge = '🏆 Exceeds Reference'; badgeCls = 'good';
-        } else if (cycleKgM2 >= ref.min) {
-            badge = '✅ Within Reference'; badgeCls = 'good';
-        } else if (cycleKgM2 >= ref.min * 0.75) {
-            badge = '⚠️ Below Reference'; badgeCls = 'avg';
-        } else {
-            badge = '❌ Low Yield'; badgeCls = 'low';
+    for (const [crop, data] of Object.entries(summaryByCrop)) {
+        const ref  = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
+        const monthsToShow = [];
+        for (let i = curMonthIdx; i >= Math.max(0, curMonthIdx - 3); i--) {
+            if (data.monthly[i] > 0 || i === curMonthIdx) monthsToShow.push(i);
         }
 
-        const monthsList = d.monthsWithData.size > 0
-            ? [...d.monthsWithData].join(', ')
-            : '<span style="color:#bbb;">None recorded yet</span>';
+        monthsToShow.reverse().forEach((mIdx, idx) => {
+            const totalYield = data.monthly[mIdx];
+            const area       = data.totalArea;
+            const kgPerM2    = area > 0 ? totalYield / area : 0;
+            let badge = '', badgeCls = '';
+            if (kgPerM2 >= ref.min) {
+                badge = '≥ Min Reference'; badgeCls = 'good';
+            } else if (kgPerM2 >= ref.min * 0.7) {
+                badge = 'Below Reference'; badgeCls = 'avg';
+            } else if (kgPerM2 > 0) {
+                badge = 'Low Yield'; badgeCls = 'low';
+            } else {
+                badge = 'No Data'; badgeCls = 'avg';
+            }
 
-        const pct = ref.max > 0 ? Math.min(100, (cycleKgM2 / ref.max) * 100) : 0;
-        const barColor = badgeCls === 'good' ? 'var(--green-600)' : badgeCls === 'avg' ? '#f39c12' : '#e74c3c';
-        const progressBar = `
-            <div style="margin-top:4px;background:#e9f3e4;border-radius:1rem;height:8px;overflow:hidden;width:100%;min-width:80px;">
-                <div style="width:${pct.toFixed(1)}%;height:100%;border-radius:1rem;background:${barColor};transition:width 0.6s;"></div>
-            </div>
-            <div style="font-size:0.68rem;color:#aaa;margin-top:2px;">${pct.toFixed(0)}% of max reference</div>`;
-
-        html += `<tr>
-            <td style="font-weight:800;white-space:nowrap;">${cropIcon[crop] || ''} ${crop}</td>
-            <td style="text-align:right;font-weight:700;">${hasData ? d.cycleTotal.toFixed(1) + ' kg' : '—'}</td>
-            <td style="text-align:right;">${d.totalArea.toFixed(1)} m²</td>
-            <td style="text-align:right;">
-                <strong style="font-size:1rem;color:var(--green-800);">${hasData ? cycleKgM2.toFixed(2) : '—'}</strong>
-                ${hasData ? progressBar : ''}
-            </td>
-            <td style="text-align:center;white-space:nowrap;">
-                <span style="font-size:0.88rem;">${ref.min} – ${ref.max}</span>
-            </td>
-            <td style="font-size:0.8rem;color:#555;">${monthsList}</td>
-            <td style="text-align:center;">
-                <span class="yield-eff-badge ${badgeCls}">${badge}</span>
-            </td>
-        </tr>`;
-
-        if (d.records.length > 1) {
-            d.records.forEach((rec, idx) => {
-                const recKgM2 = rec.area > 0 ? rec.cycleTotal / rec.area : 0;
-                html += `<tr style="background:#fafffe;font-size:0.8rem;">
-                    <td colspan="1" style="padding-left:2rem;color:#888;">
-                        <i class="fas fa-angle-right" style="color:var(--green-300);margin-right:4px;"></i>
-                        GH Record ${idx + 1}
-                    </td>
-                    <td style="text-align:right;color:#666;">${rec.cycleTotal > 0 ? rec.cycleTotal.toFixed(1) + ' kg' : '—'}</td>
-                    <td style="text-align:right;color:#666;">${rec.area.toFixed(1)} m²</td>
-                    <td style="text-align:right;color:#666;">${rec.cycleTotal > 0 ? recKgM2.toFixed(2) : '—'}</td>
-                    <td style="text-align:center;color:#aaa;font-size:0.75rem;">${rec.harvestMonths ? rec.harvestMonths + ' mo. cycle' : '—'}</td>
-                    <td style="color:#888;">${rec.breakdown.length ? rec.breakdown.map(b => b.month + ': ' + b.kg.toFixed(0) + ' kg').join(' · ') : 'No data'}</td>
-                    <td></td>
-                </tr>`;
-            });
-        } else if (d.records.length === 1 && d.records[0].breakdown.length > 0) {
-            const rec = d.records[0];
-            html += `<tr style="background:#fafffe;">
-                <td colspan="2" style="padding-left:2rem;font-size:0.75rem;color:#888;">
-                    <i class="fas fa-calendar-alt" style="color:var(--green-300);margin-right:4px;"></i>
-                    Monthly breakdown:
-                </td>
-                <td colspan="5" style="font-size:0.78rem;color:#666;padding-bottom:0.6rem;">
-                    ${rec.breakdown.map(b =>
-                        `<span style="display:inline-block;background:var(--green-50);border:1px solid var(--green-200);
-                                      border-radius:0.8rem;padding:2px 10px;margin:2px;font-weight:600;">
-                            ${b.month}: ${b.kg.toFixed(1)} kg
-                        </span>`
-                    ).join('')}
-                    ${rec.harvestMonths ? `<span style="margin-left:6px;color:#aaa;">(${rec.harvestMonths}-month cycle)</span>` : ''}
-                </td>
-            <tr>`;
-        }
+            html += `<tr>
+                ${idx === 0 ? `<td rowspan="${monthsToShow.length}" style="font-weight:800;vertical-align:top;padding-top:14px;">${crop === 'Tomato' ? '🍅' : crop === 'Sweet Pepper' ? '🌶️' : '🥒'} ${crop}</td>` : ''}
+                <td>${MONTHS[mIdx].substring(0,3)} ${new Date().getFullYear()}</td>
+                <td>${totalYield.toFixed(1)} kg</td>
+                <td>${area.toFixed(1)} m²</td>
+                <td><strong>${kgPerM2.toFixed(2)}</strong></td>
+                <td>${ref.min} – ${ref.max}</td>
+                <td><span class="yield-eff-badge ${badgeCls}">${badge}</span></td>
+            </tr>`;
+        });
     }
 
-    html += `</tbody></table></div>`;
+    html += '</tbody></table>';
     container.innerHTML = html;
 }
 
 // ==================== RECORD CARDS ====================
+// FIX: isAdminView parameter controls whether admin-search buttons show
 function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminView) {
     gridEl.innerHTML = '';
     const hdr      = headers.map(h => h.toString().toLowerCase());
@@ -1110,6 +1083,26 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminVie
 
         const card = document.createElement('div');
         card.className = 'record-card'+(isActive?'':' completed');
+
+        // FIX: Show edit/toggle buttons for both grower (own records) and admin search results
+        // For grower's own records section (prevSubmissionsSection): always show edit/toggle
+        // isAdminView = true means this is admin search results panel
+        const showActions = true; // Always show action buttons
+
+        // Build search metadata for live search (includes all searchable fields)
+        const searchMeta = [
+            usernameForActions,
+            cropVal,
+            varietyVal,
+            tomatoType,
+            stageVal,
+            weeklyYield.toString(),
+            weeklyUnit,
+            harvestMonths.toString(),
+            cycleStatus
+        ].join(' ').toLowerCase();
+
+        card.dataset.searchMeta = searchMeta;
 
         card.innerHTML = `
             <div class="record-header">
@@ -1159,12 +1152,17 @@ async function adminSearchGrower() {
         const data = await res.json();
         if (!data.rows||data.rows.length===0) {
             document.getElementById('adminSearchEmpty').style.display = 'block';
+            document.getElementById('adminLiveSearchWrap').style.display = 'none';
             toast('No records found for "'+query+'"', true);
         } else {
             document.getElementById('adminSearchedUsernameText').textContent = query;
             document.getElementById('adminSearchRecordCount').textContent    = data.rows.length+' record'+(data.rows.length!==1?'s':'')+' found';
             renderRecordCards(document.getElementById('adminSearchGrid'), data.rows, data.headers, query, true);
             document.getElementById('adminSearchResults').style.display = 'block';
+            // Show live filter bar and reset it
+            document.getElementById('adminLiveSearchWrap').style.display = 'block';
+            document.getElementById('adminLiveFilterInput').value = '';
+            document.getElementById('adminFilterCount').textContent = '';
             logActivity('search', `Searched grower records for <strong>${query}</strong> — ${data.rows.length} record(s) found`);
             toast('Loaded '+data.rows.length+' record(s) for '+query);
         }
@@ -1177,9 +1175,60 @@ function adminClearSearch() {
     document.getElementById('adminSearchResults').style.display = 'none';
     document.getElementById('adminSearchEmpty').style.display   = 'none';
     document.getElementById('adminSearchGrid').innerHTML        = '';
+    // Hide live filter bar too
+    const liveWrap = document.getElementById('adminLiveSearchWrap');
+    if (liveWrap) liveWrap.style.display = 'none';
+    const filterCount = document.getElementById('adminFilterCount');
+    if (filterCount) filterCount.textContent = '';
+    const filterInput = document.getElementById('adminLiveFilterInput');
+    if (filterInput) filterInput.value = '';
+}
+
+// ==================== ADMIN LIVE FILTER ====================
+function initAdminLiveFilter() {
+    const input = document.getElementById('adminLiveFilterInput');
+    const clearBtn = document.getElementById('adminLiveFilterClear');
+    if (!input) return;
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        clearBtn.style.display = q ? 'block' : 'none';
+        filterAdminCards(q);
+    });
+
+    clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.style.display = 'none';
+        filterAdminCards('');
+    });
+}
+
+function filterAdminCards(query) {
+    const grid = document.getElementById('adminSearchGrid');
+    const countEl = document.getElementById('adminFilterCount');
+    if (!grid) return;
+    const cards = grid.querySelectorAll('.record-card');
+    const q = query.toLowerCase().trim();
+    let visible = 0;
+    cards.forEach(card => {
+        if (!q) { card.classList.remove('search-hidden'); visible++; return; }
+        // Search within the card's searchMeta (covers grower name, crop, variety, tomato type, stage, yield, etc.)
+        const text = (card.dataset.searchMeta || card.textContent).toLowerCase();
+        const match = text.includes(q);
+        card.classList.toggle('search-hidden', !match);
+        if (match) visible++;
+    });
+    if (countEl) {
+        if (q) {
+            countEl.textContent = `${visible} record${visible !== 1 ? 's' : ''} matching "${query}"`;
+        } else {
+            countEl.textContent = '';
+        }
+    }
 }
 
 // ==================== REGISTER NEW USER ====================
+// FIX: action changed from 'registerGrower' to 'registerNewGrower' to match Apps Script
 async function registerNewUser() {
     const btn        = document.getElementById('registerUserBtn');
     const successMsg = document.getElementById('regSuccessMsg');
@@ -1206,6 +1255,8 @@ async function registerNewUser() {
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Registering...';
 
     try {
+        // FIX: Use correct action name 'registerNewGrower' matching the Apps Script handler
+        // FIX: Include all required fields: growerName, locality, phoneNumber, notes, registeredBy
         const payload = {
             action: 'registerNewGrower',
             growerName: growerName,
@@ -1223,6 +1274,7 @@ async function registerNewUser() {
             body: 'data=' + encodeURIComponent(JSON.stringify(payload))
         });
 
+        // no-cors returns opaque response, so we assume success if no network error
         recentlyRegistered.unshift({ growerName, zone, locality, phone, registeredAt: new Date().toLocaleString() });
         renderRecentRegistrations();
 
@@ -1644,6 +1696,8 @@ async function loadDashboard() {
         renderAreaByStage(data, activeCrop);
         renderTopCrops(data);
         updateCropHeroAreas(data);
+        await loadZonalEfficiency(currentZone);
+        if (isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); }
     } catch(e) { console.warn('Dashboard load failed',e); }
 }
 
@@ -1686,17 +1740,83 @@ function renderTopCrops(stats) {
         </div>`;
 }
 
+// FIX: Removed Zonal Yield Efficiency section from display — function still exists for internal use only
+async function loadZonalEfficiency(zone) {
+    // Silently load data but don't render the removed section
+    try {
+        await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
+    } catch(e) { /* silent */ }
+}
+
+async function loadTimelineChart(crop) {
+    if (!isAdmin) return;
+    try {
+        const res  = await fetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+        const data = await res.json();
+        if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
+        const stageColors = {
+            Seedling:   { bg:'rgba(168,224,99,0.4)',   border:'#56ab2f' },
+            Vegetative: { bg:'rgba(67,233,123,0.4)',   border:'#38f9d7' },
+            Flowering:  { bg:'rgba(249,215,35,0.4)',   border:'#f7971e' },
+            Harvesting: { bg:'rgba(57,106,252,0.35)',  border:'#396afc' }
+        };
+        if (!data.datasets || !data.datasets.length) {
+            document.getElementById('noTimelineData').classList.remove('hidden');
+            return;
+        }
+        document.getElementById('noTimelineData').classList.add('hidden');
+        timelineChart = new Chart(document.getElementById('timelineChart').getContext('2d'), {
+            type:'line',
+            data:{
+                labels:data.labels,
+                datasets:data.datasets.map(ds=>{
+                    const c = stageColors[ds.label] || { bg:'rgba(78,160,78,0.35)', border:'#2e8b57' };
+                    return {...ds, fill:true, tension:0.35, backgroundColor:c.bg, borderColor:c.border, borderWidth:2};
+                })
+            },
+            options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top'}}}
+        });
+    } catch(e) { console.warn(e); }
+}
+
+async function loadForecastChart(crop) {
+    if (!isAdmin) return;
+    try {
+        const res  = await fetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+        const data = await res.json();
+        if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
+        if (!data.labels || !data.labels.length) {
+            document.getElementById('noForecastData').classList.remove('hidden');
+            return;
+        }
+        document.getElementById('noForecastData').classList.add('hidden');
+        forecastChart = new Chart(document.getElementById('forecastChart').getContext('2d'), {
+            type:'bar', data:{labels:data.labels,datasets:[
+                {label:'Cultivated Area',data:data.cultivated,backgroundColor:'rgba(78,160,78,0.8)',borderColor:'#2e8b57',borderWidth:1.5},
+                {label:'Harvestable Area',data:data.harvestable,backgroundColor:'rgba(243,156,18,0.8)',borderColor:'#c0820c',borderWidth:1.5}
+            ]},
+            options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top'}}}
+        });
+    } catch(e) { console.warn(e); }
+}
+
 // ==================== AUTO-FILL PROFILE ====================
+// FIX: Locality and area auto-fill waits for dropdown to populate before setting value
 async function autoFillProfileFromRecords(username) {
     try {
         const res = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
         if (!res.ok) return;
         const data = await res.json();
-        if (data.totalArea) document.getElementById('totalArea').value = data.totalArea;
-        if (data.zone) {
+        // Auto-fill total area
+        if (data.totalArea && parseFloat(data.totalArea) > 0) {
+            document.getElementById('totalArea').value = data.totalArea;
+        }
+        // Set zone if returned
+        if (data.zone && ZONE_LOCALITIES[data.zone]) {
             currentZone = data.zone;
             initZoneHeader();
         }
+        // Always rebuild locality dropdown for the current zone
         const locs = ZONE_LOCALITIES[currentZone] || [];
         const sel = document.getElementById('localitySelect');
         if (sel) {
@@ -1706,7 +1826,9 @@ async function autoFillProfileFromRecords(username) {
                 o.value = l; o.textContent = l;
                 sel.appendChild(o);
             });
+            // Now set the locality value
             if (data.locality) {
+                // If locality is not in dropdown options, add it
                 if (!Array.from(sel.options).some(o => o.value === data.locality)) {
                     const opt = document.createElement('option');
                     opt.value = data.locality;
@@ -1716,7 +1838,10 @@ async function autoFillProfileFromRecords(username) {
                 sel.value = data.locality;
             }
         }
-    } catch(e) { console.warn('Auto-fill profile failed', e); }
+    } catch(e) {
+        // Silently fail — locality remains selectable manually
+        console.warn('Auto-fill profile failed:', e.message);
+    }
 }
 
 // ==================== LOGIN ====================
@@ -1730,12 +1855,12 @@ async function login(username, password) {
     if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
     if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
     const controller = new AbortController();
-    const timeoutId  = setTimeout(()=>controller.abort(), 12000);
+    const timeoutId  = setTimeout(()=>controller.abort(), 14000);
     try {
         const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,{signal:controller.signal});
-        clearTimeout(timeoutId);
         if (!res.ok) throw new Error(`Server error (HTTP ${res.status})`);
-        let data; try { data=await res.json(); } catch(e) { throw new Error('Server response was not valid JSON.'); }
+        let data;
+        try { data=await res.json(); } catch(e) { throw new Error('Server returned an invalid response. Please try again.'); }
         if (!data.success) { errorDiv.innerText=data.message||'Invalid username or password'; return; }
 
         isAdmin=data.isAdmin===true;
@@ -1744,38 +1869,53 @@ async function login(username, password) {
 
         logActivity('login', `<strong>${username}</strong> logged in as ${isAdmin ? 'Admin' : 'Grower'}`, username);
 
-        // --- toggle zonal reference table visibility based on admin status ---
-        const zonalTable = document.getElementById('zonalRefTable');
-        if (zonalTable) {
-            zonalTable.style.display = isAdmin ? 'block' : 'none';
-        }
+        // Show main app FIRST so UI is not frozen
+        document.getElementById('loginOverlay').style.display='none';
+        document.getElementById('mainApp').style.display='block';
 
         if (isAdmin) {
             document.getElementById('adminBadge').classList.remove('hidden');
             document.getElementById('growerProfileCard').style.display='none';
             document.getElementById('adminSearchSection').style.display='block';
             document.getElementById('prevSubmissionsSection').style.display='none';
+            setAdminSectionsVisibility(true);
             renderAdminGHForm();
         } else {
             document.getElementById('adminBadge').classList.add('hidden');
             document.getElementById('adminSearchSection').style.display='none';
             document.getElementById('growerProfileCard').style.display='block';
             document.getElementById('growerName').value=username;
+            setAdminSectionsVisibility(false);
+            // FIX: Populate locality dropdown before fetching profile so autofill works
             updateLocalityDropdown();
-            await autoFillProfileFromRecords(username);
         }
-        await loadDashboard();
-        await loadUserPreviousData(isAdmin?'':username);
-        await loadActiveMemberCount();
-        document.getElementById('loginOverlay').style.display='none';
-        document.getElementById('mainApp').style.display='block';
+
         initLiveSearch();
         toast(`Welcome ${username}${isAdmin?' (Admin)':''}! 🌱`);
+
+        // Load data in parallel (non-blocking)
+        const dashPromise = loadDashboard();
+        const memberPromise = loadActiveMemberCount();
+
+        if (!isAdmin) {
+            // Auto-fill locality/area from profile before loading records
+            await autoFillProfileFromRecords(username);
+            await Promise.allSettled([
+                loadUserPreviousData(username),
+                dashPromise,
+                memberPromise
+            ]);
+        } else {
+            await Promise.allSettled([dashPromise, memberPromise]);
+        }
+
     } catch(err) {
-        clearTimeout(timeoutId);
-        const msg = err.name==='AbortError'?'Request timed out. Check your connection.':err.message;
+        // If main app already shown, re-show login
+        document.getElementById('loginOverlay').style.display='flex';
+        document.getElementById('mainApp').style.display='none';
+        const msg = err.name==='AbortError'?'Request timed out. Please check your connection and try again.':err.message;
         errorDiv.innerText=msg; toast(msg,true);
-    } finally { loginBtn.disabled=false; loginBtn.innerHTML=origText; }
+    } finally { clearTimeout(timeoutId); loginBtn.disabled=false; loginBtn.innerHTML=origText; }
 }
 
 // ==================== ADMIN TABS ====================
@@ -1801,6 +1941,21 @@ function wireFilterButtons() {
             if (dashboardStats) renderAreaByStage(dashboardStats, btn.dataset.crop);
         });
     });
+    document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTimelineCrop=btn.dataset.crop; loadTimelineChart(currentTimelineCrop);
+        });
+    });
+    document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            currentForecastCrop=btn.dataset.crop; loadForecastChart(currentForecastCrop);
+        });
+    });
+    // FIX: Removed zoneEfficiencyButtons wiring since section is removed
 }
 
 // ==================== EVENT LISTENERS ====================
@@ -1814,6 +1969,8 @@ document.getElementById('pwToggle').onclick = () => {
 };
 
 document.getElementById('logoutBtn').onclick = () => {
+    if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
+    if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
     logActivity('login', `<strong>${currentLoggedInUser}</strong> logged out`);
     location.reload();
 };
@@ -1865,7 +2022,9 @@ initZoneHeader();
 updateLocalityDropdown();
 wireFilterButtons();
 initAdminTabs();
+initAdminLiveFilter();
 
+// Populate reg_zone dropdown
 (function(){
     const sel = document.getElementById('reg_zone');
     while(sel.options.length>1) sel.remove(1);
