@@ -2026,7 +2026,7 @@
                             <th style="text-align:center;">Indicative Yield Range (kg/m² or Unit/m²)</th>
                         </tr></thead>
                         <tbody>
-                            <tr><td>🥒 English Cucumber</td><td>Acylia / Boncanale RZ</td><td style="text-align:center;"><strong>32 – 62</strong> unit/m²</td></tr>
+                            <tr><td>🥒 English Cucumber</td><td>Acylia / Boncanale RZ</td><td style="text-align:center;"><strong>32.00 – 62.00</strong> unit/m²</td></tr>
                             <tr><td>🌶️ Sweet Pepper</td><td>Blocky</td><td style="text-align:center;"><strong>13.80 – 18.40</strong> kg/m²</td></tr>
                             <tr><td>🍅 Tomato</td><td>Salad</td><td style="text-align:center;"><strong>11.75 – 18.90</strong> kg/m²</td></tr>
                             <tr><td>🍅 Tomato</td><td>Roma / Round</td><td style="text-align:center;"><strong>9.95 – 19.72</strong> kg/m²</td></tr>
@@ -2108,31 +2108,40 @@
             "English Cucumber": 45
         };
 
-        // Variety‑aware yield reference (matches Estimated Average Yield Efficiency Reference table)
+        // Variety‑aware yield reference – exactly matches the Estimated Average Yield Efficiency Reference table
         function getYieldReference(cropName, varietyName) {
-            const cropLower = (cropName || '').toLowerCase();
-            const varietyLower = (varietyName || '').toLowerCase();
+            const cropLower = (cropName || '').toLowerCase().trim();
+            const varietyLower = (varietyName || '').toLowerCase().trim();
 
+            // English Cucumber → 32.00 – 62.00 unit/m²
             if (cropLower.includes('english cucumber') || cropLower.includes('cucumber')) {
-                return { min: 32.0, max: 62.0, unit: 'unit/m²', isUnitCrop: true, varietyLabel: 'Acylia / Boncanale RZ' };
+                return { min: 32.00, max: 62.00, unit: 'unit/m²', isUnitCrop: true, varietyLabel: 'Acylia / Boncanale RZ' };
             }
 
+            // Sweet Pepper → 13.80 – 18.40 kg/m²
             if (cropLower.includes('sweet pepper')) {
                 return { min: 13.80, max: 18.40, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'Blocky' };
             }
 
+            // Tomato – check variety keyword
             if (cropLower.includes('tomato')) {
+                // Salad → 11.75 – 18.90
                 if (varietyLower.includes('salad')) {
                     return { min: 11.75, max: 18.90, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'Salad' };
-                } else if (varietyLower.includes('roma') || varietyLower.includes('round')) {
-                    return { min: 9.95, max: 19.72, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'Roma / Round' };
-                } else if (varietyLower.includes('thn') || varietyLower.includes('988')) {
-                    return { min: 10.20, max: 19.50, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'THN 988' };
-                } else {
-                    return { min: 9.95, max: 19.72, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'Roma / Round (default)' };
                 }
+                // Roma / Round → 9.95 – 19.72
+                if (varietyLower.includes('roma') || varietyLower.includes('round')) {
+                    return { min: 9.95, max: 19.72, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'Roma / Round' };
+                }
+                // THN 988 → 10.20 – 19.50
+                if (varietyLower.includes('thn') || varietyLower.includes('988')) {
+                    return { min: 10.20, max: 19.50, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'THN 988' };
+                }
+                // Default tomato → Roma / Round (9.95 – 19.72)
+                return { min: 9.95, max: 19.72, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'Roma / Round (default)' };
             }
 
+            // Fallback
             return { min: 0, max: 99, unit: 'kg/m²', isUnitCrop: false, varietyLabel: 'Unknown' };
         }
 
@@ -2359,7 +2368,7 @@
             });
         }
 
-        // ==================== CYCLE YIELD vs REFERENCE (admin only – variety‑aware) ====================
+        // ==================== CYCLE YIELD vs REFERENCE (admin only – variety‑aware, precise decimals) ====================
         function renderMonthlyYieldVsReference(rows, headers, containerId = 'adminMonthlyYieldContainer',
         sectionId = 'adminMonthlyYieldSection') {
             const section = document.getElementById(sectionId);
@@ -2449,7 +2458,7 @@
 
                 if (rec.crop !== lastCrop) {
                     html +=
-                        `<tr class="crop-group-row"><td colspan="${totalCols}">${cropIcons[rec.crop] || ''} <strong>${rec.crop}</strong> — Reference: ${ref.varietyLabel} — ${ref.min} – ${ref.max} ${unitLabel}</td></tr>`;
+                        `<tr class="crop-group-row"><td colspan="${totalCols}">${cropIcons[rec.crop] || ''} <strong>${rec.crop}</strong> — Reference: ${ref.varietyLabel} — ${ref.min.toFixed(2)} – ${ref.max.toFixed(2)} ${unitLabel}</td></tr>`;
                     lastCrop = rec.crop;
                 }
 
@@ -2498,7 +2507,7 @@
 
                 html += `<td><strong>${rec.cycleTotalYield.toFixed(1)} ${cycleUnit}</strong></td>
             <td><strong style="font-size:0.9rem;color:var(--green-800);">${rec.cyclePerArea.toFixed(2)} (${unitLabel})</strong></td>
-            <td style="color:#555;font-size:0.78rem;">${ref.min} – ${ref.max} ${unitLabel}</td>
+            <td style="color:#555;font-size:0.78rem;">${ref.min.toFixed(2)} – ${ref.max.toFixed(2)} ${unitLabel}</td>
             <td><span class="yield-eff-badge ${badgeCls}">${badge}</span></td>
         </tr>`;
             }
@@ -3317,7 +3326,6 @@
         async function loadZonalEfficiency(zone) { try { await fetch(
                 `${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`); } catch (e) {} }
 
-        // Timeline – uses server‑side action that should read Column I (Crop Stage) and Column K (Date Transplanted)
         async function loadTimelineChart(crop) {
             if (!isAdmin) return;
             try {
