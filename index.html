@@ -186,6 +186,9 @@
         .status-badge-active { display:inline-block; background:#d4edda; color:#155724; border:1px solid #7ec891; border-radius:var(--radius-pill); padding:3px 10px; font-size:0.7rem; font-weight:700; }
         .status-badge-completed { display:inline-block; background:#e2e3e5; color:#555; border:1px solid #b0b0b0; border-radius:var(--radius-pill); padding:3px 10px; font-size:0.7rem; font-weight:700; }
 
+        /* === ADMIN-ONLY SECTIONS === */
+        .admin-only-section { display: none; }
+
         /* === YIELD EFFICIENCY TABLE === */
         .yield-eff-table { width: 100%; border-collapse: collapse; }
         .yield-eff-table th { background: var(--green-800); color: white; padding: 10px 12px; font-size: 0.82rem; font-weight: 700; text-align: left; }
@@ -201,13 +204,7 @@
         .legend-bar strong { color:var(--green-800); font-weight:800; }
         .legend-item { display:inline-flex; align-items:center; gap:5px; border-radius:var(--radius-pill); padding:3px 12px; font-weight:700; font-size:0.78rem; }
 
-        /* === ADMIN LIVE FILTER === */
-        .admin-quick-filter-btn { padding: 5px 13px; border-radius: var(--radius-pill); border: 1.5px solid var(--green-200); background: var(--green-50); color: var(--green-800); font-weight: 600; font-size: 0.78rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.15s; white-space: nowrap; }
-        .admin-quick-filter-btn:hover { background: var(--green-100); border-color: var(--green-400); }
-        .admin-quick-filter-btn.active { background: linear-gradient(100deg, var(--green-800), var(--green-600)); color: white; border-color: var(--green-700); }
-        #adminLiveFilterInput:focus { border-color: var(--green-600) !important; box-shadow: 0 0 0 3px rgba(37,145,50,0.12); }
-
-        /* === ADMIN SEARCH (extra) === */
+        /* === ADMIN SEARCH === */
         .admin-search-panel { background: linear-gradient(115deg,#f0faf0,#e6f7df); border:1.5px solid var(--green-200); border-radius:var(--radius-lg); padding:1.1rem 1.2rem; margin-bottom:1.2rem; }
         .admin-search-row { display:flex; gap:0.7rem; flex-wrap:wrap; align-items:center; }
         .admin-search-input { flex:1; min-width:160px; padding:0.75rem 1rem; border-radius:var(--radius-pill); border:1.5px solid var(--green-200); font-size:0.92rem; background:white; outline:none; font-family:'Outfit',sans-serif; transition: border-color 0.2s; }
@@ -417,34 +414,17 @@
             <div id="searchTab" class="admin-tab-content active">
                 <div class="admin-search-panel">
                     <div class="admin-search-row">
-                        <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter grower username to search..." autocomplete="off">
+                        <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter grower username to search records..." autocomplete="off">
                         <button id="adminSearchBtn" class="admin-search-btn"><i class="fas fa-search"></i> Search</button>
                         <button id="adminClearSearchBtn" class="admin-clear-btn"><i class="fas fa-times"></i> Clear</button>
                     </div>
-                    <!-- LIVE FILTER PANEL (shown after search results load) -->
-                    <div id="adminLiveFilterPanel" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1.5px dashed var(--green-200);">
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.7rem;flex-wrap:wrap;">
-                            <span style="font-weight:800;font-size:0.85rem;color:var(--green-800);"><i class="fas fa-filter"></i> Live Filter:</span>
-                            <div style="position:relative;flex:1;min-width:200px;">
-                                <i class="fas fa-search" style="position:absolute;left:0.85rem;top:50%;transform:translateY(-50%);color:var(--green-400);font-size:0.85rem;pointer-events:none;"></i>
-                                <input type="text" id="adminLiveFilterInput" placeholder="Type to filter: crop, variety, stage, yield, tomato type..." autocomplete="off"
-                                    style="width:100%;padding:0.65rem 1rem 0.65rem 2.4rem;border:2px solid var(--green-200);border-radius:var(--radius-pill);background:white;font-size:0.88rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color 0.2s,box-shadow 0.2s;">
-                                <button id="adminLiveFilterClear" title="Clear filter" style="position:absolute;right:0.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:0.95rem;display:none;"><i class="fas fa-times-circle"></i></button>
-                            </div>
-                        </div>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                            <span style="font-size:0.78rem;font-weight:700;color:#888;">Quick:</span>
-                            <button class="admin-quick-filter-btn" data-filter="">All</button>
-                            <button class="admin-quick-filter-btn" data-filter="tomato">🍅 Tomato</button>
-                            <button class="admin-quick-filter-btn" data-filter="sweet pepper">🌶️ Sweet Pepper</button>
-                            <button class="admin-quick-filter-btn" data-filter="english cucumber">🥒 Cucumber</button>
-                            <button class="admin-quick-filter-btn" data-filter="seedling">Seedling</button>
-                            <button class="admin-quick-filter-btn" data-filter="harvesting">Harvesting</button>
-                            <button class="admin-quick-filter-btn" data-filter="active">💡 Active</button>
-                            <button class="admin-quick-filter-btn" data-filter="completed">🔘 Completed</button>
-                        </div>
-                        <div id="adminFilterResultCount" style="font-size:0.78rem;color:#888;margin-top:0.4rem;padding-left:0.2rem;"></div>
+                    <!-- LIVE FILTER within admin search results -->
+                    <div id="adminLiveSearchWrap" style="display:none;margin-top:0.8rem;position:relative;">
+                        <i class="fas fa-filter" style="position:absolute;left:1.1rem;top:50%;transform:translateY(-50%);color:var(--green-400);font-size:0.9rem;pointer-events:none;"></i>
+                        <input type="text" id="adminLiveFilterInput" class="admin-search-input" placeholder="Filter by: name, crop, variety, tomato type, stage, yield..." style="padding-left:2.8rem;" autocomplete="off">
+                        <button id="adminLiveFilterClear" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:1rem;display:none;" title="Clear filter"><i class="fas fa-times-circle"></i></button>
                     </div>
+                    <div id="adminFilterCount" style="font-size:0.78rem;color:#888;padding-left:0.3rem;margin-top:0.3rem;"></div>
                 </div>
                 <div id="adminSearchResults" style="display:none;">
                     <div class="admin-search-results-header">
@@ -575,7 +555,7 @@
             <!-- LIVE SEARCH BAR -->
             <div class="live-search-wrap">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, stage, tomato type, yield, status...">
+                <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, tomato type, stage, yield, status...">
                 <button id="searchClearBtn" title="Clear search"><i class="fas fa-times-circle"></i></button>
             </div>
             <div id="searchResultCount"></div>
@@ -635,7 +615,7 @@
 
         <!-- MONTHLY YIELD vs REFERENCE (logged-in user, harvest stage) -->
         <div class="glass-card" id="monthlyYieldSection" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-bar"></i> Harvest Cycle Yield (kg/m²) vs Zonal Efficiency Reference</div>
+            <div class="stat-title"><i class="fas fa-chart-bar"></i> Monthly Yield (kg/m²) vs Zonal Efficiency Reference</div>
             <!-- FIX: Removed "Calculated per crop for records at Harvesting stage. Active cycles only." text -->
             <div class="table-responsive"><div id="monthlyYieldContainer"></div></div>
         </div>
@@ -665,8 +645,8 @@
         </div>
 
         <!-- Zonal Reference Table — ADMIN ONLY -->
-        <div class="glass-card" id="yieldEfficiencyRefCard" style="display:none;">
-            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference <span class="admin-badge" style="font-size:0.7rem;vertical-align:middle;margin-left:6px;">ADMIN</span></div>
+        <div class="glass-card admin-only-section" id="yieldEfficiencyRefCard">
+            <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference <span class="admin-badge" style="font-size:0.72rem;padding:2px 10px;margin-left:8px;">ADMIN ONLY</span></div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
                     <thead><tr>
@@ -838,10 +818,13 @@ function formatToMauritiusTime(ts) {
 }
 
 function setAdminSectionsVisibility(show) {
-    ['timelineSectionCard','forecastSectionCard','yieldEfficiencyRefCard'].forEach(id => {
+    ['timelineSectionCard','forecastSectionCard'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = show ? 'block' : 'none';
     });
+    // Yield Efficiency Reference is ADMIN ONLY
+    const yieldRef = document.getElementById('yieldEfficiencyRefCard');
+    if (yieldRef) yieldRef.style.display = show ? 'block' : 'none';
 }
 
 // ==================== ZONE & LOCALITY ====================
@@ -913,15 +896,14 @@ function filterRecordCards(query) {
     let visible = 0;
     cards.forEach(card => {
         if (!q) { card.classList.remove('search-hidden'); visible++; return; }
-        // Use data-search attribute first (fast, targeted), fallback to full text
-        const searchTarget = (card.dataset.search || card.textContent).toLowerCase();
-        const match = searchTarget.includes(q);
+        // Prefer searchMeta attribute (precise), fallback to full text
+        const text = (card.dataset.searchMeta || card.textContent).toLowerCase();
+        const match = text.includes(q);
         card.classList.toggle('search-hidden', !match);
         if (match) visible++;
     });
     if (q && countEl) {
         countEl.textContent = `${visible} record${visible !== 1 ? 's' : ''} found for "${query}"`;
-        countEl.style.color = visible === 0 ? 'var(--red)' : '#888';
     } else if (countEl) {
         countEl.textContent = '';
     }
@@ -957,28 +939,21 @@ function updateCropHeroAreas(stats) {
     });
 }
 
-// ==================== CYCLE YIELD vs REFERENCE ====================
-// Reference range (min–max kg/m²) represents the TOTAL yield over the full harvest cycle
-// (typically 4–6 months). We must sum ALL monthly harvest data across the entire cycle,
-// divide by area, then compare that cumulative figure against the reference.
+// ==================== MONTHLY YIELD vs REFERENCE ====================
 function renderMonthlyYieldVsReference(rows, headers) {
     const section    = document.getElementById('monthlyYieldSection');
     const container  = document.getElementById('monthlyYieldContainer');
     if (!section || !container) return;
 
-    const hdr        = headers.map(h => h.toString().toLowerCase());
-    const getCol     = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
-    const cropCol    = getCol(['crop']);
-    const areaCol    = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
-    const stageCol   = getCol(['stage']);
-    const statusCol  = hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
-    const harvestMonthsCol = getCol(['harvest months']);
-    const monthCols  = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
+    const hdr      = headers.map(h => h.toString().toLowerCase());
+    const getCol   = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
+    const cropCol  = getCol(['crop']);
+    const areaCol  = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
+    const stageCol = getCol(['stage']);
+    const statusCol= hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
+    const monthCols = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
 
-    // Per crop: accumulate total area and total cycle yield (sum of all monthly values)
-    // Also track month-by-month data for the breakdown rows
     const summaryByCrop = {};
-
     for (const row of rows) {
         const stage  = (stageCol !== -1 && row[stageCol]) ? String(row[stageCol]).trim() : '';
         if (!stage.toLowerCase().includes('harvest')) continue;
@@ -987,35 +962,21 @@ function renderMonthlyYieldVsReference(rows, headers) {
 
         let cropRaw = row[cropCol] || '';
         let crop = null;
-        if      (cropRaw.toLowerCase().includes('tomato'))             crop = 'Tomato';
-        else if (cropRaw.toLowerCase().includes('sweet pepper'))       crop = 'Sweet Pepper';
-        else if (cropRaw.toLowerCase().includes('english cucumber'))   crop = 'English Cucumber';
+        if (cropRaw.toLowerCase().includes('tomato'))             crop = 'Tomato';
+        else if (cropRaw.toLowerCase().includes('sweet pepper'))  crop = 'Sweet Pepper';
+        else if (cropRaw.toLowerCase().includes('english cucumber')) crop = 'English Cucumber';
         if (!crop) continue;
 
         const area = parseFloat(areaCol !== -1 ? row[areaCol] : 0) || 0;
         if (area <= 0) continue;
-
-        // Harvest duration in months (4–6 months typical)
-        const harvestMonths = harvestMonthsCol !== -1 ? (parseFloat(row[harvestMonthsCol]) || 0) : 0;
-
-        // Sum monthly yield values across the entire cycle (all 12 columns that have data)
-        let cycleYieldKg = 0;
-        const monthlyBreakdown = new Array(12).fill(0);
+        if (!summaryByCrop[crop]) summaryByCrop[crop] = { totalArea: 0, monthly: new Array(12).fill(0) };
+        summaryByCrop[crop].totalArea += area;
         MONTHS.forEach((_, i) => {
             const col = monthCols[i];
-            const val = col !== -1 && row[col] ? parseFloat(row[col]) || 0 : 0;
-            cycleYieldKg += val;
-            monthlyBreakdown[i] = val;
+            if (col !== -1 && row[col]) {
+                summaryByCrop[crop].monthly[i] += parseFloat(row[col]) || 0;
+            }
         });
-
-        if (!summaryByCrop[crop]) {
-            summaryByCrop[crop] = { totalArea: 0, cycleYieldKg: 0, monthly: new Array(12).fill(0), harvestMonths: 0, recordCount: 0 };
-        }
-        summaryByCrop[crop].totalArea    += area;
-        summaryByCrop[crop].cycleYieldKg += cycleYieldKg;
-        summaryByCrop[crop].harvestMonths = Math.max(summaryByCrop[crop].harvestMonths, harvestMonths);
-        summaryByCrop[crop].recordCount  += 1;
-        MONTHS.forEach((_, i) => { summaryByCrop[crop].monthly[i] += monthlyBreakdown[i]; });
     }
 
     if (!Object.keys(summaryByCrop).length) {
@@ -1024,82 +985,50 @@ function renderMonthlyYieldVsReference(rows, headers) {
     }
     section.style.display = 'block';
 
-    const curYear     = new Date().getFullYear();
     const curMonthIdx = new Date().getMonth();
-
-    let html = `
-    <div style="background:var(--green-50);border:1px solid var(--green-200);border-radius:1rem;padding:0.65rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:#555;display:flex;align-items:flex-start;gap:8px;">
-        <i class="fas fa-info-circle" style="color:var(--green-600);margin-top:2px;flex-shrink:0;"></i>
-        <span>The <strong>Reference range</strong> (kg/m²) is the <strong>expected total yield over the full harvest cycle</strong> (4–6 months). 
-        The <strong>Cycle Yield (kg/m²)</strong> shown is the cumulative total across all harvest months recorded — compared directly against this reference.</span>
-    </div>
-    <table class="yield-eff-table">
+    let html = `<table class="yield-eff-table">
         <thead><tr>
             <th>Crop</th>
-            <th>Cycle Total Yield (kg)</th>
+            <th>Month</th>
+            <th>Total Yield (kg)</th>
             <th>Area (m²)</th>
-            <th>Cycle Yield (kg/m²)</th>
-            <th>Reference Range (kg/m²)</th>
-            <th>Harvest Months Recorded</th>
-            <th>Status vs Reference</th>
+            <th>Yield (kg/m²)</th>
+            <th>Reference (kg/m²)</th>
+            <th>Status</th>
         </tr></thead><tbody>`;
 
     for (const [crop, data] of Object.entries(summaryByCrop)) {
-        const ref        = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
-        const area       = data.totalArea;
-        const totalYield = data.cycleYieldKg;
-        const kgPerM2    = area > 0 ? totalYield / area : 0;
-        const icon       = crop === 'Tomato' ? '🍅' : crop === 'Sweet Pepper' ? '🌶️' : '🥒';
-
-        // Count months with actual harvest data recorded
-        const activeMonths = data.monthly
-            .map((v, i) => ({ v, i }))
-            .filter(m => m.v > 0)
-            .map(m => MONTHS[m.i].substring(0, 3));
-        const monthsRecordedStr = activeMonths.length
-            ? activeMonths.join(', ') + ` <span style="color:#aaa;font-size:0.78rem;">(${activeMonths.length} month${activeMonths.length !== 1 ? 's' : ''})</span>`
-            : '<span style="color:#bbb;">None yet</span>';
-
-        // Status: compare cumulative cycle yield/m² against the full-cycle reference range
-        let badge = '', badgeCls = '', tooltip = '';
-        if (totalYield === 0) {
-            badge = 'No Harvest Data'; badgeCls = 'avg';
-            tooltip = 'No monthly yield values have been recorded yet for this crop cycle.';
-        } else if (kgPerM2 >= ref.max) {
-            badge = '🏆 Exceeds Reference'; badgeCls = 'good';
-            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² exceeds the maximum reference of ${ref.max} kg/m².`;
-        } else if (kgPerM2 >= ref.min) {
-            badge = '✅ Within Reference'; badgeCls = 'good';
-            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² is within the reference range ${ref.min}–${ref.max} kg/m².`;
-        } else if (kgPerM2 >= ref.min * 0.75) {
-            badge = '⚠️ Below Reference'; badgeCls = 'avg';
-            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² is below the minimum reference of ${ref.min} kg/m² but within 75%.`;
-        } else {
-            badge = '🔴 Low Yield'; badgeCls = 'low';
-            tooltip = `Cycle yield of ${kgPerM2.toFixed(2)} kg/m² is significantly below the reference minimum of ${ref.min} kg/m².`;
+        const ref  = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
+        const monthsToShow = [];
+        for (let i = curMonthIdx; i >= Math.max(0, curMonthIdx - 3); i--) {
+            if (data.monthly[i] > 0 || i === curMonthIdx) monthsToShow.push(i);
         }
 
-        // Progress bar: how far through the reference range (capped at ref.max)
-        const progressPct = ref.max > 0 ? Math.min(100, (kgPerM2 / ref.max) * 100) : 0;
-        const minMarkerPct = ref.max > 0 ? Math.min(100, (ref.min / ref.max) * 100) : 0;
-        const barColor = badgeCls === 'good' ? 'var(--green-600)' : badgeCls === 'avg' ? '#e67e22' : 'var(--red)';
+        monthsToShow.reverse().forEach((mIdx, idx) => {
+            const totalYield = data.monthly[mIdx];
+            const area       = data.totalArea;
+            const kgPerM2    = area > 0 ? totalYield / area : 0;
+            let badge = '', badgeCls = '';
+            if (kgPerM2 >= ref.min) {
+                badge = '≥ Min Reference'; badgeCls = 'good';
+            } else if (kgPerM2 >= ref.min * 0.7) {
+                badge = 'Below Reference'; badgeCls = 'avg';
+            } else if (kgPerM2 > 0) {
+                badge = 'Low Yield'; badgeCls = 'low';
+            } else {
+                badge = 'No Data'; badgeCls = 'avg';
+            }
 
-        html += `<tr title="${tooltip}">
-            <td style="font-weight:800;">${icon} ${crop}</td>
-            <td><strong>${totalYield.toFixed(1)} kg</strong></td>
-            <td>${area.toFixed(1)} m²</td>
-            <td>
-                <strong style="font-size:1.05rem;color:${barColor};">${kgPerM2.toFixed(2)}</strong>
-                <div style="margin-top:5px;position:relative;background:#eee;border-radius:1rem;height:8px;width:100%;min-width:100px;">
-                    <div style="position:absolute;left:0;top:0;height:8px;border-radius:1rem;width:${progressPct}%;background:${barColor};transition:width 0.5s;"></div>
-                    <div style="position:absolute;top:-3px;height:14px;width:2px;background:var(--green-800);border-radius:1px;left:${minMarkerPct}%;" title="Min reference: ${ref.min}"></div>
-                </div>
-                <div style="font-size:0.68rem;color:#aaa;margin-top:3px;">of ${ref.max} kg/m² max</div>
-            </td>
-            <td><strong>${ref.min} – ${ref.max}</strong> kg/m²</td>
-            <td style="font-size:0.83rem;">${monthsRecordedStr}</td>
-            <td><span class="yield-eff-badge ${badgeCls}" title="${tooltip}">${badge}</span></td>
-        </tr>`;
+            html += `<tr>
+                ${idx === 0 ? `<td rowspan="${monthsToShow.length}" style="font-weight:800;vertical-align:top;padding-top:14px;">${crop === 'Tomato' ? '🍅' : crop === 'Sweet Pepper' ? '🌶️' : '🥒'} ${crop}</td>` : ''}
+                <td>${MONTHS[mIdx].substring(0,3)} ${new Date().getFullYear()}</td>
+                <td>${totalYield.toFixed(1)} kg</td>
+                <td>${area.toFixed(1)} m²</td>
+                <td><strong>${kgPerM2.toFixed(2)}</strong></td>
+                <td>${ref.min} – ${ref.max}</td>
+                <td><span class="yield-eff-badge ${badgeCls}">${badge}</span></td>
+            </tr>`;
+        });
     }
 
     html += '</tbody></table>';
@@ -1154,17 +1083,26 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminVie
 
         const card = document.createElement('div');
         card.className = 'record-card'+(isActive?'':' completed');
-        // Build searchable data string for fast live filtering
-        const searchData = [
-            cropVal, stageVal, varietyVal, tomatoType, weeklyYield, weeklyUnit,
-            isActive ? 'active' : 'completed', harvestMonths
-        ].join(' ').toLowerCase();
-        card.dataset.search = searchData;
 
         // FIX: Show edit/toggle buttons for both grower (own records) and admin search results
         // For grower's own records section (prevSubmissionsSection): always show edit/toggle
         // isAdminView = true means this is admin search results panel
         const showActions = true; // Always show action buttons
+
+        // Build search metadata for live search (includes all searchable fields)
+        const searchMeta = [
+            usernameForActions,
+            cropVal,
+            varietyVal,
+            tomatoType,
+            stageVal,
+            weeklyYield.toString(),
+            weeklyUnit,
+            harvestMonths.toString(),
+            cycleStatus
+        ].join(' ').toLowerCase();
+
+        card.dataset.searchMeta = searchMeta;
 
         card.innerHTML = `
             <div class="record-header">
@@ -1199,64 +1137,6 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminVie
     }
 }
 
-// ==================== ADMIN LIVE FILTER ====================
-function initAdminLiveFilter() {
-    const input    = document.getElementById('adminLiveFilterInput');
-    const clearBtn = document.getElementById('adminLiveFilterClear');
-    if (!input) return;
-    input.addEventListener('input', () => {
-        const q = input.value.trim();
-        clearBtn.style.display = q ? 'block' : 'none';
-        applyAdminLiveFilter(q);
-    });
-    clearBtn.addEventListener('click', () => {
-        input.value = '';
-        clearBtn.style.display = 'none';
-        // reset quick filter buttons
-        document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === ''));
-        applyAdminLiveFilter('');
-    });
-    // Wire quick filter buttons
-    document.querySelectorAll('.admin-quick-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const filterVal = btn.dataset.filter;
-            input.value = filterVal;
-            clearBtn.style.display = filterVal ? 'block' : 'none';
-            applyAdminLiveFilter(filterVal);
-        });
-    });
-    // Set "All" as default active
-    const allBtn = document.querySelector('.admin-quick-filter-btn[data-filter=""]');
-    if (allBtn) allBtn.classList.add('active');
-}
-
-function applyAdminLiveFilter(query) {
-    const grid = document.getElementById('adminSearchGrid');
-    const countEl = document.getElementById('adminFilterResultCount');
-    if (!grid) return;
-    const cards = grid.querySelectorAll('.record-card');
-    const q = query.toLowerCase().trim();
-    let visible = 0;
-    cards.forEach(card => {
-        if (!q) { card.classList.remove('search-hidden'); visible++; return; }
-        // Use data-search attribute first (fast, targeted), fallback to full text
-        const searchTarget = (card.dataset.search || card.textContent).toLowerCase();
-        const match = searchTarget.includes(q);
-        card.classList.toggle('search-hidden', !match);
-        if (match) visible++;
-    });
-    if (countEl) {
-        if (q) {
-            countEl.textContent = `${visible} of ${cards.length} record${cards.length !== 1 ? 's' : ''} match "${query}"`;
-            countEl.style.color = visible === 0 ? 'var(--red)' : '#666';
-        } else {
-            countEl.textContent = '';
-        }
-    }
-}
-
 // ==================== ADMIN SEARCH ====================
 async function adminSearchGrower() {
     const query = document.getElementById('adminSearchInput').value.trim();
@@ -1266,28 +1146,27 @@ async function adminSearchGrower() {
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Searching...';
     document.getElementById('adminSearchResults').style.display = 'none';
     document.getElementById('adminSearchEmpty').style.display   = 'none';
-    document.getElementById('adminLiveFilterPanel').style.display = 'none';
-    // Reset live filter
-    const lfi = document.getElementById('adminLiveFilterInput');
-    if (lfi) lfi.value = '';
-    const lfc = document.getElementById('adminLiveFilterClear');
-    if (lfc) lfc.style.display = 'none';
-    document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === ''));
     try {
-        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.rows||data.rows.length===0) {
             document.getElementById('adminSearchEmpty').style.display = 'block';
+            const liveWrap = document.getElementById('adminLiveSearchWrap');
+            if (liveWrap) liveWrap.style.display = 'none';
             toast('No records found for "'+query+'"', true);
         } else {
             document.getElementById('adminSearchedUsernameText').textContent = query;
             document.getElementById('adminSearchRecordCount').textContent    = data.rows.length+' record'+(data.rows.length!==1?'s':'')+' found';
             renderRecordCards(document.getElementById('adminSearchGrid'), data.rows, data.headers, query, true);
             document.getElementById('adminSearchResults').style.display = 'block';
-            // Show the live filter panel now that there are results
-            document.getElementById('adminLiveFilterPanel').style.display = 'block';
-            document.getElementById('adminFilterResultCount').textContent = '';
+            // Show live filter bar
+            const liveWrap = document.getElementById('adminLiveSearchWrap');
+            if (liveWrap) { liveWrap.style.display = 'block'; }
+            const filterInput = document.getElementById('adminLiveFilterInput');
+            if (filterInput) filterInput.value = '';
+            const filterCount = document.getElementById('adminFilterCount');
+            if (filterCount) filterCount.textContent = '';
             logActivity('search', `Searched grower records for <strong>${query}</strong> — ${data.rows.length} record(s) found`);
             toast('Loaded '+data.rows.length+' record(s) for '+query);
         }
@@ -1300,9 +1179,56 @@ function adminClearSearch() {
     document.getElementById('adminSearchResults').style.display = 'none';
     document.getElementById('adminSearchEmpty').style.display   = 'none';
     document.getElementById('adminSearchGrid').innerHTML        = '';
-    document.getElementById('adminLiveFilterPanel').style.display = 'none';
-    const lfi = document.getElementById('adminLiveFilterInput');
-    if (lfi) lfi.value = '';
+    // Hide live filter bar too
+    const liveWrap = document.getElementById('adminLiveSearchWrap');
+    if (liveWrap) liveWrap.style.display = 'none';
+    const filterCount = document.getElementById('adminFilterCount');
+    if (filterCount) filterCount.textContent = '';
+    const filterInput = document.getElementById('adminLiveFilterInput');
+    if (filterInput) filterInput.value = '';
+}
+
+// ==================== ADMIN LIVE FILTER ====================
+function initAdminLiveFilter() {
+    const input = document.getElementById('adminLiveFilterInput');
+    const clearBtn = document.getElementById('adminLiveFilterClear');
+    if (!input) return;
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        clearBtn.style.display = q ? 'block' : 'none';
+        filterAdminCards(q);
+    });
+
+    clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.style.display = 'none';
+        filterAdminCards('');
+    });
+}
+
+function filterAdminCards(query) {
+    const grid = document.getElementById('adminSearchGrid');
+    const countEl = document.getElementById('adminFilterCount');
+    if (!grid) return;
+    const cards = grid.querySelectorAll('.record-card');
+    const q = query.toLowerCase().trim();
+    let visible = 0;
+    cards.forEach(card => {
+        if (!q) { card.classList.remove('search-hidden'); visible++; return; }
+        // Search within the card's searchMeta (covers grower name, crop, variety, tomato type, stage, yield, etc.)
+        const text = (card.dataset.searchMeta || card.textContent).toLowerCase();
+        const match = text.includes(q);
+        card.classList.toggle('search-hidden', !match);
+        if (match) visible++;
+    });
+    if (countEl) {
+        if (q) {
+            countEl.textContent = `${visible} record${visible !== 1 ? 's' : ''} matching "${query}"`;
+        } else {
+            countEl.textContent = '';
+        }
+    }
 }
 
 // ==================== REGISTER NEW USER ====================
@@ -1403,7 +1329,7 @@ function renderRecentRegistrations() {
 // ==================== ACTIVE MEMBER COUNT ====================
 async function loadActiveMemberCount() {
     try {
-        const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getActiveMemberCount&_=${Date.now()}`, {}, 8000);
+        const res = await fetch(`${SCRIPT_URL}?action=getActiveMemberCount&_=${Date.now()}`);
         if (!res.ok) { document.getElementById('activeMemberCount').textContent='N/A'; return; }
         const data  = await res.json();
         const count = data.count ?? data.activeMemberCount ?? null;
@@ -1445,7 +1371,7 @@ async function toggleCycleStatus(timestamp, btnEl, cardEl, overrideUsername) {
 async function loadUserPreviousData(username) {
     if (!username) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
     try {
-        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         if (!data.rows||data.rows.length===0) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
@@ -1766,7 +1692,7 @@ function clearAdminGHQueue() {
 // ==================== DASHBOARD ====================
 async function loadDashboard() {
     try {
-        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`, {}, 10000);
+        const res  = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         dashboardStats = data;
@@ -1774,13 +1700,9 @@ async function loadDashboard() {
         renderAreaByStage(data, activeCrop);
         renderTopCrops(data);
         updateCropHeroAreas(data);
-        // Fire non-critical loads independently — don't chain-await them
-        loadZonalEfficiency(currentZone).catch(()=>{});
-        if (isAdmin) {
-            loadTimelineChart(currentTimelineCrop).catch(()=>{});
-            loadForecastChart(currentForecastCrop).catch(()=>{});
-        }
-    } catch(e) { console.warn('Dashboard load failed', e); }
+        await loadZonalEfficiency(currentZone);
+        if (isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); }
+    } catch(e) { console.warn('Dashboard load failed',e); }
 }
 
 function renderAreaByStage(stats, filter) {
@@ -1824,15 +1746,16 @@ function renderTopCrops(stats) {
 
 // FIX: Removed Zonal Yield Efficiency section from display — function still exists for internal use only
 async function loadZonalEfficiency(zone) {
+    // Silently load data but don't render the removed section
     try {
-        await fetchWithTimeout(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`, {}, 6000);
-    } catch(e) { /* silent — non-critical */ }
+        await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
+    } catch(e) { /* silent */ }
 }
 
 async function loadTimelineChart(crop) {
     if (!isAdmin) return;
     try {
-        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
         const data = await res.json();
         if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
         const stageColors = {
@@ -1863,7 +1786,7 @@ async function loadTimelineChart(crop) {
 async function loadForecastChart(crop) {
     if (!isAdmin) return;
     try {
-        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
         const data = await res.json();
         if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
         if (!data.labels || !data.labels.length) {
@@ -1881,152 +1804,124 @@ async function loadForecastChart(crop) {
     } catch(e) { console.warn(e); }
 }
 
-// ==================== SAFE FETCH HELPER ====================
-// Uses Promise.race against a timeout promise (not AbortController)
-// because AbortController does not reliably abort Google Apps Script
-// redirect-based fetch calls in all browsers.
-function fetchWithTimeout(url, options={}, timeoutMs=12000) {
-    const fetchPromise = fetch(url, options).then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res;
-    });
-    const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
-    );
-    return Promise.race([fetchPromise, timeoutPromise]);
-}
-
 // ==================== AUTO-FILL PROFILE ====================
+// FIX: Locality and area auto-fill waits for dropdown to populate before setting value
 async function autoFillProfileFromRecords(username) {
     try {
-        const res  = await fetchWithTimeout(
-            `${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`,
-            {}, 8000
-        );
+        const res = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+        if (!res.ok) return;
         const data = await res.json();
-
-        // 1. Zone — update state + pill CSS only (no dropdown rebuild side-effects)
+        // Auto-fill total area
+        if (data.totalArea && parseFloat(data.totalArea) > 0) {
+            document.getElementById('totalArea').value = data.totalArea;
+        }
+        // Set zone if returned
         if (data.zone && ZONE_LOCALITIES[data.zone]) {
             currentZone = data.zone;
-            document.querySelectorAll('.zone-pill').forEach(btn =>
-                btn.classList.toggle('active', btn.dataset.zone === currentZone)
-            );
+            initZoneHeader();
         }
-
-        // 2. Rebuild locality dropdown for the correct zone
+        // Always rebuild locality dropdown for the current zone
         const locs = ZONE_LOCALITIES[currentZone] || [];
-        const sel  = document.getElementById('localitySelect');
+        const sel = document.getElementById('localitySelect');
         if (sel) {
             sel.innerHTML = '<option value="">-- Select Locality --</option>';
             locs.forEach(l => {
                 const o = document.createElement('option');
-                o.value = l; o.textContent = l; sel.appendChild(o);
+                o.value = l; o.textContent = l;
+                sel.appendChild(o);
             });
-            // 3. Set locality AFTER dropdown is fully built
+            // Now set the locality value
             if (data.locality) {
+                // If locality is not in dropdown options, add it
                 if (!Array.from(sel.options).some(o => o.value === data.locality)) {
                     const opt = document.createElement('option');
-                    opt.value = data.locality; opt.textContent = data.locality;
+                    opt.value = data.locality;
+                    opt.textContent = data.locality;
                     sel.appendChild(opt);
                 }
                 sel.value = data.locality;
             }
         }
-
-        // 4. Area — fill even when value is numeric 0
-        const areaEl = document.getElementById('totalArea');
-        if (areaEl && data.totalArea !== undefined && data.totalArea !== null && data.totalArea !== '') {
-            areaEl.value = data.totalArea;
-        }
-
-    } catch(e) { console.warn('Auto-fill profile failed:', e.message); }
+    } catch(e) {
+        // Silently fail — locality remains selectable manually
+        console.warn('Auto-fill profile failed:', e.message);
+    }
 }
 
 // ==================== LOGIN ====================
 async function login(username, password) {
-    const errorDiv  = document.getElementById('loginError');
-    errorDiv.innerText = '';
-    if (!username || !password) {
-        errorDiv.innerText = 'Please enter your username and password.'; return;
-    }
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.innerText='';
+    if (!username||!password) { errorDiv.innerText='Please enter your username and password.'; return; }
     const loginBtn = document.getElementById('loginBtn');
     const origText = loginBtn.innerHTML;
-    loginBtn.disabled = true;
-    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Signing in...';
-
+    loginBtn.disabled=true; loginBtn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Signing in...';
+    if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
+    if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(()=>controller.abort(), 14000);
     try {
-        // ── Step 1: Authenticate only — short 12 s timeout ──
-        let authData;
-        try {
-            const res  = await fetchWithTimeout(
-                `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
-                {}, 12000
-            );
-            authData = await res.json();
-        } catch(e) {
-            errorDiv.innerText = e.message || 'Login failed. Check your connection.';
-            toast(errorDiv.innerText, true);
-            return;
-        }
+        const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,{signal:controller.signal});
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error(`Server error (HTTP ${res.status})`);
+        let data;
+        try { data=await res.json(); } catch(e) { throw new Error('Server returned an invalid response. Please try again.'); }
+        if (!data.success) { errorDiv.innerText=data.message||'Invalid username or password'; return; }
 
-        if (!authData.success) {
-            errorDiv.innerText = authData.message || 'Invalid username or password'; return;
-        }
+        isAdmin=data.isAdmin===true;
+        currentLoggedInUser=username;
+        document.getElementById('loggedInUsername').innerText=username;
 
-        // ── Step 2: Set state ──
-        isAdmin = authData.isAdmin === true;
-        currentLoggedInUser = username;
-        document.getElementById('loggedInUsername').innerText = username;
+        logActivity('login', `<strong>${username}</strong> logged in as ${isAdmin ? 'Admin' : 'Grower'}`, username);
 
-        // ── Step 3: Build correct UI sections ──
+        // Show main app FIRST so UI is not frozen
+        document.getElementById('loginOverlay').style.display='none';
+        document.getElementById('mainApp').style.display='block';
+
         if (isAdmin) {
             document.getElementById('adminBadge').classList.remove('hidden');
-            document.getElementById('growerProfileCard').style.display  = 'none';
-            document.getElementById('adminSearchSection').style.display = 'block';
-            document.getElementById('prevSubmissionsSection').style.display = 'none';
+            document.getElementById('growerProfileCard').style.display='none';
+            document.getElementById('adminSearchSection').style.display='block';
+            document.getElementById('prevSubmissionsSection').style.display='none';
             setAdminSectionsVisibility(true);
             renderAdminGHForm();
         } else {
             document.getElementById('adminBadge').classList.add('hidden');
-            document.getElementById('adminSearchSection').style.display = 'none';
-            document.getElementById('growerProfileCard').style.display  = 'block';
-            document.getElementById('growerName').value = username;
+            document.getElementById('adminSearchSection').style.display='none';
+            document.getElementById('growerProfileCard').style.display='block';
+            document.getElementById('growerName').value=username;
             setAdminSectionsVisibility(false);
-            updateLocalityDropdown(); // seed dropdown immediately with default zone
+            // FIX: Populate locality dropdown before fetching profile so autofill works
+            updateLocalityDropdown();
         }
 
-        // ── Step 4: HIDE LOGIN & SHOW APP RIGHT NOW — no more awaiting ──
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('mainApp').style.display      = 'block';
         initLiveSearch();
-        toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}! 🌱`);
+        toast(`Welcome ${username}${isAdmin?' (Admin)':''}! 🌱`);
 
-        // ── Step 5: Log activity (non-blocking, fire-and-forget) ──
-        logActivity('login', `<strong>${username}</strong> logged in as ${isAdmin ? 'Admin' : 'Grower'}`, username);
+        // Load data in parallel (non-blocking)
+        const dashPromise = loadDashboard();
+        const memberPromise = loadActiveMemberCount();
 
-        // ── Step 6: All remaining data loads fire AFTER the UI is visible ──
-        // Use setTimeout(0) so the browser paints the app before starting fetches.
-        setTimeout(async () => {
-            // Profile (locality + area) for grower
-            if (!isAdmin) {
-                try { await autoFillProfileFromRecords(username); }
-                catch(e) { console.warn('Profile auto-fill error:', e.message); }
-            }
-            // Dashboard stats
-            try { await loadDashboard(); }
-            catch(e) { console.warn('Dashboard load error:', e.message); }
-            // User crop records
-            try { await loadUserPreviousData(isAdmin ? '' : username); }
-            catch(e) { console.warn('User data load error:', e.message); }
-            // Active member count
-            try { await loadActiveMemberCount(); }
-            catch(e) { console.warn('Member count error:', e.message); }
-        }, 0);
+        if (!isAdmin) {
+            // Auto-fill locality/area from profile before loading records
+            await autoFillProfileFromRecords(username);
+            await Promise.allSettled([
+                loadUserPreviousData(username),
+                dashPromise,
+                memberPromise
+            ]);
+        } else {
+            await Promise.allSettled([dashPromise, memberPromise]);
+        }
 
-    } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = origText;
-    }
+    } catch(err) {
+        clearTimeout(timeoutId);
+        // If main app already shown, re-show login
+        document.getElementById('loginOverlay').style.display='flex';
+        document.getElementById('mainApp').style.display='none';
+        const msg = err.name==='AbortError'?'Request timed out. Please check your connection and try again.':err.message;
+        errorDiv.innerText=msg; toast(msg,true);
+    } finally { loginBtn.disabled=false; loginBtn.innerHTML=origText; }
 }
 
 // ==================== ADMIN TABS ====================
@@ -2133,6 +2028,7 @@ initZoneHeader();
 updateLocalityDropdown();
 wireFilterButtons();
 initAdminTabs();
+initAdminLiveFilter();
 
 // Populate reg_zone dropdown
 (function(){
@@ -2142,7 +2038,6 @@ initAdminTabs();
 })();
 
 setZone(currentZone);
-initAdminLiveFilter();
-
+</script>
 </body>
 </html>
