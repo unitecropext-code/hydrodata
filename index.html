@@ -3317,6 +3317,7 @@
         async function loadZonalEfficiency(zone) { try { await fetch(
                 `${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`); } catch (e) {} }
 
+        // Timeline – uses server‑side action that should read Column I (Crop Stage) and Column K (Date Transplanted)
         async function loadTimelineChart(crop) {
             if (!isAdmin) return;
             try {
