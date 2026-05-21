@@ -199,6 +199,64 @@
         .yield-eff-badge.avg  { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
         .yield-eff-badge.low  { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
+        /* === TOP CROP AREAS & VARIETIES REDESIGN === */
+        .top-varieties-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+        }
+        @media (min-width: 640px) {
+            .top-varieties-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        .variety-panel {
+            border-radius: 1.4rem;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+            border: 1.5px solid rgba(0,0,0,0.06);
+        }
+        .variety-panel-header {
+            padding: 1rem 1.2rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .variety-panel-header .crop-emoji { font-size: 1.8rem; line-height: 1; }
+        .variety-panel-header .crop-label { font-weight: 900; font-size: 1rem; }
+        .variety-panel-header .crop-total { font-size: 0.78rem; font-weight: 700; margin-top: 1px; opacity: 0.85; }
+        .variety-panel.tomato .variety-panel-header { background: linear-gradient(130deg, #c0392b, #e74c3c); color: white; }
+        .variety-panel.pepper .variety-panel-header { background: linear-gradient(130deg, #d35400, #e67e22); color: white; }
+        .variety-panel.cucumber .variety-panel-header { background: linear-gradient(130deg, #1a7e22, #27ae60); color: white; }
+        .variety-panel-body { background: white; padding: 0.7rem 0; }
+        .variety-rank-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.55rem 1.1rem;
+            border-bottom: 1px solid #f2f8f0;
+            transition: background 0.15s;
+        }
+        .variety-rank-item:last-child { border-bottom: none; }
+        .variety-rank-item:hover { background: var(--green-50); }
+        .rank-badge {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 900;
+            flex-shrink: 0;
+        }
+        .rank-badge.r1 { background: linear-gradient(135deg,#f7c948,#f39c12); color: white; box-shadow: 0 2px 6px rgba(243,156,18,0.45); }
+        .rank-badge.r2 { background: linear-gradient(135deg,#b0bec5,#78909c); color: white; }
+        .rank-badge.r3 { background: linear-gradient(135deg,#cd7f32,#a0522d); color: white; }
+        .variety-name { flex: 1; font-weight: 700; font-size: 0.88rem; color: #1a3a1a; }
+        .variety-area-bar-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; min-width: 80px; }
+        .variety-area-val { font-size: 0.82rem; font-weight: 800; color: var(--green-700); }
+        .variety-mini-bar-bg { width: 80px; height: 6px; background: #e8f5e2; border-radius: 3px; overflow: hidden; }
+        .variety-mini-bar-fill { height: 100%; border-radius: 3px; }
+        .variety-panel.tomato .variety-mini-bar-fill { background: linear-gradient(90deg,#c0392b,#e74c3c); }
+        .variety-panel.pepper .variety-mini-bar-fill { background: linear-gradient(90deg,#d35400,#e67e22); }
+        .variety-panel.cucumber .variety-mini-bar-fill { background: linear-gradient(90deg,#1a7e22,#27ae60); }
+        .variety-no-data { text-align: center; color: #ccc; padding: 1.4rem 0; font-size: 0.85rem; }
+
         /* === LEGEND === */
         .legend-bar { display:flex; flex-wrap:wrap; gap:0.8rem; align-items:center; margin-bottom:1rem; padding:0.6rem 1rem; background:var(--green-50); border-radius:1rem; border:1px solid var(--green-100); font-size:0.8rem; }
         .legend-bar strong { color:var(--green-800); font-weight:800; }
@@ -549,10 +607,10 @@
             </div>
         </div>
 
-        <!-- YOUR CROP RECORDS with LIVE SEARCH (FIX: search buttons hidden for growers) -->
+        <!-- YOUR CROP RECORDS with LIVE SEARCH -->
         <div id="prevSubmissionsSection" class="glass-card" style="display:none;">
             <div class="stat-title"><i class="fas fa-clipboard-list"></i> Your Crop Records</div>
-            <!-- LIVE SEARCH BAR -->
+            <!-- LIVE SEARCH BAR (no search button - input-only for users) -->
             <div class="live-search-wrap">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, tomato type, stage, yield, status...">
@@ -613,10 +671,9 @@
             <div class="table-responsive"><div id="cropAndVarietiesContainer"></div></div>
         </div>
 
-        <!-- MONTHLY YIELD vs REFERENCE (logged-in user, harvest stage) -->
+        <!-- CYCLE YIELD vs REFERENCE (logged-in user, harvest stage) -->
         <div class="glass-card" id="monthlyYieldSection" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-bar"></i> Monthly Yield (kg/m²) vs Zonal Efficiency Reference</div>
-            <!-- FIX: Removed "Calculated per crop for records at Harvesting stage. Active cycles only." text -->
+            <div class="stat-title"><i class="fas fa-chart-bar"></i> Cycle Yield (kg/m²) vs Zonal Efficiency Reference</div>
             <div class="table-responsive"><div id="monthlyYieldContainer"></div></div>
         </div>
 
@@ -939,94 +996,116 @@ function updateCropHeroAreas(stats) {
     });
 }
 
-// ==================== MONTHLY YIELD vs REFERENCE ====================
+// ==================== CYCLE YIELD vs REFERENCE ====================
+// Corrected: sums ALL monthly harvest values across the full cycle per active harvesting record,
+// divides by area → cumulative kg/m², then compares against full-cycle reference range.
+// Shows ONE row per crop (cycle total), not one row per month.
 function renderMonthlyYieldVsReference(rows, headers) {
     const section    = document.getElementById('monthlyYieldSection');
     const container  = document.getElementById('monthlyYieldContainer');
     if (!section || !container) return;
 
-    const hdr      = headers.map(h => h.toString().toLowerCase());
-    const getCol   = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
-    const cropCol  = getCol(['crop']);
-    const areaCol  = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
-    const stageCol = getCol(['stage']);
-    const statusCol= hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
+    const hdr       = headers.map(h => h.toString().toLowerCase().trim());
+    const getCol    = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
+    const cropCol   = getCol(['crop']);
+    const stageCol  = getCol(['stage']);
+    const statusCol = hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
+    const varietyCol= getCol(['variety']);
+    const harvestMonthsCol = getCol(['harvest months', 'harvestmonths']);
+
+    // Area column: exact match first, then fallback
+    let areaCol = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)' || h === 'area') && !h.includes('total'));
+    if (areaCol === -1) areaCol = hdr.findIndex(h => h.includes('area') && !h.includes('total'));
+
+    // Month column indices (Jan–Dec)
     const monthCols = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
 
-    const summaryByCrop = {};
+    // One entry per active harvesting record: { area, cycleTotal, harvestMonths, variety, monthsWithData }
+    const cropEntries = {}; // keyed by canonical crop name
+
     for (const row of rows) {
-        const stage  = (stageCol !== -1 && row[stageCol]) ? String(row[stageCol]).trim() : '';
+        const stage  = (stageCol  !== -1 && row[stageCol])  ? String(row[stageCol]).trim()  : '';
         if (!stage.toLowerCase().includes('harvest')) continue;
         const status = (statusCol !== -1 && row[statusCol]) ? String(row[statusCol]).trim() : 'Active';
         if (status !== 'Active') continue;
 
-        let cropRaw = row[cropCol] || '';
+        const cropRaw = String(row[cropCol] || '').trim();
         let crop = null;
-        if (cropRaw.toLowerCase().includes('tomato'))             crop = 'Tomato';
-        else if (cropRaw.toLowerCase().includes('sweet pepper'))  crop = 'Sweet Pepper';
-        else if (cropRaw.toLowerCase().includes('english cucumber')) crop = 'English Cucumber';
+        if      (cropRaw.toLowerCase().includes('tomato'))             crop = 'Tomato';
+        else if (cropRaw.toLowerCase().includes('sweet pepper'))       crop = 'Sweet Pepper';
+        else if (cropRaw.toLowerCase().includes('english cucumber'))   crop = 'English Cucumber';
         if (!crop) continue;
 
         const area = parseFloat(areaCol !== -1 ? row[areaCol] : 0) || 0;
         if (area <= 0) continue;
-        if (!summaryByCrop[crop]) summaryByCrop[crop] = { totalArea: 0, monthly: new Array(12).fill(0) };
-        summaryByCrop[crop].totalArea += area;
-        MONTHS.forEach((_, i) => {
+
+        // Sum ALL monthly yield values for this record
+        let cycleTotal = 0;
+        const monthsWithData = [];
+        MONTHS.forEach((mName, i) => {
             const col = monthCols[i];
-            if (col !== -1 && row[col]) {
-                summaryByCrop[crop].monthly[i] += parseFloat(row[col]) || 0;
-            }
+            const val = (col !== -1 && row[col]) ? parseFloat(row[col]) || 0 : 0;
+            if (val > 0) { cycleTotal += val; monthsWithData.push(mName.substring(0,3)); }
         });
+
+        const variety      = varietyCol !== -1 ? (row[varietyCol] || '—') : '—';
+        const harvestMos   = harvestMonthsCol !== -1 ? parseFloat(row[harvestMonthsCol]) || 0 : 0;
+
+        if (!cropEntries[crop]) cropEntries[crop] = { records: [] };
+        cropEntries[crop].records.push({ area, cycleTotal, harvestMos, variety, monthsWithData });
     }
 
-    if (!Object.keys(summaryByCrop).length) {
+    if (!Object.keys(cropEntries).length) {
         section.style.display = 'none';
         return;
     }
     section.style.display = 'block';
 
-    const curMonthIdx = new Date().getMonth();
-    let html = `<table class="yield-eff-table">
+    // Status thresholds against full-cycle reference
+    function getStatusBadge(kgPerM2, ref) {
+        if (kgPerM2 === 0)                          return { badge: 'No Harvest Data',     cls: 'avg'  };
+        if (kgPerM2 >= ref.max)                     return { badge: '🏆 Exceeds Reference', cls: 'good' };
+        if (kgPerM2 >= ref.min)                     return { badge: '✅ Within Reference',  cls: 'good' };
+        if (kgPerM2 >= ref.min * 0.75)              return { badge: '⚠️ Below Reference',   cls: 'avg'  };
+        return                                             { badge: '❌ Low Yield',          cls: 'low'  };
+    }
+
+    let html = `
+    <p style="font-size:0.82rem;color:#666;margin-bottom:0.9rem;padding:0.6rem 1rem;background:var(--green-50);border-radius:0.8rem;border:1px solid var(--green-100);">
+        <i class="fas fa-info-circle" style="color:var(--green-500);"></i>
+        <strong>Cycle Yield:</strong> Sum of all monthly harvest values ÷ area — compared against the full-cycle reference range.
+        One row per active harvesting record.
+    </p>
+    <table class="yield-eff-table">
         <thead><tr>
             <th>Crop</th>
-            <th>Month</th>
-            <th>Total Yield (kg)</th>
+            <th>Variety</th>
+            <th>Cycle Total Yield (kg)</th>
             <th>Area (m²)</th>
-            <th>Yield (kg/m²)</th>
-            <th>Reference (kg/m²)</th>
-            <th>Status</th>
+            <th>Cycle Yield (kg/m²)</th>
+            <th>Reference Range (kg/m²)</th>
+            <th>Harvest Months Recorded</th>
+            <th>Status vs Reference</th>
         </tr></thead><tbody>`;
 
-    for (const [crop, data] of Object.entries(summaryByCrop)) {
-        const ref  = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
-        const monthsToShow = [];
-        for (let i = curMonthIdx; i >= Math.max(0, curMonthIdx - 3); i--) {
-            if (data.monthly[i] > 0 || i === curMonthIdx) monthsToShow.push(i);
-        }
+    for (const [crop, entry] of Object.entries(cropEntries)) {
+        const ref      = YIELD_REFERENCE[crop] || { min: 0, max: 99 };
+        const cropIcon = crop === 'Tomato' ? '🍅' : crop === 'Sweet Pepper' ? '🌶️' : '🥒';
 
-        monthsToShow.reverse().forEach((mIdx, idx) => {
-            const totalYield = data.monthly[mIdx];
-            const area       = data.totalArea;
-            const kgPerM2    = area > 0 ? totalYield / area : 0;
-            let badge = '', badgeCls = '';
-            if (kgPerM2 >= ref.min) {
-                badge = '≥ Min Reference'; badgeCls = 'good';
-            } else if (kgPerM2 >= ref.min * 0.7) {
-                badge = 'Below Reference'; badgeCls = 'avg';
-            } else if (kgPerM2 > 0) {
-                badge = 'Low Yield'; badgeCls = 'low';
-            } else {
-                badge = 'No Data'; badgeCls = 'avg';
-            }
+        entry.records.forEach((rec, idx) => {
+            const kgPerM2  = rec.area > 0 ? rec.cycleTotal / rec.area : 0;
+            const { badge, cls } = getStatusBadge(kgPerM2, ref);
+            const monthsLabel = rec.monthsWithData.length > 0 ? rec.monthsWithData.join(', ') : '<span style="color:#bbb;">None entered</span>';
 
             html += `<tr>
-                ${idx === 0 ? `<td rowspan="${monthsToShow.length}" style="font-weight:800;vertical-align:top;padding-top:14px;">${crop === 'Tomato' ? '🍅' : crop === 'Sweet Pepper' ? '🌶️' : '🥒'} ${crop}</td>` : ''}
-                <td>${MONTHS[mIdx].substring(0,3)} ${new Date().getFullYear()}</td>
-                <td>${totalYield.toFixed(1)} kg</td>
-                <td>${area.toFixed(1)} m²</td>
-                <td><strong>${kgPerM2.toFixed(2)}</strong></td>
-                <td>${ref.min} – ${ref.max}</td>
-                <td><span class="yield-eff-badge ${badgeCls}">${badge}</span></td>
+                ${idx === 0 ? `<td rowspan="${entry.records.length}" style="font-weight:800;vertical-align:middle;">${cropIcon} ${crop}</td>` : ''}
+                <td style="font-size:0.82rem;color:#555;">${rec.variety}</td>
+                <td><strong>${rec.cycleTotal.toFixed(1)}</strong> kg</td>
+                <td>${rec.area.toFixed(1)} m²</td>
+                <td><strong style="font-size:1rem;color:var(--green-800);">${kgPerM2.toFixed(2)}</strong></td>
+                <td style="white-space:nowrap;">${ref.min} – ${ref.max}</td>
+                <td style="font-size:0.8rem;color:#666;">${monthsLabel}</td>
+                <td><span class="yield-eff-badge ${cls}">${badge}</span></td>
             </tr>`;
         });
     }
