@@ -1152,21 +1152,17 @@ async function adminSearchGrower() {
         const data = await res.json();
         if (!data.rows||data.rows.length===0) {
             document.getElementById('adminSearchEmpty').style.display = 'block';
-            const liveWrap = document.getElementById('adminLiveSearchWrap');
-            if (liveWrap) liveWrap.style.display = 'none';
+            document.getElementById('adminLiveSearchWrap').style.display = 'none';
             toast('No records found for "'+query+'"', true);
         } else {
             document.getElementById('adminSearchedUsernameText').textContent = query;
             document.getElementById('adminSearchRecordCount').textContent    = data.rows.length+' record'+(data.rows.length!==1?'s':'')+' found';
             renderRecordCards(document.getElementById('adminSearchGrid'), data.rows, data.headers, query, true);
             document.getElementById('adminSearchResults').style.display = 'block';
-            // Show live filter bar
-            const liveWrap = document.getElementById('adminLiveSearchWrap');
-            if (liveWrap) { liveWrap.style.display = 'block'; }
-            const filterInput = document.getElementById('adminLiveFilterInput');
-            if (filterInput) filterInput.value = '';
-            const filterCount = document.getElementById('adminFilterCount');
-            if (filterCount) filterCount.textContent = '';
+            // Show live filter bar and reset it
+            document.getElementById('adminLiveSearchWrap').style.display = 'block';
+            document.getElementById('adminLiveFilterInput').value = '';
+            document.getElementById('adminFilterCount').textContent = '';
             logActivity('search', `Searched grower records for <strong>${query}</strong> — ${data.rows.length} record(s) found`);
             toast('Loaded '+data.rows.length+' record(s) for '+query);
         }
@@ -1862,7 +1858,6 @@ async function login(username, password) {
     const timeoutId  = setTimeout(()=>controller.abort(), 14000);
     try {
         const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,{signal:controller.signal});
-        clearTimeout(timeoutId);
         if (!res.ok) throw new Error(`Server error (HTTP ${res.status})`);
         let data;
         try { data=await res.json(); } catch(e) { throw new Error('Server returned an invalid response. Please try again.'); }
@@ -1915,13 +1910,12 @@ async function login(username, password) {
         }
 
     } catch(err) {
-        clearTimeout(timeoutId);
         // If main app already shown, re-show login
         document.getElementById('loginOverlay').style.display='flex';
         document.getElementById('mainApp').style.display='none';
         const msg = err.name==='AbortError'?'Request timed out. Please check your connection and try again.':err.message;
         errorDiv.innerText=msg; toast(msg,true);
-    } finally { loginBtn.disabled=false; loginBtn.innerHTML=origText; }
+    } finally { clearTimeout(timeoutId); loginBtn.disabled=false; loginBtn.innerHTML=origText; }
 }
 
 // ==================== ADMIN TABS ====================
