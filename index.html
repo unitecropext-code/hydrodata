@@ -325,7 +325,7 @@
         <div class="login-card">
             <div class="login-logo"><i class="fas fa-leaf"></i></div>
             <div class="login-header">MoHydroponic Smart Tracker</div>
-            <div class="login-sub">Real-Time Crop Insights &amp; Management</div>
+            <div class="login-sub">Real-Time Crop Insights </div>
             <div class="login-input-wrap">
                 <i class="fas fa-user icon"></i>
                 <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
@@ -1274,7 +1274,7 @@ async function adminSearchGrower() {
     if (lfc) lfc.style.display = 'none';
     document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === ''));
     try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`);
+        const res  = await safeFetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`, {}, 10000);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.rows||data.rows.length===0) {
@@ -1403,7 +1403,7 @@ function renderRecentRegistrations() {
 // ==================== ACTIVE MEMBER COUNT ====================
 async function loadActiveMemberCount() {
     try {
-        const res = await fetch(`${SCRIPT_URL}?action=getActiveMemberCount&_=${Date.now()}`);
+        const res = await safeFetch(`${SCRIPT_URL}?action=getActiveMemberCount&_=${Date.now()}`, {}, 8000);
         if (!res.ok) { document.getElementById('activeMemberCount').textContent='N/A'; return; }
         const data  = await res.json();
         const count = data.count ?? data.activeMemberCount ?? null;
@@ -1445,7 +1445,7 @@ async function toggleCycleStatus(timestamp, btnEl, cardEl, overrideUsername) {
 async function loadUserPreviousData(username) {
     if (!username) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
     try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+        const res  = await safeFetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`, {}, 10000);
         if (!res.ok) throw new Error();
         const data = await res.json();
         if (!data.rows||data.rows.length===0) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
@@ -1766,7 +1766,7 @@ function clearAdminGHQueue() {
 // ==================== DASHBOARD ====================
 async function loadDashboard() {
     try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`);
+        const res  = await safeFetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`, {}, 10000);
         if (!res.ok) throw new Error();
         const data = await res.json();
         dashboardStats = data;
@@ -1776,7 +1776,7 @@ async function loadDashboard() {
         updateCropHeroAreas(data);
         await loadZonalEfficiency(currentZone);
         if (isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); }
-    } catch(e) { console.warn('Dashboard load failed',e); }
+    } catch(e) { console.warn('Dashboard load failed', e); }
 }
 
 function renderAreaByStage(stats, filter) {
@@ -1820,16 +1820,15 @@ function renderTopCrops(stats) {
 
 // FIX: Removed Zonal Yield Efficiency section from display — function still exists for internal use only
 async function loadZonalEfficiency(zone) {
-    // Silently load data but don't render the removed section
     try {
-        await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
-    } catch(e) { /* silent */ }
+        await safeFetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`, {}, 6000);
+    } catch(e) { /* silent — non-critical */ }
 }
 
 async function loadTimelineChart(crop) {
     if (!isAdmin) return;
     try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+        const res  = await safeFetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
         const data = await res.json();
         if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
         const stageColors = {
@@ -1860,7 +1859,7 @@ async function loadTimelineChart(crop) {
 async function loadForecastChart(crop) {
     if (!isAdmin) return;
     try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
+        const res  = await safeFetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
         const data = await res.json();
         if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
         if (!data.labels || !data.labels.length) {
@@ -1878,22 +1877,40 @@ async function loadForecastChart(crop) {
     } catch(e) { console.warn(e); }
 }
 
+// ==================== SAFE FETCH HELPER ====================
+// Wraps fetch with a timeout so no single call can freeze the UI.
+async function safeFetch(url, options={}, timeoutMs=10000) {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+        const res = await fetch(url, { ...options, signal: ctrl.signal });
+        clearTimeout(tid);
+        return res;
+    } catch(e) {
+        clearTimeout(tid);
+        throw e;
+    }
+}
+
 // ==================== AUTO-FILL PROFILE ====================
-// FIX: Locality auto-fill now properly waits for dropdown to populate then sets value
 async function autoFillProfileFromRecords(username) {
     try {
-        const res = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+        const res = await safeFetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`, {}, 8000);
         if (!res.ok) return;
         const data = await res.json();
-        if (data.totalArea) document.getElementById('totalArea').value = data.totalArea;
-        if (data.zone) {
+
+        // ── 1. Zone: update state and pills FIRST, before touching dropdowns ──
+        if (data.zone && ZONE_LOCALITIES[data.zone]) {
             currentZone = data.zone;
-            // Rebuild zone pills with correct active zone
-            initZoneHeader();
+            // Update zone pill UI without triggering locality dropdown wipe
+            document.querySelectorAll('.zone-pill').forEach(btn =>
+                btn.classList.toggle('active', btn.dataset.zone === currentZone)
+            );
         }
-        // Always populate locality dropdown for the user's zone
+
+        // ── 2. Rebuild locality dropdown for the (possibly updated) zone ──
         const locs = ZONE_LOCALITIES[currentZone] || [];
-        const sel = document.getElementById('localitySelect');
+        const sel  = document.getElementById('localitySelect');
         if (sel) {
             sel.innerHTML = '<option value="">-- Select Locality --</option>';
             locs.forEach(l => {
@@ -1901,76 +1918,100 @@ async function autoFillProfileFromRecords(username) {
                 o.value = l; o.textContent = l;
                 sel.appendChild(o);
             });
-            // Now set the value if we have a locality from profile
+            // ── 3. Set locality value AFTER dropdown is fully built ──
             if (data.locality) {
-                // Check if option exists, add it if not
+                // Ensure the option exists (handles localities not in master list)
                 if (!Array.from(sel.options).some(o => o.value === data.locality)) {
                     const opt = document.createElement('option');
-                    opt.value = data.locality;
-                    opt.textContent = data.locality;
+                    opt.value = data.locality; opt.textContent = data.locality;
                     sel.appendChild(opt);
                 }
                 sel.value = data.locality;
             }
         }
-    } catch(e) { console.warn('Auto-fill profile failed', e); }
+
+        // ── 4. Area: fill even if value is 0 (was bug: falsy check skipped 0) ──
+        const areaEl = document.getElementById('totalArea');
+        if (areaEl && data.totalArea !== undefined && data.totalArea !== null && data.totalArea !== '') {
+            areaEl.value = data.totalArea;
+        }
+
+    } catch(e) { console.warn('Auto-fill profile failed:', e.message); }
 }
 
 // ==================== LOGIN ====================
 async function login(username, password) {
     const errorDiv = document.getElementById('loginError');
-    errorDiv.innerText='';
-    if (!username||!password) { errorDiv.innerText='Please enter your username and password.'; return; }
-    const loginBtn = document.getElementById('loginBtn');
-    const origText = loginBtn.innerHTML;
-    loginBtn.disabled=true; loginBtn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Signing in...';
-    if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
-    if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
-    const controller = new AbortController();
-    const timeoutId  = setTimeout(()=>controller.abort(), 12000);
+    errorDiv.innerText = '';
+    if (!username || !password) { errorDiv.innerText = 'Please enter your username and password.'; return; }
+    const loginBtn  = document.getElementById('loginBtn');
+    const origText  = loginBtn.innerHTML;
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Signing in...';
+    if (timelineChart) { timelineChart.destroy(); timelineChart = null; }
+    if (forecastChart) { forecastChart.destroy(); forecastChart = null; }
+
     try {
-        const res = await fetch(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,{signal:controller.signal});
-        clearTimeout(timeoutId);
-        if (!res.ok) throw new Error(`Server error (HTTP ${res.status})`);
-        let data; try { data=await res.json(); } catch(e) { throw new Error('Server response was not valid JSON.'); }
-        if (!data.success) { errorDiv.innerText=data.message||'Invalid username or password'; return; }
+        // ── Step 1: Authenticate (hard fail — must succeed to proceed) ──
+        let data;
+        try {
+            const res = await safeFetch(
+                `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+                {}, 12000
+            );
+            if (!res.ok) throw new Error(`Server error (HTTP ${res.status})`);
+            data = await res.json();
+        } catch(e) {
+            const msg = e.name === 'AbortError' ? 'Request timed out. Check your connection.' : e.message;
+            errorDiv.innerText = msg; toast(msg, true); return;
+        }
 
-        isAdmin=data.isAdmin===true;
-        currentLoggedInUser=username;
-        document.getElementById('loggedInUsername').innerText=username;
+        if (!data.success) { errorDiv.innerText = data.message || 'Invalid username or password'; return; }
 
+        isAdmin = data.isAdmin === true;
+        currentLoggedInUser = username;
+        document.getElementById('loggedInUsername').innerText = username;
         logActivity('login', `<strong>${username}</strong> logged in as ${isAdmin ? 'Admin' : 'Grower'}`, username);
 
+        // ── Step 2: Show correct UI sections immediately ──
         if (isAdmin) {
             document.getElementById('adminBadge').classList.remove('hidden');
-            document.getElementById('growerProfileCard').style.display='none';
-            document.getElementById('adminSearchSection').style.display='block';
-            // FIX: Harvest date prediction hidden for users — shown only for admin
-            document.getElementById('prevSubmissionsSection').style.display='none';
+            document.getElementById('growerProfileCard').style.display = 'none';
+            document.getElementById('adminSearchSection').style.display = 'block';
+            document.getElementById('prevSubmissionsSection').style.display = 'none';
             setAdminSectionsVisibility(true);
             renderAdminGHForm();
         } else {
             document.getElementById('adminBadge').classList.add('hidden');
-            document.getElementById('adminSearchSection').style.display='none';
-            document.getElementById('growerProfileCard').style.display='block';
-            document.getElementById('growerName').value=username;
+            document.getElementById('adminSearchSection').style.display = 'none';
+            document.getElementById('growerProfileCard').style.display = 'block';
+            document.getElementById('growerName').value = username;
             setAdminSectionsVisibility(false);
-            // FIX: Update locality dropdown before auto-filling profile
-            updateLocalityDropdown();
-            await autoFillProfileFromRecords(username);
         }
-        await loadDashboard();
-        await loadUserPreviousData(isAdmin?'':username);
-        await loadActiveMemberCount();
-        document.getElementById('loginOverlay').style.display='none';
-        document.getElementById('mainApp').style.display='block';
+
+        // ── Step 3: Reveal app immediately — don't make user stare at login ──
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
         initLiveSearch();
-        toast(`Welcome ${username}${isAdmin?' (Admin)':''}! 🌱`);
+        toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}! 🌱`);
+
+        // ── Step 4: Load profile (locality/area) BEFORE dashboard for grower ──
+        if (!isAdmin) {
+            updateLocalityDropdown(); // Seed dropdown with default zone first
+            await autoFillProfileFromRecords(username); // Then overwrite with actual profile
+        }
+
+        // ── Step 5: Load dashboard + user records independently (soft fails) ──
+        try { await loadDashboard(); } catch(e) { console.warn('Dashboard load error:', e.message); }
+        try { await loadUserPreviousData(isAdmin ? '' : username); } catch(e) { console.warn('User data load error:', e.message); }
+        try { await loadActiveMemberCount(); } catch(e) { console.warn('Member count error:', e.message); }
+
     } catch(err) {
-        clearTimeout(timeoutId);
-        const msg = err.name==='AbortError'?'Request timed out. Check your connection.':err.message;
-        errorDiv.innerText=msg; toast(msg,true);
-    } finally { loginBtn.disabled=false; loginBtn.innerHTML=origText; }
+        const msg = err.name === 'AbortError' ? 'Request timed out. Check your connection.' : err.message;
+        errorDiv.innerText = msg; toast(msg, true);
+    } finally {
+        loginBtn.disabled = false; loginBtn.innerHTML = origText;
+    }
 }
 
 // ==================== ADMIN TABS ====================
