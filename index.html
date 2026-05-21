@@ -87,7 +87,6 @@
         .members-banner { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(100deg, var(--green-800), var(--green-600)); color: white; border-radius: var(--radius-pill); padding: 6px 16px; font-size: 0.82rem; font-weight: 700; box-shadow: 0 4px 12px rgba(25,105,40,0.3); animation: pulse-glow 2.5s ease-in-out infinite; }
         @keyframes pulse-glow { 0%,100% { box-shadow: 0 4px 12px rgba(25,105,40,0.3); } 50% { box-shadow: 0 6px 20px rgba(25,105,40,0.55); } }
         .members-banner .count { font-size: 1.1rem; font-weight: 900; }
-        /* FIX: Zone banner pill - shorter label */
         .zone-banner { background: rgba(30,70,30,0.07); border-radius: var(--radius-pill); padding: 6px 14px; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; border: 1px solid var(--green-100); }
         .zone-pill { background: var(--green-50); border: 1.5px solid var(--green-200); padding: 7px 16px; border-radius: var(--radius-pill); font-weight: 700; cursor: pointer; font-size: 0.82rem; white-space: nowrap; transition: all 0.18s; }
         .zone-pill:hover { background: var(--green-100); border-color: var(--green-400); }
@@ -151,7 +150,6 @@
         .top-crops-table td, .data-table td, .efficiency-table td { padding: 10px 12px; border-bottom: 1px solid #e8f5e2; font-size: 0.88rem; vertical-align: middle; }
         .top-crops-table tr:last-child td { border-bottom: none; }
         .top-crops-table tr:hover td { background: var(--green-50); }
-        /* FIX: Center the figures in efficiency reference table */
         .efficiency-table td:last-child { text-align: center; }
         .efficiency-table th:last-child { text-align: center; }
 
@@ -354,7 +352,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- FIX: Zone label shows "Zone:" then short pill "E2" -->
                 <div class="zone-banner">
                     <strong style="font-size:0.8rem;color:#555;">Zone:</strong>
                     <div id="zonePillsHeader" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
@@ -539,10 +536,9 @@
             </div>
         </div>
 
-        <!-- YOUR CROP RECORDS with LIVE SEARCH (FIX: search buttons hidden for growers) -->
+        <!-- YOUR CROP RECORDS with LIVE SEARCH -->
         <div id="prevSubmissionsSection" class="glass-card" style="display:none;">
             <div class="stat-title"><i class="fas fa-clipboard-list"></i> Your Crop Records</div>
-            <!-- LIVE SEARCH BAR -->
             <div class="live-search-wrap">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, stage, yield...">
@@ -606,32 +602,7 @@
         <!-- MONTHLY YIELD vs REFERENCE (logged-in user, harvest stage) -->
         <div class="glass-card" id="monthlyYieldSection" style="display:none;">
             <div class="stat-title"><i class="fas fa-chart-bar"></i> Crop Cycle Yield (kg/m²) vs Reference Range</div>
-            <!-- Cumulative cycle yield across all harvest months compared against full-cycle reference range -->
             <div class="table-responsive"><div id="monthlyYieldContainer"></div></div>
-        </div>
-
-        <!-- Timeline (admin only) -->
-        <div id="timelineSectionCard" class="glass-card" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-line"></i> Crop Timeline — Stage-wise Area</div>
-            <div class="filter-btn-group" id="timelineCropButtons">
-                <button data-crop="Tomato" class="crop-filter-btn active">🍅 Tomato</button>
-                <button data-crop="Sweet Pepper" class="crop-filter-btn">🌶️ Sweet Pepper</button>
-                <button data-crop="English Cucumber" class="crop-filter-btn">🥒 English Cucumber</button>
-            </div>
-            <div class="chart-wrap"><canvas id="timelineChart"></canvas></div>
-            <div id="noTimelineData" class="hidden" style="text-align:center;padding:2rem;color:#aaa;">No timeline data available.</div>
-        </div>
-
-        <!-- Forecast (admin only) -->
-        <div id="forecastSectionCard" class="glass-card" style="display:none;">
-            <div class="stat-title"><i class="fas fa-chart-bar"></i> Forecast 2026 — Cultivated vs Harvestable Area (m²)</div>
-            <div class="filter-btn-group" id="forecastCropButtons">
-                <button data-crop="Tomato" class="forecast-btn active">🍅 Tomato</button>
-                <button data-crop="Sweet Pepper" class="forecast-btn">🌶️ Sweet Pepper</button>
-                <button data-crop="English Cucumber" class="forecast-btn">🥒 English Cucumber</button>
-            </div>
-            <div class="chart-wrap"><canvas id="forecastChart"></canvas></div>
-            <div id="noForecastData" class="hidden" style="text-align:center;padding:2rem;color:#aaa;">No forecast data available.</div>
         </div>
 
         <!-- Zonal Reference Table -->
@@ -808,14 +779,10 @@ function formatToMauritiusTime(ts) {
 }
 
 function setAdminSectionsVisibility(show) {
-    ['timelineSectionCard','forecastSectionCard'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = show ? 'block' : 'none';
-    });
+    // Timeline and Forecast sections have been removed from the UI
 }
 
 // ==================== ZONE & LOCALITY ====================
-// FIX: Zone pills now show only the zone code e.g. "E2" not "Zone E2"
 function initZoneHeader() {
     const zones = Object.keys(ZONE_LOCALITIES);
     const container = document.getElementById('zonePillsHeader');
@@ -931,7 +898,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
     const container = document.getElementById('monthlyYieldContainer');
     if (!section || !container) return;
 
-    // ── Column resolution ──────────────────────────────────────────────────────
     const hdr       = headers.map(h => h.toString().toLowerCase());
     const getCol    = patterns => hdr.findIndex(h => patterns.some(p => h.includes(p.toLowerCase())));
     const cropCol   = getCol(['crop']);
@@ -939,33 +905,21 @@ function renderMonthlyYieldVsReference(rows, headers) {
     const statusCol = hdr.findIndex(h => h === 'cyclestatus' || h.includes('cyclestatus'));
     const harvestMonthsCol = getCol(['harvest months']);
 
-    // Area column: prefer "area (m²)" or "area (m2)", not "total"
     let areaCol = hdr.findIndex(h => (h === 'area (m²)' || h === 'area (m2)') && !h.includes('total'));
     if (areaCol === -1) areaCol = hdr.findIndex(h => h === 'area' && !h.includes('total'));
     if (areaCol === -1) areaCol = hdr.findIndex(h => h.includes('area') && !h.includes('total') && !h.includes('greenhouse'));
 
-    // Month columns (Jan–Dec)
     const monthCols = MONTHS.map(m => hdr.findIndex(h => h === m.toLowerCase()));
 
-    // ── Aggregate per crop ─────────────────────────────────────────────────────
-    // summaryByCrop[crop] = {
-    //   records: [{ area, cycleTotal, monthlyBreakdown[], harvestMonths }],
-    //   totalArea: number,
-    //   cycleTotal: number,   ← sum of ALL monthly yield kg across all records
-    //   monthsWithData: Set
-    // }
     const summaryByCrop = {};
 
     for (const row of rows) {
-        // Must be Harvesting stage
         const stage = (stageCol !== -1 && row[stageCol]) ? String(row[stageCol]).trim() : '';
         if (!stage.toLowerCase().includes('harvest')) continue;
 
-        // Must be Active cycle
         const status = (statusCol !== -1 && row[statusCol]) ? String(row[statusCol]).trim() : 'Active';
         if (status !== 'Active') continue;
 
-        // Normalise crop name
         let cropRaw = row[cropCol] ? String(row[cropCol]) : '';
         let crop = null;
         if      (cropRaw.toLowerCase().includes('english cucumber')) crop = 'English Cucumber';
@@ -978,7 +932,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
 
         const harvestMonths = harvestMonthsCol !== -1 ? (parseFloat(row[harvestMonthsCol]) || 0) : 0;
 
-        // Sum ALL monthly harvest values for this record → full cycle yield (kg)
         let recordCycleTotal = 0;
         const breakdown = [];
         MONTHS.forEach((mName, i) => {
@@ -1003,17 +956,9 @@ function renderMonthlyYieldVsReference(rows, headers) {
     }
     section.style.display = 'block';
 
-    // ── Build table ────────────────────────────────────────────────────────────
     const cropIcon = { 'Tomato': '🍅', 'Sweet Pepper': '🌶️', 'English Cucumber': '🥒' };
 
     let html = `
-    <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:1rem;
-                padding:0.7rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:#555;line-height:1.6;">
-        <strong style="color:var(--green-800);">How this works:</strong>
-        All monthly harvest values (Jan–Dec) for each active Harvesting-stage record are summed
-        to give the <em>total cycle yield in kg</em>. Dividing by the cultivated area gives
-        <em>cumulative kg/m²</em>, which is then compared against the full-cycle reference range.
-    </div>
     <div class="table-responsive">
     <table class="yield-eff-table">
         <thead><tr>
@@ -1036,7 +981,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
         const cycleKgM2  = d.totalArea > 0 ? d.cycleTotal / d.totalArea : 0;
         const hasData    = d.cycleTotal > 0;
 
-        // Status classification against the FULL-CYCLE reference
         let badge = '', badgeCls = '';
         if (!hasData) {
             badge = 'No Harvest Data'; badgeCls = 'avg';
@@ -1050,12 +994,10 @@ function renderMonthlyYieldVsReference(rows, headers) {
             badge = '❌ Low Yield'; badgeCls = 'low';
         }
 
-        // Months that had harvest data
         const monthsList = d.monthsWithData.size > 0
             ? [...d.monthsWithData].join(', ')
             : '<span style="color:#bbb;">None recorded yet</span>';
 
-        // Progress bar showing cycle yield vs reference max
         const pct = ref.max > 0 ? Math.min(100, (cycleKgM2 / ref.max) * 100) : 0;
         const barColor = badgeCls === 'good' ? 'var(--green-600)' : badgeCls === 'avg' ? '#f39c12' : '#e74c3c';
         const progressBar = `
@@ -1081,7 +1023,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
             </td>
         </tr>`;
 
-        // Sub-rows: one line per GH record if multiple records exist for this crop
         if (d.records.length > 1) {
             d.records.forEach((rec, idx) => {
                 const recKgM2 = rec.area > 0 ? rec.cycleTotal / rec.area : 0;
@@ -1099,7 +1040,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
                 </tr>`;
             });
         } else if (d.records.length === 1 && d.records[0].breakdown.length > 0) {
-            // Single record: show month breakdown inline as a sub-row
             const rec = d.records[0];
             html += `<tr style="background:#fafffe;">
                 <td colspan="2" style="padding-left:2rem;font-size:0.75rem;color:#888;">
@@ -1124,7 +1064,6 @@ function renderMonthlyYieldVsReference(rows, headers) {
 }
 
 // ==================== RECORD CARDS ====================
-// FIX: isAdminView parameter controls whether admin-search buttons show
 function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminView) {
     gridEl.innerHTML = '';
     const hdr      = headers.map(h => h.toString().toLowerCase());
@@ -1171,11 +1110,6 @@ function renderRecordCards(gridEl, rows, headers, usernameForActions, isAdminVie
 
         const card = document.createElement('div');
         card.className = 'record-card'+(isActive?'':' completed');
-
-        // FIX: Show edit/toggle buttons for both grower (own records) and admin search results
-        // For grower's own records section (prevSubmissionsSection): always show edit/toggle
-        // isAdminView = true means this is admin search results panel
-        const showActions = true; // Always show action buttons
 
         card.innerHTML = `
             <div class="record-header">
@@ -1246,7 +1180,6 @@ function adminClearSearch() {
 }
 
 // ==================== REGISTER NEW USER ====================
-// FIX: action changed from 'registerGrower' to 'registerNewGrower' to match Apps Script
 async function registerNewUser() {
     const btn        = document.getElementById('registerUserBtn');
     const successMsg = document.getElementById('regSuccessMsg');
@@ -1273,8 +1206,6 @@ async function registerNewUser() {
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Registering...';
 
     try {
-        // FIX: Use correct action name 'registerNewGrower' matching the Apps Script handler
-        // FIX: Include all required fields: growerName, locality, phoneNumber, notes, registeredBy
         const payload = {
             action: 'registerNewGrower',
             growerName: growerName,
@@ -1292,7 +1223,6 @@ async function registerNewUser() {
             body: 'data=' + encodeURIComponent(JSON.stringify(payload))
         });
 
-        // no-cors returns opaque response, so we assume success if no network error
         recentlyRegistered.unshift({ growerName, zone, locality, phone, registeredAt: new Date().toLocaleString() });
         renderRecentRegistrations();
 
@@ -1714,8 +1644,6 @@ async function loadDashboard() {
         renderAreaByStage(data, activeCrop);
         renderTopCrops(data);
         updateCropHeroAreas(data);
-        await loadZonalEfficiency(currentZone);
-        if (isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); }
     } catch(e) { console.warn('Dashboard load failed',e); }
 }
 
@@ -1758,68 +1686,7 @@ function renderTopCrops(stats) {
         </div>`;
 }
 
-// FIX: Removed Zonal Yield Efficiency section from display — function still exists for internal use only
-async function loadZonalEfficiency(zone) {
-    // Silently load data but don't render the removed section
-    try {
-        await fetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`);
-    } catch(e) { /* silent */ }
-}
-
-async function loadTimelineChart(crop) {
-    if (!isAdmin) return;
-    try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
-        const data = await res.json();
-        if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
-        const stageColors = {
-            Seedling:   { bg:'rgba(168,224,99,0.4)',   border:'#56ab2f' },
-            Vegetative: { bg:'rgba(67,233,123,0.4)',   border:'#38f9d7' },
-            Flowering:  { bg:'rgba(249,215,35,0.4)',   border:'#f7971e' },
-            Harvesting: { bg:'rgba(57,106,252,0.35)',  border:'#396afc' }
-        };
-        if (!data.datasets || !data.datasets.length) {
-            document.getElementById('noTimelineData').classList.remove('hidden');
-            return;
-        }
-        document.getElementById('noTimelineData').classList.add('hidden');
-        timelineChart = new Chart(document.getElementById('timelineChart').getContext('2d'), {
-            type:'line',
-            data:{
-                labels:data.labels,
-                datasets:data.datasets.map(ds=>{
-                    const c = stageColors[ds.label] || { bg:'rgba(78,160,78,0.35)', border:'#2e8b57' };
-                    return {...ds, fill:true, tension:0.35, backgroundColor:c.bg, borderColor:c.border, borderWidth:2};
-                })
-            },
-            options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top'}}}
-        });
-    } catch(e) { console.warn(e); }
-}
-
-async function loadForecastChart(crop) {
-    if (!isAdmin) return;
-    try {
-        const res  = await fetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`);
-        const data = await res.json();
-        if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
-        if (!data.labels || !data.labels.length) {
-            document.getElementById('noForecastData').classList.remove('hidden');
-            return;
-        }
-        document.getElementById('noForecastData').classList.add('hidden');
-        forecastChart = new Chart(document.getElementById('forecastChart').getContext('2d'), {
-            type:'bar', data:{labels:data.labels,datasets:[
-                {label:'Cultivated Area',data:data.cultivated,backgroundColor:'rgba(78,160,78,0.8)',borderColor:'#2e8b57',borderWidth:1.5},
-                {label:'Harvestable Area',data:data.harvestable,backgroundColor:'rgba(243,156,18,0.8)',borderColor:'#c0820c',borderWidth:1.5}
-            ]},
-            options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top'}}}
-        });
-    } catch(e) { console.warn(e); }
-}
-
 // ==================== AUTO-FILL PROFILE ====================
-// FIX: Locality auto-fill now properly waits for dropdown to populate then sets value
 async function autoFillProfileFromRecords(username) {
     try {
         const res = await fetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`);
@@ -1828,10 +1695,8 @@ async function autoFillProfileFromRecords(username) {
         if (data.totalArea) document.getElementById('totalArea').value = data.totalArea;
         if (data.zone) {
             currentZone = data.zone;
-            // Rebuild zone pills with correct active zone
             initZoneHeader();
         }
-        // Always populate locality dropdown for the user's zone
         const locs = ZONE_LOCALITIES[currentZone] || [];
         const sel = document.getElementById('localitySelect');
         if (sel) {
@@ -1841,9 +1706,7 @@ async function autoFillProfileFromRecords(username) {
                 o.value = l; o.textContent = l;
                 sel.appendChild(o);
             });
-            // Now set the value if we have a locality from profile
             if (data.locality) {
-                // Check if option exists, add it if not
                 if (!Array.from(sel.options).some(o => o.value === data.locality)) {
                     const opt = document.createElement('option');
                     opt.value = data.locality;
@@ -1885,17 +1748,13 @@ async function login(username, password) {
             document.getElementById('adminBadge').classList.remove('hidden');
             document.getElementById('growerProfileCard').style.display='none';
             document.getElementById('adminSearchSection').style.display='block';
-            // FIX: Harvest date prediction hidden for users — shown only for admin
             document.getElementById('prevSubmissionsSection').style.display='none';
-            setAdminSectionsVisibility(true);
             renderAdminGHForm();
         } else {
             document.getElementById('adminBadge').classList.add('hidden');
             document.getElementById('adminSearchSection').style.display='none';
             document.getElementById('growerProfileCard').style.display='block';
             document.getElementById('growerName').value=username;
-            setAdminSectionsVisibility(false);
-            // FIX: Update locality dropdown before auto-filling profile
             updateLocalityDropdown();
             await autoFillProfileFromRecords(username);
         }
@@ -1936,21 +1795,6 @@ function wireFilterButtons() {
             if (dashboardStats) renderAreaByStage(dashboardStats, btn.dataset.crop);
         });
     });
-    document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('#timelineCropButtons .crop-filter-btn').forEach(b=>b.classList.remove('active'));
-            btn.classList.add('active');
-            currentTimelineCrop=btn.dataset.crop; loadTimelineChart(currentTimelineCrop);
-        });
-    });
-    document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('#forecastCropButtons .forecast-btn').forEach(b=>b.classList.remove('active'));
-            btn.classList.add('active');
-            currentForecastCrop=btn.dataset.crop; loadForecastChart(currentForecastCrop);
-        });
-    });
-    // FIX: Removed zoneEfficiencyButtons wiring since section is removed
 }
 
 // ==================== EVENT LISTENERS ====================
@@ -1964,8 +1808,6 @@ document.getElementById('pwToggle').onclick = () => {
 };
 
 document.getElementById('logoutBtn').onclick = () => {
-    if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
-    if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
     logActivity('login', `<strong>${currentLoggedInUser}</strong> logged out`);
     location.reload();
 };
@@ -2018,7 +1860,6 @@ updateLocalityDropdown();
 wireFilterButtons();
 initAdminTabs();
 
-// Populate reg_zone dropdown
 (function(){
     const sel = document.getElementById('reg_zone');
     while(sel.options.length>1) sel.remove(1);
