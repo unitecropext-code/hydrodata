@@ -605,8 +605,8 @@
             <div class="table-responsive"><div id="monthlyYieldContainer"></div></div>
         </div>
 
-        <!-- Zonal Reference Table -->
-        <div class="glass-card">
+        <!-- Zonal Reference Table - visible only for admin users -->
+        <div class="glass-card" id="zonalRefTable">
             <div class="stat-title"><i class="fas fa-table"></i> Estimated Average Yield Efficiency Reference</div>
             <div class="zonal-table-wrapper">
                 <table class="efficiency-table">
@@ -1055,7 +1055,7 @@ function renderMonthlyYieldVsReference(rows, headers) {
                     ).join('')}
                     ${rec.harvestMonths ? `<span style="margin-left:6px;color:#aaa;">(${rec.harvestMonths}-month cycle)</span>` : ''}
                 </td>
-            </tr>`;
+            <tr>`;
         }
     }
 
@@ -1743,6 +1743,12 @@ async function login(username, password) {
         document.getElementById('loggedInUsername').innerText=username;
 
         logActivity('login', `<strong>${username}</strong> logged in as ${isAdmin ? 'Admin' : 'Grower'}`, username);
+
+        // --- toggle zonal reference table visibility based on admin status ---
+        const zonalTable = document.getElementById('zonalRefTable');
+        if (zonalTable) {
+            zonalTable.style.display = isAdmin ? 'block' : 'none';
+        }
 
         if (isAdmin) {
             document.getElementById('adminBadge').classList.remove('hidden');
