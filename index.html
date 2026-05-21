@@ -325,7 +325,7 @@
         <div class="login-card">
             <div class="login-logo"><i class="fas fa-leaf"></i></div>
             <div class="login-header">MoHydroponic Smart Tracker</div>
-            <div class="login-sub">Real-Time Crop Insights </div>
+            <div class="login-sub">Real-Time Crop Insights &amp; Management</div>
             <div class="login-input-wrap">
                 <i class="fas fa-user icon"></i>
                 <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
@@ -1274,7 +1274,7 @@ async function adminSearchGrower() {
     if (lfc) lfc.style.display = 'none';
     document.querySelectorAll('.admin-quick-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === ''));
     try {
-        const res  = await safeFetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`, {}, 10000);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.rows||data.rows.length===0) {
@@ -1403,7 +1403,7 @@ function renderRecentRegistrations() {
 // ==================== ACTIVE MEMBER COUNT ====================
 async function loadActiveMemberCount() {
     try {
-        const res = await safeFetch(`${SCRIPT_URL}?action=getActiveMemberCount&_=${Date.now()}`, {}, 8000);
+        const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getActiveMemberCount&_=${Date.now()}`, {}, 8000);
         if (!res.ok) { document.getElementById('activeMemberCount').textContent='N/A'; return; }
         const data  = await res.json();
         const count = data.count ?? data.activeMemberCount ?? null;
@@ -1445,7 +1445,7 @@ async function toggleCycleStatus(timestamp, btnEl, cardEl, overrideUsername) {
 async function loadUserPreviousData(username) {
     if (!username) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
     try {
-        const res  = await safeFetch(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`, {}, 10000);
         if (!res.ok) throw new Error();
         const data = await res.json();
         if (!data.rows||data.rows.length===0) { document.getElementById('prevSubmissionsSection').style.display='none'; return false; }
@@ -1766,7 +1766,7 @@ function clearAdminGHQueue() {
 // ==================== DASHBOARD ====================
 async function loadDashboard() {
     try {
-        const res  = await safeFetch(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`, {}, 10000);
+        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getDashboardStats&_=${Date.now()}`, {}, 10000);
         if (!res.ok) throw new Error();
         const data = await res.json();
         dashboardStats = data;
@@ -1774,8 +1774,12 @@ async function loadDashboard() {
         renderAreaByStage(data, activeCrop);
         renderTopCrops(data);
         updateCropHeroAreas(data);
-        await loadZonalEfficiency(currentZone);
-        if (isAdmin) { await loadTimelineChart(currentTimelineCrop); await loadForecastChart(currentForecastCrop); }
+        // Fire non-critical loads independently — don't chain-await them
+        loadZonalEfficiency(currentZone).catch(()=>{});
+        if (isAdmin) {
+            loadTimelineChart(currentTimelineCrop).catch(()=>{});
+            loadForecastChart(currentForecastCrop).catch(()=>{});
+        }
     } catch(e) { console.warn('Dashboard load failed', e); }
 }
 
@@ -1821,14 +1825,14 @@ function renderTopCrops(stats) {
 // FIX: Removed Zonal Yield Efficiency section from display — function still exists for internal use only
 async function loadZonalEfficiency(zone) {
     try {
-        await safeFetch(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`, {}, 6000);
+        await fetchWithTimeout(`${SCRIPT_URL}?action=getZonalYieldEfficiency&_=${Date.now()}`, {}, 6000);
     } catch(e) { /* silent — non-critical */ }
 }
 
 async function loadTimelineChart(crop) {
     if (!isAdmin) return;
     try {
-        const res  = await safeFetch(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getCropStageTimeline&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
         const data = await res.json();
         if (timelineChart) { timelineChart.destroy(); timelineChart=null; }
         const stageColors = {
@@ -1859,7 +1863,7 @@ async function loadTimelineChart(crop) {
 async function loadForecastChart(crop) {
     if (!isAdmin) return;
     try {
-        const res  = await safeFetch(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
+        const res  = await fetchWithTimeout(`${SCRIPT_URL}?action=getMonthlyCultivatedVsHarvestable&crop=${encodeURIComponent(crop)}&_=${Date.now()}`, {}, 10000);
         const data = await res.json();
         if (forecastChart) { forecastChart.destroy(); forecastChart=null; }
         if (!data.labels || !data.labels.length) {
@@ -1878,49 +1882,48 @@ async function loadForecastChart(crop) {
 }
 
 // ==================== SAFE FETCH HELPER ====================
-// Wraps fetch with a timeout so no single call can freeze the UI.
-async function safeFetch(url, options={}, timeoutMs=10000) {
-    const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), timeoutMs);
-    try {
-        const res = await fetch(url, { ...options, signal: ctrl.signal });
-        clearTimeout(tid);
+// Uses Promise.race against a timeout promise (not AbortController)
+// because AbortController does not reliably abort Google Apps Script
+// redirect-based fetch calls in all browsers.
+function fetchWithTimeout(url, options={}, timeoutMs=12000) {
+    const fetchPromise = fetch(url, options).then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res;
-    } catch(e) {
-        clearTimeout(tid);
-        throw e;
-    }
+    });
+    const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+    );
+    return Promise.race([fetchPromise, timeoutPromise]);
 }
 
 // ==================== AUTO-FILL PROFILE ====================
 async function autoFillProfileFromRecords(username) {
     try {
-        const res = await safeFetch(`${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`, {}, 8000);
-        if (!res.ok) return;
+        const res  = await fetchWithTimeout(
+            `${SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(username)}&_=${Date.now()}`,
+            {}, 8000
+        );
         const data = await res.json();
 
-        // ── 1. Zone: update state and pills FIRST, before touching dropdowns ──
+        // 1. Zone — update state + pill CSS only (no dropdown rebuild side-effects)
         if (data.zone && ZONE_LOCALITIES[data.zone]) {
             currentZone = data.zone;
-            // Update zone pill UI without triggering locality dropdown wipe
             document.querySelectorAll('.zone-pill').forEach(btn =>
                 btn.classList.toggle('active', btn.dataset.zone === currentZone)
             );
         }
 
-        // ── 2. Rebuild locality dropdown for the (possibly updated) zone ──
+        // 2. Rebuild locality dropdown for the correct zone
         const locs = ZONE_LOCALITIES[currentZone] || [];
         const sel  = document.getElementById('localitySelect');
         if (sel) {
             sel.innerHTML = '<option value="">-- Select Locality --</option>';
             locs.forEach(l => {
                 const o = document.createElement('option');
-                o.value = l; o.textContent = l;
-                sel.appendChild(o);
+                o.value = l; o.textContent = l; sel.appendChild(o);
             });
-            // ── 3. Set locality value AFTER dropdown is fully built ──
+            // 3. Set locality AFTER dropdown is fully built
             if (data.locality) {
-                // Ensure the option exists (handles localities not in master list)
                 if (!Array.from(sel.options).some(o => o.value === data.locality)) {
                     const opt = document.createElement('option');
                     opt.value = data.locality; opt.textContent = data.locality;
@@ -1930,7 +1933,7 @@ async function autoFillProfileFromRecords(username) {
             }
         }
 
-        // ── 4. Area: fill even if value is 0 (was bug: falsy check skipped 0) ──
+        // 4. Area — fill even when value is numeric 0
         const areaEl = document.getElementById('totalArea');
         if (areaEl && data.totalArea !== undefined && data.totalArea !== null && data.totalArea !== '') {
             areaEl.value = data.totalArea;
@@ -1941,42 +1944,44 @@ async function autoFillProfileFromRecords(username) {
 
 // ==================== LOGIN ====================
 async function login(username, password) {
-    const errorDiv = document.getElementById('loginError');
+    const errorDiv  = document.getElementById('loginError');
     errorDiv.innerText = '';
-    if (!username || !password) { errorDiv.innerText = 'Please enter your username and password.'; return; }
-    const loginBtn  = document.getElementById('loginBtn');
-    const origText  = loginBtn.innerHTML;
+    if (!username || !password) {
+        errorDiv.innerText = 'Please enter your username and password.'; return;
+    }
+    const loginBtn = document.getElementById('loginBtn');
+    const origText = loginBtn.innerHTML;
     loginBtn.disabled = true;
     loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Signing in...';
-    if (timelineChart) { timelineChart.destroy(); timelineChart = null; }
-    if (forecastChart) { forecastChart.destroy(); forecastChart = null; }
 
     try {
-        // ── Step 1: Authenticate (hard fail — must succeed to proceed) ──
-        let data;
+        // ── Step 1: Authenticate only — short 12 s timeout ──
+        let authData;
         try {
-            const res = await safeFetch(
+            const res  = await fetchWithTimeout(
                 `${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
                 {}, 12000
             );
-            if (!res.ok) throw new Error(`Server error (HTTP ${res.status})`);
-            data = await res.json();
+            authData = await res.json();
         } catch(e) {
-            const msg = e.name === 'AbortError' ? 'Request timed out. Check your connection.' : e.message;
-            errorDiv.innerText = msg; toast(msg, true); return;
+            errorDiv.innerText = e.message || 'Login failed. Check your connection.';
+            toast(errorDiv.innerText, true);
+            return;
         }
 
-        if (!data.success) { errorDiv.innerText = data.message || 'Invalid username or password'; return; }
+        if (!authData.success) {
+            errorDiv.innerText = authData.message || 'Invalid username or password'; return;
+        }
 
-        isAdmin = data.isAdmin === true;
+        // ── Step 2: Set state ──
+        isAdmin = authData.isAdmin === true;
         currentLoggedInUser = username;
         document.getElementById('loggedInUsername').innerText = username;
-        logActivity('login', `<strong>${username}</strong> logged in as ${isAdmin ? 'Admin' : 'Grower'}`, username);
 
-        // ── Step 2: Show correct UI sections immediately ──
+        // ── Step 3: Build correct UI sections ──
         if (isAdmin) {
             document.getElementById('adminBadge').classList.remove('hidden');
-            document.getElementById('growerProfileCard').style.display = 'none';
+            document.getElementById('growerProfileCard').style.display  = 'none';
             document.getElementById('adminSearchSection').style.display = 'block';
             document.getElementById('prevSubmissionsSection').style.display = 'none';
             setAdminSectionsVisibility(true);
@@ -1984,33 +1989,43 @@ async function login(username, password) {
         } else {
             document.getElementById('adminBadge').classList.add('hidden');
             document.getElementById('adminSearchSection').style.display = 'none';
-            document.getElementById('growerProfileCard').style.display = 'block';
+            document.getElementById('growerProfileCard').style.display  = 'block';
             document.getElementById('growerName').value = username;
             setAdminSectionsVisibility(false);
+            updateLocalityDropdown(); // seed dropdown immediately with default zone
         }
 
-        // ── Step 3: Reveal app immediately — don't make user stare at login ──
+        // ── Step 4: HIDE LOGIN & SHOW APP RIGHT NOW — no more awaiting ──
         document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('mainApp').style.display      = 'block';
         initLiveSearch();
         toast(`Welcome ${username}${isAdmin ? ' (Admin)' : ''}! 🌱`);
 
-        // ── Step 4: Load profile (locality/area) BEFORE dashboard for grower ──
-        if (!isAdmin) {
-            updateLocalityDropdown(); // Seed dropdown with default zone first
-            await autoFillProfileFromRecords(username); // Then overwrite with actual profile
-        }
+        // ── Step 5: Log activity (non-blocking, fire-and-forget) ──
+        logActivity('login', `<strong>${username}</strong> logged in as ${isAdmin ? 'Admin' : 'Grower'}`, username);
 
-        // ── Step 5: Load dashboard + user records independently (soft fails) ──
-        try { await loadDashboard(); } catch(e) { console.warn('Dashboard load error:', e.message); }
-        try { await loadUserPreviousData(isAdmin ? '' : username); } catch(e) { console.warn('User data load error:', e.message); }
-        try { await loadActiveMemberCount(); } catch(e) { console.warn('Member count error:', e.message); }
+        // ── Step 6: All remaining data loads fire AFTER the UI is visible ──
+        // Use setTimeout(0) so the browser paints the app before starting fetches.
+        setTimeout(async () => {
+            // Profile (locality + area) for grower
+            if (!isAdmin) {
+                try { await autoFillProfileFromRecords(username); }
+                catch(e) { console.warn('Profile auto-fill error:', e.message); }
+            }
+            // Dashboard stats
+            try { await loadDashboard(); }
+            catch(e) { console.warn('Dashboard load error:', e.message); }
+            // User crop records
+            try { await loadUserPreviousData(isAdmin ? '' : username); }
+            catch(e) { console.warn('User data load error:', e.message); }
+            // Active member count
+            try { await loadActiveMemberCount(); }
+            catch(e) { console.warn('Member count error:', e.message); }
+        }, 0);
 
-    } catch(err) {
-        const msg = err.name === 'AbortError' ? 'Request timed out. Check your connection.' : err.message;
-        errorDiv.innerText = msg; toast(msg, true);
     } finally {
-        loginBtn.disabled = false; loginBtn.innerHTML = origText;
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = origText;
     }
 }
 
