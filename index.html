@@ -2023,7 +2023,7 @@
                         <thead><tr>
                             <th>Crop</th>
                             <th>Type / Variety</th>
-                            <th style="text-align:center;">Indicative Yield Range (kg/m² or Unit/m²)</th>
+                            <th style="text-align:center;">Indicative Yield Range </th>
                         </tr></thead>
                         <tbody>
                             <tr><td>🥒 English Cucumber</td><td>Acylia / Boncanale RZ</td><td style="text-align:center;"><strong>32.00 – 62.00</strong> unit/m²</td></tr>
@@ -2113,7 +2113,7 @@
             const cropLower = (cropName || '').toLowerCase().trim();
             const varietyLower = (varietyName || '').toLowerCase().trim();
 
-            // English Cucumber → 32.00 – 62.00 unit/m²
+            // English Cucumber → 32 – 62 unit/m²
             if (cropLower.includes('english cucumber') || cropLower.includes('cucumber')) {
                 return { min: 32.00, max: 62.00, unit: 'unit/m²', isUnitCrop: true, varietyLabel: 'Acylia / Boncanale RZ' };
             }
