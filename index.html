@@ -1015,7 +1015,7 @@
 
 <script>
 // ==================== CONFIG ====================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpBoIuadKKaCLmM1YQDVHp9rW73DNChZ4LetSD-68L_782UNsKySvLp6Crmz7oLxb5fA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_qLbzlwtA9mW4WYd8qp_dvSJeO0RUDxdq1Z4l70zfC6p8Vx2QtS2XqKc-C4Q5YXlt0g/exec';
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MONTHS_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const STAGES = ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"];
@@ -1061,35 +1061,33 @@ const GROWING_TIPS = {
                 title: "🌱 Tomato — Seedling Stage",
                 ec: "EC: 1.5–2.0 | pH: 5.8–6.2",
                 items: [
-                    { icon:"fa-tint", text:"Maintain substrate moisture; avoid waterlogging. Irrigate lightly 2–3×/day." },
-                    { icon:"fa-thermometer-half", text:"Keep temperature 20–25°C day, 16–18°C night for vigorous seedling growth." },
-                    { icon:"fa-sun", text:"Ensure 14–16h of light. Supplement with grow lights if needed." },
-                    { icon:"fa-flask", text:"Starter solution: EC 1.5–2.0, pH 5.8–6.2. Phosphorus-rich to encourage root development." },
+                    { icon:"fa-tint", text:"Keep coco coir buffered (pH 5.5-5.8, EC 1.0-1.2)-START WITH HEALTHY, VIGOROUS SEEDLINGS with 2-3 true leaves." },
+                    { icon:"fa-thermometer-half", text:"Maintain substrate moisture; avoid waterlogging. Irrigate lightly 2–3×/day." },
                     { icon:"fa-exclamation-triangle", text:"Watch for damping-off (Pythium). Ensure good air circulation; avoid high humidity." },
-                    { icon:"fa-ruler-vertical", text:"Transplant when seedlings reach 10–15cm with 2–3 true leaves." }
+                   
                 ]
             },
             "Vegetative": {
                 title: "🌿 Tomato — Vegetative Stage",
                 ec: "EC: 2.0–2.8 | pH: 5.8–6.2",
                 items: [
-                    { icon:"fa-tint", text:"Increase irrigation as canopy expands. Monitor runoff EC; aim for 3.0–4.0 runoff." },
-                    { icon:"fa-flask", text:"Switch to vegetative nutrient profile (higher N). EC 2.0–2.8." },
-                    { icon:"fa-arrows-alt-v", text:"Begin training/trellising. Remove suckers weekly to maintain single-stem." },
-                    { icon:"fa-bug", text:"Scout for Tuta absoluta, mites, and whiteflies; set sticky traps." },
-                    { icon:"fa-wind", text:"Ensure air circulation ≥ 0.3 m/s to reduce fungal risk and aid pollination." },
-                    { icon:"fa-thermometer-half", text:"Maintain 22–26°C day temperature. Avoid stress — it delays flowering onset." }
+                    { icon:"fa-tint", text:"Increase irrigation as canopy expands. Monitor runoff EC and adjust accordingly." },
+                    { icon:"fa-flask", text:"Remove lower leaves to improve airflow; Ensure proper disposal of plant wastes " },
+                    { icon:"fa-arrows-alt-v", text:"Begin training/trellising. Remove suckers as and when required. Disinfect pruning shears between plant rows" },
+                    { icon:"fa-bug", text:"Scout for Tuta absoluta and whiteflies; set the required sticky traps." },
+                    { icon:"fa-wind", text:"Ensure air circulation to reduce fungal risk." }
+             
                 ]
             },
             "Flowering": {
                 title: "🌸 Tomato — Flowering Stage",
                 ec: "EC: 2.5–3.5 | pH: 5.8–6.2",
                 items: [
-                    { icon:"fa-flask", text:"Reduce N, boost K and Ca. EC 2.5–3.5. Add PK booster. Prevents flower drop." },
-                    { icon:"fa-shower", text:"Pollinate by vibrating trusses or using an electric pollinator daily at 9–11 AM." },
-                    { icon:"fa-thermometer-half", text:"Critical: maintain 18–26°C. Above 32°C causes blossom drop. Below 15°C reduces fruit set." },
-                    { icon:"fa-exclamation-triangle", text:"Monitor for Pseudomonas corrugata on stems. Remove and dispose infected material." },
-                    { icon:"fa-tint", text:"Avoid water stress — inconsistent irrigation causes Blossom End Rot." },
+                    { icon:"fa-flask", text:"Check EC and pH; Ensure foliar spray of calcium and boron based products when 50% flowering is visible." },
+                    { icon:"fa-shower", text:"Pollinate by vibrating trusses or using an electric pollinator daily as from 9am till 11 AM." },
+                    { icon:"fa-thermometer-half", text:"Critical period of 14 days: maintain 18–26°C. Above 32°C causes blossom drop. Below 15°C reduces fruit set." },
+                    { icon:"fa-exclamation-triangle", text:"Monitor for Pseudomonas corrugata on stems and Thrips in flowers. Remove and dispose infected material." },
+                    { icon:"fa-tint", text:"Avoid water stress — inconsistent irrigation during flowering which can causes Blossom End Rot." },
                     { icon:"fa-leaf", text:"Remove lower leaves below first flower cluster to improve light penetration." }
                 ]
             },
@@ -1097,10 +1095,9 @@ const GROWING_TIPS = {
                 title: "🍅 Tomato — Fruiting Stage",
                 ec: "EC: 3.0–4.0 | pH: 5.8–6.2",
                 items: [
-                    { icon:"fa-flask", text:"High K and Ca phase. EC 3.0–4.0. Adequate Ca prevents Blossom End Rot." },
+                    { icon:"fa-flask", text:"Ensure adequate Calcium against Blossom End Rot." },
                     { icon:"fa-tint", text:"Consistent daily irrigation critical during fruit fill. Irregular watering = cracking." },
                     { icon:"fa-bug", text:"Continue scouting thrips and mites. Fruit surface damage reduces market value." },
-                    { icon:"fa-shield-alt", text:"Apply preventive fungicide rotation for early/late blight per IPM schedule." },
                     { icon:"fa-leaf", text:"Defoliate lower leaves progressively; keep 10–12 healthy leaves above the highest truss." },
                     { icon:"fa-balance-scale", text:"Thin fruit clusters to 4–6 per truss for larger, uniform fruit size." }
                 ]
@@ -1109,12 +1106,11 @@ const GROWING_TIPS = {
                 title: "🧺 Tomato — Harvesting Stage",
                 ec: "EC: 2.8–3.5 | pH: 5.8–6.2",
                 items: [
-                    { icon:"fa-calendar-check", text:"Harvest at breaker/turning stage for market transport; fully ripe if local." },
+                    { icon:"fa-calendar-check", text:"Harvest at breaker/turning stage; Use appropriate crates for storage" },
                     { icon:"fa-flask", text:"Reduce EC slightly at end of cycle to stress the plant into fruit ripening." },
-                    { icon:"fa-snowflake", text:"Store at 13–18°C. Never refrigerate green tomatoes — halts ripening." },
-                    { icon:"fa-recycle", text:"Plan crop turnover. Clean and sanitize greenhouse between cycles." },
+                    { icon:"fa-recycle", text:"Clean and sanitize greenhouse between cycles." },
                     { icon:"fa-chart-line", text:"Record total yield per GH for cycle analysis and efficiency comparison." },
-                    { icon:"fa-clipboard-check", text:"Mark cycle as Completed in the tracker once last harvest is collected." }
+                    { icon:"fa-clipboard-check", text:"Ensure recording keeping during the crop cycle." }
                 ]
             }
         }
@@ -1128,23 +1124,19 @@ const GROWING_TIPS = {
                 title: "🌱 Sweet Pepper — Seedling Stage",
                 ec: "EC: 1.5–2.0 | pH: 5.8–6.5",
                 items: [
-                    { icon:"fa-thermometer-half", text:"Maintain 22–26°C for germination. Sweet peppers are temperature-sensitive at this stage." },
-                    { icon:"fa-flask", text:"Use dilute nutrient solution EC 1.5–2.0. Phosphorus-forward for strong root establishment." },
+                    { icon:"fa-flask", text:"START WITH HEALTHY, VIGOROUS SEEDLINGS with 2-3 true leaves." },
                     { icon:"fa-tint", text:"Water lightly but consistently. Avoid saturated media which promotes root rot." },
-                    { icon:"fa-sun", text:"Bright light (≥ 250 µmol/m²/s) promotes compact, stocky seedlings." },
                     { icon:"fa-ruler-vertical", text:"Transplant at 15–20cm height (6–8 weeks from sowing)." },
-                    { icon:"fa-bug", text:"Inspect for thrips at this stage — they transmit TSWV virus." }
+                    { icon:"fa-bug", text:"Inspect for thrips at this stage." }
                 ]
             },
             "Vegetative": {
                 title: "🌿 Sweet Pepper — Vegetative Stage",
                 ec: "EC: 2.0–3.0 | pH: 5.8–6.5",
                 items: [
-                    { icon:"fa-flask", text:"EC 2.0–3.0. Balance N and K. Avoid excessive N which delays fruit set." },
+                    { icon:"fa-flask", text:"Check EC and pH;Avoid excessive N which delays fruit set." },
                     { icon:"fa-arrows-alt-v", text:"Train to 2-stem or 3-stem V-shape. Remove all shoots below the first fork." },
                     { icon:"fa-wind", text:"Good ventilation essential. Sweet peppers are highly susceptible to Botrytis." },
-                    { icon:"fa-bug", text:"Introduce Amblyseius cucumeris for thrips biocontrol." },
-                    { icon:"fa-thermometer-half", text:"18–24°C optimal. Below 15°C significantly slows growth." },
                     { icon:"fa-tint", text:"Monitor irrigation frequency — sweet peppers prefer slightly drier conditions than tomatoes." }
                 ]
             },
@@ -1152,9 +1144,8 @@ const GROWING_TIPS = {
                 title: "🌸 Sweet Pepper — Flowering Stage",
                 ec: "EC: 2.0–2.5 | pH: 5.8–6.5",
                 items: [
-                    { icon:"fa-flask", text:"EC 2.0–2.5. Boost K and Ca; add silicon supplement for cell wall strength." },
+                    { icon:"fa-flask", text:"Check EC; Boost K and Ca for cell wall strength." },
                     { icon:"fa-sun", text:"High light (≥ 300 µmol/m²/s) is critical for fruit set. Low light = flower drop." },
-                    { icon:"fa-thermometer-half", text:"Maintain 20–26°C. Above 35°C or below 12°C causes flower abortion." },
                     { icon:"fa-shower", text:"Gentle vibration pollination daily improves fruit set, especially in enclosed GH." },
                     { icon:"fa-exclamation-triangle", text:"Watch for Pseudomonas corrugata — wilting of young shoots; remove infected material immediately." },
                     { icon:"fa-balance-scale", text:"Remove early 'king fruits' (first central fruit) to encourage uniform lateral fruiting." }
@@ -1164,11 +1155,9 @@ const GROWING_TIPS = {
                 title: "🌶️ Sweet Pepper — Fruiting Stage",
                 ec: "EC: 2.5–3.5 | pH: 5.8–6.5",
                 items: [
-                    { icon:"fa-flask", text:"EC 2.5–3.5. High K for colour development and wall thickness. Add calcium regularly." },
+                    { icon:"fa-flask", text:"Check EC; High K for colour development and wall thickness. Add calcium regularly." },
                     { icon:"fa-tint", text:"Consistent irrigation prevents Blossom End Rot (Ca deficiency symptom from uneven water uptake)." },
                     { icon:"fa-leaf", text:"Remove old leaves progressively to improve light and air movement within the canopy." },
-                    { icon:"fa-shield-alt", text:"Preventive copper fungicide rotations against bacterial and fungal diseases during wet weather." },
-                    { icon:"fa-bug", text:"Whitefly pressure increases during fruiting — use yellow sticky traps + Encarsia biocontrol." },
                     { icon:"fa-thermometer-half", text:"High temperatures during fruit development cause pale/thin-walled fruit. Use shading if needed." }
                 ]
             },
@@ -1176,13 +1165,10 @@ const GROWING_TIPS = {
                 title: "🧺 Sweet Pepper — Harvesting Stage",
                 ec: "EC: 2.0–2.8 | pH: 5.8–6.5",
                 items: [
-                    { icon:"fa-calendar-check", text:"Harvest green at full size or wait 2–4 more weeks for red/yellow colour development." },
+                    { icon:"fa-calendar-check", text:"Harvest green at full size or wait 3–4 more weeks for red/yellow colour development." },
                     { icon:"fa-cut", text:"Cut with scissors or pruning shears — never pull, as this damages the stem." },
-                    { icon:"fa-snowflake", text:"Store at 8–10°C, 90–95% humidity for up to 2 weeks." },
-                    { icon:"fa-recycle", text:"Sweet peppers are a long-cycle crop (9–12 months). Plan second cycle early." },
-                    { icon:"fa-chart-line", text:"Yield target: 13.80–18.40 kg/m². Record actual yield for efficiency analysis." },
-                    { icon:"fa-clipboard-check", text:"Mark cycle Completed in the tracker after final harvest week." }
-                ]
+                   { icon:"fa-chart-line", text:"Ensure Record keeping. " }
+                                    ]
             }
         }
     },
@@ -1196,11 +1182,10 @@ const GROWING_TIPS = {
                 ec: "EC: 1.8–2.2 | pH: 5.5–6.0",
                 items: [
                     { icon:"fa-thermometer-half", text:"Optimal germination: 25–28°C. Cucumbers are very sensitive to cold. Avoid below 18°C." },
-                    { icon:"fa-flask", text:"EC 1.8–2.2. Higher N at seedling phase supports fast vegetative establishment." },
                     { icon:"fa-tint", text:"Keep substrate moist. Cucumbers have high water demand throughout growth." },
-                    { icon:"fa-ruler-vertical", text:"Transplant at 10–15cm (2 true leaves). Earlier transplant = faster crop cycle start." },
+                    { icon:"fa-ruler-vertical", text:"Transplant at 10–15cm (2-3 true leaves). Earlier transplant = faster crop cycle start." },
                     { icon:"fa-sun", text:"Cucumbers need high light intensity. Poor light at seedling = weak, stretched plants." },
-                    { icon:"fa-exclamation-triangle", text:"Watch for bacterial wilt — wilting despite wet media. Remove affected plants immediately." }
+                    { icon:"fa-exclamation-triangle", text:"Watch for bacterial or fungal diseases; Remove affected plants immediately." }
                 ]
             },
             "Vegetative": {
@@ -1208,31 +1193,25 @@ const GROWING_TIPS = {
                 ec: "EC: 1.8–2.5 | pH: 5.5–6.0",
                 items: [
                     { icon:"fa-arrows-alt-v", text:"Cucumbers grow rapidly. Set up vertical trellis (min 2.5m) and guide main stem daily." },
-                    { icon:"fa-flask", text:"EC 1.8–2.5. Higher N-K balance during leaf canopy expansion." },
+                    { icon:"fa-flask", text:"Check EC; Higher N-K balance during leaf canopy expansion." },
                     { icon:"fa-cut", text:"Remove all lateral shoots and tendrils below 50cm. Train single main stem." },
                     { icon:"fa-wind", text:"High ventilation critical: cucumbers are highly susceptible to powdery mildew." },
-                    { icon:"fa-thermometer-half", text:"22–28°C optimal. Growth stalls below 15°C; bitterness develops above 35°C." },
-                    { icon:"fa-tint", text:"Irrigate frequently (every 2–3h in hot conditions). Monitor runoff EC daily." }
+                    { icon:"fa-tint", text:"Irrigate frequently (every 1-2h in hot conditions). Monitor runoff EC daily." }
                 ]
             },
             "Flowering": {
                 title: "🌸 English Cucumber — Flowering Stage",
                 ec: "EC: 1.8–2.2 | pH: 5.5–6.0",
                 items: [
-                    { icon:"fa-flask", text:"EC 1.8–2.2. Parthenocarpic varieties (self-setting): avoid bee pollination for uniform fruit." },
-                    { icon:"fa-ban", text:"Do NOT introduce pollinators into GH with parthenocarpic cucumbers — causes seeded/bitter fruit." },
-                    { icon:"fa-leaf", text:"Remove all male flowers (star-shaped) if any appear. English cucumbers set without fertilisation." },
-                    { icon:"fa-thermometer-half", text:"Night temperatures critical: keep ≥ 18°C to prevent flower drop." },
-                    { icon:"fa-shield-alt", text:"Apply preventive mancozeb/copper spray for downy mildew during high humidity periods." },
-                    { icon:"fa-bug", text:"Spider mites are the biggest threat at this stage. Begin preventive Phytoseiulus releases." }
+                    { icon:"fa-bug", text:"Spider mites and thrips are the biggest threat at this stage. Monitor damage if any." }
                 ]
             },
             "Fruiting": {
                 title: "🥒 English Cucumber — Fruiting Stage",
                 ec: "EC: 2.2–3.0 | pH: 5.5–6.0",
                 items: [
-                    { icon:"fa-flask", text:"EC 2.2–3.0. Boost K and Ca during rapid fruit fill. Silicon improves skin strength." },
-                    { icon:"fa-tint", text:"Maximum water demand during fruit fill. Irrigate up to 10–15 times/day in summer." },
+                    { icon:"fa-flask", text:"Check EC; Boost K and Ca during rapid fruit fill." },
+                    { icon:"fa-tint", text:"Maximum water demand during fruit fill. Irrigate up to 10–14 times/day in summer." },
                     { icon:"fa-calendar", text:"Cucumbers grow fast — check fruit daily. Overripe fruits reduce plant productivity." },
                     { icon:"fa-bug", text:"Whitefly and thrips pressure peaks during fruiting. Biocontrol + neem oil rotation." },
                     { icon:"fa-leaf", text:"Continue defoliation: remove old/yellowing leaves from base upward every 7–10 days." },
@@ -1244,11 +1223,8 @@ const GROWING_TIPS = {
                 ec: "EC: 1.8–2.5 | pH: 5.5–6.0",
                 items: [
                     { icon:"fa-calendar-check", text:"Harvest at 25–35cm length. Uniform, dark green, firm cucumbers. Harvest every 2–3 days." },
-                    { icon:"fa-cut", text:"Cut with a clean knife. Leave 2–3cm stalk attached to reduce disease entry." },
-                    { icon:"fa-snowflake", text:"Store at 10–13°C, 90–95% humidity. Do not store with tomatoes or ethylene-producing crops." },
-                    { icon:"fa-chart-line", text:"Yield target: 32–62 units/m². Keep picking regularly to maximise total cycle yield." },
-                    { icon:"fa-recycle", text:"Cucumbers are short-cycle (4–6 months). Plan next cycle 4–6 weeks before current cycle ends." },
-                    { icon:"fa-clipboard-check", text:"Mark cycle Completed in the tracker. Sanitise GH thoroughly between cycles." }
+                    { icon:"fa-cut", text:"Cut with a clean knife. Leave 2–3cm stalk attached to reduce disease entry." }
+                    
                 ]
             }
         }
@@ -1427,15 +1403,20 @@ function formatToMauritiusTime(ts) {
 }
 
 function setAdminSectionsVisibility(show) {
-    ['timelineSectionCard','forecastSectionCard'].forEach(id => {
+    // show = true  → admin (admin panels visible)
+    // show = false → grower (admin panels hidden)
+
+    // Admin-only sections: timeline, forecast, yield reference
+    ['timelineSectionCard', 'forecastSectionCard'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = show ? 'block' : 'none';
     });
     const yieldRef = document.getElementById('yieldEfficiencyRefCard');
     if (yieldRef) yieldRef.style.display = show ? 'block' : 'none';
-    // Growing Tips is user-only — hide for admin, show for growers
+
+    // GROWING TIPS: now show for admin (show=true), hide for growers (show=false)
     const tipsSection = document.getElementById('growingTipsSection');
-    if (tipsSection) tipsSection.style.display = show ? 'none' : 'block';
+    if (tipsSection) tipsSection.style.display = show ? 'block' : 'none';
 }
 
 function getYieldReference(cropName, varietyName) {
