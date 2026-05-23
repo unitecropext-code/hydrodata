@@ -466,78 +466,6 @@
         .pest-alert-inner { display: flex; flex-direction: column; gap: 6px; }
         .pest-alert-row1 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .pest-risk-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: var(--radius-pill); padding: 4px 14px; font-size: 0.8rem; font-weight: 800; color: white; }
-        /* Multi-alert banner */
-        .pest-alert-multi-wrap { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-        .pest-alert-dismiss-btn { background: none; border: none; cursor: pointer; color: #888; font-size: 1.1rem; flex-shrink:0; transition: color 0.15s; padding: 2px 6px; border-radius: 50%; }
-        .pest-alert-dismiss-btn:hover { color: #c0392b; background: rgba(192,57,43,0.1); }
-        .pest-alert-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-        .pest-alert-photo { width: 80px; height: 80px; object-fit: cover; border-radius: 0.7rem; border: 2px solid rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.18s, box-shadow 0.18s; flex-shrink: 0; }
-        .pest-alert-photo:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
-        .pest-alert-photo-count { font-size: 0.75rem; color: #888; align-self: flex-end; }
-        /* Photo lightbox */
-        #photoLightbox { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; }
-        #photoLightbox.open { display:flex; }
-        #photoLightboxImg { max-width:92vw; max-height:88vh; border-radius:1rem; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
-        #photoLightboxClose { position:absolute; top:18px; right:22px; background:rgba(255,255,255,0.15); border:none; color:white; font-size:1.6rem; cursor:pointer; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
-        #photoLightboxClose:hover { background:rgba(255,255,255,0.3); }
-        #photoLightboxCaption { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.8); font-size:0.85rem; text-align:center; background:rgba(0,0,0,0.5); border-radius:var(--radius-pill); padding:6px 18px; }
-
-        /* ===== ADMIN SEARCH SUGGESTIONS ===== */
-        .search-suggestions-wrap { position: relative; }
-        #adminSearchSuggestions { position:absolute; top:100%; left:0; right:0; background:white; border:1.5px solid var(--green-200); border-radius:1rem; margin-top:4px; z-index:500; box-shadow:0 8px 24px rgba(0,0,0,0.12); max-height:220px; overflow-y:auto; display:none; }
-        .search-suggestion-item { padding:0.65rem 1rem; cursor:pointer; font-size:0.88rem; font-weight:600; color:var(--green-900); display:flex; align-items:center; gap:8px; transition:background 0.15s; border-bottom:1px solid #f0f7ec; }
-        .search-suggestion-item:last-child { border-bottom:none; }
-        .search-suggestion-item:hover, .search-suggestion-item.focused { background:var(--green-50); }
-        .search-suggestion-match { font-weight:900; color:var(--green-700); }
-        .search-suggestion-count { font-size:0.72rem; color:#aaa; margin-left:auto; white-space:nowrap; }
-        .admin-search-input-wrap { position:relative; flex:1; min-width:180px; }
-        .admin-search-input-wrap .admin-search-input { width:100%; }
-
-        /* ===== ENHANCED ACTIVITY LOG ===== */
-        .activity-log-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem; }
-        .activity-log-filter-input { flex:1; min-width:180px; padding:0.65rem 1rem; border:1.5px solid var(--green-200); border-radius:var(--radius-pill); font-size:0.88rem; font-family:'Outfit',sans-serif; outline:none; transition:border-color 0.2s; }
-        .activity-log-filter-input:focus { border-color:var(--green-600); box-shadow:0 0 0 3px rgba(37,145,50,0.12); }
-        .activity-log-type-filter { padding:0.65rem 1rem; border:1.5px solid var(--green-200); border-radius:var(--radius-pill); font-size:0.85rem; font-family:'Outfit',sans-serif; outline:none; background:var(--green-50); color:var(--green-900); font-weight:600; cursor:pointer; transition:border-color 0.2s; }
-        .activity-log-type-filter:focus { border-color:var(--green-600); }
-        .activity-log-wrap { max-height: 420px; overflow-y: auto; border:1px solid var(--green-100); border-radius:1rem; }
-        .activity-log-item { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.6rem 0.8rem; border-bottom: 1px solid #f0f7ec; font-size: 0.83rem; }
-        .activity-log-item:last-child { border-bottom: none; }
-        .activity-log-item .log-time { color: #aaa; font-size: 0.72rem; font-weight: 600; white-space: nowrap; margin-top: 2px; min-width: 70px; }
-        .activity-log-item .log-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
-        .log-icon.login { background: #d4edda; color: #155724; }
-        .log-icon.submit { background: #cce5ff; color: #004085; }
-        .log-icon.edit { background: #fff3cd; color: #856404; }
-        .log-icon.toggle { background: #e2e3e5; color: #555; }
-        .log-icon.admin { background: #ffd9b3; color: #8b4500; }
-        .log-icon.register { background: #e7d8f7; color: #5a2d82; }
-        .log-icon.pest { background: #fde8e4; color: #c0392b; }
-        .activity-log-item .log-msg { flex: 1; color: #444; line-height: 1.45; }
-        .activity-log-item .log-user { font-weight: 700; color: var(--green-800); }
-        .log-empty { text-align: center; color: #ccc; padding: 2rem; font-size: 0.88rem; }
-        .log-load-btn { display:block; width:100%; text-align:center; padding:0.7rem; font-size:0.82rem; font-weight:700; color:var(--green-700); background:var(--green-50); border:none; border-top:1px solid var(--green-100); cursor:pointer; font-family:'Outfit',sans-serif; transition:background 0.15s; }
-        .log-load-btn:hover { background:var(--green-100); }
-        .activity-log-stats { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:0.8rem; }
-        .log-stat-chip { background:var(--green-50); border:1.5px solid var(--green-100); border-radius:var(--radius-pill); padding:4px 12px; font-size:0.75rem; font-weight:700; color:var(--green-800); display:inline-flex; align-items:center; gap:5px; }
-
-        /* ===== PEST ALERT ADMIN — Multiple Alerts ===== */
-        .pest-alert-list { display:flex; flex-direction:column; gap:1rem; margin-top:1rem; }
-        .pest-alert-card { background:white; border:1.5px solid #fca5a5; border-radius:var(--radius-lg); padding:1rem; position:relative; }
-        .pest-alert-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.8rem; gap:8px; flex-wrap:wrap; }
-        .pest-alert-card-num { font-weight:900; font-size:0.85rem; color:var(--green-900); display:flex; align-items:center; gap:6px; }
-        .pest-alert-card-actions { display:flex; gap:6px; }
-        .pest-remove-alert-btn { background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; border-radius:var(--radius-pill); padding:5px 12px; font-size:0.75rem; font-weight:700; cursor:pointer; transition:all 0.18s; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:4px; }
-        .pest-remove-alert-btn:hover { background:#fecaca; }
-        .add-alert-card-btn { background:linear-gradient(100deg,#c0392b,#e74c3c); color:white; border:none; border-radius:var(--radius-pill); padding:10px 18px; font-size:0.9rem; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s; box-shadow:0 4px 12px rgba(192,57,43,0.3); }
-        .add-alert-card-btn:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(192,57,43,0.45); }
-        /* Photo upload in admin */
-        .photo-upload-area { border:2px dashed #fca5a5; border-radius:1rem; padding:1rem; text-align:center; background:#fff5f5; cursor:pointer; transition:all 0.2s; }
-        .photo-upload-area:hover { border-color:#c0392b; background:#fff0f0; }
-        .photo-upload-area input[type=file] { display:none; }
-        .photo-preview-grid { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-        .photo-preview-item { position:relative; width:72px; height:72px; }
-        .photo-preview-item img { width:100%; height:100%; object-fit:cover; border-radius:0.6rem; border:1.5px solid #fca5a5; }
-        .photo-preview-remove { position:absolute; top:-6px; right:-6px; background:#c0392b; color:white; border:none; border-radius:50%; width:20px; height:20px; font-size:0.65rem; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:'Outfit',sans-serif; }
-        .photo-upload-label { font-size:0.82rem; color:#888; margin-top:4px; }
 
         /* ===== MISC ===== */
         .hidden { display: none !important; }
@@ -587,15 +515,8 @@
     <!-- MAIN APP -->
     <div id="mainApp" style="display:none;">
 
-        <!-- PEST ALERT BANNER (multi-alert) -->
-        <div id="pestAlertBanner" style="display:none;"></div>
-
-        <!-- PHOTO LIGHTBOX -->
-        <div id="photoLightbox">
-            <button id="photoLightboxClose" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
-            <img id="photoLightboxImg" src="" alt="Pest symptom photo">
-            <div id="photoLightboxCaption"></div>
-        </div>
+        <!-- PEST ALERT BANNER -->
+        <div id="pestAlertBanner" style="display:none; margin-bottom: 16px;"></div>
 
         <!-- HEADER -->
         <div class="glass-card">
@@ -694,10 +615,7 @@
             <div id="searchTab" class="admin-tab-content active">
                 <div class="admin-search-panel">
                     <div class="admin-search-row">
-                        <div class="admin-search-input-wrap search-suggestions-wrap">
-                            <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter full or partial username to search..." autocomplete="off">
-                            <div id="adminSearchSuggestions"></div>
-                        </div>
+                        <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Enter grower username to search records..." autocomplete="off">
                         <button id="adminSearchBtn" class="admin-search-btn"><i class="fas fa-search"></i> Search</button>
                         <button id="adminClearSearchBtn" class="admin-clear-btn"><i class="fas fa-times"></i> Clear</button>
                     </div>
@@ -824,42 +742,40 @@
 
             <!-- TAB: Activity Log -->
             <div id="activityLogTab" class="admin-tab-content">
-                <div class="register-grower-title"><i class="fas fa-history" style="color:var(--green-600);"></i> All Growers Activity Feed</div>
-                <div id="activityLogStatsRow" class="activity-log-stats"></div>
-                <div class="activity-log-toolbar">
-                    <input type="text" id="activityLogFilterInput" class="activity-log-filter-input" placeholder="🔍 Filter by user, action, message...">
-                    <select id="activityLogTypeFilter" class="activity-log-type-filter">
-                        <option value="">All Types</option>
-                        <option value="login">Login</option>
-                        <option value="submit">Submit</option>
-                        <option value="edit">Edit</option>
-                        <option value="toggle">Toggle</option>
-                        <option value="admin">Admin</option>
-                        <option value="register">Register</option>
-                        <option value="search">Search</option>
-                        <option value="pest">Pest Alert</option>
-                    </select>
-                    <button id="loadActivityLogBtn" class="btn-secondary" style="font-size:0.82rem;padding:7px 14px;white-space:nowrap;"><i class="fas fa-sync-alt" id="loadActivityLogIcon"></i> <span id="loadActivityLogText">Load Feed</span></button>
-                    <button id="clearActivityLogBtn" class="btn-secondary" style="font-size:0.8rem;padding:7px 14px;color:#c0392b;border-color:#fca5a5;"><i class="fas fa-trash-alt"></i> Clear</button>
-                </div>
-                <div class="activity-log-wrap" id="activityLogContainer"><div class="log-empty"><i class="fas fa-clipboard-list" style="font-size:2rem;color:var(--green-200);margin-bottom:0.5rem;display:block;"></i>Click "Load Feed" to view all grower activities.</div></div>
+                <div class="register-grower-title"><i class="fas fa-history" style="color:var(--green-600);"></i> Activity Log</div>
+                <div style="display:flex;justify-content:flex-end;margin-bottom:0.8rem;"><button id="clearActivityLogBtn" class="btn-secondary" style="font-size:0.8rem;padding:7px 14px;"><i class="fas fa-trash-alt"></i> Clear Log</button></div>
+                <div class="activity-log-wrap" id="activityLogContainer"><div class="log-empty"><i class="fas fa-clipboard-list" style="font-size:2rem;color:var(--green-200);margin-bottom:0.5rem;display:block;"></i>No activity recorded yet for this session.</div></div>
             </div>
 
             <!-- TAB: Pest Alert (Admin only) -->
             <div id="pestAlertTab" class="admin-tab-content">
                 <div class="register-grower-title"><i class="fas fa-bug" style="color:var(--red);"></i> Manage Pest Alerts <span class="admin-badge" style="background:var(--red);">ADMIN ONLY</span></div>
                 <div style="background:linear-gradient(135deg,#fff5f0,#ffeaea);border:1.5px solid #fca5a5;border-radius:var(--radius-lg);padding:1.2rem;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">
-                        <div style="font-weight:800;font-size:0.95rem;color:var(--green-900);display:flex;align-items:center;gap:8px;">
-                            <i class="fas fa-exclamation-triangle" style="color:#c0392b;"></i> Active Pest Alerts
-                            <span id="activePestCount" style="background:#c0392b;color:white;border-radius:50%;width:20px;height:20px;font-size:0.7rem;font-weight:900;display:inline-flex;align-items:center;justify-content:center;">0</span>
-                        </div>
-                        <button id="addNewAlertBtn" class="add-alert-card-btn"><i class="fas fa-plus"></i> Add New Alert</button>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+                        <input type="checkbox" id="alertActiveCheckbox" style="width:18px;height:18px;cursor:pointer;accent-color:var(--red);">
+                        <label for="alertActiveCheckbox" style="font-weight:700;font-size:0.95rem;cursor:pointer;color:var(--green-900);">Enable Pest Alert Banner (visible to ALL users)</label>
                     </div>
-                    <div id="pestAlertCardsList" class="pest-alert-list"></div>
+                    <div class="register-grid">
+                        <div class="form-group">
+                            <label>Risk Level</label>
+                            <select id="alertRiskLevel">
+                                <option value="High">🔴 High</option>
+                                <option value="Medium">🟠 Medium</option>
+                                <option value="Low">🟡 Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Alert Message (Title)</label>
+                            <input type="text" id="alertMessage" placeholder="e.g. ⚠️ Late Blight Alert">
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1;">
+                            <label>Favorable Conditions / Description</label>
+                            <textarea id="alertConditions" style="border-radius:1rem;min-height:60px;" placeholder="e.g. Cool, moist conditions favor rapid disease spread. Check lower leaves and petioles near ground level for first signs. Act now to prevent crop loss."></textarea>
+                        </div>
+                    </div>
                     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:1rem;align-items:center;">
-                        <button id="savePestAlertBtn" class="btn"><i class="fas fa-save"></i> Save All Alerts</button>
-                        <button id="clearPestAlertBtn" class="btn-secondary"><i class="fas fa-times"></i> Disable All &amp; Clear</button>
+                        <button id="savePestAlertBtn" class="btn"><i class="fas fa-save"></i> Save Alert Settings</button>
+                        <button id="clearPestAlertBtn" class="btn-secondary"><i class="fas fa-times"></i> Disable &amp; Clear</button>
                         <button id="presetLateBlight" class="btn-secondary" style="border-color:#c0392b;color:#c0392b;"><i class="fas fa-bug"></i> Load Late Blight Preset</button>
                     </div>
                     <div id="pestAlertStatusMsg" style="margin-top:0.8rem;font-size:0.85rem;"></div>
@@ -1041,7 +957,7 @@
 
 <script>
 // ==================== CONFIG ====================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwI9sNOxyIZRBz2w1rXAhgyxC9wm0vWFgKfWTw7EOJGM4rKm8_pKfgyraaHDpEHxkes4A/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNs30JruyEUJnKZqKvlf8HoLkcw6AC2_LTXDXwXlkPf-dw46607K7nqmjdBhHM-QxXBQ/exec';
 
 // Admin usernames (case-insensitive). webadmin1 and webadmin2 are also allowed.
 // The backend determines isAdmin via the users sheet Role column.
@@ -1206,16 +1122,12 @@ let recentlyRegistered = [];
 let currentTimelineCrop = "Tomato";
 let currentForecastCrop = "Tomato";
 let activityLog = [];
-let allGrowersActivityLog = []; // Full feed from server
 let currentUserRecords = null;
 let notifList = [];
 let currentTipsCrop = "Tomato";
 let currentTipsStage = "Seedling";
 // For admin editing of grower records
 let adminEditContext = null; // { username, rowIndex, rows, headers }
-// Multi pest alert state
-let pestAlertCards = []; // [{id, active, riskLevel, alertMessage, conditions, photos:[base64...]}]
-let allGrowerUsernames = []; // for search suggestions
 
 // ==================== NOTIFICATION SYSTEM ====================
 function addNotif(type, icon, msg) {
@@ -1284,116 +1196,16 @@ function logActivity(type, message, user) {
         fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
             body:'data='+encodeURIComponent(JSON.stringify({action:'logActivity',actAction:type,message,user:entry.user,timestamp:entry.full}))});
     } catch(e){}
-    // Prepend to allGrowersActivityLog too
-    allGrowersActivityLog.unshift(entry);
     renderActivityLog();
 }
-
-// Load all growers activity from server (admin)
-async function loadAllGrowersActivity() {
-    const logBtn = document.getElementById('loadActivityLogBtn');
-    const icon = document.getElementById('loadActivityLogIcon');
-    const text = document.getElementById('loadActivityLogText');
-    if(icon) icon.className = 'fas fa-spinner fa-spin-custom';
-    if(text) text.textContent = 'Loading...';
-    if(logBtn) logBtn.disabled = true;
-    try {
-        const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getActivityLog&_=${Date.now()}`, 15000);
-        const data = await res.json();
-        if(data.rows && data.rows.length) {
-            const hdr = (data.headers||[]).map(h=>String(h).toLowerCase());
-            const tsCol = hdr.findIndex(h=>h.includes('timestamp'));
-            const userCol = hdr.findIndex(h=>h.includes('username'));
-            const actionCol = hdr.findIndex(h=>h.includes('action'));
-            const detailsCol = hdr.findIndex(h=>h.includes('details'));
-            allGrowersActivityLog = data.rows.map(r => {
-                const fullTs = tsCol !== -1 ? String(r[tsCol]||'') : '';
-                const username = userCol !== -1 ? String(r[userCol]||'—') : '—';
-                const action = actionCol !== -1 ? String(r[actionCol]||'') : '';
-                const details = detailsCol !== -1 ? String(r[detailsCol]||'') : '';
-                let type = 'admin';
-                if(action.includes('LOGIN')) type = 'login';
-                else if(action.includes('SUBMIT')) type = 'submit';
-                else if(action.includes('UPDATE')) type = 'edit';
-                else if(action.includes('TOGGLE')) type = 'toggle';
-                else if(action.includes('REGISTER')) type = 'register';
-                else if(action.includes('PEST')) type = 'pest';
-                else if(action.includes('SEARCH')) type = 'search';
-                const timeStr = formatToMauritiusTime(fullTs);
-                return { type, message: `${action}${details ? ': ' + details : ''}`, user: username, time: timeStr, full: fullTs };
-            });
-            // Merge with local session entries (deduplicate)
-            activityLog.forEach(local => {
-                if(!allGrowersActivityLog.some(a => a.full === local.full && a.user === local.user)) {
-                    allGrowersActivityLog.unshift(local);
-                }
-            });
-        } else if(!allGrowersActivityLog.length) {
-            allGrowersActivityLog = [...activityLog];
-        }
-        renderActivityLog();
-        toast('✅ Activity feed loaded — ' + allGrowersActivityLog.length + ' entries');
-    } catch(e) {
-        // Fall back to local session log
-        allGrowersActivityLog = [...activityLog];
-        renderActivityLog();
-        toast('Showing session log only (server unavailable)', true);
-    } finally {
-        if(icon) icon.className = 'fas fa-sync-alt';
-        if(text) text.textContent = 'Refresh Feed';
-        if(logBtn) logBtn.disabled = false;
-    }
-}
-
 function renderActivityLog() {
     const container = document.getElementById('activityLogContainer');
     if (!container) return;
-    const filterVal = (document.getElementById('activityLogFilterInput')?.value||'').toLowerCase().trim();
-    const typeFilter = document.getElementById('activityLogTypeFilter')?.value||'';
-    const sourceLog = allGrowersActivityLog.length ? allGrowersActivityLog : activityLog;
-
-    // Stats
-    const statsRow = document.getElementById('activityLogStatsRow');
-    if(statsRow && sourceLog.length) {
-        const userSet = new Set(sourceLog.map(e=>e.user));
-        const today = new Date().toLocaleDateString('en-MU');
-        const todayCount = sourceLog.filter(e => e.full && String(e.full).includes(today.split('/').reverse().join('-'))).length;
-        statsRow.innerHTML = `
-            <span class="log-stat-chip"><i class="fas fa-list"></i> ${sourceLog.length} total entries</span>
-            <span class="log-stat-chip"><i class="fas fa-users"></i> ${userSet.size} users</span>
-            <span class="log-stat-chip"><i class="fas fa-calendar-day"></i> ${todayCount} today</span>
-        `;
-    } else if(statsRow) { statsRow.innerHTML = ''; }
-
-    const iconMap = {
-        login:{cls:'login',icon:'fas fa-sign-in-alt'},
-        submit:{cls:'submit',icon:'fas fa-cloud-upload-alt'},
-        edit:{cls:'edit',icon:'fas fa-edit'},
-        toggle:{cls:'toggle',icon:'fas fa-toggle-on'},
-        admin:{cls:'admin',icon:'fas fa-shield-alt'},
-        register:{cls:'register',icon:'fas fa-user-plus'},
-        search:{cls:'submit',icon:'fas fa-search'},
-        area:{cls:'edit',icon:'fas fa-ruler-combined'},
-        pest:{cls:'pest',icon:'fas fa-bug'}
-    };
-
-    const filtered = sourceLog.filter(e => {
-        if(typeFilter && e.type !== typeFilter) return false;
-        if(filterVal) {
-            const text = (e.user+' '+e.message+' '+e.type+' '+e.time+' '+(e.full||'')).toLowerCase();
-            if(!text.includes(filterVal)) return false;
-        }
-        return true;
-    });
-
-    if(!filtered.length) {
-        container.innerHTML = `<div class="log-empty"><i class="fas fa-clipboard-list" style="font-size:2rem;color:var(--green-200);margin-bottom:0.5rem;display:block;"></i>${sourceLog.length ? 'No entries match your filter.' : 'No activity recorded yet.'}</div>`;
-        return;
-    }
-    container.innerHTML = filtered.map(e => {
+    if (!activityLog.length) { container.innerHTML = '<div class="log-empty"><i class="fas fa-clipboard-list" style="font-size:2rem;color:var(--green-200);margin-bottom:0.5rem;display:block;"></i>No activity recorded yet.</div>'; return; }
+    const iconMap = {login:{cls:'login',icon:'fas fa-sign-in-alt'},submit:{cls:'submit',icon:'fas fa-cloud-upload-alt'},edit:{cls:'edit',icon:'fas fa-edit'},toggle:{cls:'toggle',icon:'fas fa-toggle-on'},admin:{cls:'admin',icon:'fas fa-shield-alt'},register:{cls:'register',icon:'fas fa-user-plus'},search:{cls:'submit',icon:'fas fa-search'},area:{cls:'edit',icon:'fas fa-ruler-combined'}};
+    container.innerHTML = activityLog.map(e=>{
         const {cls,icon} = iconMap[e.type]||{cls:'login',icon:'fas fa-info-circle'};
-        const msgClean = e.message.replace(/<[^>]+>/g, ''); // strip HTML for safety in feed
-        return `<div class="activity-log-item"><div class="log-icon ${cls}"><i class="${icon}"></i></div><div class="log-msg"><span class="log-user">${escapeHtml(e.user||'—')}</span> ${escapeHtml(msgClean)}</div><div class="log-time">${e.time||'—'}</div></div>`;
+        return `<div class="activity-log-item"><div class="log-icon ${cls}"><i class="${icon}"></i></div><div class="log-msg"><span class="log-user">${e.user||'—'}</span> ${e.message}</div><div class="log-time">${e.time}</div></div>`;
     }).join('');
 }
 
@@ -1444,281 +1256,89 @@ function stopRefreshSpin(iconId, textId, origText) {
     if (text && origText) text.textContent = origText;
 }
 
-// ==================== PEST ALERT (MULTI) ====================
-// pestAlertCards = [{id, active, riskLevel, alertMessage, conditions, photos:[base64...]}]
-
-function makePestAlertCardId() { return 'pa_' + Date.now() + '_' + Math.random().toString(36).substr(2,5); }
-
-function renderPestAlertCards() {
-    const list = document.getElementById('pestAlertCardsList');
-    if(!list) return;
-    const countEl = document.getElementById('activePestCount');
-    if(countEl) countEl.textContent = pestAlertCards.filter(c=>c.active).length;
-    if(!pestAlertCards.length) {
-        list.innerHTML = '<div style="text-align:center;color:#aaa;padding:1rem;font-size:0.85rem;">No alerts configured. Click "Add New Alert" to create one.</div>';
-        return;
-    }
-    list.innerHTML = pestAlertCards.map((card, idx) => {
-        const riskColors = {High:'#c0392b', Medium:'#f39c12', Low:'#f1c40f'};
-        const photoPreviews = (card.photos||[]).map((b64, pi) =>
-            `<div class="photo-preview-item">
-                <img src="${b64}" alt="Symptom photo ${pi+1}">
-                <button class="photo-preview-remove" onclick="removeAlertPhoto(${idx},${pi})" title="Remove photo"><i class="fas fa-times"></i></button>
-             </div>`
-        ).join('');
-        return `<div class="pest-alert-card" id="pac_${card.id}" style="border-color:${riskColors[card.riskLevel]||'#fca5a5'}">
-            <div class="pest-alert-card-header">
-                <div class="pest-alert-card-num">
-                    <input type="checkbox" id="pac_active_${card.id}" ${card.active?'checked':''} onchange="updateAlertCardField('${card.id}','active',this.checked)" style="width:16px;height:16px;accent-color:#c0392b;cursor:pointer;">
-                    <label for="pac_active_${card.id}" style="cursor:pointer;color:${card.active?'#c0392b':'#888'};">${card.active?'🔴 Active Alert':'⚫ Inactive'}</label>
-                    <span style="font-size:0.72rem;color:#aaa;font-weight:500;">#${idx+1}</span>
-                </div>
-                <div class="pest-alert-card-actions">
-                    <button class="pest-remove-alert-btn" onclick="removePestAlertCard('${card.id}')"><i class="fas fa-trash-alt"></i> Remove</button>
-                </div>
-            </div>
-            <div class="register-grid" style="margin-bottom:0.7rem;">
-                <div class="form-group">
-                    <label>Risk Level</label>
-                    <select id="pac_risk_${card.id}" onchange="updateAlertCardField('${card.id}','riskLevel',this.value)">
-                        <option value="High" ${card.riskLevel==='High'?'selected':''}>🔴 High</option>
-                        <option value="Medium" ${card.riskLevel==='Medium'?'selected':''}>🟠 Medium</option>
-                        <option value="Low" ${card.riskLevel==='Low'?'selected':''}>🟡 Low</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Alert Title / Pest Name</label>
-                    <input type="text" id="pac_msg_${card.id}" value="${escapeHtml(card.alertMessage)}" placeholder="e.g. ⚠️ Late Blight Alert" oninput="updateAlertCardField('${card.id}','alertMessage',this.value)">
-                </div>
-                <div class="form-group" style="grid-column:1/-1;">
-                    <label>Description / Favorable Conditions</label>
-                    <textarea id="pac_cond_${card.id}" style="border-radius:1rem;min-height:55px;" placeholder="Describe conditions, affected crops, recommended actions..." oninput="updateAlertCardField('${card.id}','conditions',this.value)">${escapeHtml(card.conditions)}</textarea>
-                </div>
-            </div>
-            <div class="form-group">
-                <label style="margin-bottom:6px;">📷 Symptom Photos (visible to growers)</label>
-                <div class="photo-upload-area" onclick="document.getElementById('pac_fileInput_${card.id}').click()">
-                    <input type="file" id="pac_fileInput_${card.id}" accept="image/*" multiple onchange="handleAlertPhotoUpload('${card.id}',this)">
-                    <i class="fas fa-camera" style="font-size:1.5rem;color:#f8b4b4;margin-bottom:4px;"></i>
-                    <div style="font-size:0.85rem;font-weight:700;color:#c0392b;">Click to upload photos</div>
-                    <div class="photo-upload-label">JPG, PNG, WebP — max 3 photos per alert</div>
-                </div>
-                ${card.photos&&card.photos.length ? `<div class="photo-preview-grid">${photoPreviews}</div>` : ''}
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function updateAlertCardField(id, field, value) {
-    const card = pestAlertCards.find(c=>c.id===id);
-    if(card) card[field] = value;
-    // Re-render only the checkbox label without full re-render to avoid losing focus
-    if(field === 'active') renderPestAlertCards();
-    if(field === 'riskLevel') {
-        const cardEl = document.getElementById(`pac_${id}`);
-        if(cardEl) { const col = {High:'#c0392b',Medium:'#f39c12',Low:'#f1c40f'}[value]||'#fca5a5'; cardEl.style.borderColor = col; }
-        const countEl = document.getElementById('activePestCount');
-        if(countEl) countEl.textContent = pestAlertCards.filter(c=>c.active).length;
-    }
-}
-
-function addNewPestAlertCard(preset) {
-    const card = preset || { id: makePestAlertCardId(), active: true, riskLevel: 'High', alertMessage: '', conditions: '', photos: [] };
-    if(!card.id) card.id = makePestAlertCardId();
-    if(!card.photos) card.photos = [];
-    pestAlertCards.push(card);
-    renderPestAlertCards();
-    document.getElementById(`pac_${card.id}`)?.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-function removePestAlertCard(id) {
-    pestAlertCards = pestAlertCards.filter(c=>c.id!==id);
-    renderPestAlertCards();
-}
-
-function handleAlertPhotoUpload(cardId, input) {
-    const card = pestAlertCards.find(c=>c.id===cardId);
-    if(!card) return;
-    const files = Array.from(input.files);
-    const remaining = 3 - (card.photos||[]).length;
-    if(remaining <= 0) { toast('Maximum 3 photos per alert.', true); return; }
-    const toProcess = files.slice(0, remaining);
-    if(files.length > remaining) toast(`Only ${remaining} more photo(s) added (max 3 per alert).`);
-    toProcess.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            if(!card.photos) card.photos = [];
-            card.photos.push(e.target.result);
-            renderPestAlertCards();
-        };
-        reader.readAsDataURL(file);
-    });
-    input.value = '';
-}
-
-function removeAlertPhoto(cardIdx, photoIdx) {
-    if(pestAlertCards[cardIdx]) {
-        pestAlertCards[cardIdx].photos.splice(photoIdx, 1);
-        renderPestAlertCards();
-    }
-}
-
+// ==================== PEST ALERT ====================
 async function fetchPestAlert() {
     try {
         const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getPestAlert&_=${Date.now()}`, 6000);
         return await res.json();
     } catch(e) { return {active:false}; }
 }
-
 async function updatePestAlertBanner() {
-    // Fetch from server — returns single alert (current GAS schema)
     const alert = await fetchPestAlert();
     const banner = document.getElementById('pestAlertBanner');
     if (!banner) return;
-
-    // Collect displayable alerts: server alert + any locally cached multi-alerts
-    const displayAlerts = [];
     if (alert.active && alert.alertMessage) {
-        displayAlerts.push({...alert, id: 'server_alert', photos: []});
-    }
-
-    if(!displayAlerts.length) {
+        const riskColor = alert.riskLevel === 'High' ? '#c0392b' : (alert.riskLevel === 'Medium' ? '#f39c12' : '#f1c40f');
+        const riskClass = alert.riskLevel === 'High' ? 'pest-alert-high' : (alert.riskLevel === 'Medium' ? 'pest-alert-medium' : 'pest-alert-low');
+        banner.innerHTML = `
+            <div class="glass-card ${riskClass}" style="margin-bottom:0;">
+                <div class="pest-alert-inner">
+                    <div class="pest-alert-row1">
+                        <span class="pest-risk-badge" style="background:${riskColor};">
+                            <i class="fas fa-exclamation-triangle"></i> ${escapeHtml(alert.riskLevel)} RISK
+                        </span>
+                        <strong style="font-size:1rem;color:#2d1a0e;">⚠️ ${escapeHtml(alert.alertMessage)}</strong>
+                    </div>
+                    <div style="font-size:0.85rem;color:#555;margin-top:4px;">
+                        <i class="fas fa-cloud-rain" style="color:${riskColor};"></i>
+                        <strong>Favorable conditions:</strong> ${escapeHtml(alert.favorableConditions||'—')}
+                    </div>
+                    <div style="font-size:0.75rem;color:#888;margin-top:2px;">
+                        <i class="fas fa-leaf"></i> Act now to prevent crop loss. Monitor plants closely and apply appropriate treatment.
+                    </div>
+                </div>
+            </div>`;
+        banner.style.display = 'block';
+    } else {
         banner.innerHTML = '';
         banner.style.display = 'none';
-        return;
     }
-
-    const dismissedKey = 'dismissedAlerts';
-    let dismissed = [];
-    try { dismissed = JSON.parse(sessionStorage.getItem(dismissedKey)||'[]'); } catch(e){}
-
-    const toShow = displayAlerts.filter(a => !dismissed.includes(a.id));
-    if(!toShow.length) { banner.innerHTML=''; banner.style.display='none'; return; }
-
-    const riskColors = {High:'#c0392b', Medium:'#f39c12', Low:'#f1c40f'};
-    const riskClasses = {High:'pest-alert-high', Medium:'pest-alert-medium', Low:'pest-alert-low'};
-
-    banner.innerHTML = `<div class="pest-alert-multi-wrap">` + toShow.map(a => {
-        const rColor = riskColors[a.riskLevel]||'#c0392b';
-        const rClass = riskClasses[a.riskLevel]||'pest-alert-high';
-        const photosHtml = (a.photos&&a.photos.length) ? `<div class="pest-alert-photos">${a.photos.map((p,i)=>`<img src="${p}" class="pest-alert-photo" onclick="openLightbox('${p}','${escapeHtml(a.alertMessage)} — Photo ${i+1}')" alt="Symptom photo ${i+1}">`).join('')}<span class="pest-alert-photo-count">${a.photos.length} photo(s)</span></div>` : '';
-        return `<div class="glass-card ${rClass}" style="margin-bottom:0;">
-            <div class="pest-alert-inner">
-                <div class="pest-alert-row1">
-                    <span class="pest-risk-badge" style="background:${rColor};">
-                        <i class="fas fa-exclamation-triangle"></i> ${escapeHtml(a.riskLevel)} RISK
-                    </span>
-                    <strong style="font-size:1rem;color:#2d1a0e;flex:1;">⚠️ ${escapeHtml(a.alertMessage)}</strong>
-                    <button class="pest-alert-dismiss-btn" onclick="dismissPestAlert('${a.id}')" title="Dismiss this alert"><i class="fas fa-times"></i></button>
-                </div>
-                <div style="font-size:0.85rem;color:#555;margin-top:4px;">
-                    <i class="fas fa-cloud-rain" style="color:${rColor};"></i>
-                    <strong>Favorable conditions:</strong> ${escapeHtml(a.favorableConditions||a.conditions||'—')}
-                </div>
-                <div style="font-size:0.75rem;color:#888;margin-top:2px;">
-                    <i class="fas fa-leaf"></i> Act now to prevent crop loss. Monitor plants closely and apply appropriate treatment.
-                </div>
-                ${photosHtml}
-            </div>
-        </div>`;
-    }).join('') + `</div>`;
-    banner.style.display = 'block';
 }
-
-function dismissPestAlert(alertId) {
-    try {
-        let dismissed = JSON.parse(sessionStorage.getItem('dismissedAlerts')||'[]');
-        dismissed.push(alertId);
-        sessionStorage.setItem('dismissedAlerts', JSON.stringify(dismissed));
-    } catch(e){}
-    updatePestAlertBanner();
-}
-
-function openLightbox(src, caption) {
-    const lb = document.getElementById('photoLightbox');
-    const img = document.getElementById('photoLightboxImg');
-    const cap = document.getElementById('photoLightboxCaption');
-    if(lb && img) { img.src = src; if(cap) cap.textContent = caption||''; lb.classList.add('open'); }
-}
-function closeLightbox() {
-    document.getElementById('photoLightbox')?.classList.remove('open');
-}
-// Close lightbox on backdrop click
-document.addEventListener('click', e => { if(e.target.id==='photoLightbox') closeLightbox(); });
-
 async function loadPestAlertSettings() {
     const a = await fetchPestAlert();
-    // Populate cards from server data
-    pestAlertCards = [];
-    if(a.alertMessage || a.active) {
-        pestAlertCards.push({
-            id: 'main_alert',
-            active: a.active||false,
-            riskLevel: a.riskLevel||'High',
-            alertMessage: a.alertMessage||'',
-            conditions: a.favorableConditions||'',
-            photos: []
-        });
-    }
-    renderPestAlertCards();
+    const cb = document.getElementById('alertActiveCheckbox');
+    const rl = document.getElementById('alertRiskLevel');
+    const am = document.getElementById('alertMessage');
+    const ac = document.getElementById('alertConditions');
+    if(cb) cb.checked = a.active||false;
+    if(rl) rl.value = a.riskLevel||'High';
+    if(am) am.value = a.alertMessage||'';
+    if(ac) ac.value = a.favorableConditions||'';
 }
-
 async function savePestAlert() {
-    const activeCards = pestAlertCards.filter(c=>c.active&&c.alertMessage.trim());
-    if(pestAlertCards.some(c=>c.active&&!c.alertMessage.trim())) { toast('All active alerts must have a title/message.', true); return; }
+    const active = document.getElementById('alertActiveCheckbox').checked;
+    const riskLevel = document.getElementById('alertRiskLevel').value;
+    const alertMessage = document.getElementById('alertMessage').value.trim();
+    const conditions = document.getElementById('alertConditions').value.trim();
+    if (active && !alertMessage) { toast('Please enter an alert message.', true); return; }
     const btn = document.getElementById('savePestAlertBtn');
     const orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Saving...';
     try {
-        // Save first/primary alert to GAS (existing API)
-        const primary = activeCards[0] || pestAlertCards[0] || {};
         await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-            body:'data='+encodeURIComponent(JSON.stringify({
-                action:'updatePestAlert',
-                active: activeCards.length > 0,
-                riskLevel: primary.riskLevel||'High',
-                alertMessage: primary.alertMessage||'',
-                favorableConditions: primary.conditions||'',
-                username: currentLoggedInUser
-            }))});
-        // Store multi-alert data in sessionStorage for immediate use
-        try { sessionStorage.setItem('multiPestAlerts', JSON.stringify(pestAlertCards)); } catch(e){}
+            body:'data='+encodeURIComponent(JSON.stringify({action:'updatePestAlert',active,riskLevel,alertMessage,favorableConditions:conditions,username:currentLoggedInUser}))});
         const msg = document.getElementById('pestAlertStatusMsg');
-        if(msg) { msg.innerHTML=`<span style="color:green;font-weight:700;">✓ ${pestAlertCards.length} alert(s) saved! ${activeCards.length} active.</span>`; setTimeout(()=>msg.innerHTML='',4000); }
-        toast(`✅ ${activeCards.length} pest alert(s) active.`);
-        logActivity('pest',`Pest alerts updated — ${activeCards.length} active | Alerts: ${activeCards.map(c=>c.alertMessage).join(', ')}`);
-        renderPestAlertCards();
+        if(msg) { msg.innerHTML='<span style="color:green;font-weight:700;">✓ Alert settings saved successfully!</span>'; setTimeout(()=>msg.innerHTML='',3500); }
+        toast('Pest alert settings saved.');
+        logActivity('admin',`Pest alert updated — ${active?'ENABLED':'DISABLED'} | Risk: ${riskLevel}`);
         await updatePestAlertBanner();
-    } catch(e){ toast('Save failed: '+e.message, true); }
+    } catch(e) { toast('Save failed: '+e.message, true); }
     finally { btn.disabled=false; btn.innerHTML=orig; }
 }
-
-async function clearPestAlert() {
-    if(!confirm('Disable and clear all pest alerts?')) return;
-    pestAlertCards = [];
-    renderPestAlertCards();
-    try {
-        await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-            body:'data='+encodeURIComponent(JSON.stringify({action:'updatePestAlert',active:false,riskLevel:'High',alertMessage:'',favorableConditions:'',username:currentLoggedInUser}))});
-    } catch(e){}
-    try { sessionStorage.removeItem('multiPestAlerts'); } catch(e){}
-    const banner = document.getElementById('pestAlertBanner');
-    if(banner) { banner.innerHTML=''; banner.style.display='none'; }
-    const msg = document.getElementById('pestAlertStatusMsg');
-    if(msg) { msg.innerHTML='<span style="color:#888;font-weight:600;">All pest alerts cleared.</span>'; setTimeout(()=>msg.innerHTML='',3000); }
-    toast('Pest alerts cleared.');
-    logActivity('pest','All pest alerts DISABLED and cleared');
+function clearPestAlert() {
+    document.getElementById('alertActiveCheckbox').checked = false;
+    document.getElementById('alertRiskLevel').value = 'High';
+    document.getElementById('alertMessage').value = '';
+    document.getElementById('alertConditions').value = '';
+    savePestAlert();
 }
-
 function loadLateBlight() {
-    addNewPestAlertCard({
-        id: makePestAlertCardId(),
-        active: true,
-        riskLevel: 'High',
-        alertMessage: '⚠️ Late Blight Alert — Phytophthora infestans',
-        conditions: 'Cool nights (10–15°C) and warm humid days create ideal conditions. Check lower leaves and petioles near ground level for first signs: water-soaked lesions that turn brown/black. Act immediately — Late Blight spreads rapidly. Apply copper-based or systemic fungicide. Remove and dispose of infected plant material.',
-        photos: []
-    });
+    document.getElementById('alertActiveCheckbox').checked = true;
+    document.getElementById('alertRiskLevel').value = 'High';
+    document.getElementById('alertMessage').value = '⚠️ Late Blight Alert (Phytophthora infestans)';
+    document.getElementById('alertConditions').value = 'Low temperature + high humidity (prolonged leaf wetness) — Cool, moist conditions favor rapid disease spread. Check lower leaves and petioles near ground level for first signs. Act now to prevent crop loss.';
+    toast('Late Blight preset loaded. Click Save to activate.');
 }
+
 // ==================== ZONE & LOCALITY ====================
 function initZoneHeader() {
     const zones = Object.keys(ZONE_LOCALITIES);
@@ -1994,7 +1614,6 @@ async function login(username, password) {
                 setAdminSectionsVisibility(true);
                 buildYieldFactors('');loadDashboard();loadAdminMemberCount();
                 await loadPestAlertSettings();
-                loadAllUsernamesForSuggestions(); // preload for partial search
             } else {
                 document.getElementById('growerProfileCard').style.display='block';
                 document.getElementById('adminSearchSection').style.display='none';
@@ -2152,121 +1771,28 @@ function _populateEditModal(row, headers, username, isAdmin) {
     if(monthSec)monthSec.style.display=currentStage==='Harvesting'?'block':'none';
 }
 
-// ==================== ADMIN SEARCH (PARTIAL USERNAME) ====================
-// Load all usernames for suggestions
-async function loadAllUsernamesForSuggestions() {
-    try {
-        // Try efficient getGrowerList endpoint first
-        const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getGrowerList&_=${Date.now()}`, 12000);
-        const data = await res.json();
-        if(data.growers && data.growers.length) {
-            allGrowerUsernames = data.growers;
-            return;
-        }
-    } catch(e) { /* fallback below */ }
-    // Fallback: parse from getAllData
-    try {
-        const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getAllData&_=${Date.now()}`, 15000);
-        const data = await res.json();
-        if(data.rows && data.headers) {
-            const hdr = data.headers.map(h=>String(h).toLowerCase());
-            const userCol = hdr.findIndex(h=>h.includes('grower name'));
-            if(userCol !== -1) {
-                const names = new Set();
-                data.rows.forEach(r => { const n = String(r[userCol]||'').trim(); if(n) names.add(n); });
-                allGrowerUsernames = [...names].sort((a,b)=>a.localeCompare(b));
-            }
-        }
-    } catch(e) { console.warn('Could not preload usernames:', e.message); }
-}
-
-function initAdminSearchSuggestions() {
-    const input = document.getElementById('adminSearchInput');
-    const suggestions = document.getElementById('adminSearchSuggestions');
-    if(!input || !suggestions) return;
-    let focusedIdx = -1;
-
-    input.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        focusedIdx = -1;
-        if(!q || q.length < 2) { suggestions.style.display = 'none'; return; }
-        const matches = allGrowerUsernames.filter(u => u.toLowerCase().includes(q));
-        if(!matches.length) { suggestions.style.display = 'none'; return; }
-        suggestions.innerHTML = matches.slice(0,8).map((u,i) => {
-            const idx = u.toLowerCase().indexOf(q);
-            const before = escapeHtml(u.substring(0,idx));
-            const match = escapeHtml(u.substring(idx, idx+q.length));
-            const after = escapeHtml(u.substring(idx+q.length));
-            return `<div class="search-suggestion-item" data-name="${escapeHtml(u)}" tabindex="-1">
-                <i class="fas fa-user" style="color:var(--green-400);font-size:0.8rem;"></i>
-                <span>${before}<span class="search-suggestion-match">${match}</span>${after}</span>
-                <span class="search-suggestion-count">${i===0?'':''}tap to select</span>
-            </div>`;
-        }).join('');
-        suggestions.style.display = 'block';
-        suggestions.querySelectorAll('.search-suggestion-item').forEach(item => {
-            item.addEventListener('click', () => {
-                input.value = item.dataset.name;
-                suggestions.style.display = 'none';
-                adminSearchGrower();
-            });
-        });
-    });
-
-    input.addEventListener('keydown', e => {
-        const items = suggestions.querySelectorAll('.search-suggestion-item');
-        if(suggestions.style.display !== 'block' || !items.length) return;
-        if(e.key === 'ArrowDown') { e.preventDefault(); focusedIdx = Math.min(focusedIdx+1, items.length-1); items.forEach((it,i)=>it.classList.toggle('focused',i===focusedIdx)); }
-        else if(e.key === 'ArrowUp') { e.preventDefault(); focusedIdx = Math.max(focusedIdx-1, 0); items.forEach((it,i)=>it.classList.toggle('focused',i===focusedIdx)); }
-        else if(e.key === 'Enter' && focusedIdx >= 0) { e.preventDefault(); const sel = items[focusedIdx]; if(sel){ input.value = sel.dataset.name; suggestions.style.display='none'; adminSearchGrower(); } }
-        else if(e.key === 'Escape') { suggestions.style.display = 'none'; }
-    });
-
-    document.addEventListener('click', e => {
-        if(!input.contains(e.target) && !suggestions.contains(e.target)) suggestions.style.display = 'none';
-    });
-}
-
+// ==================== ADMIN SEARCH ====================
 async function adminSearchGrower() {
-    const input = document.getElementById('adminSearchInput');
-    const query = input.value.trim();
-    if(!query){toast('Enter a grower username to search.',true);return;}
-    document.getElementById('adminSearchSuggestions').style.display = 'none';
-
+    const username=document.getElementById('adminSearchInput').value.trim();
+    if(!username){toast('Enter a grower username to search.',true);return;}
     const btn=document.getElementById('adminSearchBtn');const origHTML=btn.innerHTML;
     btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Searching...';
-
-    // Try exact match first, then partial
-    let found = false;
     try {
-        const res=await fetchWithTimeout(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(query)}&_=${Date.now()}`,20000);
+        const res=await fetchWithTimeout(`${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}&_=${Date.now()}`,20000);
         if(!res.ok)throw new Error('Server error');const data=await res.json();
-        document.getElementById('adminSearchedUsernameText').textContent=query;
+        document.getElementById('adminSearchedUsernameText').textContent=username;
         document.getElementById('adminSearchResults').style.display='block';
         document.getElementById('adminSearchEmpty').style.display='none';
         document.getElementById('adminLiveSearchWrap').style.display=data.rows?.length?'block':'none';
         if(!data.rows?.length){
-            // Try partial match against known usernames
-            const partials = allGrowerUsernames.filter(u=>u.toLowerCase().includes(query.toLowerCase()));
-            if(partials.length && partials[0].toLowerCase() !== query.toLowerCase()) {
-                document.getElementById('adminSearchGrid').innerHTML = `<div style="padding:1rem;background:#fff8e1;border:1.5px solid #fcd34d;border-radius:1rem;font-size:0.88rem;color:#856404;">
-                    <i class="fas fa-search"></i> No exact match for "<strong>${escapeHtml(query)}</strong>". Did you mean:
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">${partials.slice(0,5).map(p=>`<button onclick="document.getElementById('adminSearchInput').value='${escapeHtml(p)}';adminSearchGrower();" style="background:var(--green-700);color:white;border:none;border-radius:var(--radius-pill);padding:5px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;">${escapeHtml(p)}</button>`).join('')}</div>
-                </div>`;
-                document.getElementById('adminSearchResults').style.display='block';
-                document.getElementById('adminSearchEmpty').style.display='none';
-                document.getElementById('adminMonthlyYieldSection').style.display='none';
-                return;
-            }
             document.getElementById('adminSearchGrid').innerHTML='';
             document.getElementById('adminSearchResults').style.display='none';
             document.getElementById('adminSearchEmpty').style.display='block';
-            document.getElementById('adminMonthlyYieldSection').style.display='none';return;
-        }
+            document.getElementById('adminMonthlyYieldSection').style.display='none';return;}
         document.getElementById('adminSearchRecordCount').textContent=`${data.rows.length} record(s) found`;
-        renderAdminSearchResults(data.rows,data.headers,query);
+        renderAdminSearchResults(data.rows,data.headers,username);
         renderMonthlyYieldVsReference(data.rows,data.headers);
-        logActivity('search',`Admin searched records for grower <strong>${query}</strong>`);
+        logActivity('search',`Admin searched records for grower <strong>${username}</strong>`);
     } catch(e){toast('Search failed: '+e.message,true);}
     finally{btn.disabled=false;btn.innerHTML=origHTML;}
 }
@@ -2607,15 +2133,6 @@ function initAdminLiveFilter(){
 // ==================== EVENT LISTENERS ====================
 document.addEventListener('DOMContentLoaded', () => {
     initZoneHeader();initLiveSearch();initAdminLiveFilter();renderNotifList();
-    renderPestAlertCards();
-
-    // Activity log filters
-    document.getElementById('activityLogFilterInput')?.addEventListener('input', renderActivityLog);
-    document.getElementById('activityLogTypeFilter')?.addEventListener('change', renderActivityLog);
-    document.getElementById('loadActivityLogBtn')?.addEventListener('click', loadAllGrowersActivity);
-
-    // Admin search suggestions
-    initAdminSearchSuggestions();
 
     // Password toggle
     document.getElementById('pwToggle').addEventListener('click',()=>{
@@ -2637,7 +2154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!confirm('Log out of MoHydroponic Smart Tracker?'))return;
         document.getElementById('mainApp').style.display='none';document.getElementById('loginOverlay').style.display='flex';
         document.getElementById('loginUsername').value='';document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='';
-        currentLoggedInUser='';isAdmin=false;dashboardStats=null;activityLog=[];allGrowersActivityLog=[];pestAlertCards=[];allGrowerUsernames=[];currentUserRecords=null;notifList=[];
+        currentLoggedInUser='';isAdmin=false;dashboardStats=null;activityLog=[];currentUserRecords=null;notifList=[];
         window._adminSearchRows=null;window._adminSearchHeaders=null;window._adminSearchUsername=null;
         if(timelineChart){timelineChart.destroy();timelineChart=null;}if(forecastChart){forecastChart.destroy();forecastChart=null;}
         document.getElementById('pestAlertBanner').style.display='none';
@@ -2692,16 +2209,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('reg_zone').value='';document.getElementById('reg_locality').value='';
         document.getElementById('regSuccessMsg').style.display='none';document.getElementById('regErrorMsg').style.display='none';
     });
-    document.getElementById('clearActivityLogBtn')?.addEventListener('click',()=>{
-        activityLog=[];allGrowersActivityLog=[];renderActivityLog();toast('Activity log cleared');
-    });
+    document.getElementById('clearActivityLogBtn')?.addEventListener('click',()=>{activityLog=[];renderActivityLog();toast('Activity log cleared');});
     document.getElementById('loadCompletedCyclesBtn')?.addEventListener('click',loadCompletedCycles);
 
-    // Pest alert buttons (multi-alert)
+    // Pest alert buttons
     document.getElementById('savePestAlertBtn')?.addEventListener('click',savePestAlert);
     document.getElementById('clearPestAlertBtn')?.addEventListener('click',clearPestAlert);
     document.getElementById('presetLateBlight')?.addEventListener('click',loadLateBlight);
-    document.getElementById('addNewAlertBtn')?.addEventListener('click',()=>addNewPestAlertCard());
 
     // Edit modal
     document.getElementById('cancelEditBtn')?.addEventListener('click',()=>document.getElementById('editModalOverlay').style.display='none');
