@@ -1527,7 +1527,7 @@ function buildYieldFactors(crop) {
     grid.innerHTML=relevant.map(f=>`<div class="yield-factor-item" id="yf_${f.id}">
         <div class="yield-factor-header"><input type="checkbox" class="yield-factor-cb" id="cb_${f.id}" onchange="updateFactorSlider('${f.id}')">
         <span class="yield-factor-name">${f.name}</span><span class="yield-factor-type">${f.type}</span></div>
-        <input type="range" class="yield-factor-slider" id="sl_${f.id}" min="0" max="100" value="30" oninput="updateFactorDisplay('${f.id}')" disabled>
+        <input type="range" class="yield-factor-slider" id="sl_${f.id}" min="0" max="100" value="0" oninput="updateFactorDisplay('${f.id}')" disabled>
         <div class="yield-factor-impact" id="imp_${f.id}">Severity: <strong>30%</strong> → Max crop loss: <strong>${Math.round(f.maxImpact*30)}%</strong></div>
     </div>`).join('');
 }
