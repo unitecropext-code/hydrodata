@@ -837,6 +837,15 @@
                             </select>
                         </div>
                         <div class="form-group"><label>Variety</label><select id="yc_variety" onchange="onYieldCalcVarietyChange()"><option value="">-- Select Variety --</option></select></div>
+                        <div class="form-group" id="yc_pepper_color_row" style="display:none;">
+                            <label>🫑 Pepper Colour <span style="font-size:0.7rem;color:#888;">(affects market price)</span></label>
+                            <select id="yc_pepper_color" onchange="onYieldCalcVarietyChange()" style="border:1.5px solid #86efac;">
+                                <option value="">-- Select Colour --</option>
+                                <option value="green">🟢 Green — MUR 150/kg</option>
+                                <option value="red">🔴 Red — MUR 250/kg</option>
+                                <option value="yellow">🟡 Yellow — MUR 250/kg</option>
+                            </select>
+                        </div>
                         <div class="form-group"><label>Greenhouse Area (m²) *</label><input type="number" id="yc_area" step="0.01" min="0" placeholder="e.g. 500"></div>
                         <div class="form-group"><label>Harvest Duration (months)</label><input type="number" id="yc_months" step="0.5" min="1" max="24" value="6"></div>
                     </div>
@@ -955,6 +964,15 @@
                         <div class="form-group" style="margin:0;flex:1;min-width:180px;">
                             <label style="font-size:0.78rem;font-weight:700;color:#6d28d9;">Greenhouse Area (m²)</label>
                             <input type="number" id="ds_area" placeholder="e.g. 500" step="0.01" min="0" style="padding:10px 14px;border-radius:2rem;border:2px solid #c4b5fd;font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;width:100%;">
+                        </div>
+                        <div class="form-group" id="ds_pepper_color_row" style="display:none;margin:0;flex:1;min-width:180px;">
+                            <label style="font-size:0.78rem;font-weight:700;color:#6d28d9;">🫑 Pepper Colour</label>
+                            <select id="ds_pepper_color" style="padding:10px 14px;border-radius:2rem;border:2px solid #86efac;font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;width:100%;background:white;">
+                                <option value="">-- Select Colour --</option>
+                                <option value="green">🟢 Green — MUR 150/kg</option>
+                                <option value="red">🔴 Red — MUR 250/kg</option>
+                                <option value="yellow">🟡 Yellow — MUR 250/kg</option>
+                            </select>
                         </div>
                         <button id="dsAnalyseBtn" class="btn" style="background:linear-gradient(100deg,#6d28d9,#7c3aed);box-shadow:0 4px 12px rgba(109,40,217,0.3);white-space:nowrap;" onclick="runDecisionSupport()">
                             <i class="fas fa-brain" id="dsBtnIcon"></i> <span id="dsBtnText">Analyse Varieties</span>
@@ -1629,16 +1647,38 @@ function setAdminSectionsVisibility(show) {
     const ts=document.getElementById('growingTipsSection');if(ts)ts.style.display=show?'block':'none';
 }
 function getYieldReference(cropName, varietyName) {
-    const c=(cropName||'').toLowerCase().trim(), v=(varietyName||'').toLowerCase().trim();
-    if(c.includes('english cucumber')||c.includes('cucumber')) return {min:32,max:62,unit:'unit/m²',isUnitCrop:true,varietyLabel:'Acylia / Boncanale RZ'};
-    if(c.includes('sweet pepper')) return {min:13.8,max:18.4,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Blocky'};
-    if(c.includes('tomato')) {
-        if(v.includes('salad')) return {min:11.75,max:18.9,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Salad'};
-        if(v.includes('roma')||v.includes('round')) return {min:9.95,max:19.72,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Roma / Round'};
-        if(v.includes('thn')||v.includes('988')) return {min:10.2,max:19.5,unit:'kg/m²',isUnitCrop:false,varietyLabel:'THN 988'};
-        return {min:9.95,max:19.72,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Roma / Round — default'};
+    const c = (cropName  || '').toLowerCase().trim();
+    const v = (varietyName || '').toLowerCase().trim();
+
+    if (c.includes('english cucumber') || c.includes('cucumber'))
+        return { min:32, max:62, unit:'unit/m²', isUnitCrop:true,  varietyLabel:'Acylia / Boncanale RZ', type:'cucumber' };
+    if (c.includes('sweet pepper'))
+        return { min:13.8, max:18.4, unit:'kg/m²', isUnitCrop:false, varietyLabel:'Blocky (Sweet Pepper)', type:'pepper' };
+
+    if (c.includes('tomato')) {
+        // ── Named Salad-type varieties ──────────────────────────────
+        const SALAD_NAMES = ['elpida','valouro','mahitos','byzance'];
+        if (SALAD_NAMES.some(n => v.includes(n)) || v === 'salad')
+            return { min:11.75, max:18.90, unit:'kg/m²', isUnitCrop:false, varietyLabel:'Salad type (Elpida / Valouro / Mahitos / Byzance)', type:'salad' };
+
+        // ── Named Roma-type varieties ───────────────────────────────
+        const ROMA_NAMES = ['thn 988','star 9082','cascade f1','top 2605','top 2607','11-062','fb king','jupiter','star 9064','star 9065','uwezo','zara'];
+        if (ROMA_NAMES.some(n => v.includes(n)) || v === 'roma')
+            return { min:9.95, max:19.72, unit:'kg/m²', isUnitCrop:false, varietyLabel:'Roma type (THN 988 / Star / Cascade / Jupiter …)', type:'roma' };
+
+        // ── Named Round-type variety ────────────────────────────────
+        const ROUND_NAMES = ['ns 501'];
+        if (ROUND_NAMES.some(n => v.includes(n)) || v === 'round')
+            return { min:10.50, max:18.50, unit:'kg/m²', isUnitCrop:false, varietyLabel:'Round type (NS 501)', type:'round' };
+
+        // ── Cherry type ─────────────────────────────────────────────
+        if (v.includes('cherry'))
+            return { min:8.00, max:14.50, unit:'kg/m²', isUnitCrop:false, varietyLabel:'Cherry type', type:'cherry' };
+
+        // ── Default fallback ────────────────────────────────────────
+        return { min:9.95, max:19.72, unit:'kg/m²', isUnitCrop:false, varietyLabel:'Roma / Round (default)', type:'roma' };
     }
-    return {min:0,max:99,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Unknown'};
+    return { min:0, max:99, unit:'kg/m²', isUnitCrop:false, varietyLabel:'Unknown', type:'unknown' };
 }
 
 
@@ -1666,19 +1706,36 @@ function setDSScenario(scenario, btn) {
 
 // ==================== MARKET PRICE REFERENCE (MUR) ====================
 // Indicative farmgate / market prices per unit for Zone E2, Mauritius
-function getMarketPrice(cropName, varietyName) {
-    const c = (cropName  || '').toLowerCase().trim();
-    const v = (varietyName || '').toLowerCase().trim();
-    if (c.includes('english cucumber')) return { price: 15,  label: 'MUR 15/unit', unit: 'unit' };
-    if (c.includes('sweet pepper'))     return { price: 80,  label: 'MUR 80/kg',   unit: 'kg'   };
-    if (c.includes('tomato')) {
-        if (v.includes('cherry'))                       return { price: 90,  label: 'MUR 90/kg',  unit: 'kg' };
-        if (v.includes('salad'))                        return { price: 70,  label: 'MUR 70/kg',  unit: 'kg' };
-        if (v.includes('roma') || v.includes('round'))  return { price: 50,  label: 'MUR 50/kg',  unit: 'kg' };
-        if (v.includes('thn') || v.includes('988'))     return { price: 45,  label: 'MUR 45/kg',  unit: 'kg' };
-        return { price: 50, label: 'MUR 50/kg', unit: 'kg' };
+function getMarketPrice(cropName, varietyName, pepperColour) {
+    const c = (cropName     || '').toLowerCase().trim();
+    const v = (varietyName  || '').toLowerCase().trim();
+    const p = (pepperColour || '').toLowerCase().trim();
+    if (c.includes('english cucumber')) return { price: 15,  label: 'MUR 15/unit',            unit: 'unit' };
+    if (c.includes('sweet pepper')) {
+        // Colour-based pricing
+        if (p === 'red'    || p === 'yellow') return { price: 250, label: `MUR 250/kg (${p.charAt(0).toUpperCase()+p.slice(1)} pepper)`, unit: 'kg' };
+        if (p === 'green')                    return { price: 150, label: 'MUR 150/kg (Green pepper)', unit: 'kg' };
+        return { price: 150, label: 'MUR 150–250/kg (select colour)', unit: 'kg' };
     }
-    return { price: 50, label: 'MUR 50/kg', unit: 'kg' };
+    if (c.includes('tomato')) {
+        // Cherry type — premium
+        if (v.includes('cherry'))
+            return { price: 90, label: 'MUR 90/kg (Cherry)', unit: 'kg' };
+        // Salad-type named varieties — MUR 90/kg
+        const SALAD_NAMES = ['elpida','valouro','mahitos','byzance','salad'];
+        if (SALAD_NAMES.some(n => v.includes(n)))
+            return { price: 90, label: 'MUR 90/kg (Salad type)', unit: 'kg' };
+        // Roma-type named varieties — MUR 100/kg
+        const ROMA_NAMES = ['thn 988','star 9082','cascade f1','top 2605','top 2607','11-062','fb king','jupiter','star 9064','star 9065','uwezo','zara','roma'];
+        if (ROMA_NAMES.some(n => v.includes(n)))
+            return { price: 100, label: 'MUR 100/kg (Roma type)', unit: 'kg' };
+        // Round type — MUR 100/kg
+        const ROUND_NAMES = ['ns 501','round'];
+        if (ROUND_NAMES.some(n => v.includes(n)))
+            return { price: 100, label: 'MUR 100/kg (Round type)', unit: 'kg' };
+        return { price: 100, label: 'MUR 100/kg', unit: 'kg' };
+    }
+    return { price: 100, label: 'MUR 100/kg', unit: 'kg' };
 }
 
 // ==================== REFRESH BUTTON ANIMATION ====================
@@ -2170,7 +2227,20 @@ async function restoreCycleToActive(username, timestamp) {
 }
 
 // ==================== ESTIMATED YIELD CALCULATOR ====================
-const YC_VARIETIES={'Tomato':['Salad','Roma','Round','THN 988','Cherry','Other'],'Sweet Pepper':['Blocky','Bell','Lamuyo','Other'],'English Cucumber':['Acylia','Boncanale RZ','Other']};
+const YC_VARIETIES={'Tomato':['Salad','Roma','Round','Cherry','Other'],'Sweet Pepper':['Blocky','Bell','Lamuyo','Other'],'English Cucumber':['Acylia','Boncanale RZ','Other']};
+
+// Specific named varieties for Final Estimated Yield tab — grouped by type
+const YC_VARIETIES_SPECIFIC = {
+    'Tomato': [
+        { group: '🍅 Salad Type',  varieties: ['Elpida','Valouro','Mahitos','Byzance'] },
+        { group: '🍅 Roma Type',   varieties: ['THN 988','Star 9082 F1','Cascade F1','Top 2605','Top 2607','11-062','FB King','Jupiter','Star 9064','Star 9065','Uwezo','Zara'] },
+        { group: '🍅 Round Type',  varieties: ['NS 501'] },
+        { group: '🍅 Cherry Type', varieties: ['Cherry (any variety)'] },
+        { group: '—',              varieties: ['Other'] },
+    ],
+    'Sweet Pepper':      [{ group: '', varieties: ['Blocky','Bell','Lamuyo','Other'] }],
+    'English Cucumber':  [{ group: '', varieties: ['Acylia','Boncanale RZ','Other'] }],
+};
 function buildYieldFactors(crop) {
     const grid=document.getElementById('yieldFactorsGrid');
     const relevant=crop?YIELD_FACTORS.filter(f=>f.crops.includes(crop)):YIELD_FACTORS;
@@ -2190,6 +2260,7 @@ function updateFactorDisplay(id) {
 }
 function calculateEstimatedYield() {
     const crop=document.getElementById('yc_crop').value;const variety=document.getElementById('yc_variety').value;
+    const pepperColour=(document.getElementById('yc_pepper_color')||{}).value||'';
     const locality=document.getElementById('yc_locality')?.value||'';
     const area=parseFloat(document.getElementById('yc_area').value)||0;const months=parseFloat(document.getElementById('yc_months').value)||6;
     if(!crop){toast('Please select a crop first.',true);return;}if(!area){toast('Please enter the greenhouse area.',true);return;}
@@ -2232,7 +2303,11 @@ function calculateEstimatedYield() {
     const ref=getYieldReference(crop,variety);
     const unit=ref.isUnitCrop?'units':'kg';
     const sourceLabel=baselineSource==='historical'?` <span style="background:#dbeafe;color:#1e40af;font-size:0.72rem;padding:2px 8px;border-radius:1rem;font-weight:700;">📊 Real data: ${locality}</span>`:'';
-    document.getElementById('yr_finalYield').innerHTML=`${finalMin.toFixed(0)} – ${finalMax.toFixed(0)} ${unit}${sourceLabel}`;
+    const mktPriceYC = getMarketPrice(crop, variety, pepperColour);
+    const revenueMin = Math.round(finalMin * mktPriceYC.price);
+    const revenueMax = Math.round(finalMax * mktPriceYC.price);
+    const revLabel   = crop === 'English Cucumber' ? '' : `<div style="font-size:0.82rem;color:#5b21b6;margin-top:0.3rem;">💰 Est. revenue: <strong>MUR ${revenueMin.toLocaleString()} – ${revenueMax.toLocaleString()}</strong> <span style="font-size:0.72rem;color:#888;">(${mktPriceYC.label})</span></div>`;
+    document.getElementById('yr_finalYield').innerHTML=`${finalMin.toFixed(0)} – ${finalMax.toFixed(0)} ${unit}${sourceLabel}${revLabel}`;
     document.getElementById('yr_range').textContent=`Over ${months} month(s) | Area: ${area} m² | Variety: ${variety||ref.varietyLabel}${locality?' | Locality: '+locality:''}`;
     document.getElementById('yr_factorsSummary').textContent=activeFactors.length?`Limiting factors: ${activeFactors.map(f=>f.name).join(', ')} | Combined crop loss: ~${totalLossPct}%`:'No limiting factors — base expected yield.';
     const rb=document.getElementById('yr_riskBadge');rb.textContent=risk;rb.className=`yr-risk ${riskCls}`;
@@ -2275,7 +2350,7 @@ function onYieldCalcVarietyChange() {
         const ref = getYieldReference(crop, variety);
         const info = document.getElementById('yc_baseYieldInfo');
         const infoText = document.getElementById('yc_baseYieldText');
-        if (ref) { infoText.textContent = ref.min + ' – ' + ref.max + ' ' + ref.unit + ' per harvest cycle (' + ref.varietyLabel + ')'; info.style.display = 'block'; }
+        if (ref) { infoText.innerHTML = `<strong>${ref.min} – ${ref.max} ${ref.unit}</strong> per harvest cycle &nbsp;·&nbsp; <span style="color:#6d28d9;font-weight:600;">${ref.varietyLabel}</span>`; info.style.display = 'block'; }
     }
     updateYieldCalcBaselineFromLocality(locality, crop, variety);
 }
@@ -2305,11 +2380,26 @@ function onYieldCalcCropChange() {
     const crop = document.getElementById('yc_crop').value;
     const varSel = document.getElementById('yc_variety');
     varSel.innerHTML = '<option value="">-- Select Variety --</option>';
-    if (crop && YC_VARIETIES[crop]) YC_VARIETIES[crop].forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; varSel.appendChild(o); });
+    if (crop && YC_VARIETIES_SPECIFIC[crop]) {
+        YC_VARIETIES_SPECIFIC[crop].forEach(grp => {
+            if (grp.group && grp.group !== '—') {
+                const og = document.createElement('optgroup');
+                og.label = grp.group;
+                grp.varieties.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; og.appendChild(o); });
+                varSel.appendChild(og);
+            } else {
+                grp.varieties.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; varSel.appendChild(o); });
+            }
+        });
+    }
     const ref = crop ? getYieldReference(crop, '') : null;
     const info = document.getElementById('yc_baseYieldInfo'); const infoText = document.getElementById('yc_baseYieldText');
-    if (ref && crop) { infoText.textContent = `${ref.min} – ${ref.max} ${ref.unit} per harvest cycle (${ref.varietyLabel})`; info.style.display = 'block'; }
+    if (ref && crop) { infoText.textContent = `Select a variety to see its specific reference range (${ref.min}–${ref.max} ${ref.unit} depending on type)`; info.style.display = 'block'; }
     else info.style.display = 'none';
+    // Show pepper colour selector only for Sweet Pepper
+    const pepperRow = document.getElementById('yc_pepper_color_row');
+    if (pepperRow) pepperRow.style.display = (crop === 'Sweet Pepper') ? 'block' : 'none';
+    if (crop !== 'Sweet Pepper') { const pc = document.getElementById('yc_pepper_color'); if (pc) pc.value = ''; }
     buildYieldFactors(crop); document.getElementById('yieldResultBox').style.display = 'none';
     document.getElementById('yc_localityBaselineInfo').style.display = 'none';
 }
@@ -2438,6 +2528,10 @@ function initDecisionSupportLocality() {
 function onDSLocalityChange() { /* triggers re-analyse if already run */ }
 function onDSCropChange() {
     const crop = document.getElementById('ds_crop').value;
+    // Show pepper colour selector only for Sweet Pepper
+    const pepperRow = document.getElementById('ds_pepper_color_row');
+    if (pepperRow) pepperRow.style.display = (crop === 'Sweet Pepper') ? 'flex' : 'none';
+    if (crop !== 'Sweet Pepper') { const pc = document.getElementById('ds_pepper_color'); if (pc) pc.value = ''; }
     buildDSFactorPanel(crop);
 }
 
@@ -2535,6 +2629,8 @@ async function runDecisionSupport() {
     const varieties          = YC_VARIETIES[crop] || [];
     const localRisks         = DS_LOCAL_RISKS[locality] || {};
     const hasPerformanceData = yieldCalcPerformanceCache && yieldCalcPerformanceCache.length > 0;
+    const pepperColourEl     = document.getElementById('ds_pepper_color');
+    const pepperColour       = pepperColourEl ? pepperColourEl.value : '';
 
     // User-selected additional limiting factors from the panel
     const userFactors = getDSActiveFactors(crop);
@@ -2588,7 +2684,7 @@ async function runDecisionSupport() {
         const adjustedYield = baseline * survivalRate;
         const lossPercent   = Math.round((1 - survivalRate) * 100);
         const totalForArea  = area > 0 ? adjustedYield * area : null;
-        const mktPrice = getMarketPrice(crop, variety);
+        const mktPrice = getMarketPrice(crop, variety, pepperColour);
         const priceOverrideEl = document.getElementById('ds_price_override');
         const priceOverride = priceOverrideEl ? parseFloat(priceOverrideEl.value) : 0;
         const effectivePrice = priceOverride > 0 ? priceOverride : mktPrice.price;
@@ -2735,12 +2831,12 @@ async function runDecisionSupport() {
     html += `</div>
     <div style="margin-top:1rem;background:#f8f8ff;border:1px solid #e0d9f7;border-radius:1rem;padding:0.9rem 1.1rem;font-size:0.78rem;color:#555;line-height:1.7;">
         <div style="font-weight:800;color:#6d28d9;margin-bottom:0.4rem;font-size:0.82rem;"><i class="fas fa-info-circle"></i> How figures are calculated</div>
-        <div><strong>Baseline yield (kg/m²):</strong> ${hasPerformanceData ? 'Uses real cycle yield from your Variety Performance records when available for the selected locality &amp; variety, otherwise falls back to the published reference midpoint.' : 'Midpoint of published reference range (e.g. Tomato Salad: Pessimistic=min, Moderate=(min+max)÷2, Optimistic=max — e.g. Tomato Salad: 11.75 / 15.33 / 18.90 kg/m²).'}</div>
+        <div><strong>Baseline yield (kg/m²):</strong> ${hasPerformanceData ? 'Uses real cycle yield from your Variety Performance records when available for the selected locality &amp; variety, otherwise falls back to the published reference midpoint.' : 'Midpoint of published reference range (e.g. Tomato Salad: Pessimistic=min, Moderate=(min+max)÷2, Optimistic=max. Reference ranges by type: Salad 11.75–18.90 · Roma 9.95–19.72 · Round 10.50–18.50 · Cherry 8.00–14.50 kg/m²).'}</div>
         <div><strong>Risk-adjusted yield (kg/m²):</strong> Baseline × combined survival rate after applying locality-specific pest/disease pressure and any user-selected limiting factors. Variety genetic resistance reduces effective loss.</div>
         <div><strong>Total yield (kg):</strong> Risk-adjusted yield (kg/m²) × Greenhouse area (m²) — represents expected output for one complete harvest cycle.</div>
         <div><strong>Estimated revenue (MUR):</strong> Total yield × indicative market price. Prices vary by variety:
-            🍅 Salad MUR 70/kg · Roma/Round MUR 50/kg · THN 988 MUR 45/kg · Cherry MUR 90/kg ·
-            🌶️ Sweet Pepper MUR 80/kg · 🥒 Cucumber MUR 15/unit.
+            🍅 Salad MUR 90/kg · Roma/Round/THN 988 MUR 100/kg · Cherry MUR 90/kg ·
+            🌶️ Sweet Pepper: Green MUR 150/kg · Red/Yellow MUR 250/kg · 🥒 Cucumber MUR 15/unit.
             These are indicative farmgate estimates — actual prices depend on market conditions.</div>
         <div style="margin-top:0.3rem;color:#aaa;">Data source: ${hasPerformanceData ? 'Real performance records from your Google Sheet (Harvest stage only) + Zone E2 risk profiles.' : 'Published reference yield data. Load Variety Performance tab for field-calibrated baselines.'}
         ${userFactors.length > 0 ? ' · <strong style="color:#92400e;">' + userFactors.length + ' additional factor(s) applied.</strong>' : ''} Always validate with field scouting before planting decisions.</div>
@@ -3560,4 +3656,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
+</html>
+
 </html>
