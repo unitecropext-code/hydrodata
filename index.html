@@ -1044,123 +1044,139 @@ const YIELD_FACTORS = [
 ];
 
 const GROWING_TIPS = {
+    // --------------------------------------------------------------
+    // TOMATO - Soilless (Coco Coir) under Greenhouse
+    // --------------------------------------------------------------
     "Tomato": {
-        stages: ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"],
-        durations: ["14–21 days","21–35 days","14–21 days","30–45 days","90–120 days"],
-        icons: ["🌱","🌿","🌸","🍅","🧺"],
+        stages: ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"],
+        durations: ["14–21 days", "21–35 days", "14–21 days", "30–45 days", "90–120 days"],
+        icons: ["🌱", "🌿", "🌸", "🍅", "🧺"],
+        system_note: "Coco coir | Greenhouse soilless",
         tips: {
-            "Seedling": { title:"🌱 Tomato — Seedling Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-tint",text:"Keep coco coir buffered (pH 5.5-5.8, EC 1.0-1.2). START WITH HEALTHY, VIGOROUS SEEDLINGS with 2-3 true leaves."},
-                {icon:"fa-thermometer-half",text:"Maintain substrate moisture; avoid waterlogging. Irrigate lightly 2–3×/day."},
-                {icon:"fa-exclamation-triangle",text:"Watch for damping-off (Pythium). Ensure good air circulation; avoid high humidity."}
+            "Seedling": { title: "🌱 Tomato — Seedling Stage (Coco/GH)", ec: "EC: 1.0–1.2 mS/cm | pH: 5.5–5.8", items: [
+                { icon: "fa-tint", text: "Pre-buffer coco coir with Ca/Mg. Start with healthy seedlings (2–3 true leaves)." },
+                { icon: "fa-thermometer-half", text: "Maintain 70–80% substrate moisture. Light irrigations 2–3×/day in greenhouse." },
+                { icon: "fa-exclamation-triangle", text: "Risk: damping-off (Pythium) in humid greenhouse air. Ensure ventilation." }
             ]},
-            "Vegetative": { title:"🌿 Tomato — Vegetative Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-tint",text:"Increase irrigation as canopy expands. Monitor runoff EC and adjust accordingly."},
-                {icon:"fa-flask",text:"Remove lower leaves to improve airflow; Ensure proper disposal of plant wastes."},
-                {icon:"fa-arrows-alt-v",text:"Begin training/trellising. Remove suckers as required. Disinfect pruning shears between rows."},
-                {icon:"fa-bug",text:"Scout for Tuta absoluta and whiteflies; set sticky traps."},
-                {icon:"fa-wind",text:"Ensure air circulation to reduce fungal risk."}
+            "Vegetative": { title: "🌿 Tomato — Vegetative Stage (Coco/GH)", ec: "EC: 1.5–2.0 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-tint", text: "Increase irrigation volume as canopy expands. Check runoff EC daily (target +0.3–0.5 over inflow)." },
+                { icon: "fa-flask", text: "Remove lower leaves for airflow. Dispose of plant waste outside greenhouse." },
+                { icon: "fa-arrows-alt-v", text: "Begin trellising. Remove suckers. Disinfect shears between rows." },
+                { icon: "fa-bug", text: "Scout Tuta absoluta & whiteflies. Use yellow/blue sticky traps in greenhouse." },
+                { icon: "fa-wind", text: "Run fans → reduce fungal risk in dense canopy." }
             ]},
-            "Flowering": { title:"🌸 Tomato — Flowering Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-flask",text:"Check EC and pH; Ensure foliar spray of calcium and boron when 50% flowering is visible."},
-                {icon:"fa-shower",text:"Pollinate by vibrating trusses or using an electric pollinator daily 9am–11am."},
-                {icon:"fa-thermometer-half",text:"Maintain 18–26°C. Above 32°C causes blossom drop. Below 15°C reduces fruit set."},
-                {icon:"fa-exclamation-triangle",text:"Monitor for Pseudomonas corrugata on stems and Thrips in flowers."},
-                {icon:"fa-tint",text:"Avoid water stress — inconsistent irrigation causes Blossom End Rot."},
-                {icon:"fa-leaf",text:"Remove lower leaves below first flower cluster to improve light penetration."}
+            "Flowering": { title: "🌸 Tomato — Flowering Stage (Coco/GH)", ec: "EC: 2.0–2.5 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-flask", text: "Foliar Ca + B at 50% flowering. Coco coir can bind Ca → monitor closely." },
+                { icon: "fa-shower", text: "Pollinate daily 9–11am via vibrating trusses (electric pollinator)." },
+                { icon: "fa-thermometer-half", text: "Greenhouse temp: 18–26°C. >32°C = blossom drop; <15°C = poor fruit set." },
+                { icon: "fa-exclamation-triangle", text: "Monitor for Pseudomonas corrugata (stem) and thrips (flowers)." },
+                { icon: "fa-tint", text: "Avoid water stress in coco — irregular irrigation = Blossom End Rot." },
+                { icon: "fa-leaf", text: "Remove leaves below first flower cluster → light & air." }
             ]},
-            "Fruiting": { title:"🍅 Tomato — Fruiting Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-flask",text:"Ensure adequate Calcium against Blossom End Rot."},
-                {icon:"fa-tint",text:"Consistent daily irrigation critical during fruit fill. Irregular watering = cracking."},
-                {icon:"fa-bug",text:"Continue scouting thrips and mites."},
-                {icon:"fa-leaf",text:"Defoliate lower leaves progressively; keep 10–12 healthy leaves above the highest truss."},
-                {icon:"fa-balance-scale",text:"Thin fruit clusters to 4–6 per truss for larger, uniform fruit size."}
+            "Fruiting": { title: "🍅 Tomato — Fruiting Stage (Coco/GH)", ec: "EC: 2.2–2.8 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-flask", text: "Boost Ca (keep pH <6.0 in coco) to prevent Blossom End Rot." },
+                { icon: "fa-tint", text: "Critical: consistent daily irrigation in coco. Irregular = fruit cracking." },
+                { icon: "fa-bug", text: "Continue thrips & spider mite scouting." },
+                { icon: "fa-leaf", text: "Gradual lower-leaf removal. Keep 10–12 healthy leaves above highest truss." },
+                { icon: "fa-balance-scale", text: "Thin fruit to 4–6 per truss → larger, uniform size." }
             ]},
-            "Harvesting": { title:"🧺 Tomato — Harvesting Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-calendar-check",text:"Harvest at breaker/turning stage; Use appropriate crates for storage."},
-                {icon:"fa-flask",text:"Reduce EC slightly at end of cycle to stress the plant into fruit ripening."},
-                {icon:"fa-recycle",text:"Clean and sanitize greenhouse between cycles."},
-                {icon:"fa-chart-line",text:"Record total yield per GH for cycle analysis and efficiency comparison."},
-                {icon:"fa-clipboard-check",text:"Ensure record keeping during the crop cycle."}
+            "Harvesting": { title: "🧺 Tomato — Harvesting Stage (Coco/GH)", ec: "EC: 1.8–2.2 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-calendar-check", text: "Harvest at breaker/turning stage. Use clean, vented crates." },
+                { icon: "fa-flask", text: "Reduce EC slightly to stress plants → uniform ripening." },
+                { icon: "fa-recycle", text: "Post-harvest: remove coir slabs, sanitize greenhouse gutters & drippers." },
+                { icon: "fa-chart-line", text: "Record kg/m² yield per greenhouse cycle." },
+                { icon: "fa-clipboard-check", text: "Log EC/pH/runoff data for next coco cycle." }
             ]}
         }
     },
+
+    // --------------------------------------------------------------
+    // SWEET PEPPER - Soilless (Coco Coir) under Greenhouse
+    // --------------------------------------------------------------
     "Sweet Pepper": {
-        stages: ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"],
-        durations: ["14–21 days","21–35 days","21–28 days","30–45 days","90–120 days"],
-        icons: ["🌱","🌿","🌸","🌶️","🧺"],
+        stages: ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"],
+        durations: ["14–21 days", "21–35 days", "21–28 days", "30–45 days", "90–120 days"],
+        icons: ["🌱", "🌿", "🌸", "🌶️", "🧺"],
+        system_note: "Coco coir | Greenhouse soilless",
         tips: {
-            "Seedling": { title:"🌱 Sweet Pepper — Seedling Stage", ec:"EC: xxx | pH: xxxx", items:[
-                {icon:"fa-flask",text:"START WITH HEALTHY, VIGOROUS SEEDLINGS with 2-3 true leaves."},
-                {icon:"fa-tint",text:"Water lightly but consistently. Avoid saturated media which promotes root rot."},
-                {icon:"fa-ruler-vertical",text:"Transplant at 15–20cm height (6–8 weeks from sowing)."},
-                {icon:"fa-bug",text:"Inspect for thrips at this stage."}
+            "Seedling": { title: "🌱 Sweet Pepper — Seedling Stage (Coco/GH)", ec: "EC: 0.8–1.0 mS/cm | pH: 5.5–5.8", items: [
+                { icon: "fa-flask", text: "Start with vigorous seedlings, 2–3 true leaves. Use low-EC coco." },
+                { icon: "fa-tint", text: "Light but consistent moisture. Avoid saturated coco → root rot risk." },
+                { icon: "fa-ruler-vertical", text: "Transplant at 15–20cm height (6–8 weeks)." },
+                { icon: "fa-bug", text: "Inspect for thrips on young leaves in greenhouse." }
             ]},
-            "Vegetative": { title:"🌿 Sweet Pepper — Vegetative Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-flask",text:"Check EC and pH; Avoid excessive N which delays fruit set."},
-                {icon:"fa-arrows-alt-v",text:"Train to 2-stem or 3-stem V-shape. Remove all shoots below the first fork."},
-                {icon:"fa-wind",text:"Good ventilation essential. Sweet peppers are highly susceptible to Botrytis."},
-                {icon:"fa-tint",text:"Monitor irrigation frequency — sweet peppers prefer slightly drier conditions."}
+            "Vegetative": { title: "🌿 Sweet Pepper — Vegetative Stage (Coco/GH)", ec: "EC: 1.2–1.6 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-flask", text: "Avoid excessive N in coco → delays fruit set. Balanced Ca/Mg important." },
+                { icon: "fa-arrows-alt-v", text: "Train to 2- or 3-stem V-shape. Remove shoots below first fork." },
+                { icon: "fa-wind", text: "Excellent ventilation in greenhouse → sweet peppers susceptible to Botrytis." },
+                { icon: "fa-tint", text: "Allow coco to dry slightly between irrigations. Peppers dislike constant saturation." }
             ]},
-            "Flowering": { title:"🌸 Sweet Pepper — Flowering Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-flask",text:"Check EC; Boost K and Ca for cell wall strength."},
-                {icon:"fa-sun",text:"High light (≥ 300 µmol/m²/s) is critical for fruit set."},
-                {icon:"fa-shower",text:"Gentle vibration pollination daily improves fruit set."},
-                {icon:"fa-exclamation-triangle",text:"Watch for Pseudomonas corrugata — wilting of young shoots."},
-                {icon:"fa-balance-scale",text:"Remove early 'king fruits' to encourage uniform lateral fruiting."}
+            "Flowering": { title: "🌸 Sweet Pepper — Flowering Stage (Coco/GH)", ec: "EC: 1.8–2.2 mS/cm | pH: 5.9–6.1", items: [
+                { icon: "fa-flask", text: "Boost K and Ca in coco solution → cell wall strength, reduce BER." },
+                { icon: "fa-sun", text: "High light ≥300 µmol/m²/s critical. Supplement if needed in greenhouse." },
+                { icon: "fa-shower", text: "Gentle vibration pollination daily improves fruit set." },
+                { icon: "fa-exclamation-triangle", text: "Watch for Pseudomonas corrugata (wilting shoots)." },
+                { icon: "fa-balance-scale", text: "Remove early 'king fruits' → encourages uniform lateral fruiting." }
             ]},
-            "Fruiting": { title:"🌶️ Sweet Pepper — Fruiting Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-flask",text:"Check EC; High K for colour development and wall thickness."},
-                {icon:"fa-tint",text:"Consistent irrigation prevents Blossom End Rot."},
-                {icon:"fa-leaf",text:"Remove old leaves progressively."},
-                {icon:"fa-thermometer-half",text:"High temperatures cause pale/thin-walled fruit. Use shading if needed."}
+            "Fruiting": { title: "🌶️ Sweet Pepper — Fruiting Stage (Coco/GH)", ec: "EC: 2.0–2.5 mS/cm | pH: 5.9–6.1", items: [
+                { icon: "fa-flask", text: "High K for color development & wall thickness. Maintain Ca:K ratio ~1:3." },
+                { icon: "fa-tint", text: "Consistent irrigation in coco prevents Blossom End Rot." },
+                { icon: "fa-leaf", text: "Remove old lower leaves progressively for airflow." },
+                { icon: "fa-thermometer-half", text: "High greenhouse temps → pale, thin-walled fruit. Use shade cloth above 30°C." }
             ]},
-            "Harvesting": { title:"🧺 Sweet Pepper — Harvesting Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-calendar-check",text:"Harvest green at full size or wait 3–4 more weeks for colour."},
-                {icon:"fa-cut",text:"Cut with scissors — never pull."},
-                {icon:"fa-chart-line",text:"Ensure record keeping."}
+            "Harvesting": { title: "🧺 Sweet Pepper — Harvesting Stage (Coco/GH)", ec: "EC: 1.6–2.0 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-calendar-check", text: "Harvest green at full size or wait 3–4 weeks for color (red/yellow)." },
+                { icon: "fa-cut", text: "Cut with scissors — never pull (damages plant & coco root zone)." },
+                { icon: "fa-chart-line", text: "Record marketable fruit weight per m²." }
             ]}
         }
     },
+
+    // --------------------------------------------------------------
+    // ENGLISH CUCUMBER - Soilless (Coco Coir) under Greenhouse
+    // --------------------------------------------------------------
     "English Cucumber": {
-        stages: ["Seedling","Vegetative","Flowering","Fruiting","Harvesting"],
-        durations: ["7–10 days","14–21 days","10–14 days","21–30 days","60–90 days"],
-        icons: ["🌱","🌿","🌸","🥒","🧺"],
+        stages: ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"],
+        durations: ["7–10 days", "14–21 days", "10–14 days", "21–30 days", "60–90 days"],
+        icons: ["🌱", "🌿", "🌸", "🥒", "🧺"],
+        system_note: "Coco coir | Greenhouse soilless",
         tips: {
-            "Seedling": { title:"🌱 English Cucumber — Seedling Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-thermometer-half",text:"Optimal germination: 25–28°C. Very sensitive to cold."},
-                {icon:"fa-tint",text:"Keep substrate moist. Cucumbers have high water demand throughout growth."},
-                {icon:"fa-ruler-vertical",text:"Transplant at 10–15cm (2-3 true leaves)."},
-                {icon:"fa-sun",text:"Cucumbers need high light intensity."},
-                {icon:"fa-exclamation-triangle",text:"Watch for bacterial or fungal diseases."}
+            "Seedling": { title: "🌱 English Cucumber — Seedling Stage (Coco/GH)", ec: "EC: 0.8–1.0 mS/cm | pH: 5.5–5.8", items: [
+                { icon: "fa-thermometer-half", text: "Germination 25–28°C. Very cold-sensitive. Warm greenhouse only." },
+                { icon: "fa-tint", text: "Keep coco moist at all times. Cucumbers have high water demand from day one." },
+                { icon: "fa-ruler-vertical", text: "Transplant at 10–15cm (2–3 true leaves) into final coir slab/bag." },
+                { icon: "fa-sun", text: "Requires high light intensity in greenhouse; supplement if <200 µmol." },
+                { icon: "fa-exclamation-triangle", text: "Watch for guttation-related fungal issues in humid greenhouse nights." }
             ]},
-            "Vegetative": { title:"🌿 English Cucumber — Vegetative Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-arrows-alt-v",text:"Set up vertical trellis (min 2.5m) and guide main stem daily."},
-                {icon:"fa-flask",text:"Higher N-K balance during leaf canopy expansion."},
-                {icon:"fa-cut",text:"Remove all lateral shoots and tendrils below 50cm."},
-                {icon:"fa-wind",text:"High ventilation critical against powdery mildew."},
-                {icon:"fa-tint",text:"Irrigate frequently (every 1-2h in hot conditions)."}
+            "Vegetative": { title: "🌿 English Cucumber — Vegetative Stage (Coco/GH)", ec: "EC: 1.4–1.8 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-arrows-alt-v", text: "Set up vertical trellis ≥2.5m. Guide main stem daily in greenhouse." },
+                { icon: "fa-flask", text: "Higher N-K ratio during leaf expansion in coco." },
+                { icon: "fa-cut", text: "Remove all lateral shoots & tendrils below 50cm." },
+                { icon: "fa-wind", text: "High ventilation critical against powdery mildew (common in greenhouse coco crops)." },
+                { icon: "fa-tint", text: "Irrigate frequently (every 1–2h in hot conditions). Coco must never dry." }
             ]},
-            "Flowering": { title:"🌸 English Cucumber — Flowering Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-bug",text:"Spider mites and thrips are the biggest threat at this stage."}
+            "Flowering": { title: "🌸 English Cucumber — Flowering Stage (Coco/GH)", ec: "EC: 1.8–2.2 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-bug", text: "Spider mites & thrips = biggest threat. Ensure regular scouting." },
+                { icon: "fa-flask", text: "Ensure adequate B and Ca for flower retention in coco medium." },
+                { icon: "fa-tint", text: "Do not let coco dry during flowering → poor fruit set." }
             ]},
-            "Fruiting": { title:"🥒 English Cucumber — Fruiting Stage", ec:"EC: xxx | pH: xxx", items:[
-                {icon:"fa-flask",text:"Boost K and Ca during rapid fruit fill."},
-                {icon:"fa-tint",text:"Maximum water demand. Irrigate up to 10–14 times/day in summer."},
-                {icon:"fa-calendar",text:"Cucumbers grow fast — check fruit daily."},
-                {icon:"fa-bug",text:"Whitefly and thrips pressure peaks during fruiting."},
-                {icon:"fa-leaf",text:"Continue defoliation every 7–10 days."},
-                {icon:"fa-balance-scale",text:"Limit 2–3 fruits per node for high-quality cucumbers."}
+            "Fruiting": { title: "🥒 English Cucumber — Fruiting Stage (Coco/GH)", ec: "EC: 2.0–2.5 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-flask", text: "Boost K and Ca during rapid fruit fill. Coco coir may need extra Ca supplementation." },
+                { icon: "fa-tint", text: "Maximum water demand: 10–14 irrigations/day in summer greenhouse." },
+                { icon: "fa-calendar", text: "Fruit grows fast → check daily. Overly mature fruit stops production." },
+                { icon: "fa-bug", text: "Whitefly & thrips peak during fruiting. Use biological control in coco." },
+                { icon: "fa-leaf", text: "Defoliate every 7–10 days. Remove old leaves up to fruiting zone." },
+                { icon: "fa-balance-scale", text: "Limit 2–3 fruits per node for high-quality long English types." }
             ]},
-            "Harvesting": { title:"🧺 English Cucumber — Harvesting Stage", ec:"EC:xxx | pH: xxx", items:[
-                {icon:"fa-calendar-check",text:"Harvest at 25–35cm length. Harvest every 2–3 days."},
-                {icon:"fa-cut",text:"Cut with a clean knife. Leave 2–3cm stalk attached."}
+            "Harvesting": { title: "🧺 English Cucumber — Harvesting Stage (Coco/GH)", ec: "EC: 1.6–2.0 mS/cm | pH: 5.8–6.0", items: [
+                { icon: "fa-calendar-check", text: "Harvest at 25–35cm length. Every 2–3 days in high season." },
+                { icon: "fa-cut", text: "Cut with clean knife. Leave 2–3cm stalk attached. Don't twist." },
+                { icon: "fa-chart-line", text: "Record number of marketable fruit per plant per week." }
             ]}
         }
     }
 };
-
-// ==================== STATE ====================
+      // ==================== STATE ====================
 let currentZone = "E2";
 let savedGreenhouses = [];
 let adminSavedGreenhouses = [];
