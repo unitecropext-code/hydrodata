@@ -508,6 +508,35 @@
         .photo-preview-remove { position:absolute; top:-6px; right:-6px; background:#c0392b; color:white; border:none; border-radius:50%; width:20px; height:20px; font-size:0.65rem; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:'Outfit',sans-serif; }
         .photo-upload-label { font-size:0.82rem; color:#888; margin-top:4px; }
 
+
+        /* === Decision Support — Limiting Factors Panel === */
+        .ds-factors-panel { background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fcd34d;border-radius:var(--radius-lg);padding:1.1rem 1.2rem;margin-bottom:1.2rem; }
+        .ds-factors-title { font-size:0.92rem;font-weight:800;color:#78350f;margin-bottom:0.8rem;display:flex;align-items:center;gap:8px; }
+        .ds-factor-grid { display:grid;grid-template-columns:1fr;gap:0.5rem;margin-bottom:0.8rem; }
+        @media(min-width:600px){ .ds-factor-grid { grid-template-columns:repeat(2,1fr); } }
+        @media(min-width:960px){ .ds-factor-grid { grid-template-columns:repeat(3,1fr); } }
+        .ds-factor-item { background:white;border:1.5px solid #fde68a;border-radius:0.9rem;padding:0.7rem 0.8rem;display:flex;flex-direction:column;gap:0.3rem; }
+        .ds-factor-header { display:flex;align-items:center;gap:8px; }
+        .ds-factor-cb { width:15px;height:15px;cursor:pointer;accent-color:#d97706;flex-shrink:0; }
+        .ds-factor-name { font-weight:700;font-size:0.82rem;color:#333;flex:1; }
+        .ds-factor-type { font-size:0.65rem;font-weight:600;background:#fde68a;color:#78350f;border-radius:0.4rem;padding:1px 5px;white-space:nowrap; }
+        .ds-factor-slider { width:100%;accent-color:#d97706;margin-top:0.15rem;cursor:pointer; }
+        .ds-factor-impact { font-size:0.72rem;color:#888; }
+        .ds-factors-note { font-size:0.75rem;color:#92400e;background:#fef9c3;border:1px solid #fde68a;border-radius:0.6rem;padding:0.4rem 0.8rem;margin-top:0.6rem; }
+        /* DS output enhancements */
+        .ds-factor-breakdown { margin-top:0.55rem;display:flex;flex-direction:column;gap:3px; }
+        .ds-factor-row { display:flex;align-items:center;justify-content:space-between;font-size:0.72rem;padding:3px 8px;border-radius:0.5rem;gap:6px; }
+        .ds-factor-row.loss { background:#fee2e2;color:#7f1d1d; }
+        .ds-factor-row.neutral { background:#f3f4f6;color:#6b7280; }
+        .ds-factor-row.resisted { background:#d1fae5;color:#065f46; }
+        .ds-factor-row-name { font-weight:700;flex:1; }
+        .ds-factor-row-val { font-weight:900;white-space:nowrap; }
+        .ds-summary-bar { display:flex;align-items:center;gap:8px;margin-top:0.6rem;flex-wrap:wrap; }
+        .ds-summary-chip { border-radius:var(--radius-pill);padding:3px 12px;font-size:0.75rem;font-weight:700; }
+        .ds-chip-loss { background:#fee2e2;color:#7f1d1d; }
+        .ds-chip-safe { background:#d1fae5;color:#065f46; }
+        .ds-chip-mod  { background:#fef3c7;color:#92400e; }
+
         .hidden { display: none !important; }
         /* Variety Performance table */
         #vpTable td { vertical-align:middle; }
@@ -837,7 +866,7 @@
                 <div class="register-grower-title"><i class="fas fa-seedling" style="color:var(--green-600);"></i> Variety Performance by Locality <span class="admin-badge" style="background:var(--green-700);">ZONE E2</span></div>
                 <div style="background:linear-gradient(135deg,#f0faf2,#e4f7e6);border:1.5px solid var(--green-200);border-radius:var(--radius-lg);padding:1.2rem;margin-bottom:1rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1rem;">
-                        <div style="font-size:0.88rem;color:#555;">Pull live data from the Google Sheet to see how each variety performs across localities in Zone E2.</div>
+                        
                         <button id="loadVariancePerfBtn" class="btn" onclick="loadVarietyPerformanceData()">
                             <i class="fas fa-cloud-download-alt" id="vpBtnIcon"></i> <span id="vpBtnText">Load Performance Data</span>
                         </button>
@@ -877,7 +906,7 @@
                 <div id="vpTableWrap" style="display:none;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;flex-wrap:wrap;gap:8px;">
                         <span id="vpRowCount" style="font-size:0.8rem;color:#888;font-weight:600;"></span>
-                        <span style="font-size:0.75rem;color:#aaa;">Data from active & completed cycles in Sheet1</span>
+                        <span style="font-size:0.75rem;color:#aaa;">Data from Active &amp; Completed cycles</span>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table" id="vpTable" style="min-width:700px;">
@@ -935,6 +964,15 @@
                 <div id="dsLoadDataRow" style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--radius-lg);padding:0.8rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;font-size:0.85rem;color:#78350f;">
                     <i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i>
                     <span>Variety performance data not loaded. <strong style="cursor:pointer;text-decoration:underline;color:#d97706;" onclick="loadVarietyPerformanceData(true)">Load it now</strong> for real baseline yields. Calculator will use static reference data otherwise.</span>
+                </div>
+                <!-- DS YIELD LIMITING FACTORS -->
+                <div class="ds-factors-panel" id="dsFactorsPanel" style="display:none;">
+                    <div class="ds-factors-title">
+                        <i class="fas fa-bug" style="color:#d97706;"></i> Yield Limiting Factors
+                        <span style="font-size:0.72rem;font-weight:500;color:#92400e;margin-left:4px;">(optional — tick to apply to the analysis)</span>
+                    </div>
+                    <div class="ds-factor-grid" id="dsFactorGrid"></div>
+                    <div class="ds-factors-note"><i class="fas fa-info-circle"></i> Factors are applied on top of locality risk profile. Combined effect multiplies down with diminishing returns — same as the Final Estimated Yield calculator.</div>
                 </div>
                 <div id="dsOutput" style="display:none;">
                     <!-- Filled by JS -->
@@ -1160,7 +1198,7 @@
 
 <script>
 // ==================== CONFIG ====================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWxkEnM-uNKhh5iLiIaH5M0JS6KKket64o3aSNxRQYqx_uqGDcRi0ubDOcHjkLMnk2Iw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwITP9IMnKQ6EuUOok6gEGGjK5DMT99aPlVt7AqtMi8l5UsxHXBtvBCUqVKCDf-djP8kw/exec';
 
 // Admin usernames (case-insensitive). webadmin1 and webadmin2 are also allowed.
 // The backend determines isAdmin via the users sheet Role column.
@@ -1560,7 +1598,7 @@ function getYieldReference(cropName, varietyName) {
         if(v.includes('salad')) return {min:11.75,max:18.9,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Salad'};
         if(v.includes('roma')||v.includes('round')) return {min:9.95,max:19.72,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Roma / Round'};
         if(v.includes('thn')||v.includes('988')) return {min:10.2,max:19.5,unit:'kg/m²',isUnitCrop:false,varietyLabel:'THN 988'};
-        return {min:9.95,max:19.72,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Roma / Round (default)'};
+        return {min:9.95,max:19.72,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Roma / Round — default'};
     }
     return {min:0,max:99,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Unknown'};
 }
@@ -2154,6 +2192,13 @@ function onYieldCalcVarietyChange() {
     const locality = document.getElementById('yc_locality').value;
     const crop = document.getElementById('yc_crop').value;
     const variety = document.getElementById('yc_variety').value;
+    // Update base yield reference when variety changes
+    if (crop) {
+        const ref = getYieldReference(crop, variety);
+        const info = document.getElementById('yc_baseYieldInfo');
+        const infoText = document.getElementById('yc_baseYieldText');
+        if (ref) { infoText.textContent = ref.min + ' – ' + ref.max + ' ' + ref.unit + ' per harvest cycle (' + ref.varietyLabel + ')'; info.style.display = 'block'; }
+    }
     updateYieldCalcBaselineFromLocality(locality, crop, variety);
 }
 
@@ -2281,8 +2326,9 @@ function renderVarietyPerfTable(rows) {
         const perfColor = perfPct >= 70 ? '#22c55e' : perfPct >= 40 ? '#f59e0b' : '#ef4444';
         const perfLabel = perfPct >= 70 ? 'High' : perfPct >= 40 ? 'Average' : 'Low';
         const icon = cropIcons[r.crop] || '🌱';
-        const avgYield = r.avgMonthlyYield > 0 ? r.avgMonthlyYield.toFixed(2) : '—';
-        const cycleYield = r.cycleYield > 0 ? r.cycleYield.toFixed(1) : '—';
+        const yieldUnit = r.crop === 'English Cucumber' ? 'unit/m²' : 'kg/m²';
+        const avgYield = r.avgMonthlyYield > 0 ? r.avgMonthlyYield.toFixed(2) + ' ' + yieldUnit : '—';
+        const cycleYield = r.cycleYield > 0 ? r.cycleYield.toFixed(1) + ' ' + yieldUnit : '—';
         const area = r.area > 0 ? r.area.toFixed(0) : '—';
         return `<tr>
             <td style="font-weight:700;color:var(--green-800);">${r.locality || '—'}</td>
@@ -2312,7 +2358,63 @@ function initDecisionSupportLocality() {
 }
 
 function onDSLocalityChange() { /* triggers re-analyse if already run */ }
-function onDSCropChange() { /* triggers re-analyse if already run */ }
+function onDSCropChange() {
+    const crop = document.getElementById('ds_crop').value;
+    buildDSFactorPanel(crop);
+}
+
+function buildDSFactorPanel(crop) {
+    const panel = document.getElementById('dsFactorsPanel');
+    const grid  = document.getElementById('dsFactorGrid');
+    if (!panel || !grid) return;
+    if (!crop) { panel.style.display = 'none'; return; }
+    const relevant = YIELD_FACTORS.filter(f => f.crops.includes(crop));
+    grid.innerHTML = relevant.map(f => `
+        <div class="ds-factor-item" id="dsf_${f.id}">
+            <div class="ds-factor-header">
+                <input type="checkbox" class="ds-factor-cb" id="dscb_${f.id}" onchange="updateDSFactorSlider('${f.id}')">
+                <span class="ds-factor-name">${f.name}</span>
+                <span class="ds-factor-type">${f.type}</span>
+            </div>
+            <input type="range" class="ds-factor-slider" id="dssl_${f.id}" min="0" max="100" value="30"
+                   oninput="updateDSFactorDisplay('${f.id}')" disabled>
+            <div class="ds-factor-impact" id="dsimp_${f.id}">Severity: <strong>30%</strong> — max loss: <strong>${Math.round(f.maxImpact * 30)}%</strong></div>
+        </div>`).join('');
+    panel.style.display = relevant.length ? 'block' : 'none';
+}
+
+function updateDSFactorSlider(id) {
+    const cb = document.getElementById(`dscb_${id}`);
+    const sl = document.getElementById(`dssl_${id}`);
+    if (!sl) return;
+    sl.disabled = !cb.checked;
+    updateDSFactorDisplay(id);
+}
+
+function updateDSFactorDisplay(id) {
+    const sl  = document.getElementById(`dssl_${id}`);
+    const imp = document.getElementById(`dsimp_${id}`);
+    if (!sl || !imp) return;
+    const factor = YIELD_FACTORS.find(f => f.id === id);
+    if (!factor) return;
+    const sev = parseInt(sl.value);
+    const cropLoss = Math.round(factor.maxImpact * (sev / 100) * 100);
+    imp.innerHTML = `Severity: <strong>${sev}%</strong> — est. crop loss: <strong>${cropLoss}%</strong>`;
+}
+
+function getDSActiveFactors(crop) {
+    const relevant = YIELD_FACTORS.filter(f => f.crops.includes(crop));
+    const active = [];
+    relevant.forEach(f => {
+        const cb = document.getElementById(`dscb_${f.id}`);
+        const sl = document.getElementById(`dssl_${f.id}`);
+        if (cb && cb.checked && sl) {
+            const sev = parseInt(sl.value) / 100;
+            active.push({ id: f.id, name: f.name, type: f.type, maxImpact: f.maxImpact, severity: sev, loss: f.maxImpact * sev });
+        }
+    });
+    return active;
+}
 
 // Local risk profile per locality (disease/pest pressure based on Zone E2 context)
 const DS_LOCAL_RISKS = {
@@ -2350,16 +2452,18 @@ async function runDecisionSupport() {
     if (btnIcon) btnIcon.className = 'fas fa-spinner fa-spin-custom';
     if (btnText) btnText.textContent = 'Analysing...';
 
-    // Small delay for UX
     await new Promise(r => setTimeout(r, 300));
 
-    const varieties = YC_VARIETIES[crop] || [];
-    const localRisks = DS_LOCAL_RISKS[locality] || {};
+    const varieties          = YC_VARIETIES[crop] || [];
+    const localRisks         = DS_LOCAL_RISKS[locality] || {};
     const hasPerformanceData = yieldCalcPerformanceCache && yieldCalcPerformanceCache.length > 0;
+
+    // User-selected additional limiting factors from the panel
+    const userFactors = getDSActiveFactors(crop);
 
     // Build variety analysis
     const analyses = varieties.filter(v => v !== 'Other').map(variety => {
-        // 1. Get baseline yield
+        // 1. Baseline yield — historical data preferred
         let baseline, baselineSource;
         if (hasPerformanceData) {
             const matches = yieldCalcPerformanceCache.filter(r =>
@@ -2376,34 +2480,51 @@ async function runDecisionSupport() {
             baselineSource = 'reference';
         }
 
-        // 2. Apply local risk factors with variety resistance
-        const varResist = DS_VARIETY_RESISTANCE[variety] || {};
+        // 2. Apply locality risk profile (with variety resistance)
+        const varResist  = DS_VARIETY_RESISTANCE[variety] || {};
         let survivalRate = 1.0;
-        const riskBreakdown = [];
+        const localBreakdown = [];
         Object.entries(localRisks).forEach(([pest, severity]) => {
             const factor = YIELD_FACTORS.find(f => f.name === pest && f.crops.includes(crop));
             if (!factor) return;
-            const resistance = varResist[pest] || 0;
+            const resistance       = varResist[pest] || 0;
             const effectiveSeverity = Math.max(0, severity - resistance);
-            const loss = factor.maxImpact * effectiveSeverity;
-            survivalRate *= (1 - loss);
-            riskBreakdown.push({ pest, severity, resistance, effectiveLoss: Math.round(loss * 100) });
+            const loss             = factor.maxImpact * effectiveSeverity;
+            survivalRate          *= (1 - loss);
+            localBreakdown.push({ pest, severity, resistance, loss, effectiveLoss: Math.round(loss * 100), source: 'locality' });
         });
 
+        // 3. Apply user-selected limiting factors (also respect variety resistance)
+        const userBreakdown = [];
+        userFactors.forEach(f => {
+            const resistance        = varResist[f.name] || 0;
+            const effectiveSeverity = Math.max(0, f.severity - resistance);
+            const loss              = f.maxImpact * effectiveSeverity;
+            survivalRate           *= (1 - loss);
+            userBreakdown.push({ pest: f.name, type: f.type, severity: f.severity, resistance, loss, effectiveLoss: Math.round(loss * 100), source: 'user' });
+        });
+
+        const allBreakdown  = [...localBreakdown, ...userBreakdown];
         const adjustedYield = baseline * survivalRate;
-        const lossPercent = Math.round((1 - survivalRate) * 100);
-        const totalForArea = area > 0 ? adjustedYield * area : null;
-        // Estimated revenue at MUR 50/kg
+        const lossPercent   = Math.round((1 - survivalRate) * 100);
+        const totalForArea  = area > 0 ? adjustedYield * area : null;
         const estimatedRevenue = totalForArea ? Math.round(totalForArea * 50) : null;
 
-        return { variety, baseline, adjustedYield, lossPercent, baselineSource, riskBreakdown, totalForArea, estimatedRevenue, survivalRate };
+        // Risk tier
+        let riskTier;
+        if      (lossPercent >= 60) riskTier = 'critical';
+        else if (lossPercent >= 35) riskTier = 'high';
+        else if (lossPercent >= 15) riskTier = 'moderate';
+        else                        riskTier = 'low';
+
+        return { variety, baseline, adjustedYield, lossPercent, baselineSource,
+                 localBreakdown, userBreakdown, allBreakdown,
+                 totalForArea, estimatedRevenue, survivalRate, riskTier };
     });
 
-    // Sort by adjusted yield descending
     analyses.sort((a, b) => b.adjustedYield - a.adjustedYield);
     const best = analyses[0];
 
-    // Build output
     const cropIcons = {'Tomato':'🍅','Sweet Pepper':'🌶️','English Cucumber':'🥒'};
     const icon = cropIcons[crop] || '🌱';
     const unit = crop === 'English Cucumber' ? 'units/m²' : 'kg/m²';
@@ -2411,29 +2532,86 @@ async function runDecisionSupport() {
     const dsOutput = document.getElementById('dsOutput');
     if (!dsOutput) return;
 
+    // ── Risk tier colours ──────────────────────────────────────────────────────
+    const tierColor = { low:'#065f46', moderate:'#92400e', high:'#c0392b', critical:'#4c0519' };
+    const tierBg    = { low:'#d1fae5',  moderate:'#fef3c7', high:'#fee2e2',  critical:'#fce7f3' };
+    const tierLabel = { low:'LOW RISK', moderate:'MODERATE RISK', high:'HIGH RISK', critical:'CRITICAL RISK' };
+
+    // ── Summary of user factors applied ───────────────────────────────────────
+    const userFactorSummary = userFactors.length > 0
+        ? `<div style="font-size:0.78rem;color:#92400e;margin-top:0.4rem;">
+               <i class="fas fa-sliders-h"></i> <strong>Your factors applied:</strong>
+               ${userFactors.map(f => `${f.name} (${Math.round(f.severity*100)}% severity)`).join(' · ')}
+           </div>`
+        : '';
+
     let html = `
     <div class="ds-recommendation-panel">
         <div class="ds-rec-title"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> RECOMMENDATION — ${icon} ${crop} in ${locality}</div>
-        <div style="font-size:0.95rem;color:#2d1d6e;font-weight:700;margin-bottom:0.4rem;">
-            🏆 Plant <strong>${best.variety}</strong> — Expected yield: <strong>${best.adjustedYield.toFixed(1)} ${unit}</strong> after local risk adjustment
+        <div style="font-size:0.95rem;color:#2d1d6e;font-weight:700;margin-bottom:0.3rem;">
+            🏆 Plant <strong>${best.variety}</strong> — Expected yield: <strong>${best.adjustedYield.toFixed(2)} ${unit}</strong> per harvest cycle after all risk adjustments
             ${best.totalForArea ? ` | Total: <strong>${Math.round(best.totalForArea).toLocaleString()} ${unit === 'units/m²' ? 'units' : 'kg'}</strong> for ${area} m²` : ''}
         </div>
-        ${best.estimatedRevenue ? `<div style="font-size:0.85rem;color:#5b21b6;margin-bottom:0.4rem;">💰 Estimated revenue: ~MUR ${best.estimatedRevenue.toLocaleString()} (@ MUR 50/kg)</div>` : ''}
+        ${best.estimatedRevenue ? `<div style="font-size:0.85rem;color:#5b21b6;margin-bottom:0.3rem;">💰 Estimated revenue: ~MUR ${best.estimatedRevenue.toLocaleString()} (@ MUR 50/kg)</div>` : ''}
         <div style="font-size:0.8rem;color:#6d28d9;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <span>Local risk profile: ${Object.keys(localRisks).length > 0 ? Object.entries(localRisks).map(([p, s]) => `${p} (${Math.round(s*100)}%)`).join(', ') : 'No specific risks on record for this locality'}</span>
-            ${hasPerformanceData ? '<span class="ds-historical-badge">📊 Uses real performance data</span>' : '<span class="ds-static-badge">📖 Uses reference data</span>'}
+            <span>Locality risks: ${Object.keys(localRisks).length > 0 ? Object.entries(localRisks).map(([p,s]) => `${p} (${Math.round(s*100)}%)`).join(', ') : 'No locality-specific risks recorded'}</span>
+            ${hasPerformanceData ? '<span class="ds-historical-badge">📊 Real data</span>' : '<span class="ds-static-badge">📖 Reference data</span>'}
         </div>
+        ${userFactorSummary}
     </div>
     <div class="ds-varieties-grid">`;
 
     analyses.forEach((a, idx) => {
-        const isTop = idx === 0;
-        const riskCls = a.lossPercent >= 35 ? 'ds-rec-risk' : isTop ? 'ds-rec-top' : 'ds-rec-good';
-        const riskLabel = a.lossPercent >= 35 ? '⚠️ High Risk' : isTop ? '🏆 Best Choice' : '✅ Good Option';
-        const resistedPests = a.riskBreakdown.filter(r => r.resistance > 0);
-        const insightText = isTop
-            ? `${a.variety} achieves the highest expected yield in ${locality} after accounting for local disease/pest pressure. ${resistedPests.length > 0 ? `Genetic resistance to ${resistedPests.map(r => r.pest).join(', ')} gives an advantage.` : ''}`
-            : `${a.variety} shows ${a.lossPercent}% potential loss from local risks. ${resistedPests.length > 0 ? `Has resistance to: ${resistedPests.map(r => r.pest).join(', ')}.` : 'No specific resistance advantage.'}`;
+        const isTop    = idx === 0;
+        const riskCls  = a.riskTier === 'low' || a.riskTier === 'moderate'
+            ? (isTop ? 'ds-rec-top' : 'ds-rec-good')
+            : 'ds-rec-risk';
+        const riskLabel = isTop && a.riskTier !== 'high' && a.riskTier !== 'critical'
+            ? '🏆 Best Choice'
+            : a.riskTier === 'critical' ? '🚨 Critical Risk'
+            : a.riskTier === 'high'     ? '⚠️ High Risk'
+            : a.riskTier === 'moderate' ? (isTop ? '🏆 Best Choice' : '✅ Good Option')
+            : (isTop ? '🏆 Best Choice' : '✅ Good Option');
+
+        const resistedPests = a.allBreakdown.filter(r => r.resistance > 0);
+        const insight = isTop
+            ? `<strong>${a.variety}</strong> delivers the highest adjusted yield in ${locality}${a.baselineSource === 'historical' ? ' based on real field data' : ''}. ${resistedPests.length > 0 ? `Genetic resistance to ${[...new Set(resistedPests.map(r => r.pest))].join(', ')} provides a yield advantage.` : 'Monitor local risks closely.'}`
+            : `<strong>${a.variety}</strong> shows ~${a.lossPercent}% combined yield loss after locality and additional risk factors. ${resistedPests.length > 0 ? `Partial resistance to ${[...new Set(resistedPests.map(r => r.pest))].join(', ')}.` : 'No notable resistance advantage for this variety.'}`;
+
+        // Factor breakdown rows
+        const localRows = a.localBreakdown.map(r => {
+            const cls = r.effectiveLoss === 0 ? 'neutral' : (r.resistance > 0 ? 'resisted' : 'loss');
+            const resistNote = r.resistance > 0 ? ` <em>(${Math.round(r.resistance*100)}% resisted)</em>` : '';
+            return `<div class="ds-factor-row ${cls}">
+                <span class="ds-factor-row-name">📍 ${r.pest}</span>
+                <span class="ds-factor-row-val">${r.effectiveLoss > 0 ? '−'+r.effectiveLoss+'%' : '✓ 0%'}${resistNote}</span>
+            </div>`;
+        }).join('');
+
+        const userRows = a.userBreakdown.map(r => {
+            const cls = r.effectiveLoss === 0 ? 'neutral' : (r.resistance > 0 ? 'resisted' : 'loss');
+            const resistNote = r.resistance > 0 ? ` <em>(${Math.round(r.resistance*100)}% resisted)</em>` : '';
+            return `<div class="ds-factor-row ${cls}">
+                <span class="ds-factor-row-name">🎚 ${r.pest} <span style="font-size:0.65rem;opacity:0.7;">${r.type}</span></span>
+                <span class="ds-factor-row-val">${r.effectiveLoss > 0 ? '−'+r.effectiveLoss+'%' : '✓ 0%'}${resistNote}</span>
+            </div>`;
+        }).join('');
+
+        const factorBreakdownHtml = (a.allBreakdown.length > 0)
+            ? `<div class="ds-factor-breakdown">
+                   ${localRows}
+                   ${userRows}
+               </div>`
+            : `<div style="font-size:0.75rem;color:#aaa;margin-top:0.4rem;font-style:italic;">No limiting factors applied for this variety.</div>`;
+
+        // Summary bar
+        const chipCls = a.riskTier === 'low' ? 'ds-chip-safe' : a.riskTier === 'moderate' ? 'ds-chip-mod' : 'ds-chip-loss';
+        const summaryBar = `<div class="ds-summary-bar">
+            <span class="ds-summary-chip ${chipCls}">Combined loss: ${a.lossPercent}%</span>
+            <span class="ds-summary-chip" style="background:var(--green-50);color:var(--green-800);">Survival: ${Math.round(a.survivalRate*100)}%</span>
+            <span class="ds-summary-chip" style="background:#ede9fe;color:#6d28d9;">Adjusted: ${a.adjustedYield.toFixed(2)} ${unit}</span>
+            ${a.totalForArea ? `<span class="ds-summary-chip" style="background:#e0f2fe;color:#0369a1;">Total: ${Math.round(a.totalForArea).toLocaleString()} ${unit === 'units/m²' ? 'units' : 'kg'}</span>` : ''}
+        </div>`;
 
         html += `<div class="ds-variety-card ${isTop ? 'ds-top' : ''}">
             <div class="ds-variety-header">
@@ -2442,36 +2620,39 @@ async function runDecisionSupport() {
             </div>
             <div class="ds-metrics">
                 <div class="ds-metric">
-                    <div class="ds-metric-val">${a.baseline.toFixed(1)}</div>
+                    <div class="ds-metric-val">${a.baseline.toFixed(2)}</div>
                     <div class="ds-metric-lbl">Baseline ${unit} ${a.baselineSource === 'historical' ? '📊' : '📖'}</div>
                 </div>
                 <div class="ds-metric">
-                    <div class="ds-metric-val" style="color:${a.lossPercent >= 35 ? '#c0392b' : 'var(--green-800)'};">${a.adjustedYield.toFixed(1)}</div>
-                    <div class="ds-metric-lbl">After Risk (${unit})</div>
+                    <div class="ds-metric-val" style="color:${a.lossPercent >= 35 ? '#c0392b' : 'var(--green-800)'};">${a.adjustedYield.toFixed(2)}</div>
+                    <div class="ds-metric-lbl">Adjusted ${unit}</div>
                 </div>
                 <div class="ds-metric">
-                    <div class="ds-metric-val" style="color:${a.lossPercent >= 35 ? '#c0392b' : '#888'};">↓${a.lossPercent}%</div>
-                    <div class="ds-metric-lbl">Est. Loss</div>
+                    <div class="ds-metric-val" style="color:${tierColor[a.riskTier]};">↓${a.lossPercent}%</div>
+                    <div class="ds-metric-lbl">${tierLabel[a.riskTier]}</div>
                 </div>
-                ${a.totalForArea ? `<div class="ds-metric"><div class="ds-metric-val" style="color:var(--teal);">${Math.round(a.totalForArea).toLocaleString()}</div><div class="ds-metric-lbl">Total (${area}m²)</div></div>` : ''}
+                ${a.totalForArea ? `<div class="ds-metric"><div class="ds-metric-val" style="color:var(--teal);">${Math.round(a.totalForArea).toLocaleString()}</div><div class="ds-metric-lbl">Total (${area} m²)</div></div>` : ''}
             </div>
-            ${a.riskBreakdown.length > 0 ? `<div style="font-size:0.75rem;color:#888;margin-bottom:0.4rem;">Risks: ${a.riskBreakdown.map(r => `${r.pest}: ${r.effectiveLoss}% loss${r.resistance > 0 ? ` (${Math.round(r.resistance*100)}% resisted)` : ''}`).join(' | ')}</div>` : ''}
-            <div class="ds-insight-box">${insightText}</div>
+            ${summaryBar}
+            ${factorBreakdownHtml}
+            <div class="ds-insight-box" style="margin-top:0.55rem;">${insight}</div>
         </div>`;
     });
 
     html += `</div>
     <div style="margin-top:0.8rem;font-size:0.75rem;color:#aaa;text-align:center;">
-        Analysis based on Zone E2 local risk profiles, variety resistance data, and ${hasPerformanceData ? 'real historical performance records' : 'reference yield data'}. Always validate with field scouting.
+        Analysis uses Zone E2 locality risk profiles, user-applied limiting factors, variety resistance data, and
+        ${hasPerformanceData ? 'real historical performance records from your Google Sheet' : 'reference yield data (load Variety Performance for field-calibrated baseline)'}. Always validate with field scouting.
+        ${userFactors.length > 0 ? '· <strong>' + userFactors.length + ' additional factor(s) applied from the panel above.</strong>' : ''}
     </div>`;
 
     dsOutput.innerHTML = html;
     dsOutput.style.display = 'block';
     dsOutput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    logActivity('admin', `Decision Support run — ${crop} in ${locality} — Best: ${best.variety}`);
+    logActivity('admin', `Decision Support run — ${crop} in ${locality} — Best: ${best.variety}${userFactors.length ? ' | +'+userFactors.length+' user factor(s)' : ''}`);
 
     if (btnIcon) btnIcon.className = 'fas fa-brain';
-    if (btnText) btnText.textContent = 'Analyse Varieties';
+    if (btnText) btnText.textContent = 'Re-Analyse';
 }
 
 // ==================== GROWING TIPS ====================
