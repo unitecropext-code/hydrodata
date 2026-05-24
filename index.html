@@ -960,6 +960,44 @@
                             <i class="fas fa-brain" id="dsBtnIcon"></i> <span id="dsBtnText">Analyse Varieties</span>
                         </button>
                     </div>
+                    <!-- ── Scenario + Price override row ── -->
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:0.85rem;padding-top:0.85rem;border-top:1px dashed #c4b5fd;">
+                        <!-- Scenario pills -->
+                        <div style="flex:1;min-width:240px;">
+                            <div style="font-size:0.78rem;font-weight:700;color:#6d28d9;margin-bottom:6px;">
+                                <i class="fas fa-sliders-h"></i> Yield Scenario
+                                <span style="font-size:0.68rem;font-weight:500;color:#888;margin-left:4px;">(applied to reference baseline only)</span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button id="ds_scen_pessimistic" onclick="setDSScenario('pessimistic',this)"
+                                    style="flex:1;padding:7px 10px;border-radius:2rem;border:2px solid #c4b5fd;background:white;font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;color:#c0392b;transition:all 0.18s;">
+                                    📉 Pessimistic<br><span style="font-size:0.65rem;font-weight:400;color:#888;">(min ref.)</span>
+                                </button>
+                                <button id="ds_scen_moderate" onclick="setDSScenario('moderate',this)"
+                                    style="flex:1;padding:7px 10px;border-radius:2rem;border:2px solid #7c3aed;background:#ede9fe;font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;color:#6d28d9;transition:all 0.18s;">
+                                    📊 Moderate<br><span style="font-size:0.65rem;font-weight:400;color:#888;">(midpoint)</span>
+                                </button>
+                                <button id="ds_scen_optimistic" onclick="setDSScenario('optimistic',this)"
+                                    style="flex:1;padding:7px 10px;border-radius:2rem;border:2px solid #c4b5fd;background:white;font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;color:#065f46;transition:all 0.18s;">
+                                    📈 Optimistic<br><span style="font-size:0.65rem;font-weight:400;color:#888;">(max ref.)</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Market price override -->
+                        <div style="min-width:200px;">
+                            <div style="font-size:0.78rem;font-weight:700;color:#6d28d9;margin-bottom:6px;">
+                                <i class="fas fa-tag"></i> Market Price Override (MUR/kg)
+                                <span style="font-size:0.68rem;font-weight:500;color:#888;margin-left:4px;">(leave 0 to use variety defaults)</span>
+                            </div>
+                            <div style="display:flex;gap:6px;align-items:center;">
+                                <span style="font-size:0.85rem;font-weight:700;color:#6d28d9;">MUR</span>
+                                <input type="number" id="ds_price_override" placeholder="e.g. 65" min="0" step="1"
+                                    style="padding:8px 12px;border-radius:2rem;border:2px solid #c4b5fd;font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;width:100%;background:white;"
+                                    oninput="document.getElementById('ds_price_override_lbl').textContent = this.value > 0 ? 'Override active: MUR '+this.value+'/kg' : 'Using variety defaults';">
+                                <span id="ds_price_override_lbl" style="font-size:0.7rem;color:#7c3aed;white-space:nowrap;min-width:130px;">Using variety defaults</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div id="dsLoadDataRow" style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--radius-lg);padding:0.8rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;font-size:0.85rem;color:#78350f;">
                     <i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i>
@@ -1603,6 +1641,28 @@ function getYieldReference(cropName, varietyName) {
     return {min:0,max:99,unit:'kg/m²',isUnitCrop:false,varietyLabel:'Unknown'};
 }
 
+
+// ==================== DS SCENARIO STATE ====================
+let DS_SCENARIO = 'moderate'; // 'pessimistic' | 'moderate' | 'optimistic'
+function setDSScenario(scenario, btn) {
+    DS_SCENARIO = scenario;
+    ['pessimistic','moderate','optimistic'].forEach(s => {
+        const el = document.getElementById('ds_scen_' + s);
+        if (!el) return;
+        if (s === scenario) {
+            el.style.background = '#ede9fe';
+            el.style.borderColor = '#7c3aed';
+            el.style.color = '#6d28d9';
+        } else {
+            el.style.background = 'white';
+            el.style.borderColor = '#c4b5fd';
+            el.style.color = s === 'pessimistic' ? '#c0392b' : '#065f46';
+        }
+    });
+    // Auto re-run if output already visible
+    const out = document.getElementById('dsOutput');
+    if (out && out.style.display !== 'none') runDecisionSupport();
+}
 
 // ==================== MARKET PRICE REFERENCE (MUR) ====================
 // Indicative farmgate / market prices per unit for Zone E2, Mauritius
@@ -2494,7 +2554,9 @@ async function runDecisionSupport() {
         }
         if (!baseline) {
             const ref = getYieldReference(crop, variety);
-            baseline = (ref.min + ref.max) / 2;
+            if (DS_SCENARIO === 'pessimistic') baseline = ref.min;
+            else if (DS_SCENARIO === 'optimistic') baseline = ref.max;
+            else baseline = (ref.min + ref.max) / 2;
             baselineSource = 'reference';
         }
 
@@ -2527,7 +2589,11 @@ async function runDecisionSupport() {
         const lossPercent   = Math.round((1 - survivalRate) * 100);
         const totalForArea  = area > 0 ? adjustedYield * area : null;
         const mktPrice = getMarketPrice(crop, variety);
-        const estimatedRevenue = totalForArea ? Math.round(totalForArea * mktPrice.price) : null;
+        const priceOverrideEl = document.getElementById('ds_price_override');
+        const priceOverride = priceOverrideEl ? parseFloat(priceOverrideEl.value) : 0;
+        const effectivePrice = priceOverride > 0 ? priceOverride : mktPrice.price;
+        const effectivePriceLabel = priceOverride > 0 ? `MUR ${priceOverride}/kg (custom)` : mktPrice.label;
+        const estimatedRevenue = totalForArea ? Math.round(totalForArea * effectivePrice) : null;
 
         // Risk tier
         let riskTier;
@@ -2538,7 +2604,7 @@ async function runDecisionSupport() {
 
         return { variety, baseline, adjustedYield, lossPercent, baselineSource,
                  localBreakdown, userBreakdown, allBreakdown,
-                 totalForArea, estimatedRevenue, mktPrice, survivalRate, riskTier };
+                 totalForArea, estimatedRevenue, mktPrice, effectivePrice, effectivePriceLabel, survivalRate, riskTier };
     });
 
     analyses.sort((a, b) => b.adjustedYield - a.adjustedYield);
@@ -2566,12 +2632,18 @@ async function runDecisionSupport() {
 
     let html = `
     <div class="ds-recommendation-panel">
-        <div class="ds-rec-title"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> RECOMMENDATION — ${icon} ${crop} in ${locality}</div>
+        <div class="ds-rec-title"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> RECOMMENDATION — ${icon} ${crop} in ${locality}
+            <span style="font-size:0.7rem;font-weight:700;padding:2px 10px;border-radius:1rem;margin-left:8px;
+                background:${DS_SCENARIO==='optimistic'?'#d1fae5':DS_SCENARIO==='pessimistic'?'#fee2e2':'#ede9fe'};
+                color:${DS_SCENARIO==='optimistic'?'#065f46':DS_SCENARIO==='pessimistic'?'#c0392b':'#6d28d9'};">
+                ${DS_SCENARIO==='optimistic'?'📈 Optimistic scenario':DS_SCENARIO==='pessimistic'?'📉 Pessimistic scenario':'📊 Moderate scenario'}
+            </span>
+        </div>
         <div style="font-size:0.95rem;color:#2d1d6e;font-weight:700;margin-bottom:0.3rem;">
             🏆 Plant <strong>${best.variety}</strong> — Expected yield: <strong>${best.adjustedYield.toFixed(2)} ${unit}</strong> per harvest cycle after all risk adjustments
             ${best.totalForArea ? ` | Total: <strong>${Math.round(best.totalForArea).toLocaleString()} ${unit === 'units/m²' ? 'units' : 'kg'}</strong> for ${area} m²` : ''}
         </div>
-        ${best.estimatedRevenue ? `<div style="font-size:0.85rem;color:#5b21b6;margin-bottom:0.3rem;">💰 Estimated revenue: ~MUR ${best.estimatedRevenue.toLocaleString()} (@ ${best.mktPrice.label}) <span style="font-size:0.72rem;color:#888;">— price varies by variety</span></div>` : ''}
+        ${best.estimatedRevenue ? `<div style="font-size:0.85rem;color:#5b21b6;margin-bottom:0.3rem;">💰 Estimated revenue: ~MUR ${best.estimatedRevenue.toLocaleString()} (@ ${best.effectivePriceLabel}) <span style="font-size:0.72rem;color:#888;">— price varies by variety</span></div>` : ''}
         <div style="font-size:0.8rem;color:#6d28d9;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
             <span>Locality risks: ${Object.keys(localRisks).length > 0 ? Object.entries(localRisks).map(([p,s]) => `${p} (${Math.round(s*100)}%)`).join(', ') : 'No locality-specific risks recorded'}</span>
             ${best.baselineSource === 'historical' ? '<span class="ds-historical-badge">📊 Real field data</span>' : (hasPerformanceData ? '<span class="ds-static-badge">📖 Reference data (no match for this locality/variety)</span>' : '<span class="ds-static-badge">📖 Reference data</span>')}
@@ -2630,7 +2702,7 @@ async function runDecisionSupport() {
             <span class="ds-summary-chip" style="background:var(--green-50);color:var(--green-800);">Survival: ${Math.round(a.survivalRate*100)}%</span>
             <span class="ds-summary-chip" style="background:#ede9fe;color:#6d28d9;">Adjusted: ${a.adjustedYield.toFixed(2)} ${unit}</span>
             ${a.totalForArea ? `<span class="ds-summary-chip" style="background:#e0f2fe;color:#0369a1;">Total: ${Math.round(a.totalForArea).toLocaleString()} ${unit === 'units/m²' ? 'units' : 'kg'}</span>` : ''}
-            ${a.estimatedRevenue ? `<span class="ds-summary-chip" style="background:#fdf4ff;color:#7c3aed;font-weight:700;">~MUR ${a.estimatedRevenue.toLocaleString()} (${a.mktPrice.label})</span>` : ''}
+            ${a.estimatedRevenue ? `<span class="ds-summary-chip" style="background:#fdf4ff;color:#7c3aed;font-weight:700;">~MUR ${a.estimatedRevenue.toLocaleString()} (${a.effectivePriceLabel})</span>` : ''}
         </div>`;
 
         html += `<div class="ds-variety-card ${isTop ? 'ds-top' : ''}">
@@ -2652,7 +2724,7 @@ async function runDecisionSupport() {
                     <div class="ds-metric-lbl">${tierLabel[a.riskTier]}</div>
                 </div>
                 ${a.totalForArea ? `<div class="ds-metric"><div class="ds-metric-val" style="color:var(--teal);">${Math.round(a.totalForArea).toLocaleString()}</div><div class="ds-metric-lbl">Total kg · ${area} m²<br><span style="font-size:0.63rem;opacity:0.75;">per harvest cycle</span></div></div>` : ''}
-                ${a.estimatedRevenue ? `<div class="ds-metric"><div class="ds-metric-val" style="color:#7c3aed;font-size:0.92rem;">~${(a.estimatedRevenue/1000).toFixed(0)}k</div><div class="ds-metric-lbl">Est. MUR<br><span style="font-size:0.63rem;opacity:0.75;">${a.mktPrice.label}</span></div></div>` : ''}
+                ${a.estimatedRevenue ? `<div class="ds-metric"><div class="ds-metric-val" style="color:#7c3aed;font-size:0.92rem;">~${(a.estimatedRevenue/1000).toFixed(0)}k</div><div class="ds-metric-lbl">Est. MUR<br><span style="font-size:0.63rem;opacity:0.75;">${a.effectivePriceLabel}</span></div></div>` : ''}
             </div>
             ${summaryBar}
             ${factorBreakdownHtml}
@@ -2663,7 +2735,7 @@ async function runDecisionSupport() {
     html += `</div>
     <div style="margin-top:1rem;background:#f8f8ff;border:1px solid #e0d9f7;border-radius:1rem;padding:0.9rem 1.1rem;font-size:0.78rem;color:#555;line-height:1.7;">
         <div style="font-weight:800;color:#6d28d9;margin-bottom:0.4rem;font-size:0.82rem;"><i class="fas fa-info-circle"></i> How figures are calculated</div>
-        <div><strong>Baseline yield (kg/m²):</strong> ${hasPerformanceData ? 'Uses real cycle yield from your Variety Performance records when available for the selected locality &amp; variety, otherwise falls back to the published reference midpoint.' : 'Midpoint of published reference range (e.g. Tomato Salad: (11.75+18.90)÷2 = 15.33 kg/m²).'}</div>
+        <div><strong>Baseline yield (kg/m²):</strong> ${hasPerformanceData ? 'Uses real cycle yield from your Variety Performance records when available for the selected locality &amp; variety, otherwise falls back to the published reference midpoint.' : 'Midpoint of published reference range (e.g. Tomato Salad: Pessimistic=min, Moderate=(min+max)÷2, Optimistic=max — e.g. Tomato Salad: 11.75 / 15.33 / 18.90 kg/m²).'}</div>
         <div><strong>Risk-adjusted yield (kg/m²):</strong> Baseline × combined survival rate after applying locality-specific pest/disease pressure and any user-selected limiting factors. Variety genetic resistance reduces effective loss.</div>
         <div><strong>Total yield (kg):</strong> Risk-adjusted yield (kg/m²) × Greenhouse area (m²) — represents expected output for one complete harvest cycle.</div>
         <div><strong>Estimated revenue (MUR):</strong> Total yield × indicative market price. Prices vary by variety:
