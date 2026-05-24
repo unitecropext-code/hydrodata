@@ -2138,7 +2138,7 @@ function calculateEstimatedYield() {
         const ref=getYieldReference(crop,variety);
         baseMin=ref.min;baseMax=ref.max;
     }
-    const baseMinTotal=baseMin*area; const baseMaxTotal=baseMax*area;
+    const baseMinTotal=baseMin*area*(months/6); const baseMaxTotal=baseMax*area*(months/6);
 
     const relevant=YIELD_FACTORS.filter(f=>f.crops.includes(crop));const activeFactors=[];
     relevant.forEach(f=>{const cb=document.getElementById(`cb_${f.id}`);const sl=document.getElementById(`sl_${f.id}`);
@@ -2732,7 +2732,7 @@ function fetchWithTimeout(url,timeoutMs=15000,options={}){
 // ==================== LOGIN ====================
 async function login(username, password) {
     const btn=document.getElementById('loginBtn');const errEl=document.getElementById('loginError');
-    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Signing in...';errEl.textContent='';
+    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Connecting… please wait';errEl.textContent='';
     try {
         const res=await fetchWithTimeout(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&_=${Date.now()}`,18000);
         if(!res.ok)throw new Error('Server error '+res.status);
@@ -2749,7 +2749,7 @@ async function login(username, password) {
                 document.getElementById('growerProfileCard').style.display='none';
                 setAdminSectionsVisibility(true);
                 buildYieldFactors('');loadDashboard();loadAdminMemberCount();
-                await loadPestAlertSettings();
+                loadPestAlertSettings();
                 loadAllUsernamesForSuggestions(); // preload for partial search
                 initYieldCalcLocalityDropdown();
                 initDecisionSupportLocality();
@@ -2759,8 +2759,7 @@ async function login(username, password) {
                 setAdminSectionsVisibility(false);
                 document.getElementById('growerName').value=username;
                 updateLocalityDropdown();
-                await autoFillProfileFromRecords(username);
-                await loadUserPreviousData(username);
+                await Promise.all([autoFillProfileFromRecords(username), loadUserPreviousData(username)]);
                 loadDashboard();loadActiveMemberCount();
             }
             initGrowingTips();
@@ -2770,7 +2769,7 @@ async function login(username, password) {
             errEl.textContent='❌ Invalid username or password. Please try again.';
         }
     } catch(e){
-        errEl.textContent=e.name==='AbortError'?'⏱️ Login timed out. Check your connection.':'⚠️ Connection error: '+(e.message||'Please try again.');
+        errEl.textContent=e.name==='AbortError'?'⏱️ Server took too long to respond. Please try again — first login may take up to 30s.':'⚠️ Connection error: '+(e.message||'Please try again.');
     } finally { btn.disabled=false;btn.innerHTML='<i class="fas fa-sign-in-alt"></i> Sign In'; }
 }
 
