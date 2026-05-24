@@ -509,6 +509,37 @@
         .photo-upload-label { font-size:0.82rem; color:#888; margin-top:4px; }
 
         .hidden { display: none !important; }
+        /* Variety Performance table */
+        #vpTable td { vertical-align:middle; }
+        #vpTable .vp-perf-bar { display:inline-flex;align-items:center;gap:6px;width:100%; }
+        #vpTable .vp-perf-track { flex:1;height:8px;background:#e8f5e2;border-radius:4px;overflow:hidden; }
+        #vpTable .vp-perf-fill { height:100%;border-radius:4px;transition:width 0.4s; }
+        .vp-perf-label { font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:1rem;white-space:nowrap; }
+        .vp-perf-high { background:#d1fae5;color:#065f46; }
+        .vp-perf-med  { background:#fef3c7;color:#92400e; }
+        .vp-perf-low  { background:#fee2e2;color:#7f1d1d; }
+        /* Decision Support output */
+        .ds-variety-card { background:white;border:2px solid var(--green-200);border-radius:var(--radius-lg);padding:1.1rem;transition:all 0.2s; }
+        .ds-variety-card.ds-top { border-color:#7c3aed;box-shadow:0 4px 16px rgba(109,40,217,0.15); }
+        .ds-variety-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem;flex-wrap:wrap;gap:6px; }
+        .ds-variety-name { font-size:1rem;font-weight:800;color:var(--green-900); }
+        .ds-rec-badge { font-size:0.72rem;padding:3px 10px;border-radius:1rem;font-weight:700; }
+        .ds-rec-top { background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd; }
+        .ds-rec-good { background:#d1fae5;color:#065f46;border:1px solid #6ee7b7; }
+        .ds-rec-risk { background:#fef3c7;color:#92400e;border:1px solid #fcd34d; }
+        .ds-metrics { display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin:0.7rem 0; }
+        @media(min-width:640px){ .ds-metrics{grid-template-columns:repeat(4,1fr);} }
+        .ds-metric { background:var(--green-50);border-radius:0.8rem;padding:0.5rem 0.6rem;text-align:center; }
+        .ds-metric-val { font-size:1rem;font-weight:800;color:var(--green-800); }
+        .ds-metric-lbl { font-size:0.68rem;color:#666;margin-top:2px; }
+        .ds-insight-box { background:linear-gradient(135deg,#f0faf2,#e4f7e6);border:1px solid var(--green-200);border-radius:0.8rem;padding:0.7rem 0.9rem;font-size:0.82rem;color:#2d5a27;margin-top:0.6rem;line-height:1.5; }
+        .ds-recommendation-panel { background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:2px solid #a78bfa;border-radius:var(--radius-lg);padding:1.2rem;margin-bottom:1.2rem; }
+        .ds-rec-title { font-size:0.95rem;font-weight:800;color:#6d28d9;margin-bottom:0.5rem;display:flex;align-items:center;gap:8px; }
+        .ds-varieties-grid { display:grid;grid-template-columns:1fr;gap:0.8rem;margin-top:0.8rem; }
+        @media(min-width:640px){ .ds-varieties-grid{grid-template-columns:repeat(2,1fr);} }
+        @media(min-width:1024px){ .ds-varieties-grid{grid-template-columns:repeat(3,1fr);} }
+        .ds-historical-badge { background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;font-size:0.7rem;padding:2px 7px;border-radius:1rem;font-weight:700; }
+        .ds-static-badge { background:#f3f4f6;color:#6b7280;border:1px solid #d1d5db;font-size:0.7rem;padding:2px 7px;border-radius:1rem;font-weight:700; }
         .fa-spin-custom { animation: spin360 0.9s infinite linear; }
         .footer { text-align: center; font-size: 0.72rem; color: #3a6b3a; margin-top: 2rem; padding: 1rem; font-weight: 500; }
         .section-divider { display: flex; align-items: center; gap: 12px; margin: 1.2rem 0; }
@@ -654,6 +685,8 @@
                 <button class="admin-tab-btn" data-tab="registerTab"><i class="fas fa-user-plus"></i> Register New User</button>
                 <button class="admin-tab-btn" data-tab="adminGHTab"><i class="fas fa-seedling"></i> Register Greenhouse Details</button>
                 <button class="admin-tab-btn" data-tab="yieldCalcTab"><i class="fas fa-calculator"></i> Final Estimated Yield</button>
+                <button class="admin-tab-btn" data-tab="varietyPerfTab"><i class="fas fa-seedling" style="color:#259132;"></i> Variety Performance</button>
+                <button class="admin-tab-btn" data-tab="decisionSupportTab"><i class="fas fa-brain" style="color:#7c3aed;"></i> Decision Support</button>
                 <button class="admin-tab-btn" data-tab="activityLogTab"><i class="fas fa-history"></i> Activity Log</button>
                 <button class="admin-tab-btn" data-tab="pestAlertTab"><i class="fas fa-exclamation-triangle" style="color:#c0392b;"></i> Pest Alert</button>
             </div>
@@ -761,6 +794,11 @@
                 <div class="register-grower-title"><i class="fas fa-calculator" style="color:var(--amber);"></i> Final Estimated Yield Calculator</div>
                 <div class="yield-calc-section">
                     <div class="register-grid" style="margin-bottom:1rem;">
+                        <div class="form-group"><label>Locality <span style="font-size:0.72rem;color:#888;">(auto-fills baseline from performance data)</span></label>
+                            <select id="yc_locality" onchange="onYieldCalcLocalityChange()">
+                                <option value="">-- Select Locality (optional) --</option>
+                            </select>
+                        </div>
                         <div class="form-group"><label>Crop *</label>
                             <select id="yc_crop" onchange="onYieldCalcCropChange()">
                                 <option value="">-- Select Crop --</option>
@@ -769,9 +807,13 @@
                                 <option value="English Cucumber">🥒 English Cucumber</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>Variety</label><select id="yc_variety"><option value="">-- Select Variety --</option></select></div>
+                        <div class="form-group"><label>Variety</label><select id="yc_variety" onchange="onYieldCalcVarietyChange()"><option value="">-- Select Variety --</option></select></div>
                         <div class="form-group"><label>Greenhouse Area (m²) *</label><input type="number" id="yc_area" step="0.01" min="0" placeholder="e.g. 500"></div>
                         <div class="form-group"><label>Harvest Duration (months)</label><input type="number" id="yc_months" step="0.5" min="1" max="24" value="6"></div>
+                    </div>
+                    <div id="yc_localityBaselineInfo" style="display:none;" class="modal-info-bar" style="background:#e8f5e9;border-color:#7ec891;">
+                        <i class="fas fa-chart-bar" style="color:var(--green-600);"></i>
+                        <span id="yc_localityBaselineText">—</span>
                     </div>
                     <div id="yc_baseYieldInfo" style="display:none;" class="modal-info-bar"><i class="fas fa-info-circle" style="color:var(--green-600);"></i> Base yield reference: <strong id="yc_baseYieldText">—</strong></div>
                     <div class="modal-section-title" style="border-top:none;padding-top:0;margin-top:0.5rem;"><i class="fas fa-bug"></i> Yield Limiting Factors</div>
@@ -787,6 +829,115 @@
                         <div class="yr-factors" id="yr_factorsSummary">—</div>
                         <div id="yr_riskBadge" class="yr-risk low">LOW RISK</div>
                     </div>
+                </div>
+            </div>
+
+            <!-- TAB: Variety Performance by Locality -->
+            <div id="varietyPerfTab" class="admin-tab-content">
+                <div class="register-grower-title"><i class="fas fa-seedling" style="color:var(--green-600);"></i> Variety Performance by Locality <span class="admin-badge" style="background:var(--green-700);">ZONE E2</span></div>
+                <div style="background:linear-gradient(135deg,#f0faf2,#e4f7e6);border:1.5px solid var(--green-200);border-radius:var(--radius-lg);padding:1.2rem;margin-bottom:1rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1rem;">
+                        <div style="font-size:0.88rem;color:#555;">Pull live data from the Google Sheet to see how each variety performs across localities in Zone E2.</div>
+                        <button id="loadVariancePerfBtn" class="btn" onclick="loadVarietyPerformanceData()">
+                            <i class="fas fa-cloud-download-alt" id="vpBtnIcon"></i> <span id="vpBtnText">Load Performance Data</span>
+                        </button>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                        <div class="form-group" style="margin:0;flex:1;min-width:160px;">
+                            <label style="font-size:0.78rem;font-weight:700;color:#555;">Filter by Crop</label>
+                            <select id="vp_cropFilter" style="padding:8px 12px;border-radius:2rem;border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.88rem;outline:none;width:100%;" onchange="filterVarietyPerfTable()">
+                                <option value="">All Crops</option>
+                                <option value="Tomato">🍅 Tomato</option>
+                                <option value="Sweet Pepper">🌶️ Sweet Pepper</option>
+                                <option value="English Cucumber">🥒 English Cucumber</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;flex:1;min-width:160px;">
+                            <label style="font-size:0.78rem;font-weight:700;color:#555;">Filter by Locality</label>
+                            <select id="vp_localityFilter" style="padding:8px 12px;border-radius:2rem;border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.88rem;outline:none;width:100%;" onchange="filterVarietyPerfTable()">
+                                <option value="">All Localities</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;flex:1;min-width:160px;">
+                            <label style="font-size:0.78rem;font-weight:700;color:#555;">Sort by</label>
+                            <select id="vp_sortBy" style="padding:8px 12px;border-radius:2rem;border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.88rem;outline:none;width:100%;" onchange="filterVarietyPerfTable()">
+                                <option value="locality">Locality</option>
+                                <option value="crop">Crop</option>
+                                <option value="variety">Variety</option>
+                                <option value="avgYield">Avg Yield (High→Low)</option>
+                                <option value="area">GH Area (High→Low)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="vpStatusMsg" style="display:none;text-align:center;padding:2rem;color:#aaa;font-size:0.9rem;">
+                    <i class="fas fa-cloud-download-alt" style="font-size:2rem;color:var(--green-200);display:block;margin-bottom:0.5rem;"></i>
+                    Click "Load Performance Data" to fetch from Google Sheet
+                </div>
+                <div id="vpTableWrap" style="display:none;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;flex-wrap:wrap;gap:8px;">
+                        <span id="vpRowCount" style="font-size:0.8rem;color:#888;font-weight:600;"></span>
+                        <span style="font-size:0.75rem;color:#aaa;">Data from active & completed cycles in Sheet1</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="vpTable" style="min-width:700px;">
+                            <thead>
+                                <tr>
+                                    <th>Locality</th>
+                                    <th>Crop</th>
+                                    <th>Variety</th>
+                                    <th style="text-align:center;">GH Area (m²)</th>
+                                    <th style="text-align:center;">Avg Monthly Yield<br><span style="font-weight:400;font-size:0.75rem;">(kg/m²/month)</span></th>
+                                    <th style="text-align:center;">Yield over Cycle<br><span style="font-weight:400;font-size:0.75rem;">(kg/m²)</span></th>
+                                    <th style="text-align:center;">Records</th>
+                                    <th style="text-align:center;">Performance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vpTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Decision Support -->
+            <div id="decisionSupportTab" class="admin-tab-content">
+                <div class="register-grower-title"><i class="fas fa-brain" style="color:#7c3aed;"></i> Variety Decision Support System <span class="admin-badge" style="background:#7c3aed;">ZONE E2</span></div>
+                <div style="background:linear-gradient(135deg,#faf5ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:var(--radius-lg);padding:1.2rem;margin-bottom:1rem;">
+                    <div style="font-size:0.88rem;color:#555;margin-bottom:1rem;line-height:1.6;">
+                        <strong style="color:#6d28d9;">Historical Performance + Local Risk Profile = Predictive Intelligence.</strong><br>
+                        Select a locality and crop to see which variety to plant, expected yield after risk factors, and a data-driven recommendation.
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+                        <div class="form-group" style="margin:0;flex:1;min-width:180px;">
+                            <label style="font-size:0.78rem;font-weight:700;color:#6d28d9;">Locality *</label>
+                            <select id="ds_locality" style="padding:10px 14px;border-radius:2rem;border:2px solid #c4b5fd;font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;width:100%;background:white;" onchange="onDSLocalityChange()">
+                                <option value="">-- Select Locality --</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;flex:1;min-width:180px;">
+                            <label style="font-size:0.78rem;font-weight:700;color:#6d28d9;">Crop *</label>
+                            <select id="ds_crop" style="padding:10px 14px;border-radius:2rem;border:2px solid #c4b5fd;font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;width:100%;background:white;" onchange="onDSCropChange()">
+                                <option value="">-- Select Crop --</option>
+                                <option value="Tomato">🍅 Tomato</option>
+                                <option value="Sweet Pepper">🌶️ Sweet Pepper</option>
+                                <option value="English Cucumber">🥒 English Cucumber</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;flex:1;min-width:180px;">
+                            <label style="font-size:0.78rem;font-weight:700;color:#6d28d9;">Greenhouse Area (m²)</label>
+                            <input type="number" id="ds_area" placeholder="e.g. 500" step="0.01" min="0" style="padding:10px 14px;border-radius:2rem;border:2px solid #c4b5fd;font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;width:100%;">
+                        </div>
+                        <button id="dsAnalyseBtn" class="btn" style="background:linear-gradient(100deg,#6d28d9,#7c3aed);box-shadow:0 4px 12px rgba(109,40,217,0.3);white-space:nowrap;" onclick="runDecisionSupport()">
+                            <i class="fas fa-brain" id="dsBtnIcon"></i> <span id="dsBtnText">Analyse Varieties</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="dsLoadDataRow" style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:var(--radius-lg);padding:0.8rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;font-size:0.85rem;color:#78350f;">
+                    <i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i>
+                    <span>Variety performance data not loaded. <strong style="cursor:pointer;text-decoration:underline;color:#d97706;" onclick="loadVarietyPerformanceData(true)">Load it now</strong> for real baseline yields. Calculator will use static reference data otherwise.</span>
+                </div>
+                <div id="dsOutput" style="display:none;">
+                    <!-- Filled by JS -->
                 </div>
             </div>
 
@@ -1009,7 +1160,7 @@
 
 <script>
 // ==================== CONFIG ====================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySaoZ37gcAY1lk_hVSXf-kRyhoVNxOD5gkFGuVnKeh9UV51gWeWthnSaZ3gur9XOFoFQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWxkEnM-uNKhh5iLiIaH5M0JS6KKket64o3aSNxRQYqx_uqGDcRi0ubDOcHjkLMnk2Iw/exec';
 
 // Admin usernames (case-insensitive). webadmin1 and webadmin2 are also allowed.
 // The backend determines isAdmin via the users sheet Role column.
@@ -1904,16 +2055,6 @@ async function restoreCycleToActive(username, timestamp) {
 
 // ==================== ESTIMATED YIELD CALCULATOR ====================
 const YC_VARIETIES={'Tomato':['Salad','Roma','Round','THN 988','Cherry','Other'],'Sweet Pepper':['Blocky','Bell','Lamuyo','Other'],'English Cucumber':['Acylia','Boncanale RZ','Other']};
-function onYieldCalcCropChange() {
-    const crop=document.getElementById('yc_crop').value;
-    const varSel=document.getElementById('yc_variety');varSel.innerHTML='<option value="">-- Select Variety --</option>';
-    if(crop&&YC_VARIETIES[crop])YC_VARIETIES[crop].forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;varSel.appendChild(o);});
-    const ref=crop?getYieldReference(crop,''):null;
-    const info=document.getElementById('yc_baseYieldInfo');const infoText=document.getElementById('yc_baseYieldText');
-    if(ref&&crop){infoText.textContent=`${ref.min} – ${ref.max} ${ref.unit} per harvest cycle (${ref.varietyLabel})`;info.style.display='block';}
-    else info.style.display='none';
-    buildYieldFactors(crop);document.getElementById('yieldResultBox').style.display='none';
-}
 function buildYieldFactors(crop) {
     const grid=document.getElementById('yieldFactorsGrid');
     const relevant=crop?YIELD_FACTORS.filter(f=>f.crops.includes(crop)):YIELD_FACTORS;
@@ -1933,23 +2074,50 @@ function updateFactorDisplay(id) {
 }
 function calculateEstimatedYield() {
     const crop=document.getElementById('yc_crop').value;const variety=document.getElementById('yc_variety').value;
+    const locality=document.getElementById('yc_locality')?.value||'';
     const area=parseFloat(document.getElementById('yc_area').value)||0;const months=parseFloat(document.getElementById('yc_months').value)||6;
     if(!crop){toast('Please select a crop first.',true);return;}if(!area){toast('Please enter the greenhouse area.',true);return;}
-    const ref=getYieldReference(crop,variety);const baseMin=ref.min*area;const baseMax=ref.max*area;
+
+    // Try locality-aware baseline from performance cache first
+    let baseMin, baseMax, baselineSource='reference';
+    if(locality && yieldCalcPerformanceCache && yieldCalcPerformanceCache.length) {
+        const matches=yieldCalcPerformanceCache.filter(r=>
+            r.locality===locality && r.crop===crop &&
+            (!variety || variety==='' || r.variety.toLowerCase()===variety.toLowerCase())
+        );
+        if(matches.length>0) {
+            const avgCycleYield=matches.reduce((s,r)=>s+r.cycleYield,0)/matches.length;
+            if(avgCycleYield>0) {
+                // Use real data: ±15% range around historical average
+                baseMin=avgCycleYield*0.85;
+                baseMax=avgCycleYield*1.15;
+                baselineSource='historical';
+            }
+        }
+    }
+    // Fallback to static reference data
+    if(!baseMin) {
+        const ref=getYieldReference(crop,variety);
+        baseMin=ref.min;baseMax=ref.max;
+    }
+    const baseMinTotal=baseMin*area; const baseMaxTotal=baseMax*area;
+
     const relevant=YIELD_FACTORS.filter(f=>f.crops.includes(crop));const activeFactors=[];
     relevant.forEach(f=>{const cb=document.getElementById(`cb_${f.id}`);const sl=document.getElementById(`sl_${f.id}`);
         if(cb&&cb.checked&&sl){const sev=parseInt(sl.value)/100;const impact=f.maxImpact*sev;activeFactors.push({name:f.name,impact});}});
     let survivalRate=1.0;activeFactors.forEach(f=>{survivalRate*=(1-f.impact);});
-    const finalMin=Math.max(0,baseMin*survivalRate);const finalMax=Math.max(0,baseMax*survivalRate);
+    const finalMin=Math.max(0,baseMinTotal*survivalRate);const finalMax=Math.max(0,baseMaxTotal*survivalRate);
     const totalLossPct=Math.round((1-survivalRate)*100);
     let risk,riskCls;
     if(totalLossPct>=60){risk='CRITICAL RISK';riskCls='critical';}
     else if(totalLossPct>=35){risk='HIGH RISK';riskCls='high';}
     else if(totalLossPct>=15){risk='MODERATE RISK';riskCls='moderate';}
     else{risk='LOW RISK';riskCls='low';}
+    const ref=getYieldReference(crop,variety);
     const unit=ref.isUnitCrop?'units':'kg';
-    document.getElementById('yr_finalYield').textContent=`${finalMin.toFixed(0)} – ${finalMax.toFixed(0)} ${unit}`;
-    document.getElementById('yr_range').textContent=`Over ${months} month(s) | Area: ${area} m² | Variety: ${variety||ref.varietyLabel}`;
+    const sourceLabel=baselineSource==='historical'?` <span style="background:#dbeafe;color:#1e40af;font-size:0.72rem;padding:2px 8px;border-radius:1rem;font-weight:700;">📊 Real data: ${locality}</span>`:'';
+    document.getElementById('yr_finalYield').innerHTML=`${finalMin.toFixed(0)} – ${finalMax.toFixed(0)} ${unit}${sourceLabel}`;
+    document.getElementById('yr_range').textContent=`Over ${months} month(s) | Area: ${area} m² | Variety: ${variety||ref.varietyLabel}${locality?' | Locality: '+locality:''}`;
     document.getElementById('yr_factorsSummary').textContent=activeFactors.length?`Limiting factors: ${activeFactors.map(f=>f.name).join(', ')} | Combined crop loss: ~${totalLossPct}%`:'No limiting factors — base expected yield.';
     const rb=document.getElementById('yr_riskBadge');rb.textContent=risk;rb.className=`yr-risk ${riskCls}`;
     document.getElementById('yieldResultBox').style.display='block';
@@ -1958,8 +2126,352 @@ function calculateEstimatedYield() {
 function resetYieldCalc() {
     document.getElementById('yc_crop').value='';document.getElementById('yc_variety').innerHTML='<option value="">-- Select Variety --</option>';
     document.getElementById('yc_area').value='';document.getElementById('yc_months').value='6';
-    document.getElementById('yc_baseYieldInfo').style.display='none';buildYieldFactors('');
+    document.getElementById('yc_baseYieldInfo').style.display='none';
+    const locBI=document.getElementById('yc_localityBaselineInfo');if(locBI)locBI.style.display='none';
+    buildYieldFactors('');
     document.getElementById('yieldResultBox').style.display='none';
+}
+
+// ==================== YIELD CALC — LOCALITY INTEGRATION ====================
+let yieldCalcPerformanceCache = null; // cached variety performance data
+
+function initYieldCalcLocalityDropdown() {
+    const sel = document.getElementById('yc_locality');
+    if (!sel) return;
+    const locs = ZONE_LOCALITIES[currentZone] || [];
+    sel.innerHTML = '<option value="">-- Select Locality (optional) --</option>';
+    locs.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; sel.appendChild(o); });
+}
+
+function onYieldCalcLocalityChange() {
+    const locality = document.getElementById('yc_locality').value;
+    const crop = document.getElementById('yc_crop').value;
+    const variety = document.getElementById('yc_variety').value;
+    updateYieldCalcBaselineFromLocality(locality, crop, variety);
+}
+
+function onYieldCalcVarietyChange() {
+    const locality = document.getElementById('yc_locality').value;
+    const crop = document.getElementById('yc_crop').value;
+    const variety = document.getElementById('yc_variety').value;
+    updateYieldCalcBaselineFromLocality(locality, crop, variety);
+}
+
+function updateYieldCalcBaselineFromLocality(locality, crop, variety) {
+    const infoEl = document.getElementById('yc_localityBaselineInfo');
+    const infoText = document.getElementById('yc_localityBaselineText');
+    if (!infoEl || !infoText) return;
+    if (!locality || !crop || !yieldCalcPerformanceCache) { infoEl.style.display = 'none'; return; }
+    const matches = yieldCalcPerformanceCache.filter(r =>
+        r.locality === locality &&
+        r.crop === crop &&
+        (!variety || variety === '' || r.variety.toLowerCase() === variety.toLowerCase())
+    );
+    if (!matches.length) { infoEl.style.display = 'none'; return; }
+    const avgYield = matches.reduce((s, r) => s + r.avgMonthlyYield, 0) / matches.length;
+    const cycleYield = matches.reduce((s, r) => s + r.cycleYield, 0) / matches.length;
+    const varietyLabel = variety || matches[0].variety || '—';
+    infoText.innerHTML = `<strong>📍 ${locality} Historical Baseline:</strong> ${varietyLabel} — Avg ${avgYield.toFixed(1)} kg/m²/month | Cycle yield: ${cycleYield.toFixed(1)} kg/m² <span class="ds-historical-badge">📊 From ${matches.length} real record(s)</span>`;
+    infoEl.style.display = 'block';
+    infoEl.style.background = '#e8f5e9';
+    infoEl.style.borderColor = '#7ec891';
+}
+
+// ==================== YIELD CALC — onYieldCalcCropChange ====================
+function onYieldCalcCropChange() {
+    const crop = document.getElementById('yc_crop').value;
+    const varSel = document.getElementById('yc_variety');
+    varSel.innerHTML = '<option value="">-- Select Variety --</option>';
+    if (crop && YC_VARIETIES[crop]) YC_VARIETIES[crop].forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; varSel.appendChild(o); });
+    const ref = crop ? getYieldReference(crop, '') : null;
+    const info = document.getElementById('yc_baseYieldInfo'); const infoText = document.getElementById('yc_baseYieldText');
+    if (ref && crop) { infoText.textContent = `${ref.min} – ${ref.max} ${ref.unit} per harvest cycle (${ref.varietyLabel})`; info.style.display = 'block'; }
+    else info.style.display = 'none';
+    buildYieldFactors(crop); document.getElementById('yieldResultBox').style.display = 'none';
+    document.getElementById('yc_localityBaselineInfo').style.display = 'none';
+}
+
+// ==================== VARIETY PERFORMANCE ====================
+let _vpRawData = [];
+let _vpFiltered = [];
+
+async function loadVarietyPerformanceData(silent) {
+    const btnIcon = document.getElementById('vpBtnIcon');
+    const btnText = document.getElementById('vpBtnText');
+    const statusMsg = document.getElementById('vpStatusMsg');
+    const tableWrap = document.getElementById('vpTableWrap');
+    const dsLoadRow = document.getElementById('dsLoadDataRow');
+
+    if (btnIcon) { btnIcon.className = 'fas fa-spinner fa-spin-custom'; }
+    if (btnText) btnText.textContent = 'Loading...';
+
+    try {
+        const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getVarietyPerformance&_=${Date.now()}`, 20000);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        _vpRawData = data.rows || [];
+        yieldCalcPerformanceCache = _vpRawData;
+
+        // Populate locality filter
+        const locs = [...new Set(_vpRawData.map(r => r.locality).filter(Boolean))].sort();
+        ['vp_localityFilter', 'yc_locality', 'ds_locality'].forEach(selId => {
+            const sel = document.getElementById(selId);
+            if (!sel) return;
+            const first = sel.options[0];
+            sel.innerHTML = '';
+            if (selId === 'vp_localityFilter') sel.appendChild(first || new Option('All Localities', ''));
+            else if (selId === 'yc_locality') sel.appendChild(new Option('-- Select Locality (optional) --', ''));
+            else sel.appendChild(new Option('-- Select Locality --', ''));
+            locs.forEach(l => sel.appendChild(new Option(l, l)));
+        });
+
+        if (statusMsg) statusMsg.style.display = 'none';
+        if (tableWrap) tableWrap.style.display = 'block';
+        if (dsLoadRow) dsLoadRow.style.display = 'none';
+        filterVarietyPerfTable();
+        if (!silent) toast(`✅ Loaded ${_vpRawData.length} variety performance records.`);
+        logActivity('admin', `Variety Performance data loaded — ${_vpRawData.length} records`);
+    } catch (e) {
+        if (statusMsg) { statusMsg.style.display = 'block'; statusMsg.innerHTML = `<i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#f59e0b;display:block;margin-bottom:0.5rem;"></i>Could not load data: ${e.message}`; }
+        if (!silent) toast('Could not load performance data: ' + e.message, true);
+    } finally {
+        if (btnIcon) btnIcon.className = 'fas fa-cloud-download-alt';
+        if (btnText) btnText.textContent = 'Refresh Data';
+    }
+}
+
+function filterVarietyPerfTable() {
+    if (!_vpRawData.length) return;
+    const cropF = (document.getElementById('vp_cropFilter')?.value || '').toLowerCase();
+    const locF  = (document.getElementById('vp_localityFilter')?.value || '').toLowerCase();
+    const sortBy = document.getElementById('vp_sortBy')?.value || 'locality';
+
+    _vpFiltered = _vpRawData.filter(r =>
+        (!cropF || r.crop.toLowerCase() === cropF) &&
+        (!locF  || (r.locality || '').toLowerCase() === locF)
+    );
+
+    _vpFiltered.sort((a, b) => {
+        if (sortBy === 'avgYield') return b.avgMonthlyYield - a.avgMonthlyYield;
+        if (sortBy === 'area')    return b.area - a.area;
+        if (sortBy === 'crop')    return a.crop.localeCompare(b.crop) || a.locality.localeCompare(b.locality);
+        if (sortBy === 'variety') return a.variety.localeCompare(b.variety);
+        return (a.locality || '').localeCompare(b.locality || '') || a.crop.localeCompare(b.crop);
+    });
+
+    renderVarietyPerfTable(_vpFiltered);
+}
+
+function renderVarietyPerfTable(rows) {
+    const tbody = document.getElementById('vpTableBody');
+    const rowCount = document.getElementById('vpRowCount');
+    if (!tbody) return;
+    if (rowCount) rowCount.textContent = `${rows.length} record(s) shown`;
+
+    const cropIcons = {'Tomato':'🍅','Sweet Pepper':'🌶️','English Cucumber':'🥒'};
+
+    // Determine max for bar scaling
+    const maxAvgYield = Math.max(...rows.map(r => r.avgMonthlyYield), 1);
+    const maxCycleYield = Math.max(...rows.map(r => r.cycleYield), 1);
+
+    tbody.innerHTML = rows.map(r => {
+        const perfPct = Math.min(100, Math.round((r.avgMonthlyYield / maxAvgYield) * 100));
+        const perfClass = perfPct >= 70 ? 'vp-perf-high' : perfPct >= 40 ? 'vp-perf-med' : 'vp-perf-low';
+        const perfColor = perfPct >= 70 ? '#22c55e' : perfPct >= 40 ? '#f59e0b' : '#ef4444';
+        const perfLabel = perfPct >= 70 ? 'High' : perfPct >= 40 ? 'Average' : 'Low';
+        const icon = cropIcons[r.crop] || '🌱';
+        const avgYield = r.avgMonthlyYield > 0 ? r.avgMonthlyYield.toFixed(2) : '—';
+        const cycleYield = r.cycleYield > 0 ? r.cycleYield.toFixed(1) : '—';
+        const area = r.area > 0 ? r.area.toFixed(0) : '—';
+        return `<tr>
+            <td style="font-weight:700;color:var(--green-800);">${r.locality || '—'}</td>
+            <td>${icon} ${r.crop}</td>
+            <td><strong>${r.variety || 'Unknown'}</strong></td>
+            <td style="text-align:center;">${area}</td>
+            <td style="text-align:center;font-weight:700;color:var(--green-800);">${avgYield}</td>
+            <td style="text-align:center;font-weight:700;color:var(--teal);">${cycleYield}</td>
+            <td style="text-align:center;">${r.count || 1}</td>
+            <td>
+                <div class="vp-perf-bar">
+                    <div class="vp-perf-track"><div class="vp-perf-fill" style="width:${perfPct}%;background:${perfColor};"></div></div>
+                    <span class="vp-perf-label ${perfClass}">${perfLabel}</span>
+                </div>
+            </td>
+        </tr>`;
+    }).join('') || '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:2rem;">No records match the current filters.</td></tr>';
+}
+
+// ==================== DECISION SUPPORT ====================
+function initDecisionSupportLocality() {
+    const sel = document.getElementById('ds_locality');
+    if (!sel) return;
+    const locs = ZONE_LOCALITIES[currentZone] || [];
+    sel.innerHTML = '<option value="">-- Select Locality --</option>';
+    locs.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; sel.appendChild(o); });
+}
+
+function onDSLocalityChange() { /* triggers re-analyse if already run */ }
+function onDSCropChange() { /* triggers re-analyse if already run */ }
+
+// Local risk profile per locality (disease/pest pressure based on Zone E2 context)
+const DS_LOCAL_RISKS = {
+    'Camp de Masque':    { 'Late Blight':0.30, 'Thrips':0.20 },
+    'Beau Bois':         { 'Late Blight':0.25, 'Thrips':0.15, 'Tuta absoluta':0.20 },
+    'Montagne Blanche':  { 'Late Blight':0.35, 'Bacterial Wilt':0.15 },
+    'Lallmatie':         { 'Thrips':0.25, 'Whiteflies':0.20 },
+    'Bel Etang':         { 'Late Blight':0.28, 'Spider Mites':0.18 },
+    'Bon Accueil':       { 'Late Blight':0.22, 'Thrips':0.18 },
+    'Salazie':           { 'Late Blight':0.40, 'Bacterial Wilt':0.20 },
+    'Providence':        { 'Thrips':0.20, 'Whiteflies':0.15 },
+    'Quatre Bords':      { 'Late Blight':0.25, 'Tuta absoluta':0.18 },
+    'Riche Fond':        { 'Late Blight':0.30, 'Thrips':0.15 }
+};
+
+// Variety-specific disease resistance (genetic advantage)
+const DS_VARIETY_RESISTANCE = {
+    'Cherry':      { 'Late Blight': 0.20 },   // 20% genetic resistance to Late Blight
+    'THN 988':     { 'Tuta absoluta': 0.15 },
+    'Acylia':      { 'Spider Mites': 0.15 },
+    'Blocky':      { 'Thrips': 0.10 },
+    'Lamuyo':      { 'Thrips': 0.15 }
+};
+
+async function runDecisionSupport() {
+    const locality = document.getElementById('ds_locality').value;
+    const crop     = document.getElementById('ds_crop').value;
+    const area     = parseFloat(document.getElementById('ds_area').value) || 0;
+
+    if (!locality) { toast('Please select a locality.', true); return; }
+    if (!crop)     { toast('Please select a crop.', true); return; }
+
+    const btnIcon = document.getElementById('dsBtnIcon');
+    const btnText = document.getElementById('dsBtnText');
+    if (btnIcon) btnIcon.className = 'fas fa-spinner fa-spin-custom';
+    if (btnText) btnText.textContent = 'Analysing...';
+
+    // Small delay for UX
+    await new Promise(r => setTimeout(r, 300));
+
+    const varieties = YC_VARIETIES[crop] || [];
+    const localRisks = DS_LOCAL_RISKS[locality] || {};
+    const hasPerformanceData = yieldCalcPerformanceCache && yieldCalcPerformanceCache.length > 0;
+
+    // Build variety analysis
+    const analyses = varieties.filter(v => v !== 'Other').map(variety => {
+        // 1. Get baseline yield
+        let baseline, baselineSource;
+        if (hasPerformanceData) {
+            const matches = yieldCalcPerformanceCache.filter(r =>
+                r.locality === locality && r.crop === crop && r.variety.toLowerCase() === variety.toLowerCase()
+            );
+            if (matches.length > 0) {
+                baseline = matches.reduce((s, r) => s + r.cycleYield, 0) / matches.length;
+                baselineSource = 'historical';
+            }
+        }
+        if (!baseline) {
+            const ref = getYieldReference(crop, variety);
+            baseline = (ref.min + ref.max) / 2;
+            baselineSource = 'reference';
+        }
+
+        // 2. Apply local risk factors with variety resistance
+        const varResist = DS_VARIETY_RESISTANCE[variety] || {};
+        let survivalRate = 1.0;
+        const riskBreakdown = [];
+        Object.entries(localRisks).forEach(([pest, severity]) => {
+            const factor = YIELD_FACTORS.find(f => f.name === pest && f.crops.includes(crop));
+            if (!factor) return;
+            const resistance = varResist[pest] || 0;
+            const effectiveSeverity = Math.max(0, severity - resistance);
+            const loss = factor.maxImpact * effectiveSeverity;
+            survivalRate *= (1 - loss);
+            riskBreakdown.push({ pest, severity, resistance, effectiveLoss: Math.round(loss * 100) });
+        });
+
+        const adjustedYield = baseline * survivalRate;
+        const lossPercent = Math.round((1 - survivalRate) * 100);
+        const totalForArea = area > 0 ? adjustedYield * area : null;
+        // Estimated revenue at MUR 50/kg
+        const estimatedRevenue = totalForArea ? Math.round(totalForArea * 50) : null;
+
+        return { variety, baseline, adjustedYield, lossPercent, baselineSource, riskBreakdown, totalForArea, estimatedRevenue, survivalRate };
+    });
+
+    // Sort by adjusted yield descending
+    analyses.sort((a, b) => b.adjustedYield - a.adjustedYield);
+    const best = analyses[0];
+
+    // Build output
+    const cropIcons = {'Tomato':'🍅','Sweet Pepper':'🌶️','English Cucumber':'🥒'};
+    const icon = cropIcons[crop] || '🌱';
+    const unit = crop === 'English Cucumber' ? 'units/m²' : 'kg/m²';
+
+    const dsOutput = document.getElementById('dsOutput');
+    if (!dsOutput) return;
+
+    let html = `
+    <div class="ds-recommendation-panel">
+        <div class="ds-rec-title"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> RECOMMENDATION — ${icon} ${crop} in ${locality}</div>
+        <div style="font-size:0.95rem;color:#2d1d6e;font-weight:700;margin-bottom:0.4rem;">
+            🏆 Plant <strong>${best.variety}</strong> — Expected yield: <strong>${best.adjustedYield.toFixed(1)} ${unit}</strong> after local risk adjustment
+            ${best.totalForArea ? ` | Total: <strong>${Math.round(best.totalForArea).toLocaleString()} ${unit === 'units/m²' ? 'units' : 'kg'}</strong> for ${area} m²` : ''}
+        </div>
+        ${best.estimatedRevenue ? `<div style="font-size:0.85rem;color:#5b21b6;margin-bottom:0.4rem;">💰 Estimated revenue: ~MUR ${best.estimatedRevenue.toLocaleString()} (@ MUR 50/kg)</div>` : ''}
+        <div style="font-size:0.8rem;color:#6d28d9;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span>Local risk profile: ${Object.keys(localRisks).length > 0 ? Object.entries(localRisks).map(([p, s]) => `${p} (${Math.round(s*100)}%)`).join(', ') : 'No specific risks on record for this locality'}</span>
+            ${hasPerformanceData ? '<span class="ds-historical-badge">📊 Uses real performance data</span>' : '<span class="ds-static-badge">📖 Uses reference data</span>'}
+        </div>
+    </div>
+    <div class="ds-varieties-grid">`;
+
+    analyses.forEach((a, idx) => {
+        const isTop = idx === 0;
+        const riskCls = a.lossPercent >= 35 ? 'ds-rec-risk' : isTop ? 'ds-rec-top' : 'ds-rec-good';
+        const riskLabel = a.lossPercent >= 35 ? '⚠️ High Risk' : isTop ? '🏆 Best Choice' : '✅ Good Option';
+        const resistedPests = a.riskBreakdown.filter(r => r.resistance > 0);
+        const insightText = isTop
+            ? `${a.variety} achieves the highest expected yield in ${locality} after accounting for local disease/pest pressure. ${resistedPests.length > 0 ? `Genetic resistance to ${resistedPests.map(r => r.pest).join(', ')} gives an advantage.` : ''}`
+            : `${a.variety} shows ${a.lossPercent}% potential loss from local risks. ${resistedPests.length > 0 ? `Has resistance to: ${resistedPests.map(r => r.pest).join(', ')}.` : 'No specific resistance advantage.'}`;
+
+        html += `<div class="ds-variety-card ${isTop ? 'ds-top' : ''}">
+            <div class="ds-variety-header">
+                <div class="ds-variety-name">${isTop ? '🏆 ' : ''}${a.variety}</div>
+                <span class="ds-rec-badge ${riskCls}">${riskLabel}</span>
+            </div>
+            <div class="ds-metrics">
+                <div class="ds-metric">
+                    <div class="ds-metric-val">${a.baseline.toFixed(1)}</div>
+                    <div class="ds-metric-lbl">Baseline ${unit} ${a.baselineSource === 'historical' ? '📊' : '📖'}</div>
+                </div>
+                <div class="ds-metric">
+                    <div class="ds-metric-val" style="color:${a.lossPercent >= 35 ? '#c0392b' : 'var(--green-800)'};">${a.adjustedYield.toFixed(1)}</div>
+                    <div class="ds-metric-lbl">After Risk (${unit})</div>
+                </div>
+                <div class="ds-metric">
+                    <div class="ds-metric-val" style="color:${a.lossPercent >= 35 ? '#c0392b' : '#888'};">↓${a.lossPercent}%</div>
+                    <div class="ds-metric-lbl">Est. Loss</div>
+                </div>
+                ${a.totalForArea ? `<div class="ds-metric"><div class="ds-metric-val" style="color:var(--teal);">${Math.round(a.totalForArea).toLocaleString()}</div><div class="ds-metric-lbl">Total (${area}m²)</div></div>` : ''}
+            </div>
+            ${a.riskBreakdown.length > 0 ? `<div style="font-size:0.75rem;color:#888;margin-bottom:0.4rem;">Risks: ${a.riskBreakdown.map(r => `${r.pest}: ${r.effectiveLoss}% loss${r.resistance > 0 ? ` (${Math.round(r.resistance*100)}% resisted)` : ''}`).join(' | ')}</div>` : ''}
+            <div class="ds-insight-box">${insightText}</div>
+        </div>`;
+    });
+
+    html += `</div>
+    <div style="margin-top:0.8rem;font-size:0.75rem;color:#aaa;text-align:center;">
+        Analysis based on Zone E2 local risk profiles, variety resistance data, and ${hasPerformanceData ? 'real historical performance records' : 'reference yield data'}. Always validate with field scouting.
+    </div>`;
+
+    dsOutput.innerHTML = html;
+    dsOutput.style.display = 'block';
+    dsOutput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    logActivity('admin', `Decision Support run — ${crop} in ${locality} — Best: ${best.variety}`);
+
+    if (btnIcon) btnIcon.className = 'fas fa-brain';
+    if (btnText) btnText.textContent = 'Analyse Varieties';
 }
 
 // ==================== GROWING TIPS ====================
@@ -2008,6 +2520,8 @@ async function login(username, password) {
                 buildYieldFactors('');loadDashboard();loadAdminMemberCount();
                 await loadPestAlertSettings();
                 loadAllUsernamesForSuggestions(); // preload for partial search
+                initYieldCalcLocalityDropdown();
+                initDecisionSupportLocality();
             } else {
                 document.getElementById('growerProfileCard').style.display='block';
                 document.getElementById('adminSearchSection').style.display='none';
@@ -2737,6 +3251,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('active'));
             btn.classList.add('active');const tabId=btn.dataset.tab;const tab=document.getElementById(tabId);if(tab)tab.classList.add('active');
             if(tabId==='adminGHTab')renderAdminGHForm();
+            if(tabId==='varietyPerfTab'&&!_vpRawData.length){document.getElementById('vpStatusMsg').style.display='block';}
         });
     });
 
