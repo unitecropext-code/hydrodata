@@ -7036,7 +7036,7 @@ function renderTopCropPanel(stats,cropKey){
                 </div>`).join('')}
             </div>
         </div>`:
-        `<div style="margin-top:1rem;font-size:0.8rem;color:#aaa;text-align:center;padding:0.5rem;"><i class="fas fa-map-marker-alt"></i> Locality data not yet available.</div>`;
+        `''`;
 
     if(!items.length){container.innerHTML=`<div class="variety-no-data"><i class="fas fa-seedling" style="font-size:2rem;color:var(--green-200);display:block;margin-bottom:0.6rem;"></i>No variety data available for ${crop.label} yet.</div>${localityHtml}`;return;}
     container.innerHTML=`<div class="variety-cards-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">${items.map((v,i)=>{
@@ -7968,7 +7968,12 @@ function toggleYLF(idx) {
     const isOpen = body.style.display !== 'none';
     toggleEl(body, !isOpen);
     if (chevron) chevron.classList.toggle('open', !isOpen);
-    if (!isOpen) buildYLFFactors(idx);
+    if (!isOpen) {
+        // Always reset built flag — DOM may have been re-rendered by loadDashboard()
+        const grid = document.getElementById(`ylf-factors-${idx}`);
+        if (grid) grid.dataset.built = '0';
+        buildYLFFactors(idx);
+    }
 }
 
 function buildYLFFactors(idx) {
@@ -8070,17 +8075,24 @@ function saveYLF(idx, tsKey) {
 
 function loadYLFState(idx) {
     const tsEl = document.getElementById(`ylf-ts-${idx}`);
-    const key  = 'ylf_' + (tsEl ? tsEl.value || idx : idx);
+    const tsVal = tsEl ? (tsEl.value || '').trim() : '';
+    // Bail out if no valid timestamp — can't reliably identify saved state
+    if (!tsVal) return;
+    const key = 'ylf_' + tsVal;
     let saved;
-    try { saved = JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) { return; }
+    try { saved = JSON.parse(localStorage.getItem(key) || 'null'); }
+    catch(e) { localStorage.removeItem(key); return; }  // clear corrupt entry
     if (!saved) return;
     const { factors, remarks } = saved;
     if (factors) {
         Object.entries(factors).forEach(([id, state]) => {
             const cb = document.getElementById(`ylfcb_${idx}_${id}`);
             const sl = document.getElementById(`ylfsl_${idx}_${id}`);
-            if (cb) cb.checked = state.checked;
-            if (sl) { sl.value = state.severity; sl.disabled = !state.checked; }
+            // Skip silently if element is missing (index drift after re-render)
+            if (!cb || !sl) return;
+            cb.checked = state.checked;
+            sl.value = state.severity;
+            sl.disabled = !state.checked;
             updateYLFDisplay(idx, id);
         });
     }
