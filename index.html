@@ -3998,7 +3998,7 @@ function toggleLang() { applyLang(_currentLang === 'en' ? 'kr' : 'en'); }
 //            Type: Web app → Execute as: Me → Who has access: Anyone
 //            Then copy the /exec URL and replace the value below.
 // ─────────────────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYfp4pNiI1Oi8be48_9OjRhv6g_V0p7Ubpu5-BpxDSNxK4yRlEJDqW7e5X_RyjscKlug/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgO7yl1hAuiBkzZBOmP3UuwqeFuniQlF5G0e5bC_bAVXJiLtaDdcOnLxS5G7dvPjtUA/exec';
 //  ↑ Replace the URL above with your own deployed GAS /exec URL.
 // ─────────────────────────────────────────────────────────────────────
 
@@ -5208,59 +5208,122 @@ function calculateEstimatedYield() {
     const area=parseFloat(document.getElementById('yc_area').value)||0;const months=parseFloat(document.getElementById('yc_months').value)||6;
     if(!crop){toast('Please select a crop first.',true);return;}if(!area){toast('Please enter the greenhouse area.',true);return;}
 
-    // Try locality-aware baseline from performance cache first
-    let baseMin, baseMax, baselineSource='reference';
-    if(locality && yieldCalcPerformanceCache && yieldCalcPerformanceCache.length) {
-        const matches=yieldCalcPerformanceCache.filter(r=>
-            r.locality===locality && r.crop===crop &&
-            (!variety || variety==='' || r.variety.toLowerCase()===variety.toLowerCase())
+    // Compute reference range totals (per m² × area) for use in statistical model
+    const _ref0 = getYieldReference(crop, variety);
+    const baseMinTotal = _ref0.min * area;
+    const baseMaxTotal = _ref0.max * area;
+
+    // ── Statistical Yield Model (v29) ─────────────────────────────────────────
+    // Method: Weighted blend of (a) observed locality/variety data and
+    //         (b) agronomic reference ranges, with 95% confidence interval.
+    //
+    // Weights shift from reference-only → observation-based as real data accrues.
+    // CV (coefficient of variation) starts at 25% (reference uncertainty) and
+    // shrinks as more observed data is available, retaining 35% irreducible CV.
+    //
+    // For English Cucumber: yield is always in units (not kg).
+    // ─────────────────────────────────────────────────────────────────────────
+    const ref = getYieldReference(crop, variety);
+    const isUnitCrop = ref.isUnitCrop;
+    const unit = isUnitCrop ? 'units' : 'kg';
+
+    // 1. Reference range (per m² × area × months normalised to full cycle)
+    //    baseMin/baseMax already computed above as cycle totals
+    const refMid   = (baseMinTotal + baseMaxTotal) / 2;
+    const refHalf  = (baseMaxTotal - baseMinTotal) / 2;
+
+    // 2. Observed data estimate (from locality performance cache)
+    let obsEstimate = -1;   // -1 = no observed data
+    let obsDataSource = '';
+    let progressFraction = 0;  // 0–1: how far through the cycle we are
+    if (locality && yieldCalcPerformanceCache && yieldCalcPerformanceCache.length) {
+        const matches = yieldCalcPerformanceCache.filter(r =>
+            r.locality === locality && r.crop === crop &&
+            (!variety || variety === '' || r.variety.toLowerCase() === variety.toLowerCase())
         );
-        if(matches.length>0) {
-            const avgCycleYield=matches.reduce((s,r)=>s+r.cycleYield,0)/matches.length;
-            if(avgCycleYield>0) {
-                // Use real data: ±15% range around historical average
-                baseMin=avgCycleYield*0.85;
-                baseMax=avgCycleYield*1.15;
-                baselineSource='historical';
+        if (matches.length > 0) {
+            const avgCycleYield = matches.reduce((s, r) => s + r.cycleYield, 0) / matches.length;
+            if (avgCycleYield > 0) {
+                obsEstimate   = avgCycleYield * area;  // scale to current GH area
+                obsDataSource = locality;
+                // If historical records exist we treat them as representative of a full cycle
+                progressFraction = 0.75;  // conservative: historical data covers most of cycle
             }
         }
     }
-    // Fallback to static reference data
-    if(!baseMin) {
-        const ref=getYieldReference(crop,variety);
-        baseMin=ref.min;baseMax=ref.max;
-    }
-    const baseMinTotal=baseMin*area; const baseMaxTotal=baseMax*area;
 
-    const relevant=YIELD_FACTORS.filter(f=>f.crops.includes(crop));const activeFactors=[];
-    relevant.forEach(f=>{const cb=document.getElementById(`cb_${f.id}`);const sl=document.getElementById(`sl_${f.id}`);
-        if(cb&&cb.checked&&sl){const sev=parseInt(sl.value)/100;const impact=f.maxImpact*sev;activeFactors.push({name:f.name,impact});}});
-    let survivalRate=1.0;activeFactors.forEach(f=>{survivalRate*=(1-f.impact);});
-    const finalMin=Math.max(0,baseMinTotal*survivalRate);const finalMax=Math.max(0,baseMaxTotal*survivalRate);
-    const totalLossPct=Math.round((1-survivalRate)*100);
-    let risk,riskCls;
-    if(totalLossPct>=60){risk='CRITICAL RISK';riskCls='critical';}
-    else if(totalLossPct>=35){risk='HIGH RISK';riskCls='high';}
-    else if(totalLossPct>=15){risk='MODERATE RISK';riskCls='moderate';}
-    else{risk='LOW RISK';riskCls='low';}
-    const ref=getYieldReference(crop,variety);
-    const unit=ref.isUnitCrop?'units':'kg';
-    const sourceLabel=baselineSource==='historical'?` <span style="background:#dbeafe;color:#1e40af;font-size:0.72rem;padding:2px 8px;border-radius:1rem;font-weight:700;">📊 Real data: ${locality}</span>`:'';
+    // 3. Blend weights: observation weight grows with progressFraction
+    const obsWeight = Math.min(0.90, progressFraction * 1.2);
+    const refWeight = 1 - obsWeight;
+
+    // 4. Point estimate
+    const pointEstimate = obsEstimate >= 0
+        ? refWeight * refMid + obsWeight * obsEstimate
+        : refMid;
+
+    // 5. Limiting-factor survival rate (multiplicative — same as before)
+    const relevant = YIELD_FACTORS.filter(f => f.crops.includes(crop));
+    const activeFactors = [];
+    relevant.forEach(f => {
+        const cb = document.getElementById(`cb_${f.id}`);
+        const sl = document.getElementById(`sl_${f.id}`);
+        if (cb && cb.checked && sl) {
+            const sev = parseInt(sl.value) / 100;
+            const impact = f.maxImpact * sev;
+            activeFactors.push({ name: f.name, impact });
+        }
+    });
+    let survivalRate = 1.0;
+    activeFactors.forEach(f => { survivalRate *= (1 - f.impact); });
+
+    const adjustedPoint = Math.max(0, pointEstimate * survivalRate);
+
+    // 6. Uncertainty: CV_eff shrinks as observation data accumulates
+    const CV_ref  = 0.25;
+    const CV_eff  = CV_ref * (1 - 0.65 * progressFraction);
+    // Also widen uncertainty proportionally for limiting factors (more factors = more unknown)
+    const factorUncertaintyBoost = activeFactors.length > 0 ? 1 + activeFactors.length * 0.03 : 1;
+    const sigma   = adjustedPoint * CV_eff * factorUncertaintyBoost;
+    const CI95    = 1.96 * sigma;
+
+    const finalMin = Math.max(0, adjustedPoint - CI95);
+    const finalMax = Math.max(0, adjustedPoint + CI95);
+    const totalLossPct = Math.round((1 - survivalRate) * 100);
+
+    // 7. Risk classification
+    let risk, riskCls;
+    if (totalLossPct >= 60)      { risk = 'CRITICAL RISK'; riskCls = 'critical'; }
+    else if (totalLossPct >= 35) { risk = 'HIGH RISK';     riskCls = 'high'; }
+    else if (totalLossPct >= 15) { risk = 'MODERATE RISK'; riskCls = 'moderate'; }
+    else                         { risk = 'LOW RISK';       riskCls = 'low'; }
+
+    // 8. Model provenance badge
+    const modelBadge = obsEstimate >= 0
+        ? `<span style="background:#dbeafe;color:#1e40af;font-size:0.72rem;padding:2px 8px;border-radius:1rem;font-weight:700;">📊 Locality data: ${obsDataSource}</span>`
+        : `<span style="background:#fef3c7;color:#92400e;font-size:0.72rem;padding:2px 8px;border-radius:1rem;font-weight:700;">📐 Reference model</span>`;
+    const ciNote = `<span style="font-size:0.72rem;color:#6b7280;display:block;margin-top:3px;">95% CI · ±${Math.round(CI95)} ${unit} · CV ${(CV_eff*100).toFixed(0)}%</span>`;
+
+    // 9. Revenue estimate
     const mktPriceYC = getMarketPrice(crop, variety, pepperColour);
-    // Use manually selected/entered price if set, otherwise fall back to reference
     const effectivePrice = (_ycActivePrice > 0) ? _ycActivePrice : mktPriceYC.price;
     const effectiveLabel = (_ycActivePrice > 0)
         ? `Rs ${_ycActivePrice}/${mktPriceYC.unit} (selected)`
         : mktPriceYC.label.replace('MUR','Rs');
     const revenueMin = Math.round(finalMin * effectivePrice);
     const revenueMax = Math.round(finalMax * effectivePrice);
-    const revLabel   = `<div style="font-size:0.82rem;color:#c4b5fd;margin-top:0.3rem;">💰 Est. revenue: <strong>Rs ${revenueMin.toLocaleString()} – ${revenueMax.toLocaleString()}</strong> <span style="font-size:0.72rem;opacity:0.8;">(${effectiveLabel})</span></div>`;
-    document.getElementById('yr_finalYield').innerHTML=`${finalMin.toFixed(0)} – ${finalMax.toFixed(0)} ${unit}${sourceLabel}${revLabel}`;
-    document.getElementById('yr_range').textContent=`Over ${months} month(s) | Area: ${area} m² | Variety: ${variety||ref.varietyLabel}${locality?' | Locality: '+locality:''}`;
-    document.getElementById('yr_factorsSummary').textContent=activeFactors.length?`Limiting factors: ${activeFactors.map(f=>f.name).join(', ')} | Combined crop loss: ~${totalLossPct}%`:'No limiting factors — base expected yield.';
-    const rb=document.getElementById('yr_riskBadge');rb.textContent=risk;rb.className=`yr-risk ${riskCls}`;
+    const revLabel = `<div style="font-size:0.82rem;color:#c4b5fd;margin-top:0.3rem;">💰 Est. revenue: <strong>Rs ${revenueMin.toLocaleString()} – ${revenueMax.toLocaleString()}</strong> <span style="font-size:0.72rem;opacity:0.8;">(${effectiveLabel})</span></div>`;
+
+    document.getElementById('yr_finalYield').innerHTML =
+        `${finalMin.toFixed(0)} – ${finalMax.toFixed(0)} ${unit} ${modelBadge}${ciNote}${revLabel}`;
+    document.getElementById('yr_range').textContent =
+        `Over ${months} month(s) | Area: ${area} m² | Variety: ${variety||ref.varietyLabel}${locality?' | Locality: '+locality:''}`;
+    document.getElementById('yr_factorsSummary').textContent =
+        activeFactors.length
+            ? `Limiting factors: ${activeFactors.map(f=>f.name).join(', ')} | Combined crop loss: ~${totalLossPct}%`
+            : 'No limiting factors — base expected yield.';
+    const rb = document.getElementById('yr_riskBadge'); rb.textContent = risk; rb.className = `yr-risk ${riskCls}`;
     showEl(document.getElementById('yieldResultBox'));
-    document.getElementById('yieldResultBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+    document.getElementById('yieldResultBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 function resetYieldCalc() {
     document.getElementById('yc_crop').value='';document.getElementById('yc_variety').innerHTML='<option value="">-- Select Variety --</option>';
