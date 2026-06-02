@@ -7961,146 +7961,182 @@ function initAdminLiveFilter(){
 }
 
 // ==================== YIELD LIMITING FACTORS (per card) ====================
+// ==================== YLF MODULE (v29 — fully rebuilt) ====================
+// Root cause of the "stuck" bug:
+//   toggleEl()/showEl()/hideEl() manage visibility via CSS *classes* (.hidden, .d-block),
+//   NOT via el.style.display. The old open-state check `body.style.display !== 'none'`
+//   always returned true after the first toggle (style.display is cleared to ''),
+//   so the panel never closed and buildYLFFactors was called on every tap.
+//
+// This module uses a single data attribute `data-ylf-open="1/0"` as the source of
+// truth for open/closed state, completely independent of display helpers.
+
 function toggleYLF(idx) {
-    const body    = document.getElementById(`ylf-body-${idx}`);
-    const chevron = document.getElementById(`ylf-chevron-${idx}`);
+    const body    = document.getElementById('ylf-body-' + idx);
+    const chevron = document.getElementById('ylf-chevron-' + idx);
     if (!body) return;
-    const isOpen = body.style.display !== 'none';
-    toggleEl(body, !isOpen);
-    if (chevron) chevron.classList.toggle('open', !isOpen);
-    if (!isOpen) {
-        // Always reset built flag — DOM may have been re-rendered by loadDashboard()
-        const grid = document.getElementById(`ylf-factors-${idx}`);
-        if (grid) grid.dataset.built = '0';
-        buildYLFFactors(idx);
+
+    // Use data attribute as sole source of truth — never rely on style.display
+    const isOpen = body.getAttribute('data-ylf-open') === '1';
+
+    if (isOpen) {
+        // Close
+        body.style.display = 'none';
+        body.setAttribute('data-ylf-open', '0');
+        if (chevron) chevron.classList.remove('open');
+    } else {
+        // Open — always rebuild factors fresh (DOM may have been wiped by loadDashboard)
+        body.style.display = 'block';
+        body.setAttribute('data-ylf-open', '1');
+        if (chevron) chevron.classList.add('open');
+        _ylfBuild(idx);
     }
 }
 
-function buildYLFFactors(idx) {
-    const cropEl = document.getElementById(`ylf-crop-${idx}`);
-    const grid   = document.getElementById(`ylf-factors-${idx}`);
-    if (!grid || grid.dataset.built === '1') return;
-    const crop = cropEl ? cropEl.value : '';
-    const relevant = YIELD_FACTORS.filter(f => !crop || f.crops.includes(crop));
+function _ylfBuild(idx) {
+    const cropEl = document.getElementById('ylf-crop-' + idx);
+    const grid   = document.getElementById('ylf-factors-' + idx);
+    if (!grid) return;
+
+    // Always rebuild — never cache with dataset.built because loadDashboard()
+    // destroys and recreates the DOM node, resetting all dataset properties anyway
+    const crop     = cropEl ? cropEl.value : '';
+    const relevant = YIELD_FACTORS.filter(function(f) { return !crop || f.crops.includes(crop); });
+
     if (!relevant.length) {
-        grid.innerHTML = '<div class="ylf-no-factors">No specific limiting factors defined for this crop.</div>';
-        grid.dataset.built = '1';
+        grid.innerHTML = '<div class="ylf-no-factors">No limiting factors defined for this crop.</div>';
         return;
     }
-    grid.innerHTML = relevant.map(f => `
-        <div class="ylf-factor-item" id="ylfitem_${idx}_${f.id}">
-            <div class="ylf-factor-header">
-                <input type="checkbox" class="ylf-factor-cb" id="ylfcb_${idx}_${f.id}"
-                    onchange="updateYLFSlider('${idx}','${f.id}')">
-                <span class="ylf-factor-name">${f.name}</span>
-                <span class="ylf-factor-type-badge">${f.type}</span>
-            </div>
-            <input type="range" class="ylf-factor-slider" id="ylfsl_${idx}_${f.id}"
-                min="0" max="100" value="30" oninput="updateYLFDisplay('${idx}','${f.id}')" disabled>
-            <div style="height:5px;border-radius:3px;background:#e8f5e9;overflow:hidden;margin:3px 0;">
-                <div id="ylfbar_${idx}_${f.id}" style="height:100%;border-radius:3px;width:0%;background:var(--green-400);transition:width 0.3s,background 0.3s;"></div>
-            </div>
-            <div class="ylf-factor-impact" id="ylfimp_${idx}_${f.id}">Severity: <strong>30%</strong></div>
-        </div>`).join('');
-    grid.dataset.built = '1';
-    loadYLFState(idx);
-}
-function updateYLFSlider(idx, id) {
-    const cb = document.getElementById(`ylfcb_${idx}_${id}`);
-    const sl = document.getElementById(`ylfsl_${idx}_${id}`);
-    if (sl) sl.disabled = !(cb && cb.checked);
-    updateYLFDisplay(idx, id);
+
+    grid.innerHTML = relevant.map(function(f) {
+        return '<div class="ylf-factor-item" id="ylfitem_' + idx + '_' + f.id + '">' +
+            '<div class="ylf-factor-header">' +
+                '<input type="checkbox" class="ylf-factor-cb" id="ylfcb_' + idx + '_' + f.id + '"' +
+                    ' onchange="_ylfSliderSync(\'' + idx + '\',\'' + f.id + '\')">' +
+                '<span class="ylf-factor-name">' + f.name + '</span>' +
+                '<span class="ylf-factor-type-badge">' + f.type + '</span>' +
+            '</div>' +
+            '<input type="range" class="ylf-factor-slider" id="ylfsl_' + idx + '_' + f.id + '"' +
+                ' min="0" max="100" value="30"' +
+                ' oninput="_ylfDisplaySync(\'' + idx + '\',\'' + f.id + '\')" disabled>' +
+            '<div style="height:5px;border-radius:3px;background:#e8f5e9;overflow:hidden;margin:3px 0;">' +
+                '<div id="ylfbar_' + idx + '_' + f.id + '" style="height:100%;border-radius:3px;width:0%;background:var(--green-400);transition:width 0.3s,background 0.3s;"></div>' +
+            '</div>' +
+            '<div class="ylf-factor-impact" id="ylfimp_' + idx + '_' + f.id + '">Severity: <strong>30%</strong></div>' +
+        '</div>';
+    }).join('');
+
+    _ylfLoadState(idx);
 }
 
-function updateYLFDisplay(idx, id) {
-    const sl  = document.getElementById(`ylfsl_${idx}_${id}`);
-    const imp = document.getElementById(`ylfimp_${idx}_${id}`);
+// Keep old names as aliases so any inline onclick="updateYLFSlider(...)" in older
+// rendered cards still works without requiring a full page reload
+function updateYLFSlider(idx, id) { _ylfSliderSync(idx, id); }
+function updateYLFDisplay(idx, id) { _ylfDisplaySync(idx, id); }
+function buildYLFFactors(idx)      { _ylfBuild(idx); }
+
+function _ylfSliderSync(idx, id) {
+    const cb = document.getElementById('ylfcb_' + idx + '_' + id);
+    const sl = document.getElementById('ylfsl_' + idx + '_' + id);
+    if (sl) sl.disabled = !(cb && cb.checked);
+    _ylfDisplaySync(idx, id);
+}
+
+function _ylfDisplaySync(idx, id) {
+    const sl  = document.getElementById('ylfsl_' + idx + '_' + id);
+    const imp = document.getElementById('ylfimp_' + idx + '_' + id);
     if (!sl || !imp) return;
-    const factor = YIELD_FACTORS.find(f => f.id === id);
+    const factor = YIELD_FACTORS.find(function(f) { return f.id === id; });
     if (!factor) return;
-    const cb = document.getElementById(`ylfcb_${idx}_${id}`);
+    const cb       = document.getElementById('ylfcb_' + idx + '_' + id);
     const isActive = cb && cb.checked;
-    const sev  = parseInt(sl.value);
-    const loss = Math.round(factor.maxImpact * (sev / 100) * 100);
-    imp.innerHTML = isActive
-        ? `Severity: <strong>${sev}%</strong> — est. loss: <strong style="color:#ef4444;">${loss}%</strong>`
-        : `Severity: <strong>${sev}%</strong>`;
-    // v21: update visual impact bar
-    const bar = document.getElementById(`ylfbar_${idx}_${id}`);
+    const sev      = parseInt(sl.value);
+    const loss     = Math.round(factor.maxImpact * (sev / 100) * 100);
+    imp.innerHTML  = isActive
+        ? 'Severity: <strong>' + sev + '%</strong> — est. loss: <strong style="color:#ef4444;">' + loss + '%</strong>'
+        : 'Severity: <strong>' + sev + '%</strong>';
+    const bar = document.getElementById('ylfbar_' + idx + '_' + id);
     if (bar) {
-        bar.style.width = isActive ? sev + '%' : '0%';
+        bar.style.width      = isActive ? sev + '%' : '0%';
         bar.style.background = sev < 35 ? 'var(--green-400)' : sev < 65 ? '#f59e0b' : '#ef4444';
     }
-    // v21: update card highlight
-    const card = document.getElementById(`ylfitem_${idx}_${id}`);
-    if (card) card.style.borderColor = isActive ? (sev<35?'var(--green-300)':sev<65?'#fcd34d':'#fca5a5') : '';
-    // v21: update active count badge on the toggle button
-    _ylfUpdateCardCount(idx);
+    const card = document.getElementById('ylfitem_' + idx + '_' + id);
+    if (card) card.style.borderColor = isActive
+        ? (sev < 35 ? 'var(--green-300)' : sev < 65 ? '#fcd34d' : '#fca5a5')
+        : '';
+    _ylfCountBadge(idx);
 }
 
-function _ylfUpdateCardCount(idx) {
-    const countEl = document.getElementById(`ylf-count-${idx}`);
+function _ylfCountBadge(idx) {
+    const countEl  = document.getElementById('ylf-count-' + idx);
     if (!countEl) return;
-    const crop = document.getElementById(`ylf-crop-${idx}`)?.value||'';
-    const relevant = YIELD_FACTORS.filter(f=>!crop||f.crops.includes(crop));
-    const activeCount = relevant.filter(f=>{
-        const cb=document.getElementById(`ylfcb_${idx}_${f.id}`);
-        return cb&&cb.checked;
+    const crop     = (document.getElementById('ylf-crop-' + idx) || {}).value || '';
+    const relevant = YIELD_FACTORS.filter(function(f) { return !crop || f.crops.includes(crop); });
+    const n        = relevant.filter(function(f) {
+        var cb = document.getElementById('ylfcb_' + idx + '_' + f.id);
+        return cb && cb.checked;
     }).length;
-    if (activeCount>0) {
-        showEl(countEl, 'flex');
-        countEl.textContent=activeCount+' active';
+    if (n > 0) {
+        countEl.style.display = 'inline-flex';
+        countEl.textContent   = n + ' active';
     } else {
-        hideEl(countEl);
+        countEl.style.display = 'none';
     }
 }
+// Keep old alias
+function _ylfUpdateCardCount(idx) { _ylfCountBadge(idx); }
 
 function saveYLF(idx, tsKey) {
-    const cropEl  = document.getElementById(`ylf-crop-${idx}`);
-    const crop    = cropEl ? cropEl.value : '';
-    const remarks = (document.getElementById(`ylf-remarks-${idx}`)?.value || '').trim();
-    const relevant = YIELD_FACTORS.filter(f => !crop || f.crops.includes(crop));
+    const cropEl   = document.getElementById('ylf-crop-' + idx);
+    const crop     = cropEl ? cropEl.value : '';
+    const remarks  = ((document.getElementById('ylf-remarks-' + idx) || {}).value || '').trim();
+    const relevant = YIELD_FACTORS.filter(function(f) { return !crop || f.crops.includes(crop); });
     const factors  = {};
-    relevant.forEach(f => {
-        const cb = document.getElementById(`ylfcb_${idx}_${f.id}`);
-        const sl = document.getElementById(`ylfsl_${idx}_${f.id}`);
-        factors[f.id] = { checked: !!(cb && cb.checked), severity: parseInt(sl ? sl.value : 30) };
+    relevant.forEach(function(f) {
+        var cb = document.getElementById('ylfcb_' + idx + '_' + f.id);
+        var sl = document.getElementById('ylfsl_' + idx + '_' + f.id);
+        factors[f.id] = { checked: !!(cb && cb.checked), severity: parseInt((sl ? sl.value : 30) || 30) };
     });
-    const key = 'ylf_' + (tsKey || idx);
-    try { localStorage.setItem(key, JSON.stringify({ factors, remarks, savedAt: new Date().toISOString() })); } catch(e) {}
-    const badge = document.getElementById(`ylf-saved-badge-${idx}`);
-    if (badge) { showEl(badge, 'flex'); setTimeout(() => hideEl(badge), 3000); }
+    // Use tsKey (timestamp) as the storage key so state survives index drift
+    var key = 'ylf_' + (tsKey || idx);
+    try { localStorage.setItem(key, JSON.stringify({ factors: factors, remarks: remarks, savedAt: new Date().toISOString() })); } catch(e) {}
+    var badge = document.getElementById('ylf-saved-badge-' + idx);
+    if (badge) { badge.style.display = 'inline-flex'; setTimeout(function() { badge.style.display = 'none'; }, 3000); }
     toast('✅ Yield notes saved locally.');
 }
 
-function loadYLFState(idx) {
-    const tsEl = document.getElementById(`ylf-ts-${idx}`);
-    const tsVal = tsEl ? (tsEl.value || '').trim() : '';
-    // Bail out if no valid timestamp — can't reliably identify saved state
+function _ylfLoadState(idx) {
+    var tsEl  = document.getElementById('ylf-ts-' + idx);
+    var tsVal = tsEl ? (tsEl.value || '').trim() : '';
+    // No timestamp = can't match saved state reliably; skip silently
     if (!tsVal) return;
-    const key = 'ylf_' + tsVal;
-    let saved;
+    var key = 'ylf_' + tsVal;
+    var saved;
     try { saved = JSON.parse(localStorage.getItem(key) || 'null'); }
-    catch(e) { localStorage.removeItem(key); return; }  // clear corrupt entry
+    catch(e) { try { localStorage.removeItem(key); } catch(e2) {} return; }
     if (!saved) return;
-    const { factors, remarks } = saved;
+    var factors = saved.factors;
+    var remarks = saved.remarks;
     if (factors) {
-        Object.entries(factors).forEach(([id, state]) => {
-            const cb = document.getElementById(`ylfcb_${idx}_${id}`);
-            const sl = document.getElementById(`ylfsl_${idx}_${id}`);
-            // Skip silently if element is missing (index drift after re-render)
+        Object.keys(factors).forEach(function(id) {
+            var state = factors[id];
+            var cb    = document.getElementById('ylfcb_' + idx + '_' + id);
+            var sl    = document.getElementById('ylfsl_' + idx + '_' + id);
+            // Guard: element may not exist if factor list changed or index drifted
             if (!cb || !sl) return;
-            cb.checked = state.checked;
-            sl.value = state.severity;
+            cb.checked  = !!state.checked;
+            sl.value    = state.severity || 30;
             sl.disabled = !state.checked;
-            updateYLFDisplay(idx, id);
+            _ylfDisplaySync(idx, id);
         });
     }
-    const taEl = document.getElementById(`ylf-remarks-${idx}`);
+    var taEl = document.getElementById('ylf-remarks-' + idx);
     if (taEl && remarks) taEl.value = remarks;
-    // v21: update active count badge after loading saved state
-    _ylfUpdateCardCount(idx);
+    _ylfCountBadge(idx);
 }
+// Keep old alias
+function loadYLFState(idx) { _ylfLoadState(idx); }
+// ==================== END YLF MODULE ====================
 
 // ==================== ZONE E2 LOCALITY COORDINATES (CORRECTED) ====================
 const E2_LOCALITY_COORDS = {
