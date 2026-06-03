@@ -3340,11 +3340,38 @@
         <div id="greenhouseSection" class="hidden">
             <div class="glass-card">
                 <div class="stat-title"><i class="fas fa-seedling"></i> Register New Greenhouse Crop</div>
+                <!-- Multi-GH guidance banner -->
+                <div style="background:linear-gradient(135deg,#f0fdf4,#e2f4e8);border:1.5px solid var(--green-300);border-radius:var(--radius-lg);padding:0.9rem 1rem;margin-bottom:1rem;">
+                    <div style="font-weight:800;font-size:0.9rem;color:var(--green-900);margin-bottom:0.6rem;display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-warehouse" style="color:var(--green-600);"></i> Up to 6 Greenhouses — how it works
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:0.7rem;">
+                        <div style="background:white;border-radius:0.8rem;padding:8px 10px;border:1.5px solid var(--green-200);display:flex;align-items:flex-start;gap:8px;">
+                            <span style="background:var(--green-700);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;flex-shrink:0;margin-top:1px;">1</span>
+                            <div style="font-size:0.78rem;color:#444;line-height:1.4;"><strong>Fill the form</strong> below for your first greenhouse — crop, area, stage, variety, yield.</div>
+                        </div>
+                        <div style="background:white;border-radius:0.8rem;padding:8px 10px;border:1.5px solid var(--green-200);display:flex;align-items:flex-start;gap:8px;">
+                            <span style="background:var(--green-700);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;flex-shrink:0;margin-top:1px;">2</span>
+                            <div style="font-size:0.78rem;color:#444;line-height:1.4;">Press <strong>&#10133; Add to Queue</strong>. The form clears — ready for your next greenhouse.</div>
+                        </div>
+                        <div style="background:white;border-radius:0.8rem;padding:8px 10px;border:1.5px solid var(--green-200);display:flex;align-items:flex-start;gap:8px;">
+                            <span style="background:var(--green-700);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;flex-shrink:0;margin-top:1px;">3</span>
+                            <div style="font-size:0.78rem;color:#444;line-height:1.4;"><strong>Repeat</strong> steps 1–2 for each GH (up to 6). Each one appears in the queue below.</div>
+                        </div>
+                        <div style="background:white;border-radius:0.8rem;padding:8px 10px;border:1.5px solid var(--green-200);display:flex;align-items:flex-start;gap:8px;">
+                            <span style="background:var(--teal);color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;flex-shrink:0;margin-top:1px;">4</span>
+                            <div style="font-size:0.78rem;color:#444;line-height:1.4;">Once all greenhouses are queued, press <strong>&#9729; Submit All</strong> to send everything at once.</div>
+                        </div>
+                    </div>
+                    <div id="ghProgressDots" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                        <span style="font-size:0.74rem;font-weight:700;color:var(--green-800);margin-right:2px;">Queue:</span>
+                    </div>
+                </div>
                 <div class="greenhouse-section-inner">
                     <div id="activeGreenhouseForm"></div>
                     <div class="greenhouse-actions">
-                        <button id="addGreenhouseBtn" class="btn"><i class="fas fa-plus-circle"></i> Add to List</button>
-                        <button id="submitDataBtn" class="btn" style="background:linear-gradient(100deg,var(--teal),#2e9b74);"><i class="fas fa-cloud-upload-alt"></i> Submit All Data</button>
+                        <button id="addGreenhouseBtn" class="btn"><i class="fas fa-plus-circle"></i> Add to Queue</button>
+                        <button id="submitDataBtn" class="btn" style="background:linear-gradient(100deg,var(--teal),#2e9b74);"><i class="fas fa-cloud-upload-alt"></i> Submit All <span id="submitCountBadge" style="display:none;background:rgba(255,255,255,0.25);border-radius:1rem;padding:1px 8px;font-size:0.8rem;margin-left:4px;font-weight:800;"></span></button>
                         <button id="closeGreenhouseBtn" class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
                     </div>
                     <div id="savedList" style="margin-top:1rem;"></div>
@@ -3712,6 +3739,242 @@ const TRANSLATIONS = {
         'chart.timeline.label': 'Crop growth stage timeline \u2014 area in m\u00b2 per month (2026)',
         'chart.forecast.label': 'Cultivated vs harvestable area forecast (2026)',
         'footer.copy':          'Copyright \u00a9 2026 | MoHydroponic Smart Data Tracker | All Rights Reserved',
+        // ── Header / branding ───────────────────────────────────
+        'header.tagline':           'Real-Time Crop Intelligence',
+        'header.role.grower':       'Grower',
+        'header.role.admin':        'Administrator',
+        // ── Buttons ─────────────────────────────────────────────
+        'btn.save':                 'Save',
+        'btn.cancel':               'Cancel',
+        'btn.submit':               'Submit',
+        'btn.add.record':           'Add Record',
+        'btn.edit':                 'Edit',
+        'btn.delete':               'Delete',
+        'btn.confirm':              'Confirm',
+        'btn.close':                'Close',
+        'btn.register':             'Register',
+        'btn.load':                 'Load Data',
+        'btn.search':               'Search',
+        'btn.register.gh':          'Register Greenhouse',
+        'btn.refresh.dashboard':    'Refresh Dashboard',
+        'btn.view.all':             'View All',
+        'btn.add.crop':             'Add Crop',
+        // ── Form labels ─────────────────────────────────────────
+        'label.date':               'Date',
+        'label.crop':               'Crop',
+        'label.stage':              'Stage',
+        'label.area':               'Area (m²)',
+        'label.yield':              'Yield (kg)',
+        'label.notes':              'Notes',
+        'label.greenhouse':         'Greenhouse',
+        'label.grower':             'Grower',
+        'label.username':           'Username',
+        'label.password':           'Password',
+        'label.phone':              'Phone Number',
+        'label.locality':           'Locality',
+        'label.zone':               'Zone',
+        'label.variety':            'Variety',
+        'label.substrate':          'Substrate',
+        'label.transplant.date':    'Transplant Date',
+        'label.weekly.yield':       'Weekly Yield',
+        'label.avg.yield':          'Avg Yield / Month',
+        'label.harvest.months':     'Harvest Months',
+        'label.unit':               'Unit',
+        'label.total.area':         'Total GH Area (m²)',
+        'label.gh.number':          'GH Number',
+        'label.month':              'Month',
+        'label.amount':             'Amount',
+        // ── Admin nav ────────────────────────────────────────────
+        'nav.admin':                'Administrator',
+        'nav.members':              'Members',
+        'nav.actlog':               'Activity Log',
+        'nav.news':                 'News',
+        'nav.map':                  'Map',
+        'nav.yield':                'Yield Calculator',
+        'nav.search':               'Search Growers',
+        'nav.completed':            'Completed Cycles',
+        'nav.register':             'New Member',
+        'nav.gh.details':           'GH Data',
+        'nav.yield.calc':           'Yield Calc',
+        'nav.variety.perf':         'Variety Performance',
+        'nav.pest.alert':           'Pest Alert',
+        'nav.act.log':              'Activity Log',
+        'nav.reg.list':             'Register List',
+        'nav.yield.map':            'Yield Map',
+        'nav.analysis':             'Analysis',
+        'nav.acp.search':           'Search\u00a0Growers',
+        'nav.acp.register':         'Register\u00a0User',
+        'nav.acp.variety':          'Variety\u00a0Performance',
+        'nav.acp.dss':              'Variety\u00a0DSS',
+        'nav.acp.pest':             'Pest\u00a0Alert',
+        'nav.acp.log':              'Activity\u00a0Log',
+        'nav.acp.reglist':          'Register\u00a0List',
+        'nav.acp.map':              'Yield\u00a0Map',
+        'nav.acp.ghdata':           'GH\u00a0Data',
+        'nav.acp.yieldcalc':        'Yield\u00a0Calc',
+        'nav.acp.completed':        'Completed\u00a0Cycles',
+        'nav.acp.analysis':         'Data\u00a0Analysis',
+        // ── Status ──────────────────────────────────────────────
+        'status.loading':           'Loading...',
+        'status.saving':            'Saving...',
+        'status.success':           'Completed successfully',
+        'status.error':             'Error — please try again',
+        'status.no.data':           'No data available',
+        'status.offline':           'Offline — showing cached data',
+        // ── Stages ──────────────────────────────────────────────
+        'stage.harvesting':         'Harvesting',
+        'stage.transplanting':      'Transplanting',
+        'stage.seedling':           'Seedling',
+        'stage.completed':          'Completed',
+        'stage.inprogress':         'In Progress',
+        'stage.pending':            'Pending',
+        'stage.vegetative':         'Vegetative',
+        'stage.flowering':          'Flowering',
+        'stage.fruiting':           'Fruiting',
+        // ── Alerts / Errors ─────────────────────────────────────
+        'alert.pest':               'Pest Alert',
+        'alert.confirm.del':        'Are you sure you want to delete this record?',
+        'err.conn':                 'Connection error — check your internet',
+        'err.timeout':              'Connection timed out — please try again',
+        'err.required':             'This field is required',
+        'err.invalid.date':         'Invalid date',
+        'err.invalid.area':         'Area must be greater than 0',
+        // ── Sections ────────────────────────────────────────────
+        'section.profile':          'Grower Profile',
+        'section.dashboard':        'Live Dashboard',
+        'section.my.crops':         'My Crops',
+        'section.add.gh':           'Add Greenhouse Data',
+        'section.timeline':         'Crop Growth Timeline',
+        'section.forecast':         'Crop Forecast 2026',
+        'section.yield.ref':        'Yield Reference',
+        'section.tips':             'Growing Tips',
+        'section.pest.alert':       'Active Pest Alerts',
+        'section.search.grower':    'Search Grower',
+        'section.completed':        'Completed Cycles',
+        'section.register':         'Register New Grower',
+        'section.gh.data':          'GH Data (Admin)',
+        'section.variety.map':      'Yield Map by Locality',
+        'section.act.log':          'Activity Log',
+        'section.reg.list':         'Registration List',
+        'section.growing.tips':     'Interactive Growing Guide — Seedling to Harvest',
+        'section.timeline.title':   'Crop Growth Timeline',
+        'section.forecast.title':   'Crop Forecast 2026',
+        'section.yield.ref.title':  'Yield Reference',
+        'section.pest.banner':      'ACTIVE PEST ALERT',
+        'section.variety.perf':     'Variety Performance by Locality',
+        'section.dss.title':        'Variety Decision Support System',
+        'section.completed.title':  'Completed Cycles',
+        'section.reg.list.title':   'Grower Registration List',
+        'section.gh.data.title':    'Greenhouse Data (Admin)',
+        'section.act.log.title':    'Activity Log',
+        'section.yield.map.title':  'Yield Map by Locality',
+        // ── Chart axis ──────────────────────────────────────────
+        'chart.axis.area':          'Area (m\u00b2)',
+        'chart.axis.month':         'Month',
+        'chart.axis.yield':         'Yield (kg)',
+        'chart.stage.seedling':     'Seedling',
+        'chart.stage.veg':          'Vegetative',
+        'chart.stage.flower':       'Flowering',
+        'chart.stage.harvest':      'Harvesting',
+        'chart.forecast.cult':      'Cultivated',
+        'chart.forecast.harv':      'Ready to Harvest',
+        // ── Empty states ────────────────────────────────────────
+        'empty.no.crops':           'No crops yet. Register your first greenhouse.',
+        'empty.no.data':            'No data available.',
+        'empty.no.results':         'No results found.',
+        'empty.no.completed':       'No completed cycles yet.',
+        'empty.no.alerts':          'No active alerts.',
+        'empty.no.registrations':   'No registrations yet.',
+        'empty.search.grower':      'Type a grower name to search.',
+        // ── Modal edit ──────────────────────────────────────────
+        'modal.edit.title':         'Edit Record',
+        'modal.edit.crop':          'Crop',
+        'modal.edit.admin.note':    'Admin Edit',
+        'modal.edit.stage':         'Growth Stage *',
+        'modal.edit.area':          'Area (m²)',
+        'modal.edit.variety':       'Variety',
+        'modal.edit.weekly':        'Weekly Yield',
+        'modal.edit.week1':         'Week 1',
+        'modal.edit.week2':         'Week 2',
+        'modal.edit.week3':         'Week 3',
+        'modal.edit.week4':         'Week 4',
+        'modal.edit.weekly.total':  'Weekly Total',
+        'modal.edit.monthly':       'Monthly Yield (kg)',
+        'modal.edit.unit':          'Yield Unit',
+        'modal.edit.harvest.months':'Harvest Months',
+        'modal.edit.save':          'Save Changes',
+        'modal.edit.cancel':        'Cancel',
+        'modal.edit.yield.factors': 'Yield Limiting Factors',
+        'modal.edit.observations':  'Observations / Notes',
+        // ── Toast messages ──────────────────────────────────────
+        'toast.saved':              'Saved successfully!',
+        'toast.error':              'Error — please try again.',
+        'toast.loading':            'Loading...',
+        'toast.no.conn':            'No internet connection.',
+        'toast.cycle.active':       'Cycle set to Active. Refreshing...',
+        'toast.cycle.complete':     'Cycle set to Completed. Refreshing...',
+        'toast.alerts.cleared':     'Alerts cleared.',
+        // ── Registration ────────────────────────────────────────
+        'register.grower.name':     'Grower Name',
+        'register.locality':        'Locality',
+        'register.phone':           'Phone Number',
+        'register.notes':           'Notes',
+        'register.btn':             'Register Grower',
+        // ── Profile ─────────────────────────────────────────────
+        'profile.grower.name':      'Grower Name',
+        'profile.locality':         'Locality',
+        // ── Add GH form ─────────────────────────────────────────
+        'addgh.title':              'Add Greenhouse Data',
+        'addgh.gh.number':          'GH Number',
+        'addgh.total.area':         'Total GH Area (m²)',
+        'addgh.crop':               'Crop *',
+        'addgh.variety':            'Variety',
+        'addgh.stage':              'Growth Stage *',
+        'addgh.area':               'GH Area (m²) *',
+        'addgh.date.trans':         'Transplant Date',
+        'addgh.substrate':          'Substrate Type',
+        'addgh.tomato.type':        'Tomato Type',
+        'addgh.weekly.yield':       'Weekly Yield',
+        'addgh.avg.yield':          'Avg Yield / Month',
+        'addgh.harvest.months':     'Harvest Months',
+        'addgh.btn.submit':         'Submit GH Data',
+        // ── Yield calculator ────────────────────────────────────
+        'yc.title':                 'Yield Calculator',
+        'yc.locality':              'Locality',
+        'yc.crop':                  'Crop *',
+        'yc.variety':               'Variety',
+        'yc.area':                  'Area (m²)',
+        'yc.harvest.months':        'Harvest Duration (months)',
+        'yc.btn.calculate':         'Calculate',
+        'yc.btn.reset':             'Reset',
+        // ── Record cards ────────────────────────────────────────
+        'record.btn.edit':          'Edit',
+        'record.btn.complete':      'Close Cycle',
+        'record.btn.reopen':        'Reopen Cycle',
+        // ── Growing guide ────────────────────────────────────────
+        'tips.sub.first.harvest':   'Pre-harvest phase',
+        'tips.sub.harvest.dur':     'Active harvest window',
+        'tips.sub.full.cycle':      'Seed to final harvest',
+        'tips.sub.system':          'Growth stages',
+        // ── Completed cycle stats ────────────────────────────────
+        'completed.stat.growers':   'Growers Involved',
+        'completed.stat.top.crop':  'Most Completed Crop',
+        // ── General UI ──────────────────────────────────────────
+        'ui.admin.only':            'ADMIN ONLY',
+        'ui.zone':                  'ZONE',
+        'ui.records.for':           'Records for:',
+        'ui.no.active.data':        'No active cycle data available',
+        'ui.loading.data':          'Loading data...',
+        'ui.filter.crop':           'Filter by Crop',
+        'ui.filter.locality':       'Filter by Locality',
+        'ui.filter.variety':        'Filter by Variety',
+        'ui.heads.per.m2':          'Heads/m²',
+        'ui.kg.per.m2':             'kg/m²',
+        'ui.weekly.total':          'Weekly Total',
+        'ui.area.m2':               'Area (m²)',
+        'ui.avg.yield.month':       'Avg Yield/Month',
+        'ui.growers.involved':      'Active Growers',
+        'ui.dominant.variety':      'Dominant Variety',
     },
     kr: {
         'login.title':          'Mo Trakker Idroponik',
@@ -3998,7 +4261,7 @@ function toggleLang() { applyLang(_currentLang === 'en' ? 'kr' : 'en'); }
 //            Type: Web app → Execute as: Me → Who has access: Anyone
 //            Then copy the /exec URL and replace the value below.
 // ─────────────────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHgO7yl1hAuiBkzZBOmP3UuwqeFuniQlF5G0e5bC_bAVXJiLtaDdcOnLxS5G7dvPjtUA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQ8V4Kefee-V9L-3W1orPkGuIucl_crP5q22aD4vof2whVSTmp7sV8QWBMOdCo-1T8xQ/exec';
 //  ↑ Replace the URL above with your own deployed GAS /exec URL.
 // ─────────────────────────────────────────────────────────────────────
 
@@ -7758,8 +8021,48 @@ function saveCurrentGreenhouse(){
     MONTHS.forEach((_,i)=>{const el=document.getElementById(`month_${i}_${target}`);if(el)el.value='';});
 }
 function updateSavedListDisplay(){
-    const list=document.getElementById('savedList');if(!list)return;if(!savedGreenhouses.length){list.innerHTML='';return;}
-    list.innerHTML=`<div style="font-weight:700;font-size:0.88rem;color:#555;margin-bottom:0.5rem;"><i class="fas fa-list"></i> Queued for submission (${savedGreenhouses.length})</div>`+savedGreenhouses.map((g,i)=>`<div class="saved-item"><span class="saved-item-info"><i class="fas fa-seedling" style="color:var(--green-600);"></i> ${g.ghNumber?`[${g.ghNumber}] `:''}<strong>${g.crop}</strong>${g.tomatoType?` (${g.tomatoType})`:''} | ${g.stage} | ${g.area} m² | ${g.variety||'—'} | ${g.weeklyYield} ${g.yieldUnit}</span><button class="remove-saved-btn" onclick="savedGreenhouses.splice(${i},1);updateSavedListDisplay()"><i class="fas fa-times"></i> Remove</button></div>`).join('');
+    const list   = document.getElementById('savedList');
+    const dots   = document.getElementById('ghProgressDots');
+    const badge  = document.getElementById('submitCountBadge');
+    const addBtn = document.getElementById('addGreenhouseBtn');
+    const MAX_GH = 6;
+    const n      = savedGreenhouses.length;
+
+    if (dots) {
+        dots.innerHTML = '<span style="font-size:0.74rem;font-weight:700;color:var(--green-800);margin-right:2px;">Queue:</span>';
+        for (let i = 0; i < MAX_GH; i++) {
+            const dot = document.createElement('div');
+            dot.title = i < n ? 'GH '+(i+1)+': '+savedGreenhouses[i].crop+(savedGreenhouses[i].ghNumber?' ['+savedGreenhouses[i].ghNumber+']':'') : 'Slot '+(i+1)+' — empty';
+            dot.style.cssText = 'width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:900;transition:all 0.2s;'+(i < n ? 'background:var(--green-700);color:white;box-shadow:0 2px 6px rgba(20,100,40,0.35);' : 'background:#e8f5e9;color:#aaa;border:1.5px dashed var(--green-300);');
+            dot.textContent = i < n ? (i+1) : '';
+            dots.appendChild(dot);
+        }
+        const rem = document.createElement('span');
+        rem.style.cssText = 'font-size:0.72rem;margin-left:4px;';
+        if (n >= MAX_GH) { rem.style.color='var(--green-700)'; rem.style.fontWeight='800'; rem.textContent='Maximum reached — press Submit All'; }
+        else { rem.style.color='#888'; rem.textContent=n+'/'+MAX_GH+' added'; }
+        dots.appendChild(rem);
+    }
+
+    if (badge) { if (n > 0) { badge.style.display='inline'; badge.textContent=n; } else badge.style.display='none'; }
+    if (addBtn) { addBtn.disabled=(n>=MAX_GH); addBtn.title=n>=MAX_GH?'Maximum 6 greenhouses reached. Submit or remove one first.':''; }
+
+    if (!list) return;
+    if (!n) { list.innerHTML=''; return; }
+    list.innerHTML='<div style="font-weight:700;font-size:0.88rem;color:var(--green-800);margin-bottom:0.6rem;display:flex;align-items:center;gap:6px;"><i class="fas fa-list-ul" style="color:var(--green-600);"></i>'+n+' greenhouse'+(n!==1?'s':'')+' queued — ready to submit</div>'+
+        savedGreenhouses.map(function(g,i){
+            return '<div class="saved-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:0.8rem;background:'+(i%2===0?'#f4fbf0':'#edf7e6')+';margin-bottom:4px;border:1px solid var(--green-100);">'+
+                '<span class="saved-item-info" style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">'+
+                '<span style="background:var(--green-700);color:white;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:900;flex-shrink:0;">'+(i+1)+'</span>'+
+                '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+
+                (g.ghNumber?'<strong>[GH '+g.ghNumber+']</strong> ':'')+
+                '<strong>'+g.crop+'</strong>'+(g.tomatoType?' ('+g.tomatoType+')':'')+' &middot; '+g.stage+' &middot; '+g.area+' m\u00b2'+
+                (g.variety?' &middot; <em>'+g.variety+'</em>':'')+
+                (g.weeklyYield>0?' &middot; '+g.weeklyYield+' '+g.yieldUnit+'/wk':'')+
+                '</span></span>'+
+                '<button class="remove-saved-btn" onclick="savedGreenhouses.splice('+i+',1);updateSavedListDisplay()" title="Remove from queue" style="flex-shrink:0;"><i class="fas fa-times"></i></button>'+
+                '</div>';
+        }).join('');
 }
 async function submitAllNewData(){
     if(!savedGreenhouses.length){toast('No greenhouses queued for submission',true);return;}
