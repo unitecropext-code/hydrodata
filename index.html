@@ -1333,6 +1333,20 @@
         .ds-chip-safe { background:#d1fae5;color:#065f46; }
         .ds-chip-mod  { background:#fef3c7;color:#92400e; }
 
+        /* === YLF Photo Strip === */
+        .ylf-photo-strip { margin-top:0.55rem; padding-top:0.5rem; border-top:1px dashed #fde68a; }
+        .ylf-photo-desc { font-size:0.72rem; color:#666; margin-bottom:0.4rem; line-height:1.45; font-style:italic; }
+        .ylf-photo-thumbs { display:flex; gap:6px; flex-wrap:wrap; }
+        .ylf-photo-thumb { width:90px; height:64px; object-fit:cover; border-radius:6px; border:1.5px solid #fde68a; cursor:pointer; transition:transform 0.15s,box-shadow 0.15s; }
+        .ylf-photo-thumb:hover { transform:scale(1.07); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+
+        /* Lightbox */
+        #ylfLightbox { position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:16px; }
+        #ylfLightbox.open { display:flex; }
+        #ylfLightboxImg { max-width:90vw;max-height:75vh;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+        #ylfLightboxCaption { color:white;font-size:0.85rem;font-weight:600;text-align:center; }
+        #ylfLightboxClose { position:fixed;top:14px;right:18px;background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.4rem;cursor:pointer;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center; }
+
         .hidden { display: none !important; }
 
         /* === v19: CSS visibility utility classes (replaces inline style toggles) === */
@@ -1610,29 +1624,82 @@
             border-radius:var(--radius-pill); border:1.5px solid var(--green-300); background:white; color:var(--green-800);
             cursor:pointer; transition:all 0.15s; }
         .map-speed-btn.active { background:var(--green-700); color:white; border-color:var(--green-700); }
-        /* === YIELD LIMITING FACTORS (per card) === */
+        /* === YIELD LIMITING FACTORS (per card) — v30 Enhanced === */
         .ylf-section { margin-top:0.9rem; border-top:1.5px dashed var(--green-200); padding-top:0.7rem; }
+        /* New pill-style toggle bar */
+        .ylf-toggle-bar { display:flex; align-items:center; gap:0.5rem; cursor:pointer; user-select:none; }
+        .ylf-toggle-pill { flex:1; display:flex; align-items:center; gap:0.5rem; background:linear-gradient(135deg,#f0fdf4,#e8f5e9); border:1.5px solid var(--green-200); border-radius:var(--radius-lg); padding:0.55rem 0.9rem; transition:background 0.18s; }
+        .ylf-toggle-bar:hover .ylf-toggle-pill { background:var(--green-100); }
+        .ylf-toggle-icon { width:26px; height:26px; background:var(--green-800); border-radius:0.45rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .ylf-toggle-icon i { color:white; font-size:0.78rem; }
+        .ylf-toggle-label { font-size:0.83rem; font-weight:700; color:var(--green-800); }
+        /* Keep old .ylf-toggle-btn for backwards compat */
         .ylf-toggle-btn { width:100%; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg,#f0fdf4,#e8f5e9); border:1.5px solid var(--green-200); border-radius:var(--radius-lg); padding:8px 14px; font-size:0.82rem; font-weight:700; color:var(--green-800); cursor:pointer; font-family:'Outfit',sans-serif; transition:all 0.18s; }
         .ylf-toggle-btn:hover { background:var(--green-100); }
         .ylf-chevron { margin-left:auto; transition:transform 0.2s; }
         .ylf-chevron.open { transform:rotate(180deg); }
-        .ylf-body { margin-top:0.7rem; padding:0.8rem; background:#f8fffe; border-radius:var(--radius-lg); border:1px solid var(--green-100); }
+        /* Count badge */
+        .ylf-active-count,.ylf-count-badge { display:none; margin-left:4px; font-size:0.68rem; background:#fef3c7; color:#92400e; border:1px solid #fcd34d; border-radius:1rem; padding:1px 9px; font-weight:700; }
+        /* Body */
+        .ylf-body { margin-top:0.7rem; }
+        /* Action row */
+        .ylf-action-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.45rem; background:#f4fbf1; border:1px solid var(--green-100); border-radius:var(--radius-lg); padding:0.6rem 0.8rem; margin-bottom:0.75rem; }
+        .ylf-action-hint { display:flex; align-items:center; gap:0.4rem; font-size:0.74rem; font-weight:600; color:var(--green-700); }
+        .ylf-action-hint i { color:var(--green-500); font-size:0.76rem; }
+        .ylf-action-btns { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+        /* Factors grid */
         .ylf-factors-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(195px,1fr)); gap:8px; margin-bottom:0.8rem; }
-        .ylf-factor-item { background:white; border:1.5px solid var(--green-200); border-radius:0.8rem; padding:10px; }
-        .ylf-factor-header { display:flex; align-items:center; gap:7px; margin-bottom:6px; flex-wrap:wrap; }
-        .ylf-factor-cb { accent-color:var(--green-700); width:15px; height:15px; cursor:pointer; flex-shrink:0; }
-        .ylf-factor-name { font-size:0.79rem; font-weight:700; color:var(--green-900); }
-        .ylf-factor-type-badge { font-size:0.67rem; background:var(--green-100); color:var(--green-800); padding:1px 7px; border-radius:20px; font-weight:600; margin-left:auto; white-space:nowrap; }
-        .ylf-factor-slider { width:100%; accent-color:var(--green-700); margin:4px 0; cursor:pointer; }
+        /* Factor card — enhanced version */
+        .ylf-factor-item { background:white; border:1.5px solid var(--green-200); border-radius:0.8rem; padding:10px; transition:all 0.15s; position:relative; }
+        .ylf-factor-item:hover { border-color:var(--green-400); box-shadow:0 2px 8px rgba(25,120,50,0.1); }
+        .ylf-factor-item.ylf-factor-checked { border-color:#d97706; background:#fffbeb; box-shadow:0 0 0 3px rgba(217,119,6,0.08); }
+        .ylf-factor-header { display:flex; align-items:flex-start; gap:7px; margin-bottom:6px; }
+        .ylf-factor-cb { accent-color:var(--green-700); width:15px; height:15px; cursor:pointer; flex-shrink:0; margin-top:1px; }
+        .ylf-factor-info { flex:1; min-width:0; }
+        .ylf-factor-name { font-size:0.79rem; font-weight:700; color:var(--green-900); display:block; margin-bottom:2px; line-height:1.3; }
+        .ylf-factor-type-badge { display:inline-block; font-size:0.62rem; font-weight:700; padding:1px 7px; border-radius:20px; background:var(--green-100); color:var(--green-800); border:1px solid var(--green-200); white-space:nowrap; }
+        .ylf-factor-type-badge.ylf-tb-bacterial { background:#e0f2fe; color:#075985; border-color:#bae6fd; }
+        .ylf-factor-type-badge.ylf-tb-viral { background:#fce7f3; color:#9d174d; border-color:#fbcfe8; }
+        .ylf-factor-type-badge.ylf-tb-nutrient { background:#ede9fe; color:#4c1d95; border-color:#ddd6fe; }
+        .ylf-factor-type-badge.ylf-tb-environmental { background:#f0fdf4; color:#14532d; border-color:#bbf7d0; }
+        /* Severity area */
+        .ylf-sev-wrap { margin-top:0.4rem; }
+        .ylf-sev-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+        .ylf-sev-label { font-size:0.67rem; color:#888; font-weight:600; }
+        .ylf-sev-val { font-size:0.7rem; font-weight:800; color:var(--green-700); min-width:30px; text-align:right; }
+        .ylf-factor-slider { width:100%; accent-color:var(--green-600); cursor:pointer; height:4px; margin:0; }
+        .ylf-impact-bar { height:3px; border-radius:3px; background:#f0f0f0; overflow:hidden; margin-top:5px; }
+        .ylf-impact-fill { height:100%; border-radius:3px; background:var(--green-500); transition:width 0.25s,background 0.25s; }
+        .ylf-loss-text { font-size:0.64rem; color:#ef4444; font-weight:700; margin-top:2px; min-height:1em; }
+        /* Legacy compat */
         .ylf-factor-impact { font-size:0.72rem; color:#666; }
+        /* Summary bar */
+        .ylf-summary-bar { display:none; align-items:center; gap:0.5rem; background:linear-gradient(135deg,#fff7ed,#fef3c7); border:1.5px solid #fcd34d; border-radius:var(--radius-md); padding:0.5rem 0.8rem; margin-top:0.65rem; flex-wrap:wrap; }
+        .ylf-summary-bar.show { display:flex; }
+        .ylf-summary-icon { width:24px; height:24px; background:#d97706; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .ylf-summary-icon i { color:white; font-size:0.68rem; }
+        .ylf-summary-text { font-size:0.74rem; font-weight:600; color:#92400e; flex:1; }
+        .ylf-summary-loss { font-size:0.88rem; font-weight:900; color:#ef4444; white-space:nowrap; }
+        /* Remarks */
         .ylf-remarks-section { margin-top:0.6rem; }
-        .ylf-remarks-label { font-size:0.8rem; font-weight:700; color:var(--green-800); margin-bottom:4px; display:block; }
-        .ylf-remarks-ta { width:100%; box-sizing:border-box; border:1.5px solid var(--green-200); border-radius:0.7rem; padding:8px 10px; font-size:0.82rem; font-family:'Outfit',sans-serif; min-height:70px; resize:vertical; outline:none; transition:border-color 0.18s; }
-        .ylf-remarks-ta:focus { border-color:var(--green-500); }
+        .ylf-remarks-label { font-size:0.8rem; font-weight:700; color:var(--green-800); margin-bottom:4px; display:flex; align-items:center; gap:0.35rem; }
+        .ylf-remarks-label i { color:var(--green-500); }
+        .ylf-remarks-ta { width:100%; box-sizing:border-box; border:1.5px solid var(--green-200); border-radius:0.7rem; padding:8px 10px; font-size:0.82rem; font-family:'Outfit',sans-serif; min-height:70px; resize:vertical; outline:none; transition:border-color 0.18s,box-shadow 0.18s; background:white; color:#1a2e1a; line-height:1.5; }
+        .ylf-remarks-ta:focus { border-color:var(--green-500); box-shadow:0 0 0 3px rgba(37,145,50,0.12); }
+        .ylf-remarks-ta::placeholder { color:#bbb; }
+        /* Save row */
         .ylf-save-row { display:flex; justify-content:flex-end; align-items:center; margin-top:6px; gap:8px; }
-        .ylf-save-btn { display:inline-flex; align-items:center; gap:6px; background:var(--green-700); color:white; border:none; border-radius:var(--radius-pill); padding:6px 16px; font-size:0.78rem; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif; }
-        .ylf-save-btn:hover { background:var(--green-800); }
-        .ylf-saved-badge { display:none; align-items:center; gap:5px; font-size:0.72rem; color:var(--teal); font-weight:700; }
+        .ylf-save-btn { display:inline-flex; align-items:center; gap:6px; background:var(--green-700); color:white; border:none; border-radius:var(--radius-pill); padding:7px 16px; font-size:0.78rem; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif; box-shadow:0 2px 8px rgba(19,107,30,0.2); transition:all 0.18s; white-space:nowrap; }
+        .ylf-save-btn:hover { background:var(--green-800); transform:translateY(-1px); }
+        .ylf-save-btn:active { transform:scale(0.97); }
+        /* Admin-only PDF button inside ylf-save-row */
+        .ylf-pdf-btn { display:none; align-items:center; gap:6px; background:white; color:#dc2626; border:1.5px solid #fca5a5; border-radius:var(--radius-pill); padding:7px 16px; font-size:0.78rem; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif; transition:all 0.18s; white-space:nowrap; position:relative; }
+        .ylf-pdf-btn:hover { background:#fee2e2; border-color:#f87171; transform:translateY(-1px); }
+        .ylf-pdf-btn.admin-vis { display:inline-flex; }
+        .ylf-pdf-admin-pip { position:absolute; top:-5px; right:-5px; width:13px; height:13px; background:#d97706; border-radius:50%; border:2px solid white; display:flex; align-items:center; justify-content:center; }
+        .ylf-pdf-admin-pip i { font-size:0.42rem; color:white; }
+        .ylf-saved-badge { display:none; align-items:center; gap:5px; font-size:0.72rem; color:#059669; font-weight:700; padding:4px 10px; background:#d1fae5; border-radius:var(--radius-pill); border:1px solid #a7f3d0; }
+        .ylf-saved-badge.show { display:inline-flex; }
         .ylf-no-factors { font-size:0.8rem; color:#aaa; padding:0.5rem; text-align:center; }
 
         /* ======================================================
@@ -3254,6 +3321,32 @@
                     </div>
                 </div>
 
+                <!-- TAB: YLF Severity Report -->
+                <div id="ylfReportTab" class="admin-tab-content">
+                    <div class="register-grower-title">
+                        <i class="fas fa-chart-bar" style="color:#d97706;"></i> YLF Severity Report
+                        <span class="admin-badge" style="background:#d97706;">ADMIN ONLY</span>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fcd34d;border-radius:var(--radius-lg);padding:1.2rem;margin-bottom:1rem;">
+                        <div style="font-size:0.82rem;color:#78350f;font-weight:600;margin-bottom:0.9rem;display:flex;align-items:center;gap:6px;">
+                            <i class="fas fa-info-circle"></i>
+                            This report aggregates Yield Limiting Factors from all active greenhouse records. Review to identify systemic risks across growers.
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                            <button class="btn" onclick="generateYLFSeverityReport()" id="ylfSevReportBtn">
+                                <i class="fas fa-chart-bar"></i> Generate Report
+                            </button>
+                            <button class="btn-secondary" onclick="printYLFSeverityReport()" id="ylfSevPrintBtn" style="display:none;">
+                                <i class="fas fa-print"></i> Print / PDF
+                            </button>
+                            <button class="btn-secondary" onclick="document.getElementById('ylfSevReportOut').innerHTML='';document.getElementById('ylfSevPrintBtn').style.display='none';" style="display:none;" id="ylfSevClearBtn">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div id="ylfSevReportOut" style="margin-top:0.5rem;"></div>
+                </div>
+
                 <!-- TAB: Yield Map -->
                 <div id="yieldMapTab" class="admin-tab-content">
                     <div class="register-grower-title"><i class="fas fa-map-marked-alt" style="color:var(--teal);"></i> Zone E2 Yield Map
@@ -4261,7 +4354,7 @@ function toggleLang() { applyLang(_currentLang === 'en' ? 'kr' : 'en'); }
 //            Type: Web app → Execute as: Me → Who has access: Anyone
 //            Then copy the /exec URL and replace the value below.
 // ─────────────────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQ8V4Kefee-V9L-3W1orPkGuIucl_crP5q22aD4vof2whVSTmp7sV8QWBMOdCo-1T8xQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7VLDAom-JAQh5XI9-HNj9r0b9Eyiy9gspKdQLZHkyI3L059ddjUtxzfVbmuYGkiEaog/exec';
 //  ↑ Replace the URL above with your own deployed GAS /exec URL.
 // ─────────────────────────────────────────────────────────────────────
 
@@ -4303,6 +4396,8 @@ const YIELD_FACTORS = [
     { id:'didymella',      name:'Didymella spp.',         type:'Fungal Disease',   maxImpact:0.50, crops:['English Cucumber'] },
     { id:'botrytis',       name:'Botrytis',               type:'Fungal Disease',   maxImpact:0.45, crops:['English Cucumber'] },
     { id:'root_rot',       name:'Root Rot',               type:'Fungal Disease',   maxImpact:0.60, crops:['English Cucumber'] },
+    { id:'powdery_mildew', name:'Powdery Mildew',         type:'Fungal Disease',   maxImpact:0.55, crops:['English Cucumber'] },
+    { id:'downy_mildew_cu',name:'Downy Mildew',           type:'Fungal Disease',   maxImpact:0.60, crops:['English Cucumber'] },
     { id:'aphids',         name:'Aphids',                 type:'Pest (Insect)',    maxImpact:0.35, crops:['English Cucumber','Lettuce'] },
     // ── Lettuce specific ──
     { id:'tipburn',        name:'Tipburn',                type:'Physiological',    maxImpact:0.50, crops:['Lettuce'] },
@@ -5070,7 +5165,7 @@ function removeAlertPhoto(cardIdx, photoIdx) {
 async function fetchPestAlert() {
     try {
         const data = await fetchWithIDBCache(`${SCRIPT_URL}?action=getPestAlert&_=${Date.now()}`, 6000);
-        return await res.json();
+        return data; // fetchWithIDBCache already returns parsed JSON
     } catch(e) { return {active:false}; }
 }
 
@@ -6558,6 +6653,7 @@ function renderUserRecords(rows, headers) {
     const ghCol=hdr.findIndex(h=>h.includes('gh number'));
     const ttCol=hdr.findIndex(h=>h.includes('tomato type'));
     const subCol=hdr.findIndex(h=>h.includes('substrate'));
+    const localityCol=hdr.findIndex(h=>h.includes('locality'));
     // Issue #17: transplant date for today-marker progress bar
     const dateTransCol=hdr.findIndex(h=>h.includes('transplant')||h.includes('datetrans'));
     const cropIcons={'Tomato':'🍅','Sweet Pepper':'🌶️','English Cucumber':'🥒','Cabbage':'🥬','Lettuce':'🥬','Eggplant':'🍆'};
@@ -6569,6 +6665,7 @@ function renderUserRecords(rows, headers) {
         const unit=unitCol!==-1?String(row[unitCol]||'kg'):'kg';const cycle=cycleCol!==-1?String(row[cycleCol]||'Active').trim():'Active';
         const isCompleted=cycle==='Completed';const ghNum=ghCol!==-1?String(row[ghCol]||''):'';
         const tomatoType=ttCol!==-1?String(row[ttCol]||''):'';const substrate=subCol!==-1?String(row[subCol]||''):'';
+        const locality=localityCol!==-1?String(row[localityCol]||''):'';
         const icon=cropIcons[crop]||'🌱';const tsStr=formatToMauritiusTime(ts);const tsRaw=ts?String(ts):'';
         const meta=[crop,variety,stage,weekYield+unit,cycle,ghNum,tomatoType,substrate,tsStr].join(' ').toLowerCase();
 
@@ -6637,24 +6734,48 @@ function renderUserRecords(rows, headers) {
                 </button>
             </div>
             <div class="ylf-section">
-                <button class="ylf-toggle-btn" onclick="toggleYLF(${i})">
-                    <i class="fas fa-sliders-h" style="color:var(--green-600);"></i> Yield Limiting Factors &amp; Notes
-                    <span class="ylf-active-count" id="ylf-count-${i}" style="display:none;margin-left:4px;font-size:0.68rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:1rem;padding:1px 7px;font-weight:700;"></span>
-                    <i class="fas fa-chevron-down ylf-chevron" id="ylf-chevron-${i}"></i>
-                </button>
-                <input type="hidden" id="ylf-crop-${i}" value="${crop}">
-                <input type="hidden" id="ylf-ts-${i}" value="${tsEscYLF}">
+                <!-- v30 pill-style toggle bar -->
+                <div class="ylf-toggle-bar" onclick="toggleYLF(${i})">
+                    <div class="ylf-toggle-pill">
+                        <div class="ylf-toggle-icon"><i class="fas fa-sliders-h"></i></div>
+                        <span class="ylf-toggle-label">Yield Limiting Factors &amp; Notes</span>
+                        <span class="ylf-active-count ylf-count-badge" id="ylf-count-${i}"></span>
+                        <i class="fas fa-chevron-down ylf-chevron" id="ylf-chevron-${i}"></i>
+                    </div>
+                </div>
+                <input type="hidden" id="ylf-crop-${i}"     value="${crop}">
+                <input type="hidden" id="ylf-ts-${i}"        value="${tsEscYLF}">
+                <input type="hidden" id="ylf-ghnum-${i}"     value="${ghNum}">
+                <input type="hidden" id="ylf-variety-${i}"   value="${variety}">
+                <input type="hidden" id="ylf-locality-${i}"  value="${locality}">
+                <input type="hidden" id="ylf-area-${i}"      value="${area.toFixed(1)}">
+                <input type="hidden" id="ylf-grower-${i}"    value="${currentLoggedInUser}">
                 <div class="ylf-body" id="ylf-body-${i}" style="display:none;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;flex-wrap:wrap;gap:6px;">
-                        <span style="font-size:0.75rem;font-weight:700;color:var(--green-800);"><i class="fas fa-info-circle" style="color:var(--green-600);margin-right:4px;"></i>Check all active factors &amp; set severity</span>
-                        <div style="display:flex;align-items:center;gap:8px;">
+                    <!-- Action row -->
+                    <div class="ylf-action-row">
+                        <div class="ylf-action-hint">
+                            <i class="fas fa-info-circle"></i> Check active factors &amp; set severity
+                        </div>
+                        <div class="ylf-action-btns">
                             <span class="ylf-saved-badge" id="ylf-saved-badge-${i}"><i class="fas fa-check-circle"></i> Saved</span>
                             <button class="ylf-save-btn" onclick="saveYLF(${i},'${tsEscYLF}')">
-                                <i class="fas fa-save"></i> Save Notes
+                                <i class="fas fa-save"></i> Save to Sheet
+                            </button>
+                            <button class="ylf-pdf-btn${isAdmin?' admin-vis':''}" id="ylf-pdf-btn-${i}" onclick="generateYLFPDF(${i},'${tsEscYLF}')">
+                                <i class="fas fa-file-pdf"></i> PDF Report
+                                <span class="ylf-pdf-admin-pip"><i class="fas fa-shield-alt"></i></span>
                             </button>
                         </div>
                     </div>
+                    <!-- Factor cards -->
                     <div class="ylf-factors-grid" id="ylf-factors-${i}"></div>
+                    <!-- Live summary bar -->
+                    <div class="ylf-summary-bar" id="ylf-summary-bar-${i}">
+                        <div class="ylf-summary-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <span class="ylf-summary-text" id="ylf-summary-text-${i}">Estimated combined impact</span>
+                        <span class="ylf-summary-loss" id="ylf-summary-loss-${i}">—</span>
+                    </div>
+                    <!-- Remarks -->
                     <div class="ylf-remarks-section">
                         <label class="ylf-remarks-label"><i class="fas fa-comment-alt"></i> Remarks / Observations</label>
                         <textarea class="ylf-remarks-ta" id="ylf-remarks-${i}" placeholder="Enter pest sightings, interventions taken, growth notes..."></textarea>
@@ -8293,8 +8414,21 @@ function toggleYLF(idx) {
         body.setAttribute('data-ylf-open', '1');
         if (chevron) chevron.classList.add('open');
         _ylfBuild(idx);
+        setTimeout(function() { _ylfInjectPhotos(idx); }, 40);
     }
 }
+
+// ── Type → CSS badge suffix map ──
+var _YLF_TYPE_CLASS = {
+    'Fungal Disease':   'ylf-tb-fungal',
+    'Bacterial Disease':'ylf-tb-bacterial',
+    'Viral Disease':    'ylf-tb-viral',
+    'Physiological':    'ylf-tb-nutrient',
+    'Pest (Insect)':    'ylf-tb-environmental',
+    'Pest (Arachnid)':  'ylf-tb-environmental',
+    'Pest (Moth)':      'ylf-tb-environmental',
+    'Pest (Mollusc)':   'ylf-tb-environmental'
+};
 
 function _ylfBuild(idx) {
     const cropEl = document.getElementById('ylf-crop-' + idx);
@@ -8312,20 +8446,38 @@ function _ylfBuild(idx) {
     }
 
     grid.innerHTML = relevant.map(function(f) {
+        var typeCls = _YLF_TYPE_CLASS[f.type] || '';
+        var maxPct  = Math.round(f.maxImpact * 100);
         return '<div class="ylf-factor-item" id="ylfitem_' + idx + '_' + f.id + '">' +
+            // ── header row: checkbox + name + type badge ──
             '<div class="ylf-factor-header">' +
                 '<input type="checkbox" class="ylf-factor-cb" id="ylfcb_' + idx + '_' + f.id + '"' +
                     ' onchange="_ylfSliderSync(\'' + idx + '\',\'' + f.id + '\')">' +
-                '<span class="ylf-factor-name">' + f.name + '</span>' +
-                '<span class="ylf-factor-type-badge">' + f.type + '</span>' +
+                '<div class="ylf-factor-info">' +
+                    '<span class="ylf-factor-name">' + f.name + '</span>' +
+                    '<span class="ylf-factor-type-badge ' + typeCls + '">' + f.type + '</span>' +
+                '</div>' +
             '</div>' +
-            '<input type="range" class="ylf-factor-slider" id="ylfsl_' + idx + '_' + f.id + '"' +
-                ' min="0" max="100" value="30"' +
-                ' oninput="_ylfDisplaySync(\'' + idx + '\',\'' + f.id + '\')" disabled>' +
-            '<div style="height:5px;border-radius:3px;background:#e8f5e9;overflow:hidden;margin:3px 0;">' +
-                '<div id="ylfbar_' + idx + '_' + f.id + '" style="height:100%;border-radius:3px;width:0%;background:var(--green-400);transition:width 0.3s,background 0.3s;"></div>' +
+            // ── severity row: label + value ──
+            '<div class="ylf-sev-wrap">' +
+                '<div class="ylf-sev-row">' +
+                    '<span class="ylf-sev-label">Severity</span>' +
+                    '<span class="ylf-sev-val" id="ylfsevval_' + idx + '_' + f.id + '">30%</span>' +
+                '</div>' +
+                '<input type="range" class="ylf-factor-slider" id="ylfsl_' + idx + '_' + f.id + '"' +
+                    ' min="0" max="100" value="30"' +
+                    ' oninput="_ylfDisplaySync(\'' + idx + '\',\'' + f.id + '\')" disabled>' +
+                // ── impact fill bar ──
+                '<div class="ylf-impact-bar">' +
+                    '<div class="ylf-impact-fill" id="ylfbar_' + idx + '_' + f.id + '" style="width:0%;"></div>' +
+                '</div>' +
+                // ── estimated loss text ──
+                '<div class="ylf-loss-text" id="ylfloss_' + idx + '_' + f.id + '"></div>' +
             '</div>' +
-            '<div class="ylf-factor-impact" id="ylfimp_' + idx + '_' + f.id + '">Severity: <strong>30%</strong></div>' +
+            // ── max-impact hint ──
+            '<div class="ylf-factor-impact" id="ylfimp_' + idx + '_' + f.id + '">' +
+                'Max impact: <strong>' + maxPct + '%</strong>' +
+            '</div>' +
         '</div>';
     }).join('');
 
@@ -8348,26 +8500,56 @@ function _ylfSliderSync(idx, id) {
 function _ylfDisplaySync(idx, id) {
     const sl  = document.getElementById('ylfsl_' + idx + '_' + id);
     const imp = document.getElementById('ylfimp_' + idx + '_' + id);
-    if (!sl || !imp) return;
+    if (!sl) return;
     const factor = YIELD_FACTORS.find(function(f) { return f.id === id; });
     if (!factor) return;
+
     const cb       = document.getElementById('ylfcb_' + idx + '_' + id);
     const isActive = cb && cb.checked;
-    const sev      = parseInt(sl.value);
-    const loss     = Math.round(factor.maxImpact * (sev / 100) * 100);
-    imp.innerHTML  = isActive
-        ? 'Severity: <strong>' + sev + '%</strong> — est. loss: <strong style="color:#ef4444;">' + loss + '%</strong>'
-        : 'Severity: <strong>' + sev + '%</strong>';
+    const sev      = parseInt(sl.value) || 0;
+    const loss     = isActive && sev > 0 ? Math.round(factor.maxImpact * (sev / 100) * 100) : 0;
+    const barColor = sev < 35 ? 'var(--green-500)' : sev < 65 ? '#f59e0b' : '#ef4444';
+
+    // severity value badge
+    const sevVal = document.getElementById('ylfsevval_' + idx + '_' + id);
+    if (sevVal) sevVal.textContent = sev + '%';
+
+    // impact fill bar
     const bar = document.getElementById('ylfbar_' + idx + '_' + id);
     if (bar) {
         bar.style.width      = isActive ? sev + '%' : '0%';
-        bar.style.background = sev < 35 ? 'var(--green-400)' : sev < 65 ? '#f59e0b' : '#ef4444';
+        bar.style.background = barColor;
     }
+
+    // estimated loss text
+    const lossEl = document.getElementById('ylfloss_' + idx + '_' + id);
+    if (lossEl) lossEl.textContent = (isActive && loss > 0) ? 'Est. yield loss: ' + loss + '%' : '';
+
+    // max impact hint (footer)
+    if (imp) {
+        var maxPct = Math.round(factor.maxImpact * 100);
+        imp.innerHTML = isActive && sev > 0
+            ? 'Est. loss: <strong style="color:#ef4444;">' + loss + '%</strong> / Max: ' + maxPct + '%'
+            : 'Max impact: <strong>' + maxPct + '%</strong>';
+    }
+
+    // card border tint
     const card = document.getElementById('ylfitem_' + idx + '_' + id);
-    if (card) card.style.borderColor = isActive
-        ? (sev < 35 ? 'var(--green-300)' : sev < 65 ? '#fcd34d' : '#fca5a5')
-        : '';
+    if (card) {
+        if (isActive) {
+            card.classList.add('ylf-factor-checked');
+            card.style.borderColor = sev < 35 ? 'var(--green-400)' : sev < 65 ? '#fcd34d' : '#fca5a5';
+        } else {
+            card.classList.remove('ylf-factor-checked');
+            card.style.borderColor = '';
+        }
+    }
+
+    // slider enable/disable handled by _ylfSliderSync; only update colour here
+    if (sl && isActive) sl.style.accentColor = barColor;
+
     _ylfCountBadge(idx);
+    _ylfUpdateSummaryBar(idx);
 }
 
 function _ylfCountBadge(idx) {
@@ -8389,7 +8571,39 @@ function _ylfCountBadge(idx) {
 // Keep old alias
 function _ylfUpdateCardCount(idx) { _ylfCountBadge(idx); }
 
-function saveYLF(idx, tsKey) {
+// ── Live summary bar: combined estimated yield loss ──────────────────────
+function _ylfUpdateSummaryBar(idx) {
+    const bar     = document.getElementById('ylf-summary-bar-' + idx);
+    const textEl  = document.getElementById('ylf-summary-text-' + idx);
+    const lossEl  = document.getElementById('ylf-summary-loss-' + idx);
+    if (!bar || !textEl || !lossEl) return;
+
+    const crop     = (document.getElementById('ylf-crop-' + idx) || {}).value || '';
+    const relevant = YIELD_FACTORS.filter(function(f) { return !crop || f.crops.includes(crop); });
+    var activeList = [];
+    relevant.forEach(function(f) {
+        var cb = document.getElementById('ylfcb_' + idx + '_' + f.id);
+        var sl = document.getElementById('ylfsl_' + idx + '_' + f.id);
+        if (cb && cb.checked) {
+            var sev  = parseInt((sl ? sl.value : 30)) || 0;
+            var loss = Math.round(f.maxImpact * (sev / 100) * 100);
+            if (sev > 0) activeList.push({ name: f.name, loss: loss });
+        }
+    });
+
+    if (!activeList.length) { bar.classList.remove('show'); return; }
+
+    // Diminishing-returns combined loss: 1 - Π(1 - lossᵢ/100)
+    var combined = 1 - activeList.reduce(function(acc, a) { return acc * (1 - a.loss / 100); }, 1);
+    var pct      = Math.round(combined * 100);
+
+    var names = activeList.map(function(a) { return a.name + ' (' + a.loss + '%)'; }).join(', ');
+    textEl.textContent = activeList.length + ' factor' + (activeList.length > 1 ? 's' : '') + ': ' + names;
+    lossEl.textContent = '−' + pct + '% yield';
+    bar.classList.add('show');
+}
+
+async function saveYLF(idx, tsKey) {
     const cropEl   = document.getElementById('ylf-crop-' + idx);
     const crop     = cropEl ? cropEl.value : '';
     const remarks  = ((document.getElementById('ylf-remarks-' + idx) || {}).value || '').trim();
@@ -8403,9 +8617,57 @@ function saveYLF(idx, tsKey) {
     // Use tsKey (timestamp) as the storage key so state survives index drift
     var key = 'ylf_' + (tsKey || idx);
     try { localStorage.setItem(key, JSON.stringify({ factors: factors, remarks: remarks, savedAt: new Date().toISOString() })); } catch(e) {}
-    var badge = document.getElementById('ylf-saved-badge-' + idx);
-    if (badge) { badge.style.display = 'inline-flex'; setTimeout(function() { badge.style.display = 'none'; }, 3000); }
-    toast('✅ Yield notes saved locally.');
+
+    // Build active-factors array with % for Google Sheets
+    const activeFactors = relevant
+        .filter(function(f) { return factors[f.id] && factors[f.id].checked; })
+        .map(function(f) { return { name: f.name, type: f.type, severity: factors[f.id].severity }; });
+
+    // Gather greenhouse-level metadata from the record card
+    const ghNumEl   = document.getElementById('ylf-ghnum-'   + idx);
+    const varEl     = document.getElementById('ylf-variety-' + idx);
+    const localEl   = document.getElementById('ylf-locality-'+ idx);
+    const areaEl    = document.getElementById('ylf-area-'    + idx);
+    const growerEl  = document.getElementById('ylf-grower-'  + idx);
+    const ghNumber  = ghNumEl  ? (ghNumEl.value  || '') : '';
+    const variety   = varEl    ? (varEl.value    || '') : '';
+    const locality  = localEl  ? (localEl.value  || '') : '';
+    const area      = areaEl   ? (areaEl.value   || '') : '';
+    const grower    = growerEl ? (growerEl.value || currentLoggedInUser) : currentLoggedInUser;
+
+    // Build YLF string for sheet column  e.g. "Late Blight: 45% | Thrips: 30%"
+    const ylfString = activeFactors.map(function(f) { return f.name + ': ' + f.severity + '%'; }).join(' | ');
+
+    // POST to Google Sheets via GAS
+    const sheetPayload = {
+        action:     'saveYLFData',
+        grower:     grower,
+        locality:   locality,
+        ghArea:     area,
+        ghNumber:   ghNumber,
+        crop:       crop,
+        variety:    variety,
+        timestamp:  tsKey || new Date().toISOString(),
+        ylf:        ylfString,
+        ylfDetails: JSON.stringify(activeFactors),
+        remarks:    remarks,
+        savedAt:    new Date().toISOString()
+    };
+
+    const badge = document.getElementById('ylf-saved-badge-' + idx);
+    try {
+        await fetch(SCRIPT_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body:    'data=' + encodeURIComponent(JSON.stringify(sheetPayload))
+        });
+        if (badge) { badge.style.display = 'inline-flex'; setTimeout(function() { badge.style.display = 'none'; }, 3000); }
+        toast('✅ YLF notes saved to Google Sheet!');
+        logActivity('ylf', 'YLF saved for GH ' + (ghNumber || idx) + ' — ' + crop + (ylfString ? ' (' + activeFactors.length + ' factor(s))' : ' (no factors)'));
+    } catch(e) {
+        if (badge) { badge.style.display = 'inline-flex'; setTimeout(function() { badge.style.display = 'none'; }, 3000); }
+        toast('⚠️ Saved locally (Sheet sync failed): ' + e.message, true);
+    }
 }
 
 function _ylfLoadState(idx) {
@@ -8436,10 +8698,215 @@ function _ylfLoadState(idx) {
     var taEl = document.getElementById('ylf-remarks-' + idx);
     if (taEl && remarks) taEl.value = remarks;
     _ylfCountBadge(idx);
+    _ylfUpdateSummaryBar(idx);
 }
 // Keep old alias
 function loadYLFState(idx) { _ylfLoadState(idx); }
 // ==================== END YLF MODULE ====================
+
+// ==================== YLF SYMPTOM PHOTO GALLERY ====================
+// Curated Wikimedia/CC public domain image URLs for each factor
+const YLF_PHOTOS = {
+    'late_blight':     { label:'Late Blight', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Late_blight_on_tomato.jpg/320px-Late_blight_on_tomato.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Late_blight_leaf_tomato.jpg/320px-Late_blight_leaf_tomato.jpg'], desc:'Dark water-soaked lesions on leaves/stems; white mold on underside in humid conditions.' },
+    'pseudo_corrugata':{ label:'Pseudomonas corrugata', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Bacterial_canker_tomato.jpg/320px-Bacterial_canker_tomato.jpg'], desc:'Pith browning, internal stem necrosis; wilting despite healthy roots.' },
+    'bact_wilt':       { label:'Bacterial Wilt', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Bacterial_wilt_tomato.jpg/320px-Bacterial_wilt_tomato.jpg'], desc:'Sudden wilt without yellowing; milky threads in cut stem dipped in water.' },
+    'tuta_absoluta':   { label:'Tuta absoluta', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Tuta_absoluta_leaf_mines.jpg/320px-Tuta_absoluta_leaf_mines.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Tuta_absoluta_fruit.jpg/320px-Tuta_absoluta_fruit.jpg'], desc:'Silvery leaf mines; frass-filled galleries in fruit; larvae inside green tomatoes.' },
+    'blossom_end_rot': { label:'Blossom End Rot', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Blossom_end_rot_tomato.jpg/320px-Blossom_end_rot_tomato.jpg'], desc:'Dark leathery sunken patch at blossom end of fruit; calcium/water stress.' },
+    'flower_drop':     { label:'Flower/Fruit Drop', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Cucumber_flower_abortion.jpg/320px-Cucumber_flower_abortion.jpg'], desc:'Flowers or tiny fruits detach; usually heat >32°C, cold <15°C, or water stress.' },
+    'thrips':          { label:'Thrips', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Thrips_damage_leaf.jpg/320px-Thrips_damage_leaf.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Thrips_adult.jpg/320px-Thrips_adult.jpg'], desc:'Silver-bronze streaks on leaves; distorted growing points; tiny slender insects.' },
+    'mites':           { label:'Spider Mites', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Spider_mite_damage.jpg/320px-Spider_mite_damage.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Spider_mites_webbing.jpg/320px-Spider_mites_webbing.jpg'], desc:'Stippled/bronzed leaves; fine webbing on underside; mites visible with hand lens.' },
+    'whiteflies':      { label:'Whiteflies', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Whitefly_colony.jpg/320px-Whitefly_colony.jpg'], desc:'White waxy insects under leaves; honeydew/sooty mold; yellowing/wilting.' },
+    'deformed_fruits': { label:'Deformed Fruits', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Deformed_pepper.jpg/320px-Deformed_pepper.jpg'], desc:'Catface, uneven growth, poor wall development; heat/cold stress or pollination failure.' },
+    'broad_mites':     { label:'Broad Mites', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Broad_mite_damage.jpg/320px-Broad_mite_damage.jpg'], desc:'Distorted shoot tips, downward leaf curl, bronzing of young tissue; invisible to naked eye.' },
+    'anthracnose':     { label:'Anthracnose', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Anthracnose_pepper.jpg/320px-Anthracnose_pepper.jpg'], desc:'Sunken tan/brown circular lesions on ripe fruit; orange spore masses in humid weather.' },
+    'didymella':       { label:'Didymella spp.', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Gummy_stem_blight_cucumber.jpg/320px-Gummy_stem_blight_cucumber.jpg'], desc:'Brown stem lesions near nodes; gummy exudate; leaf spots with dark margins.' },
+    'botrytis':        { label:'Botrytis (Grey Mould)', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Botrytis_cinerea_on_strawberry.jpg/320px-Botrytis_cinerea_on_strawberry.jpg'], desc:'Grey fuzzy mold on flowers/stems/fruit in humid conditions; tan lesions.' },
+    'root_rot':        { label:'Root Rot', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Root_rot_cucumber.jpg/320px-Root_rot_cucumber.jpg'], desc:'Brown/black roots; wilting despite moist substrate; orange-brown discoloration.' },
+    'powdery_mildew':  { label:'Powdery Mildew', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Powdery_mildew_cucurbit.jpg/320px-Powdery_mildew_cucurbit.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Sphaerotheca_fuliginea_on_cucumber.jpg/320px-Sphaerotheca_fuliginea_on_cucumber.jpg'], desc:'White powdery patches on upper leaf surface; starts on older leaves; no moisture needed.' },
+    'downy_mildew_cu': { label:'Downy Mildew (Cucumber)', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Downy_mildew_cucumber_upper.jpg/320px-Downy_mildew_cucumber_upper.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Downy_mildew_cucumber_lower.jpg/320px-Downy_mildew_cucumber_lower.jpg'], desc:'Angular yellow patches on upper leaf (following veins); grey-purple spores underneath.' },
+    'aphids':          { label:'Aphids', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Aphids_colony.jpg/320px-Aphids_colony.jpg'], desc:'Clusters of soft-bodied insects; yellowing; curling; honeydew and sooty mold.' },
+    'tipburn':         { label:'Tipburn', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Tipburn_lettuce.jpg/320px-Tipburn_lettuce.jpg'], desc:'Brown/dead inner leaf margins; calcium deficiency in rapidly growing tissue.' },
+    'downy_mildew':    { label:'Downy Mildew (Lettuce)', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Bremia_lettuce.jpg/320px-Bremia_lettuce.jpg'], desc:'Yellow patches above; white fluffy spores below leaf; spreads rapidly in cool humid GH.' },
+    'lettuce_mosaic':  { label:'Lettuce Mosaic Virus', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Lettuce_mosaic.jpg/320px-Lettuce_mosaic.jpg'], desc:'Mosaic mottling; distorted leaves; spread by aphids; no cure — rogue infected plants.' },
+    'bolting':         { label:'Bolting', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Bolting_lettuce.jpg/320px-Bolting_lettuce.jpg'], desc:'Elongated stem/flower stalk; bitter taste; triggered by temperatures >25°C.' },
+    'slugs_snails':    { label:'Slugs / Snails', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Slug_damage_lettuce.jpg/320px-Slug_damage_lettuce.jpg'], desc:'Irregular holes in leaves; slime trails; mostly night-feeding in moist growing media.' },
+};
+
+// Inject photo thumbnails into each YLF factor item after _ylfBuild
+function _ylfInjectPhotos(idx) {
+    const cropEl = document.getElementById('ylf-crop-' + idx);
+    const crop   = cropEl ? cropEl.value : '';
+    const relevant = YIELD_FACTORS.filter(function(f) { return !crop || f.crops.includes(crop); });
+    relevant.forEach(function(f) {
+        const item   = document.getElementById('ylfitem_' + idx + '_' + f.id);
+        const photos = YLF_PHOTOS[f.id];
+        if (!item || !photos) return;
+        // Don't duplicate
+        if (item.querySelector('.ylf-photo-strip')) return;
+        const strip = document.createElement('div');
+        strip.className = 'ylf-photo-strip';
+        strip.innerHTML =
+            '<div class="ylf-photo-desc">' + photos.desc + '</div>' +
+            '<div class="ylf-photo-thumbs">' +
+            photos.imgs.map(function(src) {
+                return '<img src="' + src + '" class="ylf-photo-thumb" loading="lazy" onerror="this.style.display=\'none\'" alt="' + photos.label + ' symptom photo">';
+            }).join('') +
+            '</div>';
+        item.appendChild(strip);
+    });
+}
+
+// Photos are injected via toggleYLF hook — see _ylfInjectPhotos
+// Refresh alias (also injects photos)
+function buildYLFFactors(idx) { _ylfBuild(idx); setTimeout(function(){ _ylfInjectPhotos(idx); }, 40); }
+
+// ==================== YLF PDF REPORT GENERATOR ====================
+function generateYLFPDF(idx, tsKey) {
+    const cropEl    = document.getElementById('ylf-crop-'     + idx);
+    const ghNumEl   = document.getElementById('ylf-ghnum-'    + idx);
+    const varEl     = document.getElementById('ylf-variety-'  + idx);
+    const localEl   = document.getElementById('ylf-locality-' + idx);
+    const areaEl    = document.getElementById('ylf-area-'     + idx);
+    const growerEl  = document.getElementById('ylf-grower-'   + idx);
+    const remarksEl = document.getElementById('ylf-remarks-'  + idx);
+
+    const crop     = cropEl    ? (cropEl.value    || '—') : '—';
+    const ghNumber = ghNumEl   ? (ghNumEl.value   || '—') : '—';
+    const variety  = varEl     ? (varEl.value     || '—') : '—';
+    const locality = localEl   ? (localEl.value   || '—') : '—';
+    const area     = areaEl    ? (areaEl.value    || '—') : '—';
+    const grower   = growerEl  ? (growerEl.value  || currentLoggedInUser) : currentLoggedInUser;
+    const remarks  = remarksEl ? (remarksEl.value || '') : '';
+
+    const relevant = YIELD_FACTORS.filter(function(f) { return !crop || f.crops.includes(crop); });
+    const activeFactors = relevant.filter(function(f) {
+        const cb = document.getElementById('ylfcb_' + idx + '_' + f.id);
+        return cb && cb.checked;
+    }).map(function(f) {
+        const sl = document.getElementById('ylfsl_' + idx + '_' + f.id);
+        const sev = sl ? parseInt(sl.value) : 30;
+        const loss = Math.round(f.maxImpact * (sev / 100) * 100);
+        return { name: f.name, type: f.type, sev: sev, loss: loss, id: f.id };
+    });
+
+    const reportDate = new Date().toLocaleDateString('en-MU', { day:'2-digit', month:'long', year:'numeric' });
+    const cropIcon = { 'Tomato':'🍅','Sweet Pepper':'🌶️','English Cucumber':'🥒','Lettuce':'🥬','Cabbage':'🥬','Eggplant':'🍆' }[crop] || '🌱';
+
+    // Build factor rows HTML
+    const factorRows = activeFactors.length ? activeFactors.map(function(f) {
+        const color = f.sev < 35 ? '#22c55e' : f.sev < 65 ? '#f59e0b' : '#ef4444';
+        const risk  = f.sev < 35 ? 'Low' : f.sev < 65 ? 'Moderate' : 'High';
+        return `<tr style="border-bottom:1px solid #e5e7eb;">
+            <td style="padding:8px 10px;font-weight:700;">${f.name}</td>
+            <td style="padding:8px 10px;color:#666;">${f.type}</td>
+            <td style="padding:8px 10px;text-align:center;">
+                <div style="background:#e5e7eb;border-radius:8px;height:12px;overflow:hidden;width:100%;min-width:80px;">
+                    <div style="height:100%;width:${f.sev}%;background:${color};border-radius:8px;"></div>
+                </div>
+                <span style="font-weight:800;color:${color};font-size:0.85rem;">${f.sev}%</span>
+            </td>
+            <td style="padding:8px 10px;text-align:center;font-weight:800;color:${color};">${f.loss}%</td>
+            <td style="padding:8px 10px;text-align:center;"><span style="background:${color};color:white;border-radius:20px;padding:2px 10px;font-size:0.78rem;font-weight:700;">${risk}</span></td>
+        </tr>`;
+    }).join('') : `<tr><td colspan="5" style="padding:16px;text-align:center;color:#aaa;">No limiting factors selected.</td></tr>`;
+
+    // Build photo rows (one row per active factor that has photos)
+    const photoRows = activeFactors.filter(function(f) { return YLF_PHOTOS[f.id]; }).map(function(f) {
+        const p = YLF_PHOTOS[f.id];
+        const thumbs = p.imgs.slice(0,2).map(function(src) {
+            return `<img src="${src}" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1.5px solid #e5e7eb;" onerror="this.style.display='none'" alt="${p.label}">`;
+        }).join('');
+        return `<div style="margin-bottom:1.2rem;padding:0.8rem;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;">
+            <div style="font-weight:800;font-size:0.9rem;margin-bottom:4px;">${f.name}</div>
+            <div style="font-size:0.78rem;color:#555;margin-bottom:8px;">${p.desc}</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">${thumbs}</div>
+        </div>`;
+    }).join('');
+
+    const totalLoss = activeFactors.reduce(function(sum, f) {
+        return sum * (1 - (f.loss / 100));
+    }, 1);
+    const netLossPct = Math.round((1 - totalLoss) * 100);
+    const riskColor  = netLossPct < 15 ? '#22c55e' : netLossPct < 35 ? '#f59e0b' : netLossPct < 60 ? '#ef4444' : '#7f1d1d';
+    const riskLabel  = netLossPct < 15 ? 'Low Risk' : netLossPct < 35 ? 'Moderate Risk' : netLossPct < 60 ? 'High Risk' : 'Critical Risk';
+
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>YLF Report — ${grower} — ${crop} GH${ghNumber}</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 24px; background: #f3f4f6; color: #1a1a1a; }
+  .page { background: white; max-width: 820px; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); overflow: hidden; }
+  .header { background: linear-gradient(135deg,#0d3d12,#259132); padding: 28px 32px; color: white; }
+  .header h1 { margin:0 0 4px; font-size:1.5rem; font-weight:900; }
+  .header .sub { font-size:0.82rem; opacity:0.85; }
+  .meta-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:20px 32px; background:#f9fafb; border-bottom:2px solid #e5e7eb; }
+  .meta-item label { font-size:0.68rem; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:2px; }
+  .meta-item span { font-size:0.92rem; font-weight:700; color:#0d3d12; }
+  .section { padding:20px 32px; }
+  .section h2 { font-size:1rem; font-weight:800; color:#0d3d12; border-left:4px solid #259132; padding-left:10px; margin-bottom:12px; }
+  table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+  thead tr { background:#0d3d12; color:white; }
+  thead th { padding:9px 10px; text-align:left; font-weight:700; }
+  .risk-box { background:linear-gradient(135deg,${riskColor}22,${riskColor}11); border:2px solid ${riskColor}; border-radius:10px; padding:14px 20px; display:inline-flex; align-items:center; gap:16px; margin-bottom:1rem; }
+  .risk-val { font-size:2rem; font-weight:900; color:${riskColor}; line-height:1; }
+  .risk-label { font-size:0.88rem; font-weight:800; color:${riskColor}; }
+  .remarks-box { background:#f0fdf4; border:1.5px solid #a7f3d0; border-radius:8px; padding:12px 16px; font-size:0.85rem; color:#064e3b; white-space:pre-wrap; }
+  .footer { background:#f9fafb; padding:14px 32px; border-top:1px solid #e5e7eb; font-size:0.72rem; color:#aaa; text-align:center; }
+  @media print { body { background:white; padding:0; } .page { box-shadow:none; border-radius:0; } }
+</style></head><body>
+<div class="page">
+  <div class="header">
+    <div style="font-size:0.78rem;opacity:0.7;margin-bottom:4px;">MoHydroponic Smart Tracker — Zone E2</div>
+    <h1>${cropIcon} Yield Limiting Factors Report</h1>
+    <div class="sub">Generated: ${reportDate} &nbsp;|&nbsp; Grower: <strong>${grower}</strong></div>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item"><label>Grower</label><span>${grower}</span></div>
+    <div class="meta-item"><label>Locality</label><span>${locality}</span></div>
+    <div class="meta-item"><label>GH Area</label><span>${area} m²</span></div>
+    <div class="meta-item"><label>Greenhouse #</label><span>${ghNumber}</span></div>
+    <div class="meta-item"><label>Crop</label><span>${cropIcon} ${crop}</span></div>
+    <div class="meta-item"><label>Variety</label><span>${variety}</span></div>
+  </div>
+
+  <div class="section">
+    <h2>Risk Summary</h2>
+    <div class="risk-box">
+      <div>
+        <div class="risk-val">${netLossPct}%</div>
+        <div style="font-size:0.72rem;color:#666;margin-top:2px;">Est. Yield Loss</div>
+      </div>
+      <div>
+        <div class="risk-label">${riskLabel}</div>
+        <div style="font-size:0.72rem;color:#666;margin-top:2px;">${activeFactors.length} active limiting factor(s)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0;">
+    <h2>Active Yield Limiting Factors</h2>
+    <table>
+      <thead><tr>
+        <th>Factor</th><th>Type</th><th>Severity</th><th>Est. Loss</th><th>Risk Level</th>
+      </tr></thead>
+      <tbody>${factorRows}</tbody>
+    </table>
+  </div>
+
+  ${photoRows ? `<div class="section" style="padding-top:0;"><h2>Symptom Reference Photos</h2>${photoRows}</div>` : ''}
+
+  ${remarks ? `<div class="section" style="padding-top:0;"><h2>Remarks / Observations</h2><div class="remarks-box">${remarks}</div></div>` : ''}
+
+  <div class="footer">MoHydroponic Smart Tracker v29 &nbsp;|&nbsp; Zone E2 &nbsp;|&nbsp; ${reportDate} &nbsp;|&nbsp; All Rights Reserved</div>
+</div>
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+
+    const win = window.open('', '_blank');
+    if (win) { win.document.write(html); win.document.close(); }
+    else { toast('⚠️ Pop-ups may be blocked. Please allow pop-ups for the PDF report.', true); }
+}
+// ==================== END YLF PDF REPORT ====================
 
 // ==================== ZONE E2 LOCALITY COORDINATES (CORRECTED) ====================
 const E2_LOCALITY_COORDS = {
@@ -9984,6 +10451,12 @@ async function hnSaveModalItem() {
     if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = origHTML; }
 }
 
+function ylfLightboxClose() {
+    const lb = document.getElementById('ylfLightbox');
+    if (lb) lb.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
 // Attach drag-drop support for photo upload
 document.addEventListener('DOMContentLoaded', () => {
     const zone = document.getElementById('hnPhotoDropZone');
@@ -9999,10 +10472,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     // close modal on backdrop click
     document.getElementById('hnItemModal').addEventListener('click', function(e){ if(e.target===this) hnCloseModal(); });
+
+    // YLF photo lightbox via event delegation on cropRecordsGrid
+    document.body.addEventListener('click', function(e) {
+        const thumb = e.target.closest('.ylf-photo-thumb');
+        if (!thumb) return;
+        const lb  = document.getElementById('ylfLightbox');
+        const img = document.getElementById('ylfLightboxImg');
+        const cap = document.getElementById('ylfLightboxCaption');
+        if (lb && img) {
+            img.src = thumb.src;
+            if (cap) cap.textContent = thumb.alt || '';
+            lb.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    });
 });
 </script>
 
 <!-- Issue #12: Grower sticky bottom navigation bar (hidden for admin, shown for growers on mobile) -->
+<!-- YLF Photo Lightbox -->
+<div id="ylfLightbox" role="dialog" aria-label="Symptom photo" onclick="if(event.target===this)ylfLightboxClose()">
+    <button id="ylfLightboxClose" onclick="ylfLightboxClose()" aria-label="Close photo">&times;</button>
+    <img id="ylfLightboxImg" src="" alt="Symptom photo">
+    <div id="ylfLightboxCaption"></div>
+</div>
+
 <nav id="growerBottomNav" aria-label="Grower navigation">
     <div class="gbn-inner">
         <button class="gbn-btn gbn-active" id="gbnDashboard" onclick="gbnScrollTo('liveDashboardAnchor')" aria-label="Dashboard" data-i18n="nav.dashboard" data-i18n-attr="aria-label">
