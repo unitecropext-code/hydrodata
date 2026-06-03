@@ -351,8 +351,8 @@
             .record-swipe-hint { display: none; }
         }
 
-        .crop-records-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 0.8rem; }
-        @media (min-width: 480px) { .crop-records-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); } }
+        .crop-records-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 0.8rem; align-items: start; }
+        @media (min-width: 480px) { .crop-records-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); align-items: start; } }
         .record-card {
             background: #ffffff; border: 1.5px solid var(--green-200); border-radius: var(--radius-lg);
             padding: 1rem; position: relative; transition: all 0.2s;
@@ -2862,6 +2862,11 @@
                     <span class="acp-nav-label">Pest<br>Alert</span>
                 </button>
 
+                <button class="acp-nav-card" data-tab="ylfReportTab" onclick="acpSwitch(this,'ylfReportTab')">
+                    <i class="acp-nav-icon fas fa-chart-bar" style="color:#d97706;"></i>
+                    <span class="acp-nav-label">YLF<br>Report</span>
+                </button>
+
                 <button class="acp-nav-card" data-tab="yieldMapTab" onclick="acpSwitch(this,'yieldMapTab')">
                     <i class="acp-nav-icon fas fa-map-marked-alt" style="color:var(--teal);"></i>
                     <span class="acp-nav-label">Yield<br>Map</span>
@@ -3339,8 +3344,11 @@
                             <button class="btn-secondary" onclick="printYLFSeverityReport()" id="ylfSevPrintBtn" style="display:none;">
                                 <i class="fas fa-print"></i> Print / PDF
                             </button>
-                            <button class="btn-secondary" onclick="document.getElementById('ylfSevReportOut').innerHTML='';document.getElementById('ylfSevPrintBtn').style.display='none';" style="display:none;" id="ylfSevClearBtn">
+                            <button class="btn-secondary" onclick="document.getElementById('ylfSevReportOut').innerHTML='';document.getElementById('ylfSevPrintBtn').style.display='none';document.getElementById('ylfSevClearBtn').style.display='none';" style="display:none;" id="ylfSevClearBtn">
                                 <i class="fas fa-times"></i> Clear
+                            </button>
+                            <button class="btn-secondary" onclick="createYLFPhotosSheet()" id="ylfPhotosSheetBtn" style="border-color:#0d9488;color:#0d9488;" title="Generate a formatted reference sheet in Google Sheets with all YLF factor descriptions and photo references">
+                                <i class="fas fa-table"></i> Create YLF Photos Reference Sheet
                             </button>
                         </div>
                     </div>
@@ -3649,8 +3657,14 @@
             </div>
             <div class="form-group"><label>Area (m²) *</label><input type="number" inputmode="decimal" step="0.01" id="editArea" min="0"><div class="field-error-msg" id="editAreaErr" style="display:none;"></div></div>
             <div class="form-group"><label data-i18n="modal.edit.variety">Variety</label><input type="text" id="editVariety"></div>
+            <div id="editWeeklyToggleRow" style="grid-column:1/-1;display:none;margin-bottom:0.3rem;">
+                <button type="button" id="editWeeklyToggleBtn" onclick="toggleWeeklySection()" style="display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px dashed var(--green-300);border-radius:var(--radius-pill);padding:5px 14px;font-size:0.78rem;font-weight:700;color:var(--green-700);cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.18s;">
+                    <i class="fas fa-chevron-right" id="editWeeklyToggleIcon" style="transition:transform 0.2s;font-size:0.72rem;"></i>
+                    <span id="editWeeklyToggleLabel">Show Weekly Breakdown (Optional)</span>
+                </button>
+            </div>
             <div class="form-group" id="editWeeklySection" style="grid-column:1/-1;display:none;">
-                <label data-i18n="modal.edit.weekly">Weekly Yield</label>
+                <label data-i18n="modal.edit.weekly">Weekly Yield <span style="font-size:0.72rem;font-weight:600;color:#9ca3af;margin-left:4px;">(Optional)</span></label>
                 <div class="week-yield-grid">
                     <div class="week-yield-card">
                         <span class="week-yield-card-label">Week 1</span>
@@ -3767,6 +3781,24 @@ async function idbSet(key, value) {
             tx.onerror    = e => rej(e.target.error);
         });
     } catch(e) { /* silently ignore IDB write errors */ }
+}
+// ── BUG 1 FIX: delete a specific IDB cache entry so the next fetch hits the network ──
+async function idbDelete(key) {
+    try {
+        const db = await _idbOpen();
+        return new Promise((res) => {
+            const tx = db.transaction(_IDB_STORE, 'readwrite');
+            tx.objectStore(_IDB_STORE).delete(key);
+            tx.oncomplete = () => res();
+            tx.onerror    = () => res(); // never reject — silently ignore
+        });
+    } catch(e) { /* silently ignore */ }
+}
+// Invalidate the getUserData IDB cache for a given username so that
+// loadUserPreviousData() always fetches fresh data from GAS after a write.
+async function idbBustUserCache(username) {
+    const key = `${SCRIPT_URL}?action=getUserData&username=${encodeURIComponent(username)}`;
+    await idbDelete(key);
 }
 // Fetch JSON with network-first strategy; fall back to IndexedDB cache on failure.
 // staleAfterMs controls how long cached data is considered fresh (default 10 min).
@@ -4354,7 +4386,7 @@ function toggleLang() { applyLang(_currentLang === 'en' ? 'kr' : 'en'); }
 //            Type: Web app → Execute as: Me → Who has access: Anyone
 //            Then copy the /exec URL and replace the value below.
 // ─────────────────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7VLDAom-JAQh5XI9-HNj9r0b9Eyiy9gspKdQLZHkyI3L059ddjUtxzfVbmuYGkiEaog/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7D31_1NketbAB_5Ei4U76zxUHpns7hyuY6qku4EAJfevYrFRWwehb2Cdl5Iyi_nvItg/exec';
 //  ↑ Replace the URL above with your own deployed GAS /exec URL.
 // ─────────────────────────────────────────────────────────────────────
 
@@ -6971,8 +7003,16 @@ function _populateEditModal(row, headers, username, isAdmin) {
     const isHarvesting=currentStage==='Harvesting';
     const monthSec=document.getElementById('editMonthlySection');
     if(monthSec)toggleEl(monthSec, isHarvesting);
+    // Weekly section is always hidden here — user can expand it via toggle button (optional)
     const weeklySec=document.getElementById('editWeeklySection');
-    if(weeklySec)toggleEl(weeklySec, isHarvesting, 'grid');
+    if(weeklySec)hideEl(weeklySec);
+    const weeklyToggleRow=document.getElementById('editWeeklyToggleRow');
+    if(weeklyToggleRow)toggleEl(weeklyToggleRow, isHarvesting);
+    // Reset toggle button state
+    const weeklyToggleIcon=document.getElementById('editWeeklyToggleIcon');
+    if(weeklyToggleIcon){weeklyToggleIcon.style.transform='';} 
+    const weeklyToggleLabel=document.getElementById('editWeeklyToggleLabel');
+    if(weeklyToggleLabel)weeklyToggleLabel.textContent='Show Weekly Breakdown (Optional)';
     const yieldUnitSec=document.getElementById('editYieldUnitSection');
     if(yieldUnitSec)toggleEl(yieldUnitSec, isHarvesting);
     const harvestMonthsSec=document.getElementById('editHarvestMonthsSection');
@@ -6995,6 +7035,10 @@ function _populateEditModal(row, headers, username, isAdmin) {
     // ── v22: Show inline YLF section for all stages (aligned with Yield & DSS tabs) ──
     const ylfSec=document.getElementById('editYLFSection');
     if(ylfSec)showEl(ylfSec);
+    // BUG 2 FIX: always clear the shared remarks textarea BEFORE rebuilding the YLF
+    // section so the previous greenhouse's remarks never bleed into this one.
+    const _remarksTA=document.getElementById('editYLFRemarks');
+    if(_remarksTA)_remarksTA.value='';
     _buildEditModalYLF(cropVal);
 }
 
@@ -7015,11 +7059,20 @@ function _buildEditModalYLF(crop) {
         grid.innerHTML = '<div class="ylf-no-factors">No specific limiting factors defined for this crop.</div>';
         return;
     }
-    // Restore saved state if available
-    const tsEl = document.getElementById('ylf-ts-0') || null;
-    const saveKey = 'ylf_edit_' + (document.getElementById('editCrop')?.value || 'unknown');
+    // BUG 2 FIX: Use greenhouse-specific key (crop + timestamp) so each greenhouse
+    // has its own isolated remarks/YLF state and doesn't share with other greenhouses.
+    const ghTimestamp = (currentEditRecord && currentEditRecord.ts) ? currentEditRecord.ts : '';
+    const ghKey = ghTimestamp ? ghTimestamp.replace(/[^a-zA-Z0-9]/g,'_') : 'unknown';
+    const saveKey = 'ylf_edit_' + (document.getElementById('editCrop')?.value || 'unknown') + '_' + ghKey;
+    // Store the key on the element so _eylfGetStateForSave can use the same key
+    if(grid) grid.dataset.ylfEditKey = saveKey;
     let savedState = {};
     try { savedState = JSON.parse(localStorage.getItem(saveKey) || '{}'); } catch(e) {}
+
+    // BUG 2 FIX: restore per-greenhouse remarks from localStorage so each
+    // greenhouse has its own isolated observations/remarks.
+    const remarksTA = document.getElementById('editYLFRemarks');
+    if (remarksTA) remarksTA.value = savedState._remarks || '';
 
     _eylfState = {};
     relevant.forEach(f => {
@@ -7134,9 +7187,14 @@ function _eylfUpdateSummary() {
 function _eylfGetStateForSave() {
     const crop = document.getElementById('editCrop')?.value||'unknown';
     const remarks = document.getElementById('editYLFRemarks')?.value||'';
-    const saveKey = 'ylf_edit_'+crop;
+    // BUG 2 FIX: Use same greenhouse-specific key as _buildEditModalYLF
+    const grid = document.getElementById('editYLFGrid');
+    const saveKey = (grid && grid.dataset.ylfEditKey) ? grid.dataset.ylfEditKey : ('ylf_edit_'+crop);
     const stateToSave = {};
     Object.entries(_eylfState).forEach(([fid,s])=>{ stateToSave[fid]={active:s.active,severity:s.severity}; });
+    // BUG 2 FIX: persist remarks alongside factor states under the GH-specific key
+    // so each greenhouse has its own isolated remarks that survive page reloads.
+    stateToSave._remarks = remarks;
     try { localStorage.setItem(saveKey, JSON.stringify(stateToSave)); } catch(e){}
     return { factors: stateToSave, remarks };
 }
@@ -8333,6 +8391,24 @@ function applyWeeklyTotalToCurrentMonth() {
     }
 }
 
+// ==================== WEEKLY SECTION OPTIONAL TOGGLE ====================
+function toggleWeeklySection() {
+    const sec = document.getElementById('editWeeklySection');
+    const icon = document.getElementById('editWeeklyToggleIcon');
+    const label = document.getElementById('editWeeklyToggleLabel');
+    if (!sec) return;
+    const isOpen = sec.style.display !== 'none' && sec.style.display !== '';
+    if (isOpen) {
+        sec.style.display = 'none';
+        if (icon) icon.style.transform = '';
+        if (label) label.textContent = 'Show Weekly Breakdown (Optional)';
+    } else {
+        sec.style.display = 'grid';
+        if (icon) icon.style.transform = 'rotate(90deg)';
+        if (label) label.textContent = 'Hide Weekly Breakdown';
+    }
+}
+
 // ==================== SAVE EDIT RECORD ====================
 async function saveEditRecord() {
     if(!currentEditRecord)return;
@@ -8358,8 +8434,45 @@ async function saveEditRecord() {
     const btn=document.getElementById('saveEditBtn');const origHTML=btn.innerHTML;
     btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Saving...';
     try {
+        // BUG 1 FIX: frontend was sending week1Yield/week2Yield/etc. but GAS
+        // handleUpdateFullRecord expects week1/week2/week3/week4. Renamed here.
         await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-            body:'data='+encodeURIComponent(JSON.stringify({action:'updateFullRecord',username:currentEditRecord.grower,timestamp:currentEditRecord.ts,stage,area,variety,weeklyYield,week1Yield,week2Yield,week3Yield,week4Yield,weeklyUnit,harvestMonths,monthly}))});
+            body:'data='+encodeURIComponent(JSON.stringify({action:'updateFullRecord',username:currentEditRecord.grower,timestamp:currentEditRecord.ts,stage,area,variety,weeklyYield,week1:week1Yield,week2:week2Yield,week3:week3Yield,week4:week4Yield,weeklyUnit,harvestMonths,monthly}))});
+        // BUG 1 FIX: Also save YLF remarks/observations to YLFRecords sheet in Google Sheets
+        const ylfRemarks = (document.getElementById('editYLFRemarks')?.value||'').trim();
+        const cropVal = document.getElementById('editCrop')?.value||'';
+        const activeFactors = Object.entries(ylfData.factors||{})
+            .filter(([,s])=>s.active)
+            .map(([fid,s])=>{
+                const f=YIELD_FACTORS.find(x=>x.id===fid);
+                return {name:f?f.name:fid, type:f?f.type:'unknown', severity:s.severity};
+            });
+        const ylfString = activeFactors.map(f=>f.name+': '+(_EYLF_SEV_LEVELS[f.severity]||0)+'%').join(' | ');
+        // Get GH number, locality, area from the record being edited
+        const hdrLow=(currentEditRecord.headers||[]).map(h=>String(h).toLowerCase());
+        const _getRecVal=(patterns)=>{const ci=hdrLow.findIndex(h=>patterns.some(p=>h.includes(p)));return ci!==-1?String(currentEditRecord.row[ci]||''):'';}
+        const ghNumber=_getRecVal(['gh number','greenhouse number']);
+        const locality=_getRecVal(['locality']);
+        const ghArea=_getRecVal(['area (m'])||String(area);
+        const ylfPayload={
+            action:'saveYLFData',
+            grower:currentEditRecord.grower,
+            locality,
+            ghArea,
+            ghNumber,
+            crop:cropVal,
+            variety,
+            timestamp:currentEditRecord.ts,
+            ylf:ylfString,
+            ylfDetails:JSON.stringify(activeFactors),
+            remarks:ylfRemarks,
+            savedAt:new Date().toISOString()
+        };
+        // Only post to YLFRecords if there are remarks or active factors
+        if(ylfRemarks||activeFactors.length>0){
+            fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                body:'data='+encodeURIComponent(JSON.stringify(ylfPayload))}).catch(()=>{});
+        }
         const editType=currentEditRecord.isAdminEdit?'Admin edited':'Updated';
         toast(`${editType} record successfully!`);
         logActivity('edit',`${editType} record: ${variety||'crop'} | Stage: ${stage} | Area: ${area} m²${currentEditRecord.isAdminEdit?' (admin action for grower: '+currentEditRecord.grower+')':''}`);
@@ -8369,8 +8482,12 @@ async function saveEditRecord() {
         refreshYieldMapIfOpen();
         // Refresh appropriate view
         if(currentEditRecord.isAdminEdit&&window._adminSearchUsername){
+            // Bust admin-searched user's cache so they see fresh data
+            await idbBustUserCache(currentEditRecord.grower);
             await adminSearchGrower();
         } else if(!currentEditRecord.isAdminEdit){
+            // BUG 1 FIX: bust IDB cache so stale data doesn't hide the monthly yields just saved
+            await idbBustUserCache(currentLoggedInUser);
             await loadUserPreviousData(currentLoggedInUser);
         }
         await loadDashboard();
@@ -8601,6 +8718,143 @@ function _ylfUpdateSummaryBar(idx) {
     textEl.textContent = activeList.length + ' factor' + (activeList.length > 1 ? 's' : '') + ': ' + names;
     lossEl.textContent = '−' + pct + '% yield';
     bar.classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// YLF SEVERITY REPORT (Admin) — fetches aggregated factor data from
+// GAS YLFRecords sheet and renders a visual bar-chart table.
+// ═══════════════════════════════════════════════════════════════
+async function generateYLFSeverityReport() {
+    const out    = document.getElementById('ylfSevReportOut');
+    const btn    = document.getElementById('ylfSevReportBtn');
+    const prtBtn = document.getElementById('ylfSevPrintBtn');
+    const clrBtn = document.getElementById('ylfSevClearBtn');
+    if (!out) return;
+    out.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#888;"><i class="fas fa-spinner fa-spin-custom" style="font-size:1.8rem;"></i><div style="margin-top:8px;font-size:0.88rem;">Fetching YLF data from Google Sheets…</div></div>';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Loading…'; }
+    try {
+        const data = await fetchWithIDBCache(`${SCRIPT_URL}?action=getYLFSeverityReport&_=${Date.now()}`, 20000, 0);
+        if (!data.success) throw new Error(data.error || 'Server error');
+        const factors      = data.factors || [];
+        const totalRecords = data.totalRecords || 0;
+
+        if (!factors.length) {
+            out.innerHTML = `<div style="padding:2rem;text-align:center;background:#f9fafb;border-radius:10px;border:1.5px dashed #d1d5db;">
+                <i class="fas fa-chart-bar" style="font-size:2rem;color:#d1d5db;display:block;margin-bottom:8px;"></i>
+                <div style="font-weight:700;color:#6b7280;">No YLF records found.</div>
+                <div style="font-size:0.82rem;color:#9ca3af;margin-top:4px;">Growers must save YLF data from their greenhouse cards first.</div>
+            </div>`;
+            if (prtBtn) prtBtn.style.display = 'none';
+            if (clrBtn) clrBtn.style.display = 'none';
+            return;
+        }
+
+        const maxCount = factors[0].count || 1;
+        const typeColors = {
+            'Fungal Disease':    '#7c3aed',
+            'Bacterial Disease': '#dc2626',
+            'Viral Disease':     '#db2777',
+            'Physiological':     '#0891b2',
+            'Pest (Insect)':     '#d97706',
+            'Pest (Arachnid)':   '#ea580c',
+            'Pest (Moth)':       '#be185d',
+            'Pest (Mollusc)':    '#16a34a'
+        };
+
+        const rows = factors.map(function(f, i) {
+            const barPct  = Math.round((f.count / maxCount) * 100);
+            const color   = typeColors[f.type] || '#6b7280';
+            const sevText = f.avgSeverity > 0 ? `${f.avgSeverity}% avg` : '—';
+            const sevColor= f.avgSeverity < 35 ? '#16a34a' : f.avgSeverity < 65 ? '#d97706' : '#dc2626';
+            return `<tr style="border-bottom:1px solid #f3f4f6;">
+                <td style="padding:8px 10px;font-weight:700;white-space:nowrap;">${i+1}. ${escapeHtml(f.name)}</td>
+                <td style="padding:8px 10px;"><span style="background:${color}22;color:${color};border-radius:4px;padding:2px 8px;font-size:0.73rem;font-weight:700;white-space:nowrap;">${escapeHtml(f.type)}</span></td>
+                <td style="padding:8px 12px;min-width:160px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="flex:1;background:#f3f4f6;border-radius:6px;height:12px;overflow:hidden;">
+                            <div style="height:100%;width:${barPct}%;background:${color};border-radius:6px;transition:width 0.6s;"></div>
+                        </div>
+                        <span style="font-weight:800;font-size:0.85rem;min-width:24px;color:${color};">${f.count}</span>
+                    </div>
+                </td>
+                <td style="padding:8px 10px;text-align:center;font-weight:700;color:${sevColor};">${sevText}</td>
+            </tr>`;
+        }).join('');
+
+        out.innerHTML = `
+        <div id="ylfSevReportContent">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.8rem;">
+                <div style="font-weight:900;font-size:0.95rem;color:var(--green-900);"><i class="fas fa-chart-bar" style="color:#d97706;margin-right:6px;"></i>Yield Limiting Factor Severity Report</div>
+                <div style="font-size:0.78rem;color:#6b7280;background:#f9fafb;border-radius:6px;padding:3px 10px;border:1px solid #e5e7eb;">Based on <strong>${totalRecords}</strong> YLF record(s)</div>
+            </div>
+            <div style="overflow-x:auto;border-radius:10px;border:1.5px solid #e5e7eb;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;font-family:'Outfit',sans-serif;">
+                    <thead>
+                        <tr style="background:#0d3d12;color:white;">
+                            <th style="padding:10px 12px;text-align:left;font-weight:800;">Factor</th>
+                            <th style="padding:10px 12px;text-align:left;font-weight:800;">Type</th>
+                            <th style="padding:10px 12px;text-align:left;font-weight:800;">Occurrences</th>
+                            <th style="padding:10px 12px;text-align:center;font-weight:800;">Avg Severity</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
+            <div style="margin-top:0.8rem;font-size:0.75rem;color:#9ca3af;text-align:right;">Generated ${new Date().toLocaleString('en-MU')} · Mauritius Time</div>
+        </div>`;
+
+        if (prtBtn) { prtBtn.style.display = 'inline-flex'; }
+        if (clrBtn) { clrBtn.style.display = 'inline-flex'; }
+    } catch(e) {
+        out.innerHTML = `<div style="padding:1rem;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5;color:#dc2626;font-size:0.88rem;"><i class="fas fa-exclamation-triangle"></i> Failed to load report: ${escapeHtml(e.message)}</div>`;
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-chart-bar"></i> Generate Report'; }
+    }
+}
+
+function printYLFSeverityReport() {
+    const content = document.getElementById('ylfSevReportContent');
+    if (!content) return;
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>YLF Severity Report</title>
+<style>
+  body{font-family:'Segoe UI',Arial,sans-serif;margin:24px;color:#1a1a1a;}
+  h2{color:#0d3d12;margin-bottom:4px;}
+  table{width:100%;border-collapse:collapse;font-size:0.9rem;}
+  th{background:#0d3d12;color:white;padding:8px 12px;text-align:left;}
+  td{padding:8px 12px;border-bottom:1px solid #e5e7eb;}
+  .bar-wrap{background:#f3f4f6;border-radius:6px;height:10px;overflow:hidden;width:120px;display:inline-block;vertical-align:middle;}
+  .bar-fill{height:100%;border-radius:6px;}
+</style>
+</head><body>
+<h2>YLF Severity Report — MoHydroponic Smart Tracker</h2>
+<p style="font-size:0.82rem;color:#6b7280;">Printed: ${new Date().toLocaleString('en-MU')}</p>
+${content.innerHTML}
+</body></html>`;
+    const w = window.open('', '_blank', 'width=820,height=600');
+    if (w) { w.document.write(html); w.document.close(); setTimeout(function(){ w.print(); }, 400); }
+}
+
+// Creates or refreshes the YLFPhotosRef sheet in Google Sheets via the GAS endpoint.
+async function createYLFPhotosSheet() {
+    const btn = document.getElementById('ylfPhotosSheetBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Creating…'; }
+    try {
+        const res  = await fetch(SCRIPT_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body:    'data=' + encodeURIComponent(JSON.stringify({ action: 'createYLFPhotosSheet' }))
+        });
+        const data = await res.json();
+        if (data.success) {
+            toast(`✅ ${data.message || 'YLFPhotosRef sheet created!'}`);
+        } else {
+            toast('⚠️ Sheet creation failed: ' + (data.error || 'Unknown error'), true);
+        }
+    } catch(e) {
+        toast('⚠️ Sheet creation failed: ' + e.message, true);
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-table"></i> Create YLF Photos Reference Sheet'; }
+    }
 }
 
 async function saveYLF(idx, tsKey) {
@@ -9947,8 +10201,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const isHarvesting=e.target.value==='Harvesting';
         const monthSec=document.getElementById('editMonthlySection');
         if(monthSec)toggleEl(monthSec, isHarvesting);
+        // Weekly section remains hidden — user can expand via optional toggle
         const weeklySec=document.getElementById('editWeeklySection');
-        if(weeklySec)toggleEl(weeklySec, isHarvesting, 'grid');
+        if(weeklySec)hideEl(weeklySec);
+        const weeklyToggleRow=document.getElementById('editWeeklyToggleRow');
+        if(weeklyToggleRow)toggleEl(weeklyToggleRow, isHarvesting);
+        // Reset toggle button state when stage changes
+        const weeklyToggleIcon=document.getElementById('editWeeklyToggleIcon');
+        if(weeklyToggleIcon)weeklyToggleIcon.style.transform='';
+        const weeklyToggleLabel=document.getElementById('editWeeklyToggleLabel');
+        if(weeklyToggleLabel)weeklyToggleLabel.textContent='Show Weekly Breakdown (Optional)';
         const yieldUnitSec=document.getElementById('editYieldUnitSection');
         if(yieldUnitSec)toggleEl(yieldUnitSec, isHarvesting);
         const harvestMonthsSec=document.getElementById('editHarvestMonthsSection');
@@ -9977,6 +10239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         decisionSupportTab: { icon: 'fa-brain',          label: 'Decision Support'    },
         activityLogTab:     { icon: 'fa-history',        label: 'Activity Log'        },
         pestAlertTab:       { icon: 'fa-bug',            label: 'Pest Alert'          },
+        ylfReportTab:       { icon: 'fa-chart-bar',      label: 'YLF Report'          },
         yieldMapTab:        { icon: 'fa-map-marked-alt', label: 'Yield Map'           },
     };
     window.acpSwitch = function(cardEl, tabId) {
