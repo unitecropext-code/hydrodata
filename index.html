@@ -507,6 +507,7 @@
             border-top: 2px solid var(--green-100);
             margin-top: 0.6rem; padding-top: 1.2rem;
             scroll-behavior: smooth;
+            transition: opacity 0.2s ease;
         }
         /* Content panel breadcrumb strip */
         .acp-breadcrumb {
@@ -3478,6 +3479,7 @@
                         <i class="fas fa-info-circle"></i> A grower is shown as <strong>Online</strong> if their browser sent a heartbeat ping in the last 3 minutes. The ping fires every 90 seconds automatically after login. Closing the browser tab removes them within 3 minutes.
                     </div>
                 </div>
+            </div><!-- /.acp-content-area -->
         </div><!-- /adminSearchSection -->
 
         <!-- GREENHOUSE SECTION (grower) -->
@@ -10404,6 +10406,20 @@ document.addEventListener('DOMContentLoaded', () => {
         onlineNowTab:       { icon: 'fa-users',          label: 'Online Now'          },
     };
     window.acpSwitch = function(cardEl, tabId) {
+        const contentArea = document.querySelector('.acp-content-area');
+        const isAlreadyActive = cardEl && cardEl.classList.contains('active');
+
+        // Double-click on active card → collapse/hide the content area
+        if (isAlreadyActive) {
+            document.querySelectorAll('.acp-nav-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+            if (contentArea) contentArea.style.display = 'none';
+            return;
+        }
+
+        // Show the content area in case it was collapsed
+        if (contentArea) contentArea.style.display = '';
+
         // 1. Update nav card active state
         document.querySelectorAll('.acp-nav-card').forEach(c => c.classList.remove('active'));
         if (cardEl) cardEl.classList.add('active');
