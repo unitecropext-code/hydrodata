@@ -8184,7 +8184,8 @@ function renderGreenhouseForm(containerId, target) {
         <div class="form-group"><label>Growth Stage *</label><select id="stageInput_${target}" onchange="onStageChange('${target}',this.value)">${stageOptions}</select></div>
         <div class="form-group"><label>Substrate Type</label><select id="substrateInput_${target}"><option value="">-- Select --</option>${subOptions}</select></div>
         <div class="form-group"><label>Date Transplanted</label><input type="date" id="dateTrans_${target}"></div>
-        <div class="form-group harvest-only-fields" id="harvestOnlyFields_${target}" style="display:none;grid-column:1/-1;flex-direction:column;align-items:stretch;"><label>Weekly Yield</label>
+        <div class="harvest-only-fields" id="harvestOnlyFields_${target}" style="display:none;grid-column:1/-1;flex-direction:column;align-items:stretch;gap:0.7rem;">
+            <div style="font-size:0.8rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.03em;">Weekly Yield</div>
             <div class="week-yield-grid">
                 <div class="week-yield-card"><span class="week-yield-card-label">Week 1</span><div class="week-yield-input-row"><input type="number" step="0.01" min="0" id="week1YieldInput_${target}" placeholder="0.00" oninput="recalcFormWeeklyTotal('${target}')"><span class="week-unit-badge" id="formWeekBadge1_${target}">kg</span></div></div>
                 <div class="week-yield-card"><span class="week-yield-card-label">Week 2</span><div class="week-yield-input-row"><input type="number" step="0.01" min="0" id="week2YieldInput_${target}" placeholder="0.00" oninput="recalcFormWeeklyTotal('${target}')"><span class="week-unit-badge" id="formWeekBadge2_${target}">kg</span></div></div>
@@ -8199,10 +8200,12 @@ function renderGreenhouseForm(containerId, target) {
                 </div>
                 <button type="button" class="apply-month-btn" onclick="applyFormWeeklyToMonth('${target}')"><i class="fas fa-calendar-check"></i> Apply to Current Month</button>
             </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+                <div class="form-group" style="margin:0;"><label>Yield Unit</label><select id="yieldUnitInput_${target}" onchange="syncFormWeekBadges('${target}')"><option value="kg">kg</option><option value="unit">unit</option><option value="crates">crates</option></select></div>
+                <div class="form-group" style="margin:0;"><label>Avg Yield/Month</label><input type="number" step="0.01" id="avgYieldPerMonthInput_${target}" placeholder="0.00" min="0"></div>
+            </div>
+            <div class="form-group" style="margin:0;"><label>Harvest Duration (months)</label><input type="number" step="0.5" id="harvestMonthsInput_${target}" placeholder="0" min="0"></div>
         </div>
-        <div class="form-group harvest-only-fields" id="harvestOnlyFields2_${target}"><label>Yield Unit</label><select id="yieldUnitInput_${target}" onchange="syncFormWeekBadges('${target}')"><option value="kg">kg</option><option value="unit">unit</option><option value="crates">crates</option></select></div>
-        <div class="form-group harvest-only-fields" id="harvestOnlyFields3_${target}"><label>Avg Yield/Month</label><input type="number" step="0.01" id="avgYieldPerMonthInput_${target}" placeholder="0.00" min="0"></div>
-        <div class="form-group harvest-only-fields" id="harvestOnlyFields4_${target}"><label>Harvest Duration (months)</label><input type="number" step="0.5" id="harvestMonthsInput_${target}" placeholder="0" min="0"></div>
     </div>
     <div id="monthlySection_${target}" style="display:none;margin-top:1rem;">
         <div class="modal-section-title"><i class="fas fa-calendar-alt"></i> Monthly Harvest Distribution</div>
@@ -8223,7 +8226,7 @@ function onCropChange(target){
     }
 }
 function onStageChange(target,stage){
-    const hf=[`harvestOnlyFields_${target}`,`harvestOnlyFields2_${target}`,`harvestOnlyFields3_${target}`,`harvestOnlyFields4_${target}`];
+    const hf=[`harvestOnlyFields_${target}`];
     const ms=document.getElementById(`monthlySection_${target}`);const isH=stage==='Harvesting';
     hf.forEach(id=>toggleEl(document.getElementById(id),isH,'flex'));
     toggleEl(ms,isH,'block');
@@ -8242,7 +8245,7 @@ function saveCurrentGreenhouse(){
     ['ghNumberInput','cropSelect','tomatoTypeInput','varietyInput','areaInput','week1YieldInput','week2YieldInput','week3YieldInput','week4YieldInput','avgYieldPerMonthInput','harvestMonthsInput','dateTrans','substrateInput'].forEach(base=>{const el=document.getElementById(`${base}_${target}`);if(el)el.value='';});
     const totDisp=document.getElementById(`formWeeklyTotal_${target}`);if(totDisp)totDisp.textContent='0.00';
     const stageSelG=document.getElementById(`stageInput_${target}`);if(stageSelG){stageSelG.value='Seedling';onStageChange(target,'Seedling');}
-    ['tomatoTypeRow_','harvestOnlyFields_','harvestOnlyFields2_','harvestOnlyFields3_','harvestOnlyFields4_'].forEach(prefix=>hideEl(document.getElementById(`${prefix}${target}`)));
+    ['tomatoTypeRow_','harvestOnlyFields_'].forEach(prefix=>hideEl(document.getElementById(`${prefix}${target}`)));
     MONTHS.forEach((_,i)=>{const el=document.getElementById(`month_${i}_${target}`);if(el)el.value='';});
 }
 function updateSavedListDisplay(){
@@ -8318,7 +8321,7 @@ function adminSaveCurrentGreenhouse(){
     ['ghNumberInput','cropSelect','tomatoTypeInput','varietyInput','areaInput','week1YieldInput','week2YieldInput','week3YieldInput','week4YieldInput','avgYieldPerMonthInput','harvestMonthsInput','dateTrans','substrateInput'].forEach(base=>{const el=document.getElementById(`${base}_${target}`);if(el)el.value='';});
     const totDispA=document.getElementById(`formWeeklyTotal_${target}`);if(totDispA)totDispA.textContent='0.00';
     const stageSelA=document.getElementById(`stageInput_${target}`);if(stageSelA){stageSelA.value='Seedling';onStageChange(target,'Seedling');}
-    ['tomatoTypeRow_','harvestOnlyFields_','harvestOnlyFields2_','harvestOnlyFields3_','harvestOnlyFields4_'].forEach(prefix=>hideEl(document.getElementById(`${prefix}${target}`)));
+    ['tomatoTypeRow_','harvestOnlyFields_'].forEach(prefix=>hideEl(document.getElementById(`${prefix}${target}`)));
     const ms=document.getElementById(`monthlySection_${target}`);hideEl(ms);
     MONTHS.forEach((_,i)=>{const el=document.getElementById(`month_${i}_${target}`);if(el)el.value='';});
 }
