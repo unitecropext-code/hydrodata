@@ -706,6 +706,9 @@
         .month-card.flash-applied { animation: monthFlash 0.75s ease-out forwards; }
 
         .activity-log-wrap { max-height: 320px; overflow-y: auto; }
+        /* Online Now pulse dot */
+        @keyframes onlinePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.4)} }
+        .online-pulse-dot { display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;animation:onlinePulse 1.8s ease-in-out infinite;vertical-align:middle;margin-right:4px; }
         .activity-log-item { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.6rem 0.8rem; border-bottom: 1px solid #f0f7ec; font-size: 0.83rem; }
         .activity-log-item:last-child { border-bottom: none; }
         .activity-log-item .log-time { color: #aaa; font-size: 0.72rem; font-weight: 600; white-space: nowrap; margin-top: 2px; min-width: 70px; }
@@ -2872,7 +2875,10 @@
                     <span class="acp-nav-label">Yield<br>Map</span>
                 </button>
 
-            </div><!-- /acp-nav-grid -->
+                <button class="acp-nav-card" data-tab="onlineNowTab" onclick="acpSwitch(this,'onlineNowTab')">
+                    <i class="acp-nav-icon fas fa-circle" style="color:#22c55e;font-size:0.6rem;position:relative;top:-2px;"></i><i class="acp-nav-icon fas fa-users" style="margin-left:-4px;"></i>
+                    <span class="acp-nav-label">Online<br>Now</span>
+                </button>
 
             <!-- ═══ CONTENT AREA ═══ -->
             <div class="acp-content-area">
@@ -3434,7 +3440,42 @@
                     </div>
                 </div>
 
-            </div><!-- /acp-content-area -->
+                <!-- TAB: Online Now -->
+                <div id="onlineNowTab" class="admin-tab-content">
+                    <div class="register-grower-title">
+                        <span style="display:inline-flex;align-items:center;gap:8px;">
+                            <i class="fas fa-circle" style="color:#22c55e;font-size:0.55rem;vertical-align:middle;"></i>
+                            <i class="fas fa-users" style="color:var(--green-600);"></i>
+                            Online Growers — Live Presence
+                        </span>
+                        <span class="admin-badge" style="background:#15803d;">LIVE</span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:1rem;">
+                        <button id="onlineRefreshBtn" class="btn-secondary" style="font-size:0.82rem;padding:7px 14px;display:inline-flex;align-items:center;gap:6px;" onclick="loadOnlineGrowers(true)">
+                            <i class="fas fa-sync-alt" id="onlineRefreshIcon"></i> Refresh
+                        </button>
+                        <span id="onlineAutoLabel" style="font-size:0.78rem;color:#888;"></span>
+                        <span id="onlineAsOf" style="font-size:0.78rem;color:#aaa;margin-left:auto;"></span>
+                    </div>
+
+                    <!-- Summary chips -->
+                    <div id="onlineStatsRow" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;"></div>
+
+                    <!-- Grower cards grid -->
+                    <div id="onlineGrowerGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;"></div>
+
+                    <!-- Empty state -->
+                    <div id="onlineEmptyState" style="display:none;padding:2.5rem;text-align:center;background:var(--green-50);border-radius:var(--radius-lg);border:1.5px dashed var(--green-200);">
+                        <i class="fas fa-moon" style="font-size:2rem;color:var(--green-300);display:block;margin-bottom:0.6rem;"></i>
+                        <div style="font-weight:700;color:var(--green-800);font-size:0.95rem;">No growers online right now</div>
+                        <div style="font-size:0.82rem;color:#888;margin-top:4px;">Auto-refreshes every 60 seconds. Growers appear here within 90 s of logging in.</div>
+                    </div>
+
+                    <div style="margin-top:1.2rem;font-size:0.76rem;color:#aaa;border-top:1px solid var(--green-100);padding-top:0.7rem;">
+                        <i class="fas fa-info-circle"></i> A grower is shown as <strong>Online</strong> if their browser sent a heartbeat ping in the last 3 minutes. The ping fires every 90 seconds automatically after login. Closing the browser tab removes them within 3 minutes.
+                    </div>
+                </div>
         </div><!-- /adminSearchSection -->
 
         <!-- GREENHOUSE SECTION (grower) -->
@@ -4386,7 +4427,7 @@ function toggleLang() { applyLang(_currentLang === 'en' ? 'kr' : 'en'); }
 //            Type: Web app → Execute as: Me → Who has access: Anyone
 //            Then copy the /exec URL and replace the value below.
 // ─────────────────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJsfd-5yo6oKEKcpgupQZ2YzAWSIBQJBbdjnihMrLP37SwIAWtqvs4_m_uIBfj-2Hw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeT_mzyqsUQ07UQbxzub1CmMKrMSEjRGzINTn5vYYzIlbH5XSESERg6slgDSXV3DcWxQ/exec';
 //  ↑ Replace the URL above with your own deployed GAS /exec URL.
 // ─────────────────────────────────────────────────────────────────────
 
@@ -6613,6 +6654,7 @@ async function login(username, password) {
             initGrowingTips();
             updatePestAlertBanner();
             logActivity('login',`<strong>${username}</strong> logged in${isAdmin?' as ADMIN':''}`);
+            startHeartbeat(username, isAdmin ? 'admin' : 'grower');
         } else {
             errEl.textContent='❌ Invalid username or password. Please try again.';
         }
@@ -8857,6 +8899,122 @@ async function createYLFPhotosSheet() {
     }
 }
 
+// ============================================================
+// HEARTBEAT — grower pings every 90 s; admin polls every 60 s
+// ============================================================
+let _heartbeatTimer    = null;
+let _onlineRefreshTimer= null;
+let _heartbeatSessionId= 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+
+function startHeartbeat(username, role) {
+    if (_heartbeatTimer) clearInterval(_heartbeatTimer);
+    const sendPing = () => {
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify({
+                action:    'heartbeat',
+                username:  username,
+                role:      role || 'grower',
+                page:      document.title || 'MoHydroponic',
+                sessionId: _heartbeatSessionId
+            }))
+        }).catch(() => {});
+    };
+    sendPing(); // immediate first ping
+    _heartbeatTimer = setInterval(sendPing, 90000); // every 90 s
+}
+
+function stopHeartbeat() {
+    if (_heartbeatTimer) { clearInterval(_heartbeatTimer); _heartbeatTimer = null; }
+}
+
+// ── Admin: load and render online growers ────────────────────
+let _onlineAutoInterval = null;
+
+async function loadOnlineGrowers(showSpinner) {
+    const grid    = document.getElementById('onlineGrowerGrid');
+    const empty   = document.getElementById('onlineEmptyState');
+    const stats   = document.getElementById('onlineStatsRow');
+    const asOf    = document.getElementById('onlineAsOf');
+    const icon    = document.getElementById('onlineRefreshIcon');
+    const autoLbl = document.getElementById('onlineAutoLabel');
+    if (!grid) return;
+
+    if (showSpinner && icon) icon.className = 'fas fa-spinner fa-spin-custom';
+
+    try {
+        const res  = await fetch(`${SCRIPT_URL}?action=getOnlineGrowers&_=${Date.now()}`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Server error');
+
+        const list = data.online || [];
+
+        // Stats chips
+        const growers = list.filter(u => u.role !== 'admin');
+        const admins  = list.filter(u => u.role === 'admin');
+        if (stats) {
+            stats.innerHTML = `
+                <span style="display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;border-radius:20px;padding:3px 11px;font-size:0.78rem;font-weight:700;">
+                    <i class="fas fa-circle" style="font-size:0.45rem;"></i> ${list.length} online total
+                </span>
+                <span style="display:inline-flex;align-items:center;gap:5px;background:#e0f2fe;color:#0369a1;border-radius:20px;padding:3px 11px;font-size:0.78rem;font-weight:700;">
+                    <i class="fas fa-seedling" style="font-size:0.7rem;"></i> ${growers.length} grower${growers.length!==1?'s':''}
+                </span>
+                ${admins.length ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#fef3c7;color:#92400e;border-radius:20px;padding:3px 11px;font-size:0.78rem;font-weight:700;"><i class="fas fa-shield-alt" style="font-size:0.7rem;"></i> ${admins.length} admin${admins.length!==1?'s':''}</span>` : ''}
+            `;
+        }
+        if (asOf) asOf.textContent = 'As of ' + formatToMauritiusTime(data.asOf);
+
+        if (!list.length) {
+            grid.innerHTML = '';
+            if (empty) empty.style.display = '';
+        } else {
+            if (empty) empty.style.display = 'none';
+            grid.innerHTML = list.map(u => {
+                const secsAgo = u.secondsAgo || 0;
+                const mins    = Math.floor(secsAgo / 60);
+                const secs    = secsAgo % 60;
+                const freshness = secsAgo < 30  ? '#22c55e'
+                                : secsAgo < 100 ? '#84cc16'
+                                : '#f59e0b';
+                const timeAgo = mins > 0 ? `${mins}m ${secs}s ago` : `${secs}s ago`;
+                const initials = u.username.substring(0,2).toUpperCase();
+                const isAdminUser = (u.role === 'admin');
+                return `<div style="background:var(--green-50);border:1.5px solid var(--green-200);border-radius:var(--radius-lg);padding:0.85rem 1rem;display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:0;left:0;width:3px;height:100%;background:${freshness};border-radius:2px 0 0 2px;"></div>
+                    <div style="width:40px;height:40px;border-radius:50%;background:${isAdminUser?'#fef3c7':'#d1fae5'};border:2px solid ${isAdminUser?'#d97706':'#22c55e'};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.82rem;color:${isAdminUser?'#92400e':'#15803d'};flex-shrink:0;">${initials}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:800;font-size:0.9rem;color:var(--green-900);display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                            ${escapeHtml(u.username)}
+                            ${isAdminUser ? '<span style="background:#fef3c7;color:#92400e;font-size:0.65rem;font-weight:700;padding:1px 7px;border-radius:10px;">ADMIN</span>' : ''}
+                        </div>
+                        <div style="font-size:0.75rem;color:#888;margin-top:2px;display:flex;align-items:center;gap:4px;">
+                            <i class="fas fa-circle" style="font-size:0.4rem;color:${freshness};"></i>
+                            Last seen ${timeAgo}
+                        </div>
+                        <div style="font-size:0.73rem;color:#aaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(u.page||'')}">
+                            <i class="fas fa-window-maximize" style="font-size:0.65rem;"></i> ${escapeHtml(u.page||'MoHydroponic')}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    } catch(e) {
+        if (grid) grid.innerHTML = `<div style="color:#c0392b;font-size:0.85rem;padding:1rem;"><i class="fas fa-exclamation-triangle"></i> Failed to load: ${escapeHtml(e.message)}</div>`;
+    } finally {
+        if (icon) icon.className = 'fas fa-sync-alt';
+    }
+
+    // Start or restart auto-refresh (60 s) only when tab is visible
+    if (_onlineAutoInterval) clearInterval(_onlineAutoInterval);
+    _onlineAutoInterval = setInterval(() => {
+        const tab = document.getElementById('onlineNowTab');
+        if (tab && tab.classList.contains('active')) loadOnlineGrowers(false);
+    }, 60000);
+    if (autoLbl) autoLbl.textContent = 'Auto-refreshes every 60 s';
+}
+
 async function saveYLF(idx, tsKey) {
     const cropEl   = document.getElementById('ylf-crop-' + idx);
     const crop     = cropEl ? cropEl.value : '';
@@ -10241,6 +10399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pestAlertTab:       { icon: 'fa-bug',            label: 'Pest Alert'          },
         ylfReportTab:       { icon: 'fa-chart-bar',      label: 'YLF Report'          },
         yieldMapTab:        { icon: 'fa-map-marked-alt', label: 'Yield Map'           },
+        onlineNowTab:       { icon: 'fa-users',          label: 'Online Now'          },
     };
     window.acpSwitch = function(cardEl, tabId) {
         // 1. Update nav card active state
@@ -10263,6 +10422,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const msg = document.getElementById('vpStatusMsg'); if (msg) showEl(msg);
         }
         if (tabId === 'yieldMapTab') setTimeout(() => { maybeAutoLoadYieldMap(); }, 80);
+        if (tabId === 'onlineNowTab') loadOnlineGrowers(false);
     };
 
     // Stage area filter
