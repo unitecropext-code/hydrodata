@@ -3702,14 +3702,8 @@
             </div>
             <div class="form-group"><label>Area (m²) *</label><input type="number" inputmode="decimal" step="0.01" id="editArea" min="0"><div class="field-error-msg" id="editAreaErr" style="display:none;"></div></div>
             <div class="form-group"><label data-i18n="modal.edit.variety">Variety</label><input type="text" id="editVariety"></div>
-            <div id="editWeeklyToggleRow" style="grid-column:1/-1;display:none;margin-bottom:0.3rem;">
-                <button type="button" id="editWeeklyToggleBtn" onclick="toggleWeeklySection()" style="display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px dashed var(--green-300);border-radius:var(--radius-pill);padding:5px 14px;font-size:0.78rem;font-weight:700;color:var(--green-700);cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.18s;">
-                    <i class="fas fa-chevron-right" id="editWeeklyToggleIcon" style="transition:transform 0.2s;font-size:0.72rem;"></i>
-                    <span id="editWeeklyToggleLabel">Show Weekly Breakdown (Optional)</span>
-                </button>
-            </div>
-            <div class="form-group" id="editWeeklySection" style="grid-column:1/-1;display:none;">
-                <label data-i18n="modal.edit.weekly">Weekly Yield <span style="font-size:0.72rem;font-weight:600;color:#9ca3af;margin-left:4px;">(Optional)</span></label>
+            <div id="editWeeklySection" style="grid-column:1/-1;display:none;flex-direction:column;gap:0.7rem;">
+                <div style="font-size:0.8rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.03em;" data-i18n="modal.edit.weekly">Weekly Yield</div>
                 <div class="week-yield-grid">
                     <div class="week-yield-card">
                         <span class="week-yield-card-label">Week 1</span>
@@ -3753,11 +3747,18 @@
                         <i class="fas fa-calendar-check"></i> Apply to Current Month
                     </button>
                 </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+                    <div class="form-group" style="margin:0;"><label>Yield Unit</label>
+                        <select id="editUnit" onchange="syncWeeklyYieldUnitLabels()"><option value="kg">kg</option><option value="unit">unit</option><option value="crates">crates</option></select>
+                    </div>
+                    <div class="form-group" style="margin:0;" id="editAvgYieldMonthSection"><label>Avg Yield/Month</label>
+                        <input type="number" inputmode="decimal" step="0.01" id="editAvgYieldPerMonth" placeholder="0.00" min="0">
+                    </div>
+                </div>
+                <div class="form-group" style="margin:0;" id="editHarvestMonthsSection"><label>Harvest Duration (months)</label>
+                    <input type="number" inputmode="decimal" step="0.5" id="editHarvestMonths" min="0">
+                </div>
             </div>
-            <div class="form-group" id="editYieldUnitSection" style="display:none;"><label>Yield Unit</label>
-                <select id="editUnit" onchange="syncWeeklyYieldUnitLabels()"><option value="kg">kg</option><option value="unit">unit</option><option value="crates">crates</option></select>
-            </div>
-            <div class="form-group" id="editHarvestMonthsSection" style="display:none;"><label>Harvest Duration (months)</label><input type="number" inputmode="decimal" step="0.5" id="editHarvestMonths" min="0"></div>
         </div>
         <div id="editMonthlySection">
             <div class="modal-section-title"><i class="fas fa-calendar-alt"></i> Monthly Harvest Distribution <span class="harvest-unit-badge" id="editMonthlyUnitBadge"><i class="fas fa-weight-hanging" style="font-size:0.65rem;"></i> kg</span></div>
@@ -7013,6 +7014,8 @@ function _populateEditModal(row, headers, username, isAdmin) {
     const _defaultUnit=_unitCropsModal.includes(cropVal)?'unit':'kg';
     document.getElementById('editUnit').value=_storedUnit||_defaultUnit;
     document.getElementById('editHarvestMonths').value=parseFloat(getVal(['harvest months']))||0;
+    const avgYieldEl=document.getElementById('editAvgYieldPerMonth');
+    if(avgYieldEl)avgYieldEl.value=parseFloat(getVal(['avg yield','avgyield','avg_yield']))||0;
     // Populate week 1–4 yield fields; fall back to equal distribution of legacy weeklyYield
     // FIX: GAS sheet headers are 'Week1','Week2','Week3','Week4' (not 'week1 yield')
     const w1=parseFloat(getVal(['week1','week 1']))||null;
@@ -7049,18 +7052,9 @@ function _populateEditModal(row, headers, username, isAdmin) {
     const isHarvesting=currentStage==='Harvesting';
     const monthSec=document.getElementById('editMonthlySection');
     if(monthSec)toggleEl(monthSec, isHarvesting);
-    // Weekly section is always hidden here — user can expand it via toggle button (optional)
+    // Weekly section shown directly when Harvesting (no toggle button)
     const weeklySec=document.getElementById('editWeeklySection');
-    if(weeklySec)hideEl(weeklySec);
-    const weeklyToggleRow=document.getElementById('editWeeklyToggleRow');
-    if(weeklyToggleRow)toggleEl(weeklyToggleRow, isHarvesting);
-    // Reset toggle button state
-    const weeklyToggleIcon=document.getElementById('editWeeklyToggleIcon');
-    if(weeklyToggleIcon){weeklyToggleIcon.style.transform='';} 
-    const weeklyToggleLabel=document.getElementById('editWeeklyToggleLabel');
-    if(weeklyToggleLabel)weeklyToggleLabel.textContent='Show Weekly Breakdown (Optional)';
-    const yieldUnitSec=document.getElementById('editYieldUnitSection');
-    if(yieldUnitSec)toggleEl(yieldUnitSec, isHarvesting);
+    if(weeklySec){ weeklySec.style.display = isHarvesting ? 'flex' : 'none'; }
     const harvestMonthsSec=document.getElementById('editHarvestMonthsSection');
     if(harvestMonthsSec)toggleEl(harvestMonthsSec, isHarvesting);
     // ── v21: Update unit badge on Monthly Harvest Distribution header ──
@@ -8442,20 +8436,7 @@ function applyWeeklyTotalToCurrentMonth() {
 
 // ==================== WEEKLY SECTION OPTIONAL TOGGLE ====================
 function toggleWeeklySection() {
-    const sec = document.getElementById('editWeeklySection');
-    const icon = document.getElementById('editWeeklyToggleIcon');
-    const label = document.getElementById('editWeeklyToggleLabel');
-    if (!sec) return;
-    const isOpen = sec.style.display !== 'none' && sec.style.display !== '';
-    if (isOpen) {
-        sec.style.display = 'none';
-        if (icon) icon.style.transform = '';
-        if (label) label.textContent = 'Show Weekly Breakdown (Optional)';
-    } else {
-        sec.style.display = 'grid';
-        if (icon) icon.style.transform = 'rotate(90deg)';
-        if (label) label.textContent = 'Hide Weekly Breakdown';
-    }
+    // Toggle button removed — weekly section now always visible when Harvesting
 }
 
 // ==================== SAVE EDIT RECORD ====================
@@ -8477,6 +8458,7 @@ async function saveEditRecord() {
     const weeklyYield=week1Yield+week2Yield+week3Yield+week4Yield;
     const weeklyUnit=document.getElementById('editUnit').value;
     const harvestMonths=parseFloat(document.getElementById('editHarvestMonths').value)||0;
+    const avgYieldPerMonth=parseFloat(document.getElementById('editAvgYieldPerMonth')?.value)||0;
     const monthly=MONTHS.map((_,i)=>parseFloat(document.getElementById(`em_${i}`)?.value)||0);
     // v21: persist YLF state to localStorage as part of save
     const ylfData=_eylfGetStateForSave();
@@ -8486,7 +8468,7 @@ async function saveEditRecord() {
         // BUG 1 FIX: frontend was sending week1Yield/week2Yield/etc. but GAS
         // handleUpdateFullRecord expects week1/week2/week3/week4. Renamed here.
         await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-            body:'data='+encodeURIComponent(JSON.stringify({action:'updateFullRecord',username:currentEditRecord.grower,timestamp:currentEditRecord.ts,stage,area,variety,weeklyYield,week1:week1Yield,week2:week2Yield,week3:week3Yield,week4:week4Yield,weeklyUnit,harvestMonths,monthly}))});
+            body:'data='+encodeURIComponent(JSON.stringify({action:'updateFullRecord',username:currentEditRecord.grower,timestamp:currentEditRecord.ts,stage,area,variety,weeklyYield,week1:week1Yield,week2:week2Yield,week3:week3Yield,week4:week4Yield,weeklyUnit,harvestMonths,avgYieldPerMonth,monthly}))});
         // BUG 1 FIX: Also save YLF remarks/observations to YLFRecords sheet in Google Sheets
         const ylfRemarks = (document.getElementById('editYLFRemarks')?.value||'').trim();
         const cropVal = document.getElementById('editCrop')?.value||'';
@@ -10366,18 +10348,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const isHarvesting=e.target.value==='Harvesting';
         const monthSec=document.getElementById('editMonthlySection');
         if(monthSec)toggleEl(monthSec, isHarvesting);
-        // Weekly section remains hidden — user can expand via optional toggle
+        // Weekly section shown directly when Harvesting (no toggle button)
         const weeklySec=document.getElementById('editWeeklySection');
-        if(weeklySec)hideEl(weeklySec);
-        const weeklyToggleRow=document.getElementById('editWeeklyToggleRow');
-        if(weeklyToggleRow)toggleEl(weeklyToggleRow, isHarvesting);
-        // Reset toggle button state when stage changes
-        const weeklyToggleIcon=document.getElementById('editWeeklyToggleIcon');
-        if(weeklyToggleIcon)weeklyToggleIcon.style.transform='';
-        const weeklyToggleLabel=document.getElementById('editWeeklyToggleLabel');
-        if(weeklyToggleLabel)weeklyToggleLabel.textContent='Show Weekly Breakdown (Optional)';
-        const yieldUnitSec=document.getElementById('editYieldUnitSection');
-        if(yieldUnitSec)toggleEl(yieldUnitSec, isHarvesting);
+        if(weeklySec){ weeklySec.style.display = isHarvesting ? 'flex' : 'none'; }
         const harvestMonthsSec=document.getElementById('editHarvestMonthsSection');
         if(harvestMonthsSec)toggleEl(harvestMonthsSec, isHarvesting);
         // v21: also show/hide inline YLF
