@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="MoHydro">
     <meta name="description" content="MoHydroponic Smart Tracker — Real-Time Crop Intelligence for Zone E2 growers">
-    <title>MoHydroponic Smart Tracker v28 | Admin &amp; Grower</title>
+    <title>MoHydroponic Smart Tracker v31 | Admin &amp; Grower</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -364,6 +364,15 @@
         .record-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; }
         .record-card-crop { font-weight: 800; font-size: 1rem; color: var(--green-900); }
         .record-card-stage { display: inline-flex; align-items: center; gap: 4px; background: var(--green-100); color: var(--green-800); border-radius: var(--radius-pill); padding: 3px 12px; font-size: 0.75rem; font-weight: 700; }
+        /* v31 — GH number badge: prominent, always visible, never confused with area */
+        .record-card-gh-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: linear-gradient(100deg, var(--green-800), var(--green-600));
+            color: white; border-radius: var(--radius-pill);
+            padding: 2px 10px; font-size: 0.72rem; font-weight: 900;
+            letter-spacing: 0.03em; white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(25,100,40,0.25);
+        }
         .record-card-meta { font-size: 0.78rem; color: #666; margin-bottom: 0.5rem; line-height: 1.5; }
         .record-card-yield { font-size: 1.1rem; font-weight: 900; color: var(--green-700); }
         /* Issue #10: loading skeleton shimmer */
@@ -429,51 +438,34 @@
 
         /* ── Nav card grid ── */
         /* Issue #2 fix — mobile-first horizontal-scroll nav strip */
+        /* ── FIX v30: ACP nav grid — mobile-first scrollable row, no text cut-off ── */
         .acp-nav-grid {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
-            gap: 8px;
-            padding: 1rem 0 0.5rem;
-            /* Fade-out hint at right edge so user knows it scrolls */
-            -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
-            mask-image: linear-gradient(to right, black 90%, transparent 100%);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 0.8rem 0 0.4rem;
         }
-        .acp-nav-grid::-webkit-scrollbar { display: none; }
-        .acp-nav-grid .acp-nav-card {
-            flex: 0 0 auto;
-            width: 84px;
-        }
-        @media (min-width: 600px) {
-            .acp-nav-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                flex-wrap: unset;
-                overflow-x: unset;
-                -webkit-mask-image: none;
-                mask-image: none;
-            }
-            .acp-nav-grid .acp-nav-card { width: auto; }
-        }
-        @media (min-width: 700px) { .acp-nav-grid { grid-template-columns: repeat(5, 1fr); } }
-        @media (min-width: 1024px){ .acp-nav-grid { grid-template-columns: repeat(10, 1fr); } }
+        @media (min-width: 480px) { .acp-nav-grid { grid-template-columns: repeat(6, 1fr); gap: 7px; } }
+        @media (min-width: 640px) { .acp-nav-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; } }
+        @media (min-width: 768px) { .acp-nav-grid { grid-template-columns: repeat(8, 1fr); } }
+        @media (min-width: 1024px){ .acp-nav-grid { grid-template-columns: repeat(12, 1fr); } }
 
         .acp-nav-card {
             position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 5px; padding: 12px 6px 10px;
-            border-radius: 1rem; border: 2px solid var(--green-100);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            gap: 4px; padding: 10px 4px 8px;
+            border-radius: 0.85rem; border: 2px solid var(--green-100);
             background: white; cursor: pointer; transition: all 0.2s;
             font-family: 'Outfit', sans-serif; text-align: center;
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            min-height: 82px;
+            min-height: 72px;
+            /* FIX: prevent overflow/text distortion */
+            overflow: visible;
+            width: 100%;
             touch-action: manipulation;
         }
         .acp-nav-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             border-color: var(--green-400);
             box-shadow: 0 6px 18px rgba(25,120,50,0.15);
         }
@@ -484,14 +476,18 @@
             transform: translateY(-2px);
         }
         .acp-nav-icon {
-            font-size: 1.3rem; line-height: 1;
+            font-size: 1.2rem; line-height: 1; flex-shrink: 0;
             color: var(--green-700); transition: color 0.2s;
         }
         .acp-nav-card.active .acp-nav-icon { color: rgba(255,255,255,0.9); }
         .acp-nav-label {
-            font-size: 0.62rem; font-weight: 800; color: var(--green-900);
-            line-height: 1.25; text-transform: uppercase; letter-spacing: 0.04em;
+            /* FIX: no text wrapping issues — allow natural line breaks, no overflow:hidden */
+            font-size: 0.58rem; font-weight: 800; color: var(--green-900);
+            line-height: 1.2; text-transform: uppercase; letter-spacing: 0.03em;
             transition: color 0.2s;
+            word-break: break-word;
+            hyphens: auto;
+            max-width: 100%;
         }
         .acp-nav-card.active .acp-nav-label { color: white; }
         .acp-nav-dot {
@@ -621,7 +617,7 @@
         /* legacy alias so any JS that sets .modal-actions children still works */
         .modal-actions { display: contents; }
 
-        /* ── FIX #5: Monthly harvest grid — responsive columns across all screen sizes ── */
+        /* FIX v30 — monthly harvest grid: inputs must never clip 4-digit values on any screen */
         .update-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);   /* mobile: 3 cols × 4 rows */
@@ -630,19 +626,19 @@
         @media (min-width: 420px) { .update-grid { grid-template-columns: repeat(4, 1fr); } }   /* 4×3 */
         @media (min-width: 640px) { .update-grid { grid-template-columns: repeat(6, 1fr); } }   /* 6×2 */
         @media (min-width: 900px) { .update-grid { grid-template-columns: repeat(12, 1fr); } }  /* 12×1 desktop */
-        .month-card { background: var(--green-50); border-radius: 0.9rem; padding: 0.5rem 0.3rem; text-align: center; border: 1px solid var(--green-100); }
+        .month-card { background: var(--green-50); border-radius: 0.9rem; padding: 0.5rem 0.3rem; text-align: center; border: 1px solid var(--green-100); min-width: 0; }
         .month-card span { font-size: 0.72rem; font-weight: 700; color: #555; display: block; margin-bottom: 0.2rem; }
         .month-card input {
-            width: 100%; padding: 0.4rem 0.2rem; border-radius: 0.6rem;
+            width: 100%; padding: 0.4rem 0.15rem; border-radius: 0.6rem;
             border: 1px solid var(--green-200); text-align: center;
             font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 600;
-            min-height: 40px; min-width: 52px; touch-action: manipulation;
-            /* ensure 4 digits always visible: ch units for digit-width */
-            width: 100%; box-sizing: border-box;
+            min-height: 40px;
+            /* FIX v30: use min-width:0 so grid cell can shrink; font-size ensures 4 digits fit */
+            min-width: 0; box-sizing: border-box;
+            touch-action: manipulation;
         }
-        /* Ensure 4-digit values never get clipped — override grid min-width */
+        /* Ensure 4-digit values never get clipped */
         .update-grid { min-width: 0; }
-        .month-card { min-width: 54px; }
         .modal-section-title { font-weight: 700; font-size: 0.95rem; color: var(--green-800); margin: 1.2rem 0 0.5rem; display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--green-100); padding-top: 1rem; }
         .harvest-unit-badge {
             font-size: 0.72rem; font-weight: 800; color: var(--green-800);
@@ -2490,7 +2486,7 @@
         }
         
         /* === IMPROVED TOUCH TARGETS — ensure all interactive elements meet 44px === */
-        .acp-nav-card { min-height: 82px; min-width: 70px; }
+        .acp-nav-card { min-height: 68px; }
         .crop-filter-btn, .forecast-btn { min-height: 44px; }
         .btn, .btn-secondary, .btn-danger, .btn-amber { min-height: 44px; }
         .edit-record-btn, .cycle-toggle-btn { min-height: 44px; }
@@ -4432,7 +4428,7 @@ function toggleLang() { applyLang(_currentLang === 'en' ? 'kr' : 'en'); }
 //            Type: Web app → Execute as: Me → Who has access: Anyone
 //            Then copy the /exec URL and replace the value below.
 // ─────────────────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeT_mzyqsUQ07UQbxzub1CmMKrMSEjRGzINTn5vYYzIlbH5XSESERg6slgDSXV3DcWxQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxc5la029TANvneFwlX6DLcSol0Xggrnk__UR84H0xAY0TsECOYeOxhtk_vcOijOV9JGg/exec';
 //  ↑ Replace the URL above with your own deployed GAS /exec URL.
 // ─────────────────────────────────────────────────────────────────────
 
@@ -6796,9 +6792,12 @@ function renderUserRecords(rows, headers) {
             <div class="record-card ${isCompleted?'completed':'active-cycle'}" data-search-meta="${meta}">
             <div class="record-card-header">
                 <div class="record-card-crop">${icon} ${crop}${tomatoType?` (${tomatoType})`:''}</div>
-                <div class="record-card-stage">${stage}</div>
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                    ${ghNum?`<span class="record-card-gh-badge"><i class="fas fa-warehouse" style="font-size:0.62rem;"></i> GH ${ghNum}</span>`:''}
+                    <div class="record-card-stage">${stage}</div>
+                </div>
             </div>
-            <div class="record-card-meta">${variety?`<span>📌 ${variety}</span> | `:''}${ghNum?`<span>GH: ${ghNum}</span> | `:''}<span>📐 ${area.toFixed(1)} m²</span>${substrate?` | <span>🪨 ${substrate}</span>`:''}</div>
+            <div class="record-card-meta">${variety?`<span>📌 ${variety}</span> · `:''}<span>📐 ${area.toFixed(1)} m²</span>${substrate?` · <span>🪨 ${substrate}</span>`:''}</div>
             <div class="record-card-yield">${weekYield} ${unit}/wk</div>
             <div class="record-card-meta" style="margin-top:4px;font-size:0.72rem;">📅 ${tsStr}</div>
             ${todayBarHtml}
@@ -6970,30 +6969,31 @@ function initRecordCardSwipe() {
 function openEditModal(idx) {
     if(!currentUserRecords)return;
     const row=currentUserRecords.rows[idx];const headers=currentUserRecords.headers;
-    _populateEditModal(row,headers,currentLoggedInUser,false);
-    // Store context for saving
+    // FIX v31: set currentEditRecord BEFORE _populateEditModal so the grid
+    // timestamp stamp (dataset.editGhTimestamp) captures the correct value.
     const hdr=headers.map(h=>h.toString().toLowerCase());
     const tsCol=hdr.findIndex(h=>h.includes('timestamp'));
     const growerCol=hdr.findIndex(h=>h.includes('grower name'));
     currentEditRecord={row,headers,idx,ts:tsCol!==-1?String(row[tsCol]||''):'',grower:growerCol!==-1?String(row[growerCol]||''):currentLoggedInUser,isAdminEdit:false};
     adminEditContext=null;
+    _populateEditModal(row,headers,currentLoggedInUser,false);
     showEl(document.getElementById('editModalOverlay'), 'flex');
     document.body.style.overflow='hidden';
 }
 
 // ==================== ADMIN EDIT MODAL ====================
 function openAdminEditModal(username, rowIndex, rows, headers) {
-    // Validate inputs
     if(rowIndex<0||rowIndex>=rows.length){toast('Record not found.',true);return;}
     const row=rows[rowIndex];
-    _populateEditModal(row,headers,username,true);
     const hdr=headers.map(h=>h.toString().toLowerCase());
     const tsCol=hdr.findIndex(h=>h.includes('timestamp'));
     const growerCol=hdr.findIndex(h=>h.includes('grower name'));
     const ts=tsCol!==-1?String(row[tsCol]||''):'';
     const grower=growerCol!==-1?String(row[growerCol]||''):username;
+    // FIX v31: set currentEditRecord BEFORE _populateEditModal
     currentEditRecord={row,headers,idx:rowIndex,ts,grower,isAdminEdit:true};
     adminEditContext={username,rowIndex,rows,headers};
+    _populateEditModal(row,headers,username,true);
     showEl(document.getElementById('editModalOverlay'), 'flex');
     document.body.style.overflow='hidden';
 }
@@ -7040,9 +7040,11 @@ function _populateEditModal(row, headers, username, isAdmin) {
     const adminNote=document.getElementById('editModalAdminNote');
     toggleEl(adminNote, isAdmin, 'flex');
     const monthGrid=document.getElementById('editMonthlyGrid');
+    // FIX v30: store the GH-specific timestamp/key on the grid so save reads the right GH
+    monthGrid.dataset.editGhTimestamp = currentEditRecord?.ts || '';
     monthGrid.innerHTML=MONTHS.map((m,i)=>{
         const mCol=hdr.findIndex(h=>h===m.toLowerCase());const val=mCol!==-1?(parseFloat(row[mCol])||0):0;
-        return `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" min="0" id="em_${i}" value="${val}"></div>`;
+        return `<div class="month-card"><span>${m.substring(0,3)}</span><input type="number" step="0.01" min="0" id="em_${i}" value="${val}" autocomplete="off"></div>`;
     }).join('');
     const varietyVal=getVal(['variety'])||'';
     const areaVal=parseFloat(areaCol!==-1?row[areaCol]:0)||0;
@@ -7391,9 +7393,12 @@ function renderAdminSearchResults(rows, headers, username) {
         return `<div class="record-card ${isCompleted?'completed':'active-cycle'}">
             <div class="record-card-header">
                 <div class="record-card-crop">${icon} ${crop}${tomatoType?` (${tomatoType})`:''}</div>
-                <div class="record-card-stage">${stage}</div>
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                    ${ghNum?`<span class="record-card-gh-badge"><i class="fas fa-warehouse" style="font-size:0.62rem;"></i> GH ${ghNum}</span>`:''}
+                    <div class="record-card-stage">${stage}</div>
+                </div>
             </div>
-            <div class="record-card-meta">${variety?`<span>📌 ${variety}</span> | `:''}${ghNum?`<span>GH: ${ghNum}</span> | `:''}<span>📐 ${area.toFixed(1)} m²</span>${substrate?` | <span>🪨 ${substrate}</span>`:''}</div>
+            <div class="record-card-meta">${variety?`<span>📌 ${variety}</span> · `:''}<span>📐 ${area.toFixed(1)} m²</span>${substrate?` · <span>🪨 ${substrate}</span>`:''}</div>
             <div class="record-card-yield">${weekYield} ${unit}/wk</div>
             <div class="record-card-meta" style="margin-top:4px;font-size:0.72rem;">📅 ${tsStr}</div>
             <div class="record-card-actions">
@@ -8292,7 +8297,9 @@ async function submitAllNewData(){
     const localityVal=document.getElementById('localitySelect')?.value||'';const totalAreaVal=parseFloat(document.getElementById('totalArea')?.value)||0;
     const btn=document.getElementById('submitDataBtn');const origHTML=btn.innerHTML;btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
     try {
-        const rows=savedGreenhouses.map(g=>({growerName:username,locality:localityVal,zone:currentZone,totalGHArea:totalAreaVal,ghNumber:g.ghNumber,crop:g.crop,variety:g.variety,cropStage:g.stage,area:g.area,dateTrans:g.dateTrans,weeklyYield:g.weeklyYield,avgYieldPerMonth:g.avgYieldPerMonth,harvestMonths:g.harvestMonths,substrate:g.substrate,tomatoType:g.tomatoType,january:g.monthly[0],february:g.monthly[1],march:g.monthly[2],april:g.monthly[3],may:g.monthly[4],june:g.monthly[5],july:g.monthly[6],august:g.monthly[7],september:g.monthly[8],october:g.monthly[9],november:g.monthly[10],december:g.monthly[11],yieldUnit:g.yieldUnit,cycleStatus:'Active'}));
+        // FIX v30: include week1–week4 individually so each GH's weekly breakdown
+        // is saved correctly to Sheet1 columns M–P (COL_WEEK1–COL_WEEK4).
+        const rows=savedGreenhouses.map(g=>({growerName:username,locality:localityVal,zone:currentZone,totalGHArea:totalAreaVal,ghNumber:g.ghNumber,crop:g.crop,variety:g.variety,cropStage:g.stage,area:g.area,dateTrans:g.dateTrans,weeklyYield:g.weeklyYield,week1:g.week1Yield||0,week2:g.week2Yield||0,week3:g.week3Yield||0,week4:g.week4Yield||0,avgYieldPerMonth:g.avgYieldPerMonth,harvestMonths:g.harvestMonths,substrate:g.substrate,tomatoType:g.tomatoType,january:g.monthly[0],february:g.monthly[1],march:g.monthly[2],april:g.monthly[3],may:g.monthly[4],june:g.monthly[5],july:g.monthly[6],august:g.monthly[7],september:g.monthly[8],october:g.monthly[9],november:g.monthly[10],december:g.monthly[11],yieldUnit:g.yieldUnit,cycleStatus:'Active'}));
         await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(JSON.stringify({action:'submitGreenhouseData',username,data:rows}))});
         await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(JSON.stringify({action:'logAreaUpdate',username,currentArea:totalAreaVal,newArea:totalAreaVal,locality:localityVal,zone:currentZone}))});
         logActivity('submit',`Submitted ${rows.length} greenhouse record(s)`,username);
@@ -8329,7 +8336,9 @@ async function submitAdminGHData(){
     const totalAreaVal=parseFloat(document.getElementById('adminGH_totalArea').value)||0;
     if(!growerUsername){ showFieldError('adminGH_grower','adminGH_growerErr','Grower Username is required.'); return; }
     if(!adminSavedGreenhouses.length){toast('No greenhouse data to submit',true);return;}
-    const rows=adminSavedGreenhouses.map(g=>({growerName:growerUsername,locality,zone:currentZone,totalGHArea:totalAreaVal,ghNumber:g.ghNumber,crop:g.crop,variety:g.variety,cropStage:g.stage,area:g.area,dateTrans:g.dateTrans,weeklyYield:g.weeklyYield,avgYieldPerMonth:g.avgYieldPerMonth,harvestMonths:g.harvestMonths,substrate:g.substrate,tomatoType:g.tomatoType,january:g.monthly[0],february:g.monthly[1],march:g.monthly[2],april:g.monthly[3],may:g.monthly[4],june:g.monthly[5],july:g.monthly[6],august:g.monthly[7],september:g.monthly[8],october:g.monthly[9],november:g.monthly[10],december:g.monthly[11],yieldUnit:g.yieldUnit,cycleStatus:'Active'}));
+    // FIX v30: include week1–week4 per greenhouse so each GH's weekly data maps to
+    // the correct Sheet1 columns — prevents different GHs from overwriting each other.
+    const rows=adminSavedGreenhouses.map(g=>({growerName:growerUsername,locality,zone:currentZone,totalGHArea:totalAreaVal,ghNumber:g.ghNumber,crop:g.crop,variety:g.variety,cropStage:g.stage,area:g.area,dateTrans:g.dateTrans,weeklyYield:g.weeklyYield,week1:g.week1Yield||0,week2:g.week2Yield||0,week3:g.week3Yield||0,week4:g.week4Yield||0,avgYieldPerMonth:g.avgYieldPerMonth,harvestMonths:g.harvestMonths,substrate:g.substrate,tomatoType:g.tomatoType,january:g.monthly[0],february:g.monthly[1],march:g.monthly[2],april:g.monthly[3],may:g.monthly[4],june:g.monthly[5],july:g.monthly[6],august:g.monthly[7],september:g.monthly[8],october:g.monthly[9],november:g.monthly[10],december:g.monthly[11],yieldUnit:g.yieldUnit,cycleStatus:'Active'}));
     const btn=document.getElementById('adminSubmitAllBtn');const origHTML=btn.innerHTML;btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
     try {
         await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(JSON.stringify({action:'submitGreenhouseData',username:growerUsername,data:rows}))});
@@ -8442,6 +8451,14 @@ function toggleWeeklySection() {
 // ==================== SAVE EDIT RECORD ====================
 async function saveEditRecord() {
     if(!currentEditRecord)return;
+    // FIX v30: sanity-check that the modal timestamp still matches the record we opened
+    // (guards against rare race condition where admin opens two records quickly)
+    const gridEl = document.getElementById('editMonthlyGrid');
+    if(gridEl && gridEl.dataset.editGhTimestamp &&
+       gridEl.dataset.editGhTimestamp !== currentEditRecord.ts) {
+        toast('⚠️ Record mismatch detected — please close and reopen the edit modal.', true);
+        return;
+    }
     const stage=document.getElementById('editStage').value;
     const area=parseFloat(document.getElementById('editArea').value)||0;
     // Issue #9: inline field validation
@@ -10355,8 +10372,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if(harvestMonthsSec)toggleEl(harvestMonthsSec, isHarvesting);
         // v21: also show/hide inline YLF
         const ylfSec=document.getElementById('editYLFSection');
-        if(ylfSec)toggleEl(ylfSec, isHarvesting);
+        if(ylfSec)showEl(ylfSec); // FIX v30: always show YLF section (was hiding for non-Harvesting stages)
         if(isHarvesting){const cropVal=document.getElementById('editCrop')?.value||'';_buildEditModalYLF(cropVal);}
+        // FIX v30: when switching AWAY from Harvesting, clear weekly/monthly inputs
+        // so stale harvest data from GH-A doesn't display when editing non-harvesting GH-B
+        if(!isHarvesting){
+            ['editWeek1Yield','editWeek2Yield','editWeek3Yield','editWeek4Yield','editAvgYieldPerMonth','editHarvestMonths'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0';});
+            recalcWeeklyTotal();
+            MONTHS.forEach((_,i)=>{const el=document.getElementById('em_'+i);if(el)el.value='0';});
+        }
     });
 
     // Zone reg dropdown
