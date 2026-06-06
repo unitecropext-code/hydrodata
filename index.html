@@ -10897,7 +10897,19 @@ const STAGE_NAMES  = ['Seedling','Vegetative','Flowering','Fruiting','Harvesting
 function initYieldMap() {
     const container = document.getElementById('yieldMapContainer');
     if (!container) return;
-    if (_yieldMapInstance) { _yieldMapInstance.invalidateSize(); return; }
+    // FIX: If the container is hidden (offsetParent===null), Leaflet will read 0×0 and
+    // produce the classic tile-grid distortion. Defer until it is visible.
+    if (container.offsetParent === null || container.offsetWidth === 0) {
+        setTimeout(initYieldMap, 120);
+        return;
+    }
+    if (_yieldMapInstance) {
+        // FIX: invalidateSize alone is not enough after a display:none→block transition —
+        // also pan to the target centre so Leaflet re-requests all tiles at correct coords.
+        _yieldMapInstance.invalidateSize({ pan: true });
+        _yieldMapInstance.setView([-20.2566, 57.6004], _yieldMapInstance.getZoom());
+        return;
+    }
     _yieldMapInstance = L.map('yieldMapContainer').setView([-20.2566, 57.6004], 11);
     // v19: use CARTO dark tiles in dark mode, OSM light tiles otherwise
     const _darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -10940,7 +10952,9 @@ function toggleMapExpand() {
         if (icon) { icon.classList.replace('fa-compress-alt','fa-expand-alt'); }
         if (lbl)  lbl.textContent = 'Expand';
     }
-    if (_yieldMapInstance) { setTimeout(()=>_yieldMapInstance.invalidateSize(),320); }
+    // FIX: height transition is 0.3s (300 ms); fire invalidateSize at 360 ms so it always
+    // runs after the container has its final dimensions, not mid-transition.
+    if (_yieldMapInstance) { setTimeout(()=>{ _yieldMapInstance.invalidateSize({ pan:true }); },360); }
 }
 
 function toggleMockMode() {
@@ -11964,7 +11978,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tabId === 'varietyPerfTab' && !_vpRawData.length) {
             const msg = document.getElementById('vpStatusMsg'); if (msg) showEl(msg);
         }
-        if (tabId === 'yieldMapTab') setTimeout(() => { maybeAutoLoadYieldMap(); }, 80);
+        // FIX: was 80 ms — too short while display:none→block + tabFadeIn animation settles.
+        // 350 ms guarantees the container has a real offsetWidth before Leaflet measures it.
+        if (tabId === 'yieldMapTab') setTimeout(() => { maybeAutoLoadYieldMap(); }, 350);
         if (tabId === 'onlineNowTab') loadOnlineGrowers(false);
     };
 
