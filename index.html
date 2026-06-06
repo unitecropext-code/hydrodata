@@ -11172,10 +11172,15 @@ function _syncMapPortal() {
     const mc  = document.getElementById('yieldMapContainer');
     if (!ph || !mc || mc.style.display === 'none') return;
     const r = ph.getBoundingClientRect();
+    // v38 FIX: skip sync if placeholder has no area (tab hidden / mid-animation)
+    if (r.width === 0 || r.height === 0) return;
     mc.style.left   = r.left   + 'px';
     mc.style.top    = r.top    + 'px';
     mc.style.width  = r.width  + 'px';
     mc.style.height = r.height + 'px';
+    // v38 FIX: keep border-radius in sync when side panel opens/closes
+    const isRightOpen = document.getElementById('yieldSidePanel')?.classList.contains('open');
+    mc.style.borderRadius = isRightOpen ? '1.5rem 0 0 1.5rem' : '1.5rem';
 }
 function _startPortalSync() {
     _stopPortalSync();
@@ -11266,6 +11271,15 @@ function initYieldMap() {
     }
 
     if (_yieldMapData) renderYieldMapLayer(_yieldMapCrop);
+
+    // v38 FIX: force Leaflet to re-measure after first paint — eliminates residual
+    // tile-grid distortion caused by any sub-pixel layout settle after init.
+    setTimeout(() => {
+        if (_yieldMapInstance) {
+            _syncMapPortal();
+            _yieldMapInstance.invalidateSize({ pan: false });
+        }
+    }, 120);
 }
 
 // ── Improvement #11: auto-load when tab is activated (≤15 min cache) ──
@@ -12330,7 +12344,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // The CSS animation runs on the tab's own element (no transform, opacity only), but
         // the browser may still defer compositing until the animation frame finishes.
         // Waiting 250ms (220ms anim + 30ms buffer) guarantees L.map() sees stable geometry.
-        if (tabId === 'yieldMapTab') setTimeout(() => maybeAutoLoadYieldMap(), 250);
+        if (tabId === 'yieldMapTab') setTimeout(() => maybeAutoLoadYieldMap(), 450);
         if (tabId === 'onlineNowTab') loadOnlineGrowers(false);
     };
 
@@ -12992,7 +13006,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- v37 MAP PORTAL: #yieldMapContainer lives directly on <body> so it is never
      inside a backdrop-filter / overflow:hidden / composited ancestor stacking context.
      JS positions it over #yieldMapPlaceholder using getBoundingClientRect + fixed positioning. -->
-<div id="yieldMapContainer" style="position:fixed;display:none;z-index:10;background:#e8f5e9;"></div>
+<div id="yieldMapContainer" style="position:fixed;display:none;z-index:10;background:#e8f5e9;overflow:hidden;border-radius:1.5rem 0 0 1.5rem;"></div>
 
 <nav id="growerBottomNav" aria-label="Grower navigation">
     <div class="gbn-inner">
