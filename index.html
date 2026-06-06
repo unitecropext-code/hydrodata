@@ -5865,12 +5865,13 @@ window._ndgCurrentCrop = 'Tomato';
 window._ndgCurrentSev  = 'all';
 window._ndgExpandedId  = null;
 
-async function ndgInit() {
+async function ndgInit(forceRefresh) {
     const badge = document.getElementById('ndgLoadingBadge');
     if(badge) showEl(badge,'inline-block');
     try {
-        const res = await fetch(GAS_URL + '?action=getNutrientDeficiencyGuide&crop=all');
-        const data = await res.json();
+        const cacheUrl = `${SCRIPT_URL}?action=getNutrientDeficiencyGuide&crop=all`;
+        if(forceRefresh) await idbDelete(cacheUrl);
+        const data = await fetchWithIDBCache(`${cacheUrl}&_=${Date.now()}`, 15000, 86400000);
         if(!data.success || !data.crops) throw new Error(data.error||'Guide data unavailable');
         window._ndgData   = data.crops;
         window._ndgLoaded = true;
@@ -5879,7 +5880,7 @@ async function ndgInit() {
         const c = document.getElementById('ndgCardsContainer');
         if(c) c.innerHTML = `<div style="color:var(--red);padding:1.2rem;font-size:0.85rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.6rem;">
             <div><i class="fas fa-exclamation-triangle"></i> Could not load nutrient guide: ${escHtml(err.message)}</div>
-            <button onclick="ndgInit()" style="padding:5px 14px;border-radius:2rem;border:1.5px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:0.8rem;font-family:'Outfit',sans-serif;font-weight:600;">
+            <button onclick="ndgInit(true)" style="padding:5px 14px;border-radius:2rem;border:1.5px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:0.8rem;font-family:'Outfit',sans-serif;font-weight:600;">
                 <i class="fas fa-redo"></i> Retry
             </button>
         </div>`;
