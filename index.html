@@ -169,25 +169,63 @@
         .action-buttons { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .badge { background: var(--green-50); border: 1.5px solid var(--green-200); border-radius: var(--radius-pill); padding: 6px 14px; font-size: 0.8rem; font-weight: 600; color: var(--green-800); display: inline-flex; align-items: center; gap: 6px; }
         .admin-badge { background: linear-gradient(90deg,#d97706,#f59e0b); color: white; border-radius: 1rem; padding: 1px 8px; font-size: 0.7rem; font-weight: 800; margin-left: 4px; }
-        /* ── Nutrient Deficiency Guide (v2.7) ── */
-        .ndg-tab { background:var(--card-bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text); }
-        .ndg-tab:hover { border-color:#7c3aed;color:#7c3aed; }
-        .ndg-tab-active { background:#7c3aed;border-color:#7c3aed;color:#fff; }
-        .ndg-card { background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:0.9rem 1rem;position:relative;overflow:hidden;transition:box-shadow .18s; }
-        .ndg-card:hover { box-shadow:0 4px 18px rgba(124,58,237,0.13); }
-        .ndg-card-accent { position:absolute;top:0;left:0;width:5px;height:100%;border-radius:12px 0 0 12px; }
-        .ndg-card-header { display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:0.55rem; }
-        .ndg-sev-badge { font-size:0.65rem;font-weight:800;padding:2px 8px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;margin-top:1px; }
+        /* ── Nutrient Deficiency Guide (v3.0 — redesigned) ── */
+        .ndg-tab { background:rgba(255,255,255,0.7);border:1.5px solid var(--green-200);border-radius:2rem;padding:7px 18px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all .18s;color:var(--green-800);font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:5px; }
+        .ndg-tab:hover { background:var(--green-50);border-color:var(--green-400);transform:translateY(-1px); }
+        .ndg-tab-active { background:linear-gradient(100deg,var(--green-800),var(--green-600));border-color:var(--green-700);color:#fff;box-shadow:0 4px 14px rgba(25,105,40,0.32); }
+        /* Search bar */
+        .ndg-search-wrap { position:relative;margin-bottom:1rem; }
+        .ndg-search-wrap .ndg-si { position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--green-400);font-size:0.9rem;pointer-events:none; }
+        .ndg-search-input { width:100%;padding:0.75rem 2.8rem 0.75rem 2.6rem;border:1.5px solid var(--green-200);border-radius:var(--radius-pill);background:white;font-size:0.88rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;color:#333; }
+        .ndg-search-input:focus { border-color:var(--green-600);box-shadow:0 0 0 3px rgba(37,145,50,0.12); }
+        .ndg-search-clear { position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:0.9rem;display:none;padding:4px; }
+        /* Severity filter chips */
+        .ndg-filter-row { display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:0.9rem; }
+        .ndg-filter-label { font-size:0.75rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-right:2px; }
+        .ndg-sev-btn { padding:4px 13px;border-radius:2rem;border:1.5px solid #e5e7eb;background:#f9fafb;color:#666;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s; }
+        .ndg-sev-btn:hover { border-color:#ccc;background:#f3f4f6; }
+        .ndg-sev-btn.active-all { background:var(--green-50);border-color:var(--green-400);color:var(--green-800); }
+        .ndg-sev-btn.active-critical { background:#fde8e4;border-color:#f87171;color:#b91c1c; }
+        .ndg-sev-btn.active-high { background:#fef3c7;border-color:#fbbf24;color:#92400e; }
+        .ndg-sev-btn.active-medium { background:#ede9fe;border-color:#a78bfa;color:#4c1d95; }
+        /* Count bar */
+        .ndg-count-bar { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:0.8rem;padding:0 2px; }
+        .ndg-result-count { font-size:0.78rem;color:#888;font-weight:500; }
+        .ndg-stat-chips { display:flex;gap:5px;flex-wrap:wrap; }
+        .ndg-stat-chip { display:inline-flex;align-items:center;gap:3px;font-size:0.7rem;font-weight:600;padding:2px 9px;border-radius:1rem;border:1px solid; }
+        .ndg-chip-crit { background:#fde8e4;border-color:#fca5a5;color:#b91c1c; }
+        .ndg-chip-high { background:#fef3c7;border-color:#fcd34d;color:#92400e; }
+        .ndg-chip-med  { background:#ede9fe;border-color:#c4b5fd;color:#4c1d95; }
+        /* Cards */
+        .ndg-card { background:white;border:1.5px solid #e8f0e2;border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .18s,box-shadow .18s;position:relative; }
+        .ndg-card:hover { border-color:var(--green-300);box-shadow:0 4px 18px rgba(25,120,50,0.1); }
+        .ndg-card.ndg-expanded { border-color:var(--green-400);box-shadow:0 6px 24px rgba(25,120,50,0.14); }
+        .ndg-card-top { display:flex;overflow:hidden; }
+        .ndg-card-accent { width:5px;flex-shrink:0; }
+        .ndg-card-body { padding:12px 14px 10px;flex:1;min-width:0; }
+        .ndg-card-header { display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px; }
+        .ndg-card-title { font-size:0.88rem;font-weight:700;color:#1a2e1a;line-height:1.3; }
+        .ndg-nutrient-tag { font-size:0.72rem;color:#888;font-style:italic;margin-top:1px; }
+        .ndg-sev-badge { font-size:0.65rem;font-weight:800;padding:2px 9px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;margin-top:2px; }
         .ndg-sev-critical { background:#fde8e4;color:#b91c1c; }
-        .ndg-sev-high     { background:#fef0c7;color:#92400e; }
+        .ndg-sev-high     { background:#fef3c7;color:#92400e; }
         .ndg-sev-medium   { background:#ede9fe;color:#4c1d95; }
-        .ndg-card-title { font-size:0.88rem;font-weight:700;color:var(--text);line-height:1.3; }
-        .ndg-nutrient-tag { font-size:0.72rem;color:var(--text-muted);font-style:italic;margin-bottom:0.4rem; }
-        .ndg-section-label { font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#7c3aed;margin:0.55rem 0 0.18rem 0; }
-        .ndg-text { font-size:0.78rem;color:var(--text-muted);line-height:1.5;margin:0; }
-        .ndg-visual-cue { background:#f5f3ff;border-left:3px solid #7c3aed;border-radius:0 6px 6px 0;padding:0.35rem 0.6rem;font-size:0.78rem;color:#4c1d95;margin:0.4rem 0;line-height:1.4; }
-        .ndg-correction { background:#f0fdf4;border-left:3px solid #16a34a;border-radius:0 6px 6px 0;padding:0.35rem 0.6rem;font-size:0.78rem;color:#14532d;margin:0.4rem 0;line-height:1.4; }
-        .ndg-prevention { background:#fff7ed;border-left:3px solid #ea580c;border-radius:0 6px 6px 0;padding:0.35rem 0.6rem;font-size:0.78rem;color:#7c2d12;margin:0.4rem 0 0 0;line-height:1.4; }
+        .ndg-preview-text { font-size:0.78rem;color:#666;line-height:1.5;margin-top:6px;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden; }
+        .ndg-expand-hint { display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:8px;font-size:0.72rem;color:#aaa; }
+        .ndg-expand-icon { font-size:0.7rem;transition:transform .2s; }
+        .ndg-expanded .ndg-expand-icon { transform:rotate(180deg); }
+        /* Detail panel */
+        .ndg-detail { display:none;border-top:1px solid #eef4e8;padding:12px 14px 14px 19px; }
+        .ndg-expanded .ndg-detail { display:block; }
+        .ndg-section-label { font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#888;margin:10px 0 4px 0;display:flex;align-items:center;gap:4px; }
+        .ndg-section-label:first-child { margin-top:0; }
+        .ndg-text { font-size:0.78rem;color:#555;line-height:1.55;margin:0; }
+        .ndg-visual-cue { background:#f5f3ff;border-left:3px solid #7c3aed;border-radius:0 6px 6px 0;padding:0.38rem 0.65rem;font-size:0.78rem;color:#4c1d95;line-height:1.45; }
+        .ndg-correction { background:#f0fdf4;border-left:3px solid #16a34a;border-radius:0 6px 6px 0;padding:0.38rem 0.65rem;font-size:0.78rem;color:#14532d;line-height:1.45; }
+        .ndg-prevention { background:#fff7ed;border-left:3px solid #ea580c;border-radius:0 6px 6px 0;padding:0.38rem 0.65rem;font-size:0.78rem;color:#7c2d12;line-height:1.45; }
+        /* Empty state */
+        .ndg-empty { text-align:center;padding:2.5rem 1rem;color:#aaa;font-size:0.85rem; }
+        .ndg-empty i { font-size:2rem;display:block;margin-bottom:0.5rem;opacity:.4; }
 
         .stat-title { font-weight: 800; font-size: 1.15rem; color: var(--green-900); border-left: 4px solid var(--green-500); padding-left: 0.8rem; margin-bottom: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
         .live-dashboard-title { font-size: 1.4rem; font-weight: 900; color: var(--green-900); margin: 0 0 1rem 0; padding-bottom: 0.6rem; border-bottom: 2px dashed var(--green-200); display: flex; align-items: center; gap: 10px; }
@@ -4161,40 +4199,57 @@
             </div>
         </div>
 
-        <!-- NUTRIENT DEFICIENCY VISUAL GUIDE — ADMIN ONLY (v2.7) -->
+        <!-- NUTRIENT DEFICIENCY VISUAL GUIDE — ADMIN ONLY (v3.0) -->
         <div class="glass-card admin-only-section" id="nutrientDeficiencyGuideCard" style="display:none;">
+            <!-- Header -->
             <div class="stat-title" style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
-                <i class="fas fa-flask" style="color:#7c3aed;"></i>
+                <i class="fas fa-flask" style="color:var(--green-600);"></i>
                 Nutrient Deficiency Visual Guide
-                <span class="admin-badge" style="font-size:0.72rem;padding:2px 10px;margin-left:2px;background:#7c3aed;">ADMIN ONLY</span>
-                <span id="ndgLoadingBadge" class="admin-badge" style="font-size:0.68rem;background:#0ea5e9;display:none;">Loading…</span>
+                <span class="admin-badge" style="font-size:0.72rem;padding:2px 10px;margin-left:2px;">ADMIN ONLY</span>
+                <span id="ndgLoadingBadge" class="admin-badge" style="font-size:0.68rem;background:#0ea5e9;display:none;"><i class="fas fa-spinner fa-spin"></i> Loading…</span>
             </div>
-            <p style="color:var(--text-muted);font-size:0.82rem;margin:0.3rem 0 1rem 0;">
+            <p style="color:#666;font-size:0.82rem;margin:0.2rem 0 1rem 0;line-height:1.6;">
                 Identify and correct nutrient deficiencies in hydroponic Tomato, Sweet Pepper and English Cucumber crops.
-                Symptom descriptions, visual cues, correction solutions and prevention tips.
+                Click any card to expand symptoms, visual cues, corrections and prevention tips.
             </p>
 
-            <!-- Crop tabs + Feature 4: Print Guide button -->
-            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1.1rem;" id="ndgCropTabs">
-                <button class="ndg-tab ndg-tab-active" data-ndg-crop="Tomato" onclick="ndgSelectCrop('Tomato',this)">
-                    🍅 Tomato
-                </button>
-                <button class="ndg-tab" data-ndg-crop="Sweet Pepper" onclick="ndgSelectCrop('Sweet Pepper',this)">
-                    🌶️ Sweet Pepper
-                </button>
-                <button class="ndg-tab" data-ndg-crop="English Cucumber" onclick="ndgSelectCrop('English Cucumber',this)">
-                    🥒 English Cucumber
-                </button>
+            <!-- Crop tabs + Print button -->
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;" id="ndgCropTabs">
+                <button class="ndg-tab ndg-tab-active" data-ndg-crop="Tomato" onclick="ndgSelectCrop('Tomato',this)">🍅 Tomato</button>
+                <button class="ndg-tab" data-ndg-crop="Sweet Pepper" onclick="ndgSelectCrop('Sweet Pepper',this)">🌶️ Sweet Pepper</button>
+                <button class="ndg-tab" data-ndg-crop="English Cucumber" onclick="ndgSelectCrop('English Cucumber',this)">🥒 English Cucumber</button>
                 <button onclick="printNutrientGuide(window._ndgCurrentCrop)" title="Print / PDF current crop guide"
-                    style="margin-left:auto;padding:6px 14px;border-radius:2rem;border:1.5px solid #7c3aed;background:#f5f3ff;color:#6d28d9;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:5px;transition:all .18s;"
-                    onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
+                    style="margin-left:auto;padding:7px 16px;border-radius:2rem;border:1.5px solid var(--green-300);background:var(--green-50);color:var(--green-800);font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:all .18s;"
+                    onmouseover="this.style.background='var(--green-100)'" onmouseout="this.style.background='var(--green-50)'">
                     <i class="fas fa-print"></i> Print Guide
                 </button>
             </div>
 
+            <!-- Search bar -->
+            <div class="ndg-search-wrap">
+                <i class="fas fa-search ndg-si"></i>
+                <input class="ndg-search-input" type="text" id="ndgSearchInput" placeholder="Search by name, nutrient, symptom…" oninput="ndgApplyFilters()" aria-label="Search deficiencies">
+                <button class="ndg-search-clear" id="ndgSearchClear" onclick="ndgClearSearch()" title="Clear search">✕</button>
+            </div>
+
+            <!-- Severity filter -->
+            <div class="ndg-filter-row">
+                <span class="ndg-filter-label">Severity:</span>
+                <button class="ndg-sev-btn active-all" data-sev="all" onclick="ndgSetSev(this,'all')">All</button>
+                <button class="ndg-sev-btn" data-sev="critical" onclick="ndgSetSev(this,'critical')">⚠ Critical</button>
+                <button class="ndg-sev-btn" data-sev="high" onclick="ndgSetSev(this,'high')">🔴 High</button>
+                <button class="ndg-sev-btn" data-sev="medium" onclick="ndgSetSev(this,'medium')">🟡 Medium</button>
+            </div>
+
+            <!-- Count bar + stat chips -->
+            <div class="ndg-count-bar">
+                <span class="ndg-result-count" id="ndgResultCount"></span>
+                <div class="ndg-stat-chips" id="ndgStatChips"></div>
+            </div>
+
             <!-- Deficiency cards container -->
-            <div id="ndgCardsContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:0.85rem;">
-                <div style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center;" id="ndgPlaceholder">
+            <div id="ndgCardsContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0.85rem;">
+                <div style="color:#999;font-size:0.85rem;padding:1.5rem;text-align:center;">
                     <i class="fas fa-spinner fa-spin"></i> Loading guide data…
                 </div>
             </div>
@@ -5796,17 +5851,19 @@ function setAdminSectionsVisibility(show) {
     ['timelineSectionCard','forecastSectionCard'].forEach(id=>{const el=document.getElementById(id);if(el)toggleEl(el, show);});
     const yr=document.getElementById('yieldEfficiencyRefCard');if(yr)toggleEl(yr, show);
     const ts=document.getElementById('growingTipsSection');if(ts)toggleEl(ts, show);
-    // v2.7: Nutrient Deficiency Guide (admin only)
+    // v3.0: Nutrient Deficiency Guide (admin only)
     const ndg=document.getElementById('nutrientDeficiencyGuideCard');
     if(ndg){ toggleEl(ndg, show); if(show && !window._ndgLoaded) ndgInit(); }
 }
 
 // ============================================================
-// NUTRIENT DEFICIENCY VISUAL GUIDE — v2.7  (Admin only)
+// NUTRIENT DEFICIENCY VISUAL GUIDE — v3.0  (Admin only)
 // ============================================================
-window._ndgData   = null;   // full guide data from GAS
-window._ndgLoaded = false;  // true after first successful load
+window._ndgData        = null;
+window._ndgLoaded      = false;
 window._ndgCurrentCrop = 'Tomato';
+window._ndgCurrentSev  = 'all';
+window._ndgExpandedId  = null;
 
 async function ndgInit() {
     const badge = document.getElementById('ndgLoadingBadge');
@@ -5817,12 +5874,14 @@ async function ndgInit() {
         if(!data.success || !data.crops) throw new Error(data.error||'Guide data unavailable');
         window._ndgData   = data.crops;
         window._ndgLoaded = true;
-        ndgRenderCrop(window._ndgCurrentCrop);
+        ndgRenderAll();
     } catch(err) {
         const c = document.getElementById('ndgCardsContainer');
-        if(c) c.innerHTML = `<div style="color:var(--red);padding:1rem;font-size:0.85rem;">
-            <i class="fas fa-exclamation-triangle"></i> Could not load nutrient guide: ${err.message}
-            <br><button onclick="ndgInit()" style="margin-top:0.5rem;padding:4px 12px;border-radius:6px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:0.8rem;">Retry</button>
+        if(c) c.innerHTML = `<div style="color:var(--red);padding:1.2rem;font-size:0.85rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.6rem;">
+            <div><i class="fas fa-exclamation-triangle"></i> Could not load nutrient guide: ${escHtml(err.message)}</div>
+            <button onclick="ndgInit()" style="padding:5px 14px;border-radius:2rem;border:1.5px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:0.8rem;font-family:'Outfit',sans-serif;font-weight:600;">
+                <i class="fas fa-redo"></i> Retry
+            </button>
         </div>`;
     } finally {
         if(badge) hideEl(badge);
@@ -5831,61 +5890,125 @@ async function ndgInit() {
 
 function ndgSelectCrop(cropName, btn) {
     window._ndgCurrentCrop = cropName;
-    // Update tab styles
+    window._ndgExpandedId  = null;
     document.querySelectorAll('.ndg-tab').forEach(t => {
         t.classList.toggle('ndg-tab-active', t.dataset.ndgCrop === cropName);
     });
-    ndgRenderCrop(cropName);
+    ndgRenderAll();
 }
 
-function ndgRenderCrop(cropName) {
+function ndgSetSev(btn, sev) {
+    window._ndgCurrentSev = sev;
+    document.querySelectorAll('.ndg-sev-btn').forEach(b => {
+        b.className = 'ndg-sev-btn';
+        if(b.dataset.sev === sev) b.classList.add('active-' + sev);
+    });
+    ndgRenderAll();
+}
+
+function ndgApplyFilters() {
+    const q = (document.getElementById('ndgSearchInput')||{}).value||'';
+    const clr = document.getElementById('ndgSearchClear');
+    if(clr) clr.style.display = q ? 'block' : 'none';
+    ndgRenderAll();
+}
+
+function ndgClearSearch() {
+    const inp = document.getElementById('ndgSearchInput');
+    if(inp) inp.value = '';
+    const clr = document.getElementById('ndgSearchClear');
+    if(clr) clr.style.display = 'none';
+    ndgRenderAll();
+}
+
+function ndgToggleCard(id) {
+    window._ndgExpandedId = (window._ndgExpandedId === id) ? null : id;
+    ndgRenderAll();
+}
+
+function ndgRenderAll() {
     const container = document.getElementById('ndgCardsContainer');
     if(!container) return;
     if(!window._ndgData) {
-        container.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
+        container.innerHTML = '<div style="color:#999;font-size:0.85rem;padding:1.5rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
         ndgInit();
         return;
     }
-    const deficiencies = window._ndgData[cropName];
-    if(!deficiencies || !deficiencies.length) {
-        container.innerHTML = `<div style="color:var(--text-muted);font-size:0.85rem;padding:1rem;">No data for ${cropName}.</div>`;
+    const all = window._ndgData[window._ndgCurrentCrop] || [];
+    const q   = ((document.getElementById('ndgSearchInput')||{}).value||'').toLowerCase().trim();
+    const sev = window._ndgCurrentSev;
+
+    const filtered = all.filter(d => {
+        if(sev !== 'all' && d.severity !== sev) return false;
+        if(q) return (d.name+' '+d.nutrient+' '+d.symptoms+' '+d.visualCue).toLowerCase().includes(q);
+        return true;
+    });
+
+    // Update count bar
+    const crit = all.filter(d=>d.severity==='critical').length;
+    const hi   = all.filter(d=>d.severity==='high').length;
+    const med  = all.filter(d=>d.severity==='medium').length;
+    const rc   = document.getElementById('ndgResultCount');
+    const sc   = document.getElementById('ndgStatChips');
+    if(rc) rc.textContent = filtered.length + ' of ' + all.length + ' deficiencies shown';
+    if(sc) sc.innerHTML = `
+        <span class="ndg-stat-chip ndg-chip-crit">⚠ ${crit} critical</span>
+        <span class="ndg-stat-chip ndg-chip-high">🔴 ${hi} high</span>
+        <span class="ndg-stat-chip ndg-chip-med">🟡 ${med} medium</span>`;
+
+    if(!filtered.length) {
+        container.innerHTML = `<div class="ndg-empty"><i class="fas fa-seedling"></i><div>No deficiencies match your filter.</div></div>`;
         return;
     }
-    container.innerHTML = deficiencies.map(d => ndgBuildCard(d)).join('');
+
+    container.innerHTML = filtered.map(d => ndgBuildCard(d)).join('');
+}
+
+function ndgRenderCrop(cropName) {
+    ndgRenderAll();
 }
 
 function ndgBuildCard(d) {
-    const sevClass = d.severity==='critical'?'ndg-sev-critical':d.severity==='high'?'ndg-sev-high':'ndg-sev-medium';
-    const sevLabel = d.severity==='critical'?'⚠ CRITICAL':d.severity==='high'?'🔴 HIGH':'🟡 MEDIUM';
-    const accentColor = d.colorHex || '#7c3aed';
-    return `
-    <div class="ndg-card">
-        <div class="ndg-card-accent" style="background:${accentColor};"></div>
-        <div style="padding-left:10px;">
-            <div class="ndg-card-header">
-                <div style="flex:1;">
-                    <div class="ndg-card-title">${escHtml(d.name)}</div>
-                    <div class="ndg-nutrient-tag">${escHtml(d.nutrient)}</div>
-                </div>
-                <span class="ndg-sev-badge ${sevClass}">${sevLabel}</span>
-            </div>
-            <div class="ndg-section-label">📍 Affected Parts</div>
+    const id        = escHtml(d.name);
+    const isExp     = window._ndgExpandedId === d.name;
+    const sevClass  = d.severity==='critical'?'ndg-sev-critical':d.severity==='high'?'ndg-sev-high':'ndg-sev-medium';
+    const sevLabel  = d.severity==='critical'?'⚠ Critical':d.severity==='high'?'🔴 High':'🟡 Medium';
+    const accent    = d.colorHex || '#2ea83c';
+    const clamp     = isExp ? '999' : '2';
+    const detail    = isExp ? `
+        <div class="ndg-detail">
+            <div class="ndg-section-label"><i class="fas fa-map-marker-alt" style="color:${accent};font-size:0.65rem;"></i> Affected Parts</div>
             <p class="ndg-text">${escHtml(d.affectedParts)}</p>
-            <div class="ndg-section-label">🔬 Symptoms</div>
+            <div class="ndg-section-label"><i class="fas fa-microscope" style="color:${accent};font-size:0.65rem;"></i> Symptoms</div>
             <p class="ndg-text">${escHtml(d.symptoms)}</p>
-            <div class="ndg-section-label">👁 Visual Cue</div>
+            <div class="ndg-section-label"><i class="fas fa-eye" style="color:#7c3aed;font-size:0.65rem;"></i> Visual Cue</div>
             <div class="ndg-visual-cue">${escHtml(d.visualCue)}</div>
-            <div class="ndg-section-label">💊 Correction</div>
+            <div class="ndg-section-label"><i class="fas fa-pills" style="color:#16a34a;font-size:0.65rem;"></i> Correction</div>
             <div class="ndg-correction">${escHtml(d.correctionSolution)}</div>
-            <div class="ndg-section-label">🛡 Prevention</div>
+            <div class="ndg-section-label"><i class="fas fa-shield-alt" style="color:#ea580c;font-size:0.65rem;"></i> Prevention</div>
             <div class="ndg-prevention">${escHtml(d.preventionTips)}</div>
+        </div>` : '';
+    return `
+    <div class="ndg-card${isExp?' ndg-expanded':''}" onclick="ndgToggleCard(${JSON.stringify(d.name)})">
+        <div class="ndg-card-top">
+            <div class="ndg-card-accent" style="background:${accent};"></div>
+            <div class="ndg-card-body">
+                <div class="ndg-card-header">
+                    <div>
+                        <div class="ndg-card-title">${escHtml(d.name)}</div>
+                        <div class="ndg-nutrient-tag">${escHtml(d.nutrient)}</div>
+                    </div>
+                    <span class="ndg-sev-badge ${sevClass}">${sevLabel}</span>
+                </div>
+                <p class="ndg-preview-text" style="-webkit-line-clamp:${clamp};">${escHtml(d.symptoms)}</p>
+                <div class="ndg-expand-hint">
+                    <span>${isExp?'Collapse':'Show details'}</span>
+                    <i class="fas fa-chevron-down ndg-expand-icon"></i>
+                </div>
+            </div>
         </div>
+        ${detail}
     </div>`;
-}
-
-function escHtml(str) {
-    if(!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 // ── End Nutrient Deficiency Guide ───────────────────────────
 function getYieldReference(cropName, varietyName) {
