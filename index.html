@@ -1818,9 +1818,22 @@
         .map-autoplay-btn:hover { background:var(--green-100); }
         .map-autoplay-btn.playing { background:var(--green-700); color:white; border-color:var(--green-700); }
         .map-month-ticks { display:flex; justify-content:space-between; width:100%; padding:0 2px; font-size:0.6rem; color:#aaa; font-weight:600; letter-spacing:0.01em; }
-        /* map+side-panel wrapper */
-        .map-with-panel { display:flex; gap:0; position:relative; border-radius:var(--radius-lg); overflow:hidden; border:2px solid var(--green-200); transition:all 0.25s; }
-        .map-with-panel #yieldMapContainer { flex:1; min-width:0; border-radius:0; border:none; transition:width 0.25s; }
+        /* v37 FIX: backdrop-filter on the glass-card ancestor creates a GPU composited
+           stacking context. Leaflet's tile transform: translate3d() positions are then
+           computed relative to the composited layer boundary rather than the viewport,
+           causing the 4-quadrant tile fragmentation. Disable backdrop-filter on the
+           admin panel card specifically — it wraps the entire admin section including
+           the yield map. The visual difference is negligible (panel bg is already 97% opaque). */
+        #adminSearchSection {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        /* v37 FIX: overflow:hidden + border-radius together on .map-with-panel also
+           trigger GPU compositing of the Leaflet container. Replace with a clip-path
+           (which doesn't create a stacking context) or just remove the border-radius
+           from the wrapper and apply it only via box-shadow/border styling. */
+        .map-with-panel { display:flex; gap:0; position:relative; border-radius:var(--radius-lg); border:2px solid var(--green-200); transition:all 0.25s; overflow:visible; }
+        .map-with-panel #yieldMapContainer { flex:1; min-width:0; border-radius:var(--radius-lg) 0 0 var(--radius-lg); border:none; transition:width 0.25s; overflow:hidden; }
         /* side panel — richer */
         #yieldSidePanel { width:0; overflow:hidden; background:#fff; border-left:0px solid var(--green-200); transition:width 0.25s, border-left-width 0.25s; font-family:'Outfit',sans-serif; display:flex; flex-direction:column; }
         #yieldSidePanel.open { width:300px; border-left-width:2px; }
