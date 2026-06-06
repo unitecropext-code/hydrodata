@@ -3982,7 +3982,7 @@
                         <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Avg</span>
                     </div>
                     <div class="map-with-panel">
-                        <div id="yieldMapContainer" style="height:clamp(280px,50vw,520px);background:#e8f5e9;transition:height 0.3s ease;"></div>
+                        <div id="yieldMapPlaceholder" style="flex:1;min-width:0;height:clamp(280px,50vw,520px);background:#e8f5e9;border-radius:var(--radius-lg) 0 0 var(--radius-lg);"></div>
                         <div id="yieldSidePanel">
                             <div class="ysp-header">
                                 <span class="ysp-title" id="yspTitle">—</span>
@@ -11165,75 +11165,79 @@ const VARIETY_COLORS = {
 const STAGE_COLORS = ['#a7f3d0','#34d399','#059669','#d97706','#1a7e22'];
 const STAGE_NAMES  = ['Seedling','Vegetative','Flowering','Fruiting','Harvesting'];
 
-// v37: ResizeObserver handle — kept so we can disconnect the old one before
-// wiring a new one each time the map is (re)created.
-let _yieldMapResizeObserver = null;
+// v37 PORTAL: sync the fixed #yieldMapContainer position over #yieldMapPlaceholder
+let _yieldMapPortalRAF = null;
+function _syncMapPortal() {
+    const ph  = document.getElementById('yieldMapPlaceholder');
+    const mc  = document.getElementById('yieldMapContainer');
+    if (!ph || !mc || mc.style.display === 'none') return;
+    const r = ph.getBoundingClientRect();
+    mc.style.left   = r.left   + 'px';
+    mc.style.top    = r.top    + 'px';
+    mc.style.width  = r.width  + 'px';
+    mc.style.height = r.height + 'px';
+}
+function _startPortalSync() {
+    _stopPortalSync();
+    (function loop() {
+        _syncMapPortal();
+        _yieldMapPortalRAF = requestAnimationFrame(loop);
+    })();
+}
+function _stopPortalSync() {
+    if (_yieldMapPortalRAF) { cancelAnimationFrame(_yieldMapPortalRAF); _yieldMapPortalRAF = null; }
+}
 
 function _destroyYieldMap() {
-    // Disconnect any live ResizeObserver first to avoid callbacks on a dead map.
+    _stopPortalSync();
     if (_yieldMapResizeObserver) {
         _yieldMapResizeObserver.disconnect();
         _yieldMapResizeObserver = null;
     }
     if (_yieldMapInstance) {
-        // Remove the dark-mode listener so it doesn't fire on the dead instance.
         if (window.matchMedia) {
             window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', _onDarkModeChangeTiles);
         }
-        _yieldMapInstance.remove();   // tears down the Leaflet instance + clears the DOM node
+        _yieldMapInstance.remove();
         _yieldMapInstance  = null;
         _yieldMapTileLayer = null;
         _yieldMapMarkers   = [];
         _yieldMapPulseMarkers = [];
     }
+    // Hide the portal container
+    const mc = document.getElementById('yieldMapContainer');
+    if (mc) mc.style.display = 'none';
 }
 
 function initYieldMap() {
-    const container = document.getElementById('yieldMapContainer');
-    if (!container) return;
+    const ph = document.getElementById('yieldMapPlaceholder');
+    const mc = document.getElementById('yieldMapContainer');
+    if (!ph || !mc) return;
 
-    // Always destroy the old instance before creating a new one.
     _destroyYieldMap();
 
-    // ── CRITICAL SIZE GUARD ──────────────────────────────────────────────────
-    // Leaflet measures the container with clientWidth/clientHeight internally.
-    // getBoundingClientRect().width can be non-zero even when clientWidth is 0
-    // (ancestor has overflow:hidden and layout hasn't flushed yet).
-    // Reading clientWidth HERE forces a synchronous layout flush, so the value
-    // we check is exactly what Leaflet will read when L.map() runs moments later.
-    // Also forces offsetParent reflow first to ensure the cascade is settled.
-    //
-    // ALSO: the container has "transition: height 0.3s ease" inline. On first
-    // show the height animates from 0 → clamp(...), so clientHeight can be 0
-    // or mid-transition. Strip the transition before measuring, restore after.
-    const _prevTransition = container.style.transition;
-    container.style.transition = 'none';
-    void container.offsetParent; // force reflow
-    const cw = container.clientWidth;
-    const ch = container.clientHeight;
-    if (cw === 0 || ch === 0) {
-        container.style.transition = _prevTransition; // restore before retrying
+    // Measure the placeholder (which is in the normal flow and always has correct dims)
+    // The portal container is fixed on <body> — zero stacking context interference.
+    const r = ph.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) {
         requestAnimationFrame(() => setTimeout(initYieldMap, 60));
         return;
     }
-    // ────────────────────────────────────────────────────────────────────────
 
-    // Create a fresh Leaflet instance every time the tab is opened.
-    // fadeAnimation/zoomAnimation disabled: their CSS transforms corrupt
-    // _getMapPanePos() if still active on ancestors when L.map() runs.
+    // Position and show the portal container exactly over the placeholder
+    mc.style.left    = r.left   + 'px';
+    mc.style.top     = r.top    + 'px';
+    mc.style.width   = r.width  + 'px';
+    mc.style.height  = r.height + 'px';
+    mc.style.display = 'block';
+
+    // Leaflet now gets a clean container: fixed position, on body, no compositing ancestors.
     _yieldMapInstance = L.map('yieldMapContainer', {
         fadeAnimation: false,
         zoomAnimation: false,
     }).setView([-20.2566, 57.6004], 11);
 
-    // Restore the height transition now that Leaflet has locked its origin.
-    container.style.transition = _prevTransition;
-
-    // Force Leaflet to re-measure after setView in case the style recalc
-    // inside L.map() changed any ancestor dimensions.
-    _yieldMapInstance.invalidateSize({ pan: false });
-
-    // v19: use CARTO dark tiles in dark mode, OSM light tiles otherwise
+    // v19: CARTO dark tiles in dark mode, OSM light tiles otherwise
     const _darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const _initTileURL = _darkMode
         ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -11243,21 +11247,22 @@ function initYieldMap() {
         : '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
     _yieldMapTileLayer = L.tileLayer(_initTileURL, { attribution: _initTileAttr, maxZoom: 17 }).addTo(_yieldMapInstance);
 
-    // Watch for runtime dark/light mode changes and swap tiles live.
     if (window.matchMedia) {
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', _onDarkModeChangeTiles);
     }
 
-    // v37 FIX: Wire a ResizeObserver so that any subsequent container resize
-    // (expand/collapse toggle, window resize, panel slide) calls invalidateSize
-    // with the real final dimensions instead of whatever RAF happened to catch.
+    // Keep the portal in sync as the user scrolls or resizes —
+    // this is what makes the fixed container follow the placeholder perfectly.
+    _startPortalSync();
+
+    // ResizeObserver on the placeholder: when its size changes (expand toggle etc.)
+    // resize the portal and tell Leaflet.
     if (typeof ResizeObserver !== 'undefined') {
         _yieldMapResizeObserver = new ResizeObserver(() => {
-            if (_yieldMapInstance) {
-                _yieldMapInstance.invalidateSize({ pan: false });
-            }
+            _syncMapPortal();
+            if (_yieldMapInstance) _yieldMapInstance.invalidateSize({ pan: false });
         });
-        _yieldMapResizeObserver.observe(container);
+        _yieldMapResizeObserver.observe(ph);
     }
 
     if (_yieldMapData) renderYieldMapLayer(_yieldMapCrop);
@@ -11278,22 +11283,21 @@ let _yieldMapMockMode = false;
 let _mapExpanded = false;
 function toggleMapExpand() {
     _mapExpanded = !_mapExpanded;
-    const c = document.getElementById('yieldMapContainer');
+    // Resize the placeholder — the portal's RAF loop will sync the fixed container automatically.
+    const ph   = document.getElementById('yieldMapPlaceholder');
     const icon = document.getElementById('mapExpandIcon');
     const lbl  = document.getElementById('mapExpandLabel');
     if (_mapExpanded) {
-        c.style.height = '85dvh';
+        if (ph) ph.style.height = '85dvh';
         if (icon) { icon.classList.replace('fa-expand-alt','fa-compress-alt'); }
         if (lbl)  lbl.textContent = 'Collapse';
     } else {
-        c.style.height = 'clamp(280px,50vw,520px)';
+        if (ph) ph.style.height = 'clamp(280px,50vw,520px)';
         if (icon) { icon.classList.replace('fa-compress-alt','fa-expand-alt'); }
         if (lbl)  lbl.textContent = 'Expand';
     }
-    // v37: ResizeObserver fires invalidateSize automatically as the height transition runs,
-    // including at its final value. No manual setTimeout needed; keep a single deferred
-    // call only as a belt-and-suspenders guard for browsers that batch ResizeObserver late.
-    if (_yieldMapInstance) { setTimeout(()=>{ _yieldMapInstance.invalidateSize({ pan:false }); }, 380); }
+    // After the placeholder height settles, tell Leaflet the new size.
+    if (_yieldMapInstance) { setTimeout(()=>{ _syncMapPortal(); _yieldMapInstance.invalidateSize({ pan:false }); }, 380); }
 }
 
 function toggleMockMode() {
@@ -12984,6 +12988,11 @@ document.addEventListener('DOMContentLoaded', () => {
     <img id="ylfLightboxImg" src="" alt="Symptom photo">
     <div id="ylfLightboxCaption"></div>
 </div>
+
+<!-- v37 MAP PORTAL: #yieldMapContainer lives directly on <body> so it is never
+     inside a backdrop-filter / overflow:hidden / composited ancestor stacking context.
+     JS positions it over #yieldMapPlaceholder using getBoundingClientRect + fixed positioning. -->
+<div id="yieldMapContainer" style="position:fixed;display:none;z-index:10;background:#e8f5e9;"></div>
 
 <nav id="growerBottomNav" aria-label="Grower navigation">
     <div class="gbn-inner">
