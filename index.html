@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="MoHydro">
     <meta name="description" content="MoHydroponic Smart Tracker — Real-Time Crop Intelligence for Zone E2 growers">
     <!-- Security: Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <title>MoHydroponic Smart Tracker v35 | Admin &amp; Grower</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -11139,6 +11139,7 @@ let _yieldMapViewMode = 'yield';
 let _yieldMapMonthIdx = 12;
 let _mapAutoplayTimer = null;
 let _yieldMapTileLayer = null;   // v19: tracked so dark-mode listener can swap tiles
+let _yieldMapResizeObserver = null;
 
 // v19: swap Leaflet tile layer when OS dark-mode preference changes
 function _onDarkModeChangeTiles(e) {
