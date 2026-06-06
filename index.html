@@ -5879,7 +5879,7 @@ async function ndgInit(forceRefresh) {
     } catch(err) {
         const c = document.getElementById('ndgCardsContainer');
         if(c) c.innerHTML = `<div style="color:var(--red);padding:1.2rem;font-size:0.85rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.6rem;">
-            <div><i class="fas fa-exclamation-triangle"></i> Could not load nutrient guide: ${escHtml(err.message)}</div>
+            <div><i class="fas fa-exclamation-triangle"></i> Could not load nutrient guide: ${escapeHtml(err.message)}</div>
             <button onclick="ndgInit(true)" style="padding:5px 14px;border-radius:2rem;border:1.5px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:0.8rem;font-family:'Outfit',sans-serif;font-weight:600;">
                 <i class="fas fa-redo"></i> Retry
             </button>
@@ -5970,7 +5970,7 @@ function ndgRenderCrop(cropName) {
 }
 
 function ndgBuildCard(d) {
-    const id        = escHtml(d.name);
+    const id        = escapeHtml(d.name);
     const isExp     = window._ndgExpandedId === d.name;
     const sevClass  = d.severity==='critical'?'ndg-sev-critical':d.severity==='high'?'ndg-sev-high':'ndg-sev-medium';
     const sevLabel  = d.severity==='critical'?'⚠ Critical':d.severity==='high'?'🔴 High':'🟡 Medium';
@@ -5979,15 +5979,15 @@ function ndgBuildCard(d) {
     const detail    = isExp ? `
         <div class="ndg-detail">
             <div class="ndg-section-label"><i class="fas fa-map-marker-alt" style="color:${accent};font-size:0.65rem;"></i> Affected Parts</div>
-            <p class="ndg-text">${escHtml(d.affectedParts)}</p>
+            <p class="ndg-text">${escapeHtml(d.affectedParts)}</p>
             <div class="ndg-section-label"><i class="fas fa-microscope" style="color:${accent};font-size:0.65rem;"></i> Symptoms</div>
-            <p class="ndg-text">${escHtml(d.symptoms)}</p>
+            <p class="ndg-text">${escapeHtml(d.symptoms)}</p>
             <div class="ndg-section-label"><i class="fas fa-eye" style="color:#7c3aed;font-size:0.65rem;"></i> Visual Cue</div>
-            <div class="ndg-visual-cue">${escHtml(d.visualCue)}</div>
+            <div class="ndg-visual-cue">${escapeHtml(d.visualCue)}</div>
             <div class="ndg-section-label"><i class="fas fa-pills" style="color:#16a34a;font-size:0.65rem;"></i> Correction</div>
-            <div class="ndg-correction">${escHtml(d.correctionSolution)}</div>
+            <div class="ndg-correction">${escapeHtml(d.correctionSolution)}</div>
             <div class="ndg-section-label"><i class="fas fa-shield-alt" style="color:#ea580c;font-size:0.65rem;"></i> Prevention</div>
-            <div class="ndg-prevention">${escHtml(d.preventionTips)}</div>
+            <div class="ndg-prevention">${escapeHtml(d.preventionTips)}</div>
         </div>` : '';
     return `
     <div class="ndg-card${isExp?' ndg-expanded':''}" onclick="ndgToggleCard(${JSON.stringify(d.name)})">
@@ -5996,12 +5996,12 @@ function ndgBuildCard(d) {
             <div class="ndg-card-body">
                 <div class="ndg-card-header">
                     <div>
-                        <div class="ndg-card-title">${escHtml(d.name)}</div>
-                        <div class="ndg-nutrient-tag">${escHtml(d.nutrient)}</div>
+                        <div class="ndg-card-title">${escapeHtml(d.name)}</div>
+                        <div class="ndg-nutrient-tag">${escapeHtml(d.nutrient)}</div>
                     </div>
                     <span class="ndg-sev-badge ${sevClass}">${sevLabel}</span>
                 </div>
-                <p class="ndg-preview-text" style="-webkit-line-clamp:${clamp};">${escHtml(d.symptoms)}</p>
+                <p class="ndg-preview-text" style="-webkit-line-clamp:${clamp};">${escapeHtml(d.symptoms)}</p>
                 <div class="ndg-expand-hint">
                     <span>${isExp?'Collapse':'Show details'}</span>
                     <i class="fas fa-chevron-down ndg-expand-icon"></i>
@@ -11021,19 +11021,30 @@ const STAGE_NAMES  = ['Seedling','Vegetative','Flowering','Fruiting','Harvesting
 function initYieldMap() {
     const container = document.getElementById('yieldMapContainer');
     if (!container) return;
-    // FIX: If the container is hidden (offsetParent===null), Leaflet will read 0×0 and
-    // produce the classic tile-grid distortion. Defer until it is visible.
-    if (container.offsetParent === null || container.offsetWidth === 0) {
-        setTimeout(initYieldMap, 120);
+
+    // Use requestAnimationFrame + a size check instead of offsetParent (unreliable with
+    // display:none !important). We wait for the container to have real pixel dimensions
+    // before letting Leaflet measure it, preventing the classic tile-grid distortion.
+    const w = container.getBoundingClientRect().width;
+    if (w === 0) {
+        // Not laid out yet — retry after next paint cycle
+        requestAnimationFrame(() => setTimeout(initYieldMap, 50));
         return;
     }
+
     if (_yieldMapInstance) {
-        // FIX: invalidateSize alone is not enough after a display:none→block transition —
-        // also pan to the target centre so Leaflet re-requests all tiles at correct coords.
+        // Already initialised — just fix the tile layout after display:none→block.
+        // Fire twice: once immediately for a quick repaint, once after the 220ms
+        // tabFadeIn animation fully completes to catch any residual layout shift.
         _yieldMapInstance.invalidateSize({ pan: true });
         _yieldMapInstance.setView([-20.2566, 57.6004], _yieldMapInstance.getZoom());
+        setTimeout(() => {
+            _yieldMapInstance.invalidateSize({ pan: true });
+            _yieldMapInstance.setView([-20.2566, 57.6004], _yieldMapInstance.getZoom());
+        }, 260);
         return;
     }
+
     _yieldMapInstance = L.map('yieldMapContainer').setView([-20.2566, 57.6004], 11);
     // v19: use CARTO dark tiles in dark mode, OSM light tiles otherwise
     const _darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -12102,9 +12113,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tabId === 'varietyPerfTab' && !_vpRawData.length) {
             const msg = document.getElementById('vpStatusMsg'); if (msg) showEl(msg);
         }
-        // FIX: was 80 ms — too short while display:none→block + tabFadeIn animation settles.
-        // 350 ms guarantees the container has a real offsetWidth before Leaflet measures it.
-        if (tabId === 'yieldMapTab') setTimeout(() => { maybeAutoLoadYieldMap(); }, 350);
+        // 400 ms: clears the 220ms tabFadeIn animation + scroll-into-view reflow before
+        // Leaflet measures the container. The RAF+size-check inside initYieldMap is the
+        // real safety net, but starting later means fewer retry cycles needed.
+        if (tabId === 'yieldMapTab') setTimeout(() => { maybeAutoLoadYieldMap(); }, 400);
         if (tabId === 'onlineNowTab') loadOnlineGrowers(false);
     };
 
