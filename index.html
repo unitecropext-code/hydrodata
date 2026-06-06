@@ -5873,25 +5873,151 @@ window._ndgCurrentCrop = 'Tomato';
 window._ndgCurrentSev  = 'all';
 window._ndgExpandedId  = null;
 
+// ── LOCAL FALLBACK: full nutrient deficiency dataset embedded in the app ──
+// Used whenever the backend doesn't return valid data (offline, GAS not deployed,
+// action not yet implemented). The guide always works without a network call.
+const _NDG_LOCAL = (function(){
+    // Field names match ndgBuildCard: name, nutrient, severity, symptoms, visualCue,
+    // correctionSolution, preventionTips, affectedParts, colorHex, crops
+    const mk = (id, name, nutrient, sev, crops, affectedParts, symptoms, visualCue, correctionSolution, preventionTips, colorHex) =>
+        ({id, name, nutrient, severity:sev, crops, affectedParts, symptoms, visualCue, correctionSolution, preventionTips, colorHex: colorHex||'#2ea83c'});
+    const ALL = ['Tomato','Sweet Pepper','English Cucumber'];
+    const TP  = ['Tomato','Sweet Pepper'];
+    const items = [
+        mk('N1','Nitrogen Deficiency','Nitrogen (N)','critical',ALL,
+            'Older leaves, stems',
+            'Uniform yellowing of older (lower) leaves first, progressing upward. Stunted growth, thin stems, reduced fruit set.',
+            'Pale green to yellow lower leaves; purple tinge on stems/petioles in tomato. New growth stays small and pale.',
+            'Raise nitrate-N in nutrient solution. Increase EC by 0.3–0.5 and verify NO₃⁻ is 150–200 ppm. Foliar urea spray (0.5%) for fast response.',
+            'Maintain EC within crop targets. Monitor drainage EC — rising drain EC with low N signals root-zone N lockout.',
+            '#b91c1c'),
+        mk('N2','Phosphorus Deficiency','Phosphorus (P)','high',ALL,
+            'Older leaves, undersides, stems',
+            'Purple/reddish discoloration on undersides of older leaves and stems. Dark green upper surface, dull appearance.',
+            'Purple-red colour on leaf undersides, petioles and stems. In cucumber: leaves curl downward with mottled dark green patches.',
+            'Raise H₂PO₄⁻ to 50–60 ppm. Check pH — P availability crashes above 6.5 and below 5.5. Warm root zone (>18 °C) if cold-induced.',
+            'Keep pH 5.8–6.2. Avoid overwatering which cools root zone and blocks P uptake.',
+            '#7c3aed'),
+        mk('N3','Potassium Deficiency','Potassium (K)','high',ALL,
+            'Leaf margins, older leaves, fruit',
+            'Marginal leaf scorch (brown crispy edges) on older leaves. Weak stems, poor fruit sizing.',
+            'Brown, necrotic margins on lower/mid-canopy leaves. Interveinal chlorosis in advanced stages. Fruit remains small.',
+            'Raise K⁺ to 200–250 ppm. Balance with Ca — K:Ca ratio should be ~2:1. Reduce competing NH₄⁺ to <10 ppm.',
+            'Monitor K through weekly solution analysis. High humidity and low transpiration reduce K uptake — ensure good air circulation.',
+            '#d97706'),
+        mk('N4','Calcium Deficiency','Calcium (Ca)','critical',ALL,
+            'Youngest leaves, growing tips, fruit (blossom end)',
+            'Tip burn on young leaves, blossom-end rot on fruit. Young growing points collapse or die back.',
+            'Necrotic brown margins on newest leaves. In tomato/pepper: dark sunken patches on blossom end of fruit. Cucumber tip burn.',
+            'Raise Ca²⁺ to 150–200 ppm. Ensure good transpiration (ventilate). Foliar CaCl₂ (0.4%) at early fruit set. Ca moves in transpiration stream only.',
+            'Maintain humidity 65–80%. Avoid high K or Mg competing with Ca. Do not allow wilting.',
+            '#b91c1c'),
+        mk('N5','Magnesium Deficiency','Magnesium (Mg)','high',ALL,
+            'Older leaves (interveinal tissue)',
+            'Interveinal chlorosis on older leaves — veins stay green while tissue between turns yellow.',
+            'Classic "green veins, yellow blades" pattern on mid/lower canopy. Leaves may become brittle and curl upward at edges.',
+            'Apply MgSO₄ as foliar spray (0.5–1%) for fast correction. Raise Mg²⁺ in solution to 50–60 ppm. Check K:Mg ratio (<5:1).',
+            'Avoid excessive K⁺ which antagonises Mg uptake. Replenish Mg when using high-K nutrient formulations.',
+            '#d97706'),
+        mk('N6','Iron Deficiency','Iron (Fe)','high',ALL,
+            'Youngest leaves, growing tips',
+            'Interveinal chlorosis on youngest leaves first. New growth is pale yellow to white while veins remain distinctly green.',
+            'Bright yellow new leaves with sharp green vein contrast. Growing tip may bleach white in severe cases.',
+            'Check pH — Fe precipitates above 6.5. Lower to 5.8–6.0. Apply chelated Fe-EDTA/DTPA foliar (0.1%). Verify Fe in solution at 2–3 ppm.',
+            'Maintain pH 5.8–6.2 rigorously. Use chelated iron (Fe-DTPA stable up to pH 7). Avoid bicarbonate buildup in water.',
+            '#d97706'),
+        mk('N7','Manganese Deficiency','Manganese (Mn)','medium',ALL,
+            'Young-mid canopy leaves',
+            'Interveinal chlorosis on young leaves similar to Fe deficiency but less intense. Brown speckling may appear in advanced stage.',
+            'Yellow-green patches between veins on newer leaves. Tiny brown necrotic spots in advanced stage. Less dramatic than Fe deficiency.',
+            'Foliar MnSO₄ spray (0.1–0.2%). Raise solution Mn to 0.5–1 ppm. Lower pH if above 6.5.',
+            'Keep pH below 6.3. Mn and Fe deficiencies often occur together — check both.',
+            '#059669'),
+        mk('N8','Zinc Deficiency','Zinc (Zn)','medium',ALL,
+            'New leaves, shoot tips, internodes',
+            'Small, distorted new leaves. Short internodes, rosette-like growth, mottled younger leaves.',
+            'Stunted new growth with reduced leaf size. Mottled pale green/yellow pattern on young leaves. Zigzag or compressed internode growth.',
+            'Foliar ZnSO₄ or chelated Zn spray (0.05%). Raise solution Zn to 0.1–0.3 ppm. Lower pH if elevated.',
+            'Avoid excess phosphorus which antagonises Zn. Maintain balanced micronutrient programme.',
+            '#059669'),
+        mk('N9','Boron Deficiency','Boron (B)','critical',ALL,
+            'Growing tips, flowers, young fruit',
+            'Growing tips die, flowers abort, fruit deformed or cracked. Leaves thick, brittle, cupped downward.',
+            'Distorted, thickened young leaves. Growing tips turn brown and die. Fruit cracks or develops corky patches on skin.',
+            'Foliar borax spray (0.1% — do not exceed). Raise solution B to 0.3–0.5 ppm. Do not over-correct — B toxicity is easy to induce.',
+            'Maintain consistent watering — drought concentrates B. Avoid over-liming which raises pH and locks out B.',
+            '#b91c1c'),
+        mk('N10','Copper Deficiency','Copper (Cu)','medium',ALL,
+            'Young leaves, growing points',
+            'Wilting of young leaves despite adequate moisture. Leaves dark bluish-green, limp. Poor fruit set.',
+            'Young leaves droop and wilt even when well watered. Pale green to yellow new growth in advanced cases. Limp growing tips.',
+            'Foliar CuSO₄ spray (0.05%). Raise solution Cu to 0.05–0.1 ppm. Very low amounts needed — excess is toxic.',
+            'Avoid excess iron or zinc which antagonise Cu. Use chelated micronutrient mixes.',
+            '#059669'),
+        mk('N11','Blossom-End Rot','Calcium / Water stress','critical',['Tomato','Sweet Pepper'],
+            'Fruit (blossom end)',
+            'Dark, sunken, leathery patch at blossom end of fruit. Affects tomato and pepper. Not caused by Ca absence in solution — a transport issue.',
+            'Black/dark brown collapsed tissue at fruit tip. Internal tissue brown and dry. First truss most affected. Worsens in high-EC, high-temp conditions.',
+            'Improve Ca transport: increase ventilation, avoid water stress, reduce high-humidity nights. Foliar CaCl₂ (0.4%) at first fruit set.',
+            'Consistent irrigation — avoid EC spikes. Ca in solution means nothing if transpiration is too low to move it into fruit.',
+            '#b91c1c'),
+        mk('N12','Tip Burn','Calcium (inner leaf transport)','high',['English Cucumber'],
+            'Inner/young leaves, margins',
+            'Brown, papery margins on inner/young leaves. A local Ca deficiency — Ca cannot reach inner leaves via transpiration stream.',
+            'Crispy brown edges on newest leaves that never fully unfurl. Common in cucumber in humid, low-airflow conditions.',
+            'Increase airflow directly over crop canopy. Foliar CaCl₂. Reduce humidity. Widen plant spacing.',
+            'Keep humidity <80%. Overhead fans. Avoid dense planting that prevents air movement to inner leaves.',
+            '#d97706'),
+        mk('N13','Sulfur Deficiency','Sulfur (S)','medium',ALL,
+            'Young leaves, shoot tips',
+            'Uniform yellowing of young leaves — similar to N deficiency but affects new growth first, not old leaves.',
+            'Pale yellow new leaves with uniform colour loss. Older leaves remain greener. Stunted growth with light green overall appearance.',
+            'Add MgSO₄ or K₂SO₄ to raise SO₄²⁻ to 50–80 ppm. Usually corrects without foliar spray.',
+            'Sulfur deficiency rare in balanced nutrient solutions. Appears when tap water is very low in sulfate.',
+            '#059669'),
+        mk('N14','Molybdenum Deficiency','Molybdenum (Mo)','medium',['Tomato','Sweet Pepper'],
+            'Older/mid-canopy leaves',
+            'Marginal scorch and rolling/cupping of older leaves. In tomato: "whiptail" — leaves become narrow and strappy.',
+            'Interveinal scorch on mid-canopy leaves. Leaf blades curl upward and become strappy/strap-like in severe cases.',
+            'Raise solution pH — Mo becomes available above pH 6.0. Add sodium molybdate at 0.05 ppm if pH is already correct.',
+            'Molybdenum deficiency is almost always pH-induced. Correct pH before adding Mo supplements.',
+            '#059669'),
+    ];
+    // Index by crop
+    const out = {};
+    items.forEach(item => {
+        item.crops.forEach(crop => {
+            if(!out[crop]) out[crop]=[];
+            out[crop].push(item);
+        });
+    });
+    return out;
+})();
+
 async function ndgInit(forceRefresh) {
     const badge = document.getElementById('ndgLoadingBadge');
     if(badge) showEl(badge,'inline-block');
     try {
         const cacheUrl = `${SCRIPT_URL}?action=getNutrientDeficiencyGuide&crop=all`;
         if(forceRefresh) await idbDelete(cacheUrl);
-        const data = await fetchWithIDBCache(`${cacheUrl}&_=${Date.now()}`, 15000, 86400000);
-        if(!data.success || !data.crops) throw new Error(data.error||'Guide data unavailable');
-        window._ndgData   = data.crops;
+        const data = await fetchWithIDBCache(`${cacheUrl}&_=${Date.now()}`, 10000, 86400000);
+        if(data && data.success && data.crops && Object.keys(data.crops).length > 0) {
+            window._ndgData   = data.crops;
+            window._ndgLoaded = true;
+            ndgRenderAll();
+            return;
+        }
+        // Backend returned a response but data was empty/invalid — fall through to local data
+        throw new Error('backend_empty');
+    } catch(err) {
+        // Always fall back to local embedded data — guide must work offline
+        window._ndgData   = _NDG_LOCAL;
         window._ndgLoaded = true;
         ndgRenderAll();
-    } catch(err) {
-        const c = document.getElementById('ndgCardsContainer');
-        if(c) c.innerHTML = `<div style="color:var(--red);padding:1.2rem;font-size:0.85rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.6rem;">
-            <div><i class="fas fa-exclamation-triangle"></i> Could not load nutrient guide: ${escapeHtml(err.message)}</div>
-            <button onclick="ndgInit(true)" style="padding:5px 14px;border-radius:2rem;border:1.5px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:0.8rem;font-family:'Outfit',sans-serif;font-weight:600;">
-                <i class="fas fa-redo"></i> Retry
-            </button>
-        </div>`;
+        // Show a subtle offline notice only on explicit retry, not on first load
+        if(forceRefresh) {
+            toast('Using built-in guide data — server unavailable.', true);
+        }
     } finally {
         if(badge) hideEl(badge);
     }
@@ -11053,29 +11179,46 @@ function initYieldMap() {
     const container = document.getElementById('yieldMapContainer');
     if (!container) return;
 
-    // v37 FIX: Always destroy before recreating.
-    // Reusing a map instance whose container was in display:none — even briefly — risks
-    // Leaflet anchoring tiles at (0,0) of the page instead of the container, because
-    // offsetLeft/offsetTop are captured once at init time and scroll-into-view may still
-    // be animating. Destroying and recreating on every tab-show is cheap and bulletproof.
+    // Always destroy the old instance before creating a new one.
     _destroyYieldMap();
 
-    // Wait until the container has real pixel dimensions (display:none gives 0).
-    // RAF alone isn't enough when scrollIntoView is still animating, so we poll
-    // with a short timeout until width > 0.
-    const w = container.getBoundingClientRect().width;
-    if (w === 0) {
-        requestAnimationFrame(() => setTimeout(initYieldMap, 50));
+    // ── CRITICAL SIZE GUARD ──────────────────────────────────────────────────
+    // Leaflet measures the container with clientWidth/clientHeight internally.
+    // getBoundingClientRect().width can be non-zero even when clientWidth is 0
+    // (ancestor has overflow:hidden and layout hasn't flushed yet).
+    // Reading clientWidth HERE forces a synchronous layout flush, so the value
+    // we check is exactly what Leaflet will read when L.map() runs moments later.
+    // Also forces offsetParent reflow first to ensure the cascade is settled.
+    //
+    // ALSO: the container has "transition: height 0.3s ease" inline. On first
+    // show the height animates from 0 → clamp(...), so clientHeight can be 0
+    // or mid-transition. Strip the transition before measuring, restore after.
+    const _prevTransition = container.style.transition;
+    container.style.transition = 'none';
+    void container.offsetParent; // force reflow
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    if (cw === 0 || ch === 0) {
+        container.style.transition = _prevTransition; // restore before retrying
+        requestAnimationFrame(() => setTimeout(initYieldMap, 60));
         return;
     }
+    // ────────────────────────────────────────────────────────────────────────
 
-    // Create a fresh map instance every time the tab is opened.
+    // Create a fresh Leaflet instance every time the tab is opened.
+    // fadeAnimation/zoomAnimation disabled: their CSS transforms corrupt
+    // _getMapPanePos() if still active on ancestors when L.map() runs.
     _yieldMapInstance = L.map('yieldMapContainer', {
-        // Disable the built-in fade animation: it causes tiles to be positioned
-        // relative to the old (stale) container origin during the animation frame.
         fadeAnimation: false,
         zoomAnimation: false,
     }).setView([-20.2566, 57.6004], 11);
+
+    // Restore the height transition now that Leaflet has locked its origin.
+    container.style.transition = _prevTransition;
+
+    // Force Leaflet to re-measure after setView in case the style recalc
+    // inside L.map() changed any ancestor dimensions.
+    _yieldMapInstance.invalidateSize({ pan: false });
 
     // v19: use CARTO dark tiles in dark mode, OSM light tiles otherwise
     const _darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
