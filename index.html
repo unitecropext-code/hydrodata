@@ -8,7 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="MoHydro">
     <meta name="description" content="MoHydroponic Smart Tracker — Real-Time Crop Intelligence for Zone E2 growers">
-    <title>MoHydroponic Smart Tracker v31 | Admin &amp; Grower</title>
+    <!-- Security: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <title>MoHydroponic Smart Tracker v35 | Admin &amp; Grower</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -166,6 +169,25 @@
         .action-buttons { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .badge { background: var(--green-50); border: 1.5px solid var(--green-200); border-radius: var(--radius-pill); padding: 6px 14px; font-size: 0.8rem; font-weight: 600; color: var(--green-800); display: inline-flex; align-items: center; gap: 6px; }
         .admin-badge { background: linear-gradient(90deg,#d97706,#f59e0b); color: white; border-radius: 1rem; padding: 1px 8px; font-size: 0.7rem; font-weight: 800; margin-left: 4px; }
+        /* ── Nutrient Deficiency Guide (v2.7) ── */
+        .ndg-tab { background:var(--card-bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text); }
+        .ndg-tab:hover { border-color:#7c3aed;color:#7c3aed; }
+        .ndg-tab-active { background:#7c3aed;border-color:#7c3aed;color:#fff; }
+        .ndg-card { background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:0.9rem 1rem;position:relative;overflow:hidden;transition:box-shadow .18s; }
+        .ndg-card:hover { box-shadow:0 4px 18px rgba(124,58,237,0.13); }
+        .ndg-card-accent { position:absolute;top:0;left:0;width:5px;height:100%;border-radius:12px 0 0 12px; }
+        .ndg-card-header { display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:0.55rem; }
+        .ndg-sev-badge { font-size:0.65rem;font-weight:800;padding:2px 8px;border-radius:10px;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;margin-top:1px; }
+        .ndg-sev-critical { background:#fde8e4;color:#b91c1c; }
+        .ndg-sev-high     { background:#fef0c7;color:#92400e; }
+        .ndg-sev-medium   { background:#ede9fe;color:#4c1d95; }
+        .ndg-card-title { font-size:0.88rem;font-weight:700;color:var(--text);line-height:1.3; }
+        .ndg-nutrient-tag { font-size:0.72rem;color:var(--text-muted);font-style:italic;margin-bottom:0.4rem; }
+        .ndg-section-label { font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#7c3aed;margin:0.55rem 0 0.18rem 0; }
+        .ndg-text { font-size:0.78rem;color:var(--text-muted);line-height:1.5;margin:0; }
+        .ndg-visual-cue { background:#f5f3ff;border-left:3px solid #7c3aed;border-radius:0 6px 6px 0;padding:0.35rem 0.6rem;font-size:0.78rem;color:#4c1d95;margin:0.4rem 0;line-height:1.4; }
+        .ndg-correction { background:#f0fdf4;border-left:3px solid #16a34a;border-radius:0 6px 6px 0;padding:0.35rem 0.6rem;font-size:0.78rem;color:#14532d;margin:0.4rem 0;line-height:1.4; }
+        .ndg-prevention { background:#fff7ed;border-left:3px solid #ea580c;border-radius:0 6px 6px 0;padding:0.35rem 0.6rem;font-size:0.78rem;color:#7c2d12;margin:0.4rem 0 0 0;line-height:1.4; }
 
         .stat-title { font-weight: 800; font-size: 1.15rem; color: var(--green-900); border-left: 4px solid var(--green-500); padding-left: 0.8rem; margin-bottom: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
         .live-dashboard-title { font-size: 1.4rem; font-weight: 900; color: var(--green-900); margin: 0 0 1rem 0; padding-bottom: 0.6rem; border-bottom: 2px dashed var(--green-200); display: flex; align-items: center; gap: 10px; }
@@ -416,11 +438,26 @@
         .acp-header {
             display: flex; align-items: center; justify-content: space-between;
             flex-wrap: wrap; gap: 10px;
-            background: linear-gradient(120deg, var(--green-900), var(--green-700));
+            background: linear-gradient(120deg, var(--green-900) 0%, #1a5228 50%, var(--green-800) 100%);
             border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-            padding: 1rem 1.4rem; margin: -1.2rem -1.2rem 0;
+            padding: 0; margin: -1.2rem -1.2rem 0;
+            overflow: hidden;
+            position: relative;
         }
-        @media (min-width: 768px) { .acp-header { margin: -1.6rem -2rem 0; padding: 1.1rem 2rem; } }
+        .acp-header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 80% 0%, rgba(134,239,172,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        @media (min-width: 768px) { .acp-header { margin: -1.6rem -2rem 0; } }
+        .acp-header-top {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px;
+            padding: 0.9rem 1.4rem 0.75rem;
+            width: 100%;
+        }
+        @media (min-width: 768px) { .acp-header-top { padding: 1rem 2rem 0.75rem; } }
         .acp-header-left { display: flex; align-items: center; gap: 10px; }
         .acp-header-icon {
             width: 40px; height: 40px; border-radius: 50%;
@@ -435,68 +472,220 @@
             border-radius: 1rem; padding: 3px 12px; font-size: 0.7rem; font-weight: 900;
             letter-spacing: 0.06em;
         }
+        /* Beautiful category tab strip inside the banner */
+        .acp-banner-tabs {
+            display: flex; align-items: center; width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 8px 10px 10px; gap: 6px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.18));
+        }
+        .acp-banner-tabs::-webkit-scrollbar { display: none; }
+
+        .acp-banner-tab {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 7px; padding: 7px 16px;
+            cursor: pointer; border: 1.5px solid transparent;
+            border-radius: 3rem;
+            font-family: 'Outfit', sans-serif; font-size: 0.72rem; font-weight: 800;
+            letter-spacing: 0.07em; text-transform: uppercase;
+            color: rgba(255,255,255,0.38);
+            background: rgba(255,255,255,0.04);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            white-space: nowrap; flex-shrink: 0;
+            position: relative; overflow: hidden;
+        }
+        .acp-banner-tab::before {
+            content: ''; position: absolute; inset: 0; border-radius: inherit;
+            background: rgba(255,255,255,0); transition: background 0.2s;
+        }
+        .acp-banner-tab:hover::before { background: rgba(255,255,255,0.06); }
+        .acp-banner-tab:active { transform: scale(0.94); }
+
+        .acp-banner-tab i {
+            font-size: 0.82rem; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .acp-banner-tab:hover i { transform: scale(1.2) rotate(-5deg); }
+
+        /* Per-category colours (inactive) */
+        .acp-banner-tab[data-cat="data"]    { color: rgba(134,239,172,0.5); border-color: rgba(134,239,172,0.12); }
+        .acp-banner-tab[data-cat="intel"]   { color: rgba(196,181,253,0.5); border-color: rgba(196,181,253,0.12); }
+        .acp-banner-tab[data-cat="ops"]     { color: rgba(253,230,138,0.5); border-color: rgba(253,230,138,0.12); }
+        .acp-banner-tab[data-cat="monitor"] { color: rgba(252,165,165,0.5); border-color: rgba(252,165,165,0.12); }
+        .acp-banner-tab[data-cat="live"]    { color: rgba(110,231,183,0.5); border-color: rgba(110,231,183,0.12); }
+
+        /* Per-category ACTIVE state — vivid pill */
+        .acp-banner-tab[data-cat="data"].acp-btab-active {
+            color: #052e16; background: linear-gradient(135deg,#86efac,#4ade80);
+            border-color: #4ade80; box-shadow: 0 4px 18px rgba(74,222,128,0.45), 0 0 0 1px rgba(134,239,172,0.3);
+            transform: translateY(-1px);
+        }
+        .acp-banner-tab[data-cat="intel"].acp-btab-active {
+            color: #1e0a46; background: linear-gradient(135deg,#c4b5fd,#a78bfa);
+            border-color: #a78bfa; box-shadow: 0 4px 18px rgba(167,139,250,0.45), 0 0 0 1px rgba(196,181,253,0.3);
+            transform: translateY(-1px);
+        }
+        .acp-banner-tab[data-cat="ops"].acp-btab-active {
+            color: #451a03; background: linear-gradient(135deg,#fde68a,#fbbf24);
+            border-color: #fbbf24; box-shadow: 0 4px 18px rgba(251,191,36,0.45), 0 0 0 1px rgba(253,230,138,0.3);
+            transform: translateY(-1px);
+        }
+        .acp-banner-tab[data-cat="monitor"].acp-btab-active {
+            color: #450a0a; background: linear-gradient(135deg,#fca5a5,#f87171);
+            border-color: #f87171; box-shadow: 0 4px 18px rgba(248,113,113,0.45), 0 0 0 1px rgba(252,165,165,0.3);
+            transform: translateY(-1px);
+        }
+        .acp-banner-tab[data-cat="live"].acp-btab-active {
+            color: #022c22; background: linear-gradient(135deg,#6ee7b7,#34d399);
+            border-color: #34d399; box-shadow: 0 4px 18px rgba(52,211,153,0.45), 0 0 0 1px rgba(110,231,183,0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Live dot on LIVE tab */
+        .acp-btab-dot {
+            width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+            background: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34,197,94,0.3);
+            animation: pulse-glow 1.5s ease-in-out infinite;
+        }
+        .acp-banner-tab[data-cat="live"].acp-btab-active .acp-btab-dot {
+            background: #022c22;
+            box-shadow: 0 0 0 2px rgba(2,44,34,0.3);
+        }
+
+        /* nav card smooth filter animation */
+        .acp-nav-card {
+            transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+                        background 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+        .acp-nav-card.acp-cat-hidden {
+            opacity: 0.18 !important;
+            transform: scale(0.88) !important;
+            pointer-events: none;
+        }
+        .acp-nav-card.acp-cat-highlight {
+            opacity: 1 !important;
+            transform: scale(1.04) !important;
+        }
+
+        /* ALL tab active state */
+        .acp-banner-tab[data-cat="all"].acp-btab-active {
+            color: #0d3d12; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,253,244,0.9));
+            border-color: rgba(255,255,255,0.6);
+            box-shadow: 0 4px 18px rgba(255,255,255,0.2), 0 0 0 1px rgba(255,255,255,0.15);
+            transform: translateY(-1px);
+        }
 
         /* ── Nav card grid ── */
         /* Issue #2 fix — mobile-first horizontal-scroll nav strip */
         /* ── FIX v30: ACP nav grid — mobile-first scrollable row, no text cut-off ── */
+        /* ── v32: REDESIGNED admin panel — grouped, colorful, dynamic cards ── */
         .acp-nav-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            padding: 0.8rem 0 0.4rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 0.8rem 0 0.6rem;
         }
-        @media (min-width: 480px) { .acp-nav-grid { grid-template-columns: repeat(6, 1fr); gap: 7px; } }
-        @media (min-width: 640px) { .acp-nav-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; } }
-        @media (min-width: 768px) { .acp-nav-grid { grid-template-columns: repeat(8, 1fr); } }
-        @media (min-width: 1024px){ .acp-nav-grid { grid-template-columns: repeat(12, 1fr); } }
+        @media (min-width: 480px) { .acp-nav-grid { grid-template-columns: repeat(4, 1fr); gap: 9px; } }
+        @media (min-width: 640px) { .acp-nav-grid { grid-template-columns: repeat(6, 1fr); gap: 10px; } }
+        @media (min-width: 768px) { .acp-nav-grid { grid-template-columns: repeat(6, 1fr); gap: 10px; } }
+        @media (min-width: 1024px){ .acp-nav-grid { grid-template-columns: repeat(12, 1fr); gap: 8px; } }
 
         .acp-nav-card {
             position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            gap: 4px; padding: 10px 4px 8px;
-            border-radius: 0.85rem; border: 2px solid var(--green-100);
-            background: white; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 5px; padding: 12px 6px 10px;
+            border-radius: 1rem; border: 2px solid transparent;
+            background: white; cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
             font-family: 'Outfit', sans-serif; text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            min-height: 72px;
-            /* FIX: prevent overflow/text distortion */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+            min-height: 80px;
             overflow: visible;
             width: 100%;
             touch-action: manipulation;
         }
+        /* Color-coded card categories via data attributes */
+        .acp-nav-card[data-cat="data"]    { border-color: #bbf7d0; background: linear-gradient(145deg,#f0fdf4,#fff); }
+        .acp-nav-card[data-cat="intel"]   { border-color: #c4b5fd; background: linear-gradient(145deg,#faf5ff,#fff); }
+        .acp-nav-card[data-cat="ops"]     { border-color: #fde68a; background: linear-gradient(145deg,#fffbeb,#fff); }
+        .acp-nav-card[data-cat="monitor"] { border-color: #fecaca; background: linear-gradient(145deg,#fff1f2,#fff); }
+        .acp-nav-card[data-cat="live"]    { border-color: #a7f3d0; background: linear-gradient(145deg,#f0fdfa,#fff); }
+
         .acp-nav-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--green-400);
-            box-shadow: 0 6px 18px rgba(25,120,50,0.15);
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
+        .acp-nav-card[data-cat="data"]:hover    { border-color: #4ade80; box-shadow: 0 8px 20px rgba(34,197,94,0.25); }
+        .acp-nav-card[data-cat="intel"]:hover   { border-color: #a78bfa; box-shadow: 0 8px 20px rgba(139,92,246,0.25); }
+        .acp-nav-card[data-cat="ops"]:hover     { border-color: #fbbf24; box-shadow: 0 8px 20px rgba(245,158,11,0.25); }
+        .acp-nav-card[data-cat="monitor"]:hover { border-color: #f87171; box-shadow: 0 8px 20px rgba(239,68,68,0.25); }
+        .acp-nav-card[data-cat="live"]:hover    { border-color: #34d399; box-shadow: 0 8px 20px rgba(16,185,129,0.25); }
+
+        /* Active states - each category has its own gradient */
         .acp-nav-card.active {
-            background: linear-gradient(145deg, var(--green-800), var(--green-600));
-            border-color: var(--green-700);
-            box-shadow: 0 6px 20px rgba(25,100,40,0.35);
-            transform: translateY(-2px);
+            border-color: transparent;
+            transform: translateY(-2px) scale(1.03);
         }
+        .acp-nav-card[data-cat="data"].active    { background: linear-gradient(145deg,#166534,#15803d); box-shadow: 0 8px 24px rgba(22,101,52,0.4); }
+        .acp-nav-card[data-cat="intel"].active   { background: linear-gradient(145deg,#5b21b6,#7c3aed); box-shadow: 0 8px 24px rgba(91,33,182,0.4); }
+        .acp-nav-card[data-cat="ops"].active     { background: linear-gradient(145deg,#92400e,#d97706); box-shadow: 0 8px 24px rgba(146,64,14,0.4); }
+        .acp-nav-card[data-cat="monitor"].active { background: linear-gradient(145deg,#991b1b,#dc2626); box-shadow: 0 8px 24px rgba(153,27,27,0.4); }
+        .acp-nav-card[data-cat="live"].active    { background: linear-gradient(145deg,#065f46,#059669); box-shadow: 0 8px 24px rgba(6,95,70,0.4); }
+        /* fallback for cards without data-cat */
+        .acp-nav-card:not([data-cat]).active {
+            background: linear-gradient(145deg,var(--green-800),var(--green-600));
+            box-shadow: 0 8px 24px rgba(25,100,40,0.4);
+        }
+
         .acp-nav-icon {
-            font-size: 1.2rem; line-height: 1; flex-shrink: 0;
-            color: var(--green-700); transition: color 0.2s;
+            font-size: 1.25rem; line-height: 1; flex-shrink: 0;
+            transition: all 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
         }
-        .acp-nav-card.active .acp-nav-icon { color: rgba(255,255,255,0.9); }
+        /* Default icon color inherits from card category */
+        .acp-nav-card[data-cat="data"]    .acp-nav-icon { color: #16a34a; }
+        .acp-nav-card[data-cat="intel"]   .acp-nav-icon { color: #7c3aed; }
+        .acp-nav-card[data-cat="ops"]     .acp-nav-icon { color: #d97706; }
+        .acp-nav-card[data-cat="monitor"] .acp-nav-icon { color: #dc2626; }
+        .acp-nav-card[data-cat="live"]    .acp-nav-icon { color: #059669; }
+        .acp-nav-card:not([data-cat])     .acp-nav-icon { color: var(--green-700); }
+        .acp-nav-card.active .acp-nav-icon { color: rgba(255,255,255,0.95) !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3)); }
+
         .acp-nav-label {
-            /* FIX: no text wrapping issues — allow natural line breaks, no overflow:hidden */
-            font-size: 0.58rem; font-weight: 800; color: var(--green-900);
-            line-height: 1.2; text-transform: uppercase; letter-spacing: 0.03em;
+            font-size: 0.6rem; font-weight: 800; line-height: 1.15;
+            text-transform: uppercase; letter-spacing: 0.04em;
             transition: color 0.2s;
-            word-break: break-word;
-            hyphens: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             max-width: 100%;
+            display: block;
         }
-        .acp-nav-card.active .acp-nav-label { color: white; }
+        .acp-nav-card[data-cat="data"]    .acp-nav-label { color: #166534; }
+        .acp-nav-card[data-cat="intel"]   .acp-nav-label { color: #5b21b6; }
+        .acp-nav-card[data-cat="ops"]     .acp-nav-label { color: #92400e; }
+        .acp-nav-card[data-cat="monitor"] .acp-nav-label { color: #991b1b; }
+        .acp-nav-card[data-cat="live"]    .acp-nav-label { color: #065f46; }
+        .acp-nav-card:not([data-cat])     .acp-nav-label { color: var(--green-900); }
+        .acp-nav-card.active .acp-nav-label { color: rgba(255,255,255,0.95) !important; }
+
+        /* Category group label strip above nav */
         .acp-nav-dot {
-            position: absolute; top: 6px; right: 7px;
-            width: 8px; height: 8px; border-radius: 50%;
-            background: var(--red); border: 1.5px solid white;
-            display: none;
+            position: absolute; top: 7px; right: 8px;
+            width: 9px; height: 9px; border-radius: 50%;
+            background: var(--red); border: 2px solid white;
+            display: none; animation: pulse-glow 1.5s ease-in-out infinite;
         }
         .acp-nav-dot.show { display: block; }
+        /* "New" badge on card */
+        .acp-nav-badge {
+            position: absolute; top: -5px; right: -5px;
+            background: linear-gradient(135deg,#dc2626,#f87171);
+            color: white; font-size: 0.5rem; font-weight: 900;
+            border-radius: 1rem; padding: 1px 5px; border: 1.5px solid white;
+            letter-spacing: 0.04em; text-transform: uppercase;
+        }
 
         /* ── Active tab content ── */
         .acp-content-area {
@@ -649,8 +838,8 @@
         }
 
         /* ── Week Yield Cards ─────────────────────────────────── */
-        .week-yield-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; margin-top: 0.4rem; }
-        @media (min-width: 520px) { .week-yield-grid { grid-template-columns: repeat(4, 1fr); } }
+        .week-yield-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 0.4rem; }
+        @media (min-width: 560px) { .week-yield-grid { grid-template-columns: repeat(4, 1fr); } }
         .week-yield-card {
             background: linear-gradient(135deg, #eaf7e6, #d5ecc8);
             border: 1.5px solid var(--green-200); border-radius: 1rem;
@@ -1286,6 +1475,69 @@
         .activity-log-stats { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:0.8rem; }
         .log-stat-chip { background:var(--green-50); border:1.5px solid var(--green-100); border-radius:var(--radius-pill); padding:4px 12px; font-size:0.75rem; font-weight:700; color:var(--green-800); display:inline-flex; align-items:center; gap:5px; }
 
+        /* ── Grower Pest Report ── */
+        .grower-pest-report-btn {
+            width: 100%; display: flex; align-items: center; gap: 10px;
+            background: linear-gradient(100deg, #fef2f2, #fff5f5);
+            border: 2px dashed #fca5a5; border-radius: var(--radius-lg);
+            padding: 0.85rem 1.2rem; cursor: pointer;
+            font-family: 'Outfit', sans-serif; font-size: 0.92rem; font-weight: 700;
+            color: #b91c1c; transition: all 0.2s;
+        }
+        .grower-pest-report-btn:hover { background: #fee2e2; border-color: #f87171; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(220,38,38,0.15); }
+        .grower-pest-report-btn i { font-size: 1.1rem; color: #dc2626; }
+        .gpr-badge { background: #dc2626; color: white; border-radius: 1rem; padding: 1px 8px; font-size: 0.64rem; font-weight: 900; letter-spacing: 0.06em; margin-left: auto; }
+        .gpr-sev-option {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: var(--radius-pill);
+            border: 1.5px solid #fca5a5; background: #fff5f5;
+            font-size: 0.82rem; font-weight: 600; cursor: pointer;
+            font-family: 'Outfit', sans-serif; transition: all 0.18s;
+        }
+        .gpr-sev-option:has(input:checked) { background: #fee2e2; border-color: #f87171; color: #7f1d1d; }
+        .gpr-sev-option input[type=radio] { display: none; }
+        .gpr-photo-area {
+            border: 2px dashed #fca5a5; border-radius: 1rem; padding: 1rem;
+            text-align: center; background: #fff5f5; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .gpr-photo-area:hover { border-color: #dc2626; background: #fee2e2; }
+        .gpr-photo-thumb { position: relative; width: 72px; height: 72px; border-radius: 0.6rem; overflow: hidden; border: 1.5px solid #fca5a5; }
+        .gpr-photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .gpr-photo-thumb .gpr-remove-photo { position: absolute; top: 3px; right: 3px; background: #dc2626; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        /* Admin grower reports tab card in pest alert tab */
+        .grower-report-item {
+            background: #fff5f5; border: 1.5px solid #fca5a5; border-radius: var(--radius-lg);
+            padding: 1rem; margin-bottom: 0.8rem; position: relative;
+        }
+        .grower-report-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .grower-report-name { font-weight: 800; font-size: 0.9rem; color: #7f1d1d; }
+        .grower-report-ts { font-size: 0.72rem; color: #aaa; margin-left: auto; }
+        .grower-report-severity { padding: 2px 10px; border-radius: 1rem; font-size: 0.72rem; font-weight: 800; }
+        .sev-low  { background: #fef3c7; color: #78350f; }
+        .sev-medium { background: #fed7aa; color: #92400e; }
+        .sev-high { background: #fecaca; color: #7f1d1d; }
+        .grower-report-body { font-size: 0.84rem; color: #555; line-height: 1.5; margin-bottom: 0.5rem; }
+        .grower-report-meta { font-size: 0.76rem; color: #888; display: flex; gap: 10px; flex-wrap: wrap; }
+        .grower-report-photos { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 0.5rem; }
+        .grower-report-photos img { width: 64px; height: 64px; object-fit: cover; border-radius: 0.5rem; border: 1.5px solid #fca5a5; cursor: pointer; }
+        .grower-report-ack-btn { margin-top: 0.7rem; background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; border-radius: var(--radius-pill); padding: 5px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.18s; display: inline-flex; align-items: center; gap: 5px; }
+        .grower-report-ack-btn:hover { background: #a7f3d0; }
+        .grower-report-acked { background: #f0fdf4; border-color: #86efac; }
+        .grower-report-acked-badge { display: inline-flex; align-items: center; gap: 4px; background: #d1fae5; color: #065f46; border-radius: 1rem; padding: 2px 10px; font-size: 0.72rem; font-weight: 800; }
+
+        .hwp-upload-zone {
+            border: 2px dashed var(--green-300); border-radius: 0.8rem;
+            padding: 0.85rem 1rem; text-align: center; background: white;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+        }
+        .hwp-upload-zone:hover { border-color: var(--green-600); background: var(--green-50); }
+        .hwp-thumb { position: relative; width: 72px; height: 72px; border-radius: 0.6rem; overflow: hidden; border: 2px solid var(--green-300); flex-shrink: 0; }
+        .hwp-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .hwp-thumb button { position: absolute; top: 3px; right: 3px; background: var(--red); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 0.58rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; }
+        .hwp-verified-badge { display: inline-flex; align-items: center; gap: 4px; background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; border-radius: 1rem; padding: 2px 8px; font-size: 0.7rem; font-weight: 800; }
+
         .pest-alert-list { display:flex; flex-direction:column; gap:1rem; margin-top:1rem; }
         .pest-alert-card { background:white; border:1.5px solid #fca5a5; border-radius:var(--radius-lg); padding:1rem; position:relative; }
         .pest-alert-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.8rem; gap:8px; flex-wrap:wrap; }
@@ -1418,7 +1670,7 @@
         #vpTable .vp-perf-bar { display:inline-flex;align-items:center;gap:6px;width:100%; }
         #vpTable .vp-perf-track { flex:1;height:8px;background:#e8f5e2;border-radius:4px;overflow:hidden; }
         #vpTable .vp-perf-fill { height:100%;border-radius:4px;transition:width 0.4s; }
-        .vp-perf-label { font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:1rem;white-space:nowrap; }
+        .vp-perf-label { font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:1rem;white-space:nowrap;flex-shrink:0;min-width:46px;text-align:center;display:inline-block; }
         .vp-perf-high { background:#d1fae5;color:#065f46; }
         .vp-perf-med  { background:#fef3c7;color:#92400e; }
         .vp-perf-low  { background:#fee2e2;color:#7f1d1d; }
@@ -2381,6 +2633,8 @@
             .acp-nav-card { background: #0d2410; color: var(--green-800); border-color: var(--green-200); }
             .acp-nav-card.active { background: var(--green-800); color: #0a1a0d; }
             .admin-tab-content { background: transparent; }
+            .acp-banner-tab { color: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.06); }
+            .acp-banner-tab:hover { background: rgba(255,255,255,0.05); }
 
             /* ── Tables ── */
             .top-crops-table td,
@@ -2544,6 +2798,31 @@
                 <i class="fas fa-sign-in-alt"></i> <span data-i18n="login.btn">Sign In</span>
             </button>
             <div id="loginError" role="alert" aria-live="polite" style="color:#d9534f;margin-top:1rem;font-size:0.88rem;min-height:1.2em;display:flex;align-items:center;gap:6px;justify-content:center;"></div>
+            <!-- GDPR Notice -->
+            <div style="margin-top:1.1rem;padding:0.65rem 0.9rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:0.75rem;font-size:0.72rem;color:#555;line-height:1.5;text-align:left;">
+                <strong style="color:var(--green-800);">🔒 Privacy Notice:</strong> By signing in you agree to the collection and use of your agricultural data solely for Zone E2 crop management purposes. Data is stored securely and not shared with third parties. Session data is cleared on logout.
+            </div>
+        </div>
+    </div>
+
+    <!-- RE-AUTH MODAL (session expiry prompt) -->
+    <div id="reauthOverlay" style="display:none;position:fixed;inset:0;background:rgba(10,30,15,0.85);backdrop-filter:blur(12px);z-index:3000;align-items:center;justify-content:center;padding:16px;">
+        <div style="background:white;max-width:380px;width:100%;border-radius:1.5rem;padding:2rem 1.8rem;text-align:center;box-shadow:0 30px 60px rgba(0,0,0,0.4);animation:popIn 0.3s ease-out;">
+            <div style="width:52px;height:52px;background:linear-gradient(135deg,#d97706,#f59e0b);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 6px 18px rgba(217,119,6,0.35);">
+                <i class="fas fa-clock" style="color:white;font-size:1.4rem;"></i>
+            </div>
+            <div style="font-size:1.25rem;font-weight:900;color:var(--green-900);margin-bottom:0.3rem;">Session Expired</div>
+            <div style="font-size:0.82rem;color:#777;margin-bottom:1.4rem;line-height:1.5;">Your session has timed out for security. Please re-enter your password to continue.</div>
+            <div id="reauthUsername" style="font-size:0.88rem;font-weight:700;color:var(--green-800);margin-bottom:0.8rem;"></div>
+            <div style="position:relative;margin-bottom:0.9rem;">
+                <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--green-400);font-size:0.9rem;"></i>
+                <input type="password" id="reauthPassword" placeholder="Re-enter password" autocomplete="current-password"
+                    style="width:100%;padding:0.9rem 1rem 0.9rem 2.6rem;border:1.5px solid var(--green-200);border-radius:3rem;font-size:0.95rem;font-family:'Outfit',sans-serif;outline:none;" />
+            </div>
+            <div id="reauthError" style="color:#d9534f;font-size:0.82rem;min-height:1.2em;margin-bottom:0.8rem;"></div>
+            <button id="reauthBtn" class="btn" style="width:100%;justify-content:center;font-size:0.95rem;padding:12px;">
+                <i class="fas fa-sign-in-alt"></i> Re-authenticate
+            </button>
         </div>
     </div>
 
@@ -2683,6 +2962,94 @@
         <!-- PEST ALERT BANNER — appears below MoHydroponic banner and E-News widget -->
         <div id="pestAlertBanner" style="display:none;margin-bottom:1.4rem;"></div>
 
+        <!-- GROWER PEST REPORT BUTTON — visible only to growers -->
+        <div id="growerPestReportBar" style="display:none;margin-bottom:1.2rem;">
+            <button class="grower-pest-report-btn" onclick="openGrowerPestReport()">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Report a Pest / Disease Incident</span>
+                <span class="gpr-badge">NEW</span>
+            </button>
+        </div>
+
+        <!-- GROWER PEST REPORT MODAL -->
+        <div id="growerPestReportOverlay" class="modal-overlay" style="display:none;">
+            <div class="modal-container" style="max-width:520px;">
+                <div class="modal-header-sticky">
+                    <div class="modal-title" style="color:#c0392b;">
+                        <i class="fas fa-bug" style="color:#dc2626;"></i> Report Pest / Disease Incident
+                    </div>
+                </div>
+                <div class="modal-body-scroll" style="padding:1.2rem;">
+                    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:1rem;padding:0.9rem 1rem;margin-bottom:1.2rem;font-size:0.82rem;color:#7f1d1d;line-height:1.5;">
+                        <i class="fas fa-info-circle" style="color:#dc2626;"></i>
+                        Your report will be sent directly to the Zone E2 Admin for review. You will receive a notification when it is acknowledged.
+                    </div>
+                    <div class="form-group">
+                        <label>Affected Crop *</label>
+                        <select id="gpr_crop" style="padding:10px 14px;border-radius:2rem;border:1.5px solid #fca5a5;font-family:'Outfit',sans-serif;font-size:0.9rem;width:100%;outline:none;">
+                            <option value="">-- Select Crop --</option>
+                            <option>Tomato</option><option>Sweet Pepper</option><option>English Cucumber</option>
+                            <option>Lettuce</option><option>Okra</option><option>Eggplant</option>
+                            <option>Melon</option><option>Cabbage</option><option>Cauliflower</option>
+                            <option>Greens</option><option>Shallot</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Greenhouse Number</label>
+                        <input type="text" id="gpr_gh" placeholder="e.g. GH-01" style="padding:10px 14px;border-radius:2rem;border:1.5px solid #fca5a5;font-family:'Outfit',sans-serif;font-size:0.9rem;width:100%;outline:none;">
+                    </div>
+                    <div class="form-group">
+                        <label>Type of Problem *</label>
+                        <select id="gpr_type" style="padding:10px 14px;border-radius:2rem;border:1.5px solid #fca5a5;font-family:'Outfit',sans-serif;font-size:0.9rem;width:100%;outline:none;">
+                            <option value="">-- Select Type --</option>
+                            <option value="pest">🐛 Pest (insect / mite)</option>
+                            <option value="disease">🍄 Disease (fungal / bacterial / viral)</option>
+                            <option value="nutrient">💧 Nutrient / Physiological disorder</option>
+                            <option value="other">❓ Other / Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Severity *</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+                            <label class="gpr-sev-option" id="gpr_sev_low">
+                                <input type="radio" name="gpr_severity" value="low">
+                                <span>🟡 Low — few plants</span>
+                            </label>
+                            <label class="gpr-sev-option" id="gpr_sev_med">
+                                <input type="radio" name="gpr_severity" value="medium">
+                                <span>🟠 Medium — spreading</span>
+                            </label>
+                            <label class="gpr-sev-option" id="gpr_sev_high">
+                                <input type="radio" name="gpr_severity" value="high">
+                                <span>🔴 High — majority affected</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description *</label>
+                        <textarea id="gpr_desc" rows="3" placeholder="Describe what you see: symptoms, affected parts, when it started..." style="width:100%;padding:10px 14px;border-radius:1rem;border:1.5px solid #fca5a5;font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;resize:vertical;min-height:80px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Photo Evidence (optional — up to 2)</label>
+                        <div class="gpr-photo-area" onclick="document.getElementById('gpr_photo_input').click()">
+                            <input type="file" id="gpr_photo_input" accept="image/*" multiple style="display:none;" onchange="gprHandlePhotos(event)">
+                            <i class="fas fa-camera" style="font-size:1.4rem;color:#dc2626;margin-bottom:4px;"></i>
+                            <div style="font-size:0.8rem;font-weight:700;color:#7f1d1d;">Tap to add photos</div>
+                            <div style="font-size:0.7rem;color:#aaa;">JPG, PNG, WebP — max 4MB each</div>
+                        </div>
+                        <div id="gpr_photo_previews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+                    </div>
+                    <div id="gpr_error" style="color:#dc2626;font-size:0.84rem;margin-top:0.5rem;min-height:1.2em;"></div>
+                </div>
+                <div class="modal-footer-sticky">
+                    <button class="btn-secondary" onclick="closeGrowerPestReport()"><i class="fas fa-times"></i> Cancel</button>
+                    <button id="gpr_submitBtn" class="btn" style="background:linear-gradient(100deg,#b91c1c,#dc2626);box-shadow:0 4px 12px rgba(185,28,28,0.3);" onclick="submitGrowerPestReport()">
+                        <i class="fas fa-paper-plane"></i> Submit Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- E-NEWS ITEM ADD/EDIT MODAL -->
         <div id="hnItemModal">
             <div class="hn-modal-card">
@@ -2803,78 +3170,103 @@
 
             <!-- ═══ HEADER ═══ -->
             <div class="acp-header">
-                <div class="acp-header-left">
-                    <div class="acp-header-icon"><i class="fas fa-shield-alt"></i></div>
-                    <div>
-                        <div class="acp-header-title" data-i18n="acp.title">Admin Control Panel</div>
-                        <div class="acp-header-sub" data-i18n="acp.sub">Zone E2 · MoHydroponic Smart Tracker</div>
+                <div class="acp-header-top">
+                    <div class="acp-header-left">
+                        <div class="acp-header-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div>
+                            <div class="acp-header-title" data-i18n="acp.title">Admin Control Panel</div>
+                            <div class="acp-header-sub" data-i18n="acp.sub">Zone E2 · MoHydroponic Smart Tracker</div>
+                        </div>
                     </div>
+                    <span class="acp-admin-badge">ADMIN ONLY</span>
                 </div>
-                <span class="acp-admin-badge">ADMIN ONLY</span>
+                <!-- Beautiful category pill strip -->
+                <div class="acp-banner-tabs" id="acpBannerTabs">
+                    <button class="acp-banner-tab" data-cat="all" onclick="acpBannerTabClick(this,'all')" style="color:rgba(255,255,255,0.4);border-color:rgba(255,255,255,0.1);">
+                        <i class="fas fa-th"></i> ALL
+                    </button>
+                    <button class="acp-banner-tab acp-btab-active" data-cat="data" onclick="acpBannerTabClick(this,'data')">
+                        <i class="fas fa-chart-bar"></i> DATA
+                    </button>
+                    <button class="acp-banner-tab" data-cat="intel" onclick="acpBannerTabClick(this,'intel')">
+                        <i class="fas fa-brain"></i> INTELLIGENCE
+                    </button>
+                    <button class="acp-banner-tab" data-cat="ops" onclick="acpBannerTabClick(this,'ops')">
+                        <i class="fas fa-cogs"></i> OPERATIONS
+                    </button>
+                    <button class="acp-banner-tab" data-cat="monitor" onclick="acpBannerTabClick(this,'monitor')">
+                        <i class="fas fa-bug"></i> MONITORING
+                    </button>
+                    <button class="acp-banner-tab" data-cat="live" onclick="acpBannerTabClick(this,'live')">
+                        <i class="fas fa-satellite-dish"></i> LIVE
+                        <span class="acp-btab-dot"></span>
+                    </button>
+                </div>
             </div>
 
             <!-- ═══ NAV CARD GRID — all tabs visible at once ═══ -->
             <div class="acp-nav-grid" id="acpNavGrid">
 
-                <button class="acp-nav-card active" data-tab="searchTab" onclick="acpSwitch(this,'searchTab')">
+                <button class="acp-nav-card active" data-tab="searchTab" data-cat="data" onclick="acpSwitch(this,'searchTab')">
                     <i class="acp-nav-icon fas fa-search"></i>
-                    <span class="acp-nav-label" data-i18n="nav.acp.search">Search<br>Growers</span>
+                    <span class="acp-nav-label">Search</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="completedCyclesTab" onclick="acpSwitch(this,'completedCyclesTab')">
+                <button class="acp-nav-card" data-tab="completedCyclesTab" data-cat="data" onclick="acpSwitch(this,'completedCyclesTab')">
                     <span class="acp-nav-dot" id="completedDot"></span>
                     <i class="acp-nav-icon fas fa-check-double"></i>
-                    <span class="acp-nav-label">Completed<br>Cycles</span>
+                    <span class="acp-nav-label">Completed</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="registerTab" onclick="acpSwitch(this,'registerTab')">
+                <button class="acp-nav-card" data-tab="registerTab" data-cat="ops" onclick="acpSwitch(this,'registerTab')">
                     <i class="acp-nav-icon fas fa-user-plus"></i>
-                    <span class="acp-nav-label" data-i18n="nav.acp.register">Register<br>User</span>
+                    <span class="acp-nav-label">Register</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="adminGHTab" onclick="acpSwitch(this,'adminGHTab')">
+                <button class="acp-nav-card" data-tab="adminGHTab" data-cat="data" onclick="acpSwitch(this,'adminGHTab')">
                     <i class="acp-nav-icon fas fa-seedling"></i>
-                    <span class="acp-nav-label">GH<br>Details</span>
+                    <span class="acp-nav-label">GH Data</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="yieldCalcTab" onclick="acpSwitch(this,'yieldCalcTab')">
+                <button class="acp-nav-card" data-tab="yieldCalcTab" data-cat="intel" onclick="acpSwitch(this,'yieldCalcTab')">
                     <i class="acp-nav-icon fas fa-calculator"></i>
-                    <span class="acp-nav-label">Yield<br>Calculator</span>
+                    <span class="acp-nav-label">Yield Calc</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="varietyPerfTab" onclick="acpSwitch(this,'varietyPerfTab')">
-                    <i class="acp-nav-icon fas fa-chart-bar" style="color:#259132;"></i>
-                    <span class="acp-nav-label" data-i18n="nav.acp.variety">Variety<br>Performance</span>
+                <button class="acp-nav-card" data-tab="varietyPerfTab" data-cat="intel" onclick="acpSwitch(this,'varietyPerfTab')">
+                    <i class="acp-nav-icon fas fa-chart-bar"></i>
+                    <span class="acp-nav-label">Variety Perf</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="decisionSupportTab" onclick="acpSwitch(this,'decisionSupportTab')">
-                    <i class="acp-nav-icon fas fa-brain" style="color:#7c3aed;"></i>
-                    <span class="acp-nav-label">Decision<br>Support</span>
+                <button class="acp-nav-card" data-tab="decisionSupportTab" data-cat="intel" onclick="acpSwitch(this,'decisionSupportTab')">
+                    <i class="acp-nav-icon fas fa-brain"></i>
+                    <span class="acp-nav-label">Decision</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="activityLogTab" onclick="acpSwitch(this,'activityLogTab')">
+                <button class="acp-nav-card" data-tab="activityLogTab" data-cat="ops" onclick="acpSwitch(this,'activityLogTab')">
                     <i class="acp-nav-icon fas fa-history"></i>
-                    <span class="acp-nav-label">Activity<br>Log</span>
+                    <span class="acp-nav-label">Activity</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="pestAlertTab" onclick="acpSwitch(this,'pestAlertTab')">
-                    <i class="acp-nav-icon fas fa-bug" style="color:#c0392b;"></i>
-                    <span class="acp-nav-label">Pest<br>Alert</span>
+                <button class="acp-nav-card" data-tab="pestAlertTab" data-cat="monitor" onclick="acpSwitch(this,'pestAlertTab')">
+                    <i class="acp-nav-icon fas fa-bug"></i>
+                    <span class="acp-nav-label">Pest Alert</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="ylfReportTab" onclick="acpSwitch(this,'ylfReportTab')">
-                    <i class="acp-nav-icon fas fa-chart-bar" style="color:#d97706;"></i>
-                    <span class="acp-nav-label">YLF<br>Report</span>
+                <button class="acp-nav-card" data-tab="ylfReportTab" data-cat="monitor" onclick="acpSwitch(this,'ylfReportTab')">
+                    <i class="acp-nav-icon fas fa-chart-area"></i>
+                    <span class="acp-nav-label">YLF Report</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="yieldMapTab" onclick="acpSwitch(this,'yieldMapTab')">
-                    <i class="acp-nav-icon fas fa-map-marked-alt" style="color:var(--teal);"></i>
-                    <span class="acp-nav-label">Yield<br>Map</span>
+                <button class="acp-nav-card" data-tab="yieldMapTab" data-cat="live" onclick="acpSwitch(this,'yieldMapTab')">
+                    <i class="acp-nav-icon fas fa-map-marked-alt"></i>
+                    <span class="acp-nav-label">Yield Map</span>
                 </button>
 
-                <button class="acp-nav-card" data-tab="onlineNowTab" onclick="acpSwitch(this,'onlineNowTab')">
-                    <i class="acp-nav-icon fas fa-circle" style="color:#22c55e;font-size:0.6rem;position:relative;top:-2px;"></i><i class="acp-nav-icon fas fa-users" style="margin-left:-4px;"></i>
-                    <span class="acp-nav-label">Online<br>Now</span>
+                <button class="acp-nav-card" data-tab="onlineNowTab" data-cat="live" onclick="acpSwitch(this,'onlineNowTab')">
+                    <i class="acp-nav-icon fas fa-users"></i>
+                    <span class="acp-nav-dot" id="onlineDot" style="display:block;background:#22c55e;animation:pulse-glow 1.5s ease-in-out infinite;"></span>
+                    <span class="acp-nav-label">Online Now</span>
                 </button>
 
             </div><!-- /.acp-nav-grid -->
@@ -2915,6 +3307,9 @@
                             </button>
                             <span class="admin-search-results-label">Records for: <span class="admin-search-user-pill"><i class="fas fa-user"></i> <span id="adminSearchedUsernameText"></span></span></span>
                             <span id="adminSearchRecordCount" style="font-size:0.82rem;color:#555;"></span>
+                            <button class="btn-secondary" onclick="exportAdminSearchCSV()" style="font-size:0.78rem;padding:6px 12px;margin-left:auto;" title="Export as CSV">
+                                <i class="fas fa-file-csv"></i> Export CSV
+                            </button>
                         </div>
                         <div class="legend-bar">
                             <strong>Legend:</strong>
@@ -2971,7 +3366,7 @@
                         <div class="form-group"><label>Grower Name *</label><input type="text" id="reg_growerName" placeholder="e.g. SURNAME Name" autocomplete="name"><div class="field-error-msg" id="reg_growerNameErr" style="display:none;"></div></div>
                         <div class="form-group"><label>Zone</label><select id="reg_zone"><option value="">-- Select Zone --</option></select></div>
                         <div class="form-group"><label>Locality</label><select id="reg_locality"><option value="">-- Select Locality --</option></select></div>
-                        <div class="form-group"><label>Phone Number *</label><input type="tel" id="reg_phone" placeholder="+230 XXXX XXXX" autocomplete="tel"><div class="field-error-msg" id="reg_phoneErr" style="display:none;"></div></div>
+                        <div class="form-group"><label>Phone Number <span style="font-size:0.75rem;font-weight:500;color:#aaa;">(optional)</span></label><input type="tel" id="reg_phone" placeholder="+230 XXXX XXXX" autocomplete="tel"><div class="field-error-msg" id="reg_phoneErr" style="display:none;"></div></div>
                         <div class="form-group" style="grid-column:1/-1;"><label>Notes / Remarks (optional)</label><textarea id="reg_notes" placeholder="Any additional details such as Sheltered Farming Scheme beneficiary..."></textarea></div>
                     </div>
                     <div class="register-actions">
@@ -3128,6 +3523,58 @@
                             <div class="yr-range" id="yr_range">—</div>
                             <div class="yr-factors" id="yr_factorsSummary">—</div>
                             <div id="yr_riskBadge" class="yr-risk low">LOW RISK</div>
+                        </div>
+
+                        <!-- ── PROFITABILITY P&L CALCULATOR ── -->
+                        <div id="plCalcSection" style="display:none;margin-top:1.2rem;background:linear-gradient(135deg,#f0fdf4,#e6f7ec);border:1.5px solid var(--green-300);border-radius:var(--radius-lg);padding:1.2rem;">
+                            <div style="font-weight:800;font-size:1rem;color:var(--green-900);margin-bottom:0.9rem;display:flex;align-items:center;gap:8px;">
+                                <i class="fas fa-coins" style="color:var(--amber);"></i> Profitability Calculator <span style="font-size:0.72rem;font-weight:600;color:#888;margin-left:4px;">(batch P&L estimate)</span>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:0.8rem;">
+                                <div class="form-group" style="margin:0;">
+                                    <label style="font-size:0.75rem;">🌱 Substrate cost (MUR/m²)</label>
+                                    <input type="number" id="pl_substrate" inputmode="decimal" placeholder="e.g. 120" min="0" step="1" value="120" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label style="font-size:0.75rem;">💧 Water &amp; nutrients (MUR/m²/month)</label>
+                                    <input type="number" id="pl_water" inputmode="decimal" placeholder="e.g. 45" min="0" step="1" value="45" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label style="font-size:0.75rem;">👷 Labour (MUR/m²/month)</label>
+                                    <input type="number" id="pl_labour" inputmode="decimal" placeholder="e.g. 60" min="0" step="1" value="60" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label style="font-size:0.75rem;">🏗️ Overhead / other (MUR/m²/month)</label>
+                                    <input type="number" id="pl_overhead" inputmode="decimal" placeholder="e.g. 30" min="0" step="1" value="30" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
+                                </div>
+                            </div>
+                            <div id="plResultPanel" style="display:none;background:linear-gradient(135deg,#0d3d12,#136b1e);color:white;border-radius:1rem;padding:1.1rem 1.2rem;margin-top:0.5rem;">
+                                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;text-align:center;margin-bottom:0.8rem;">
+                                    <div>
+                                        <div style="font-size:0.68rem;font-weight:700;opacity:0.75;letter-spacing:0.06em;text-transform:uppercase;">Revenue</div>
+                                        <div id="pl_revenue" style="font-size:1.2rem;font-weight:900;color:#86efac;">—</div>
+                                        <div style="font-size:0.64rem;opacity:0.65;">MUR (est.)</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:0.68rem;font-weight:700;opacity:0.75;letter-spacing:0.06em;text-transform:uppercase;">Total Cost</div>
+                                        <div id="pl_totalcost" style="font-size:1.2rem;font-weight:900;color:#fca5a5;">—</div>
+                                        <div style="font-size:0.64rem;opacity:0.65;">MUR (est.)</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:0.68rem;font-weight:700;opacity:0.75;letter-spacing:0.06em;text-transform:uppercase;">Net Profit</div>
+                                        <div id="pl_netprofit" style="font-size:1.4rem;font-weight:900;color:#fbbf24;">—</div>
+                                        <div style="font-size:0.64rem;opacity:0.65;">MUR (est.)</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:0.72rem;">
+                                    <span id="pl_margin_badge" style="padding:3px 12px;border-radius:1rem;font-weight:800;background:rgba(255,255,255,0.15);">—% margin</span>
+                                    <span id="pl_roi_badge" style="padding:3px 12px;border-radius:1rem;font-weight:800;background:rgba(255,255,255,0.15);">— ROI</span>
+                                    <span id="pl_verdict_badge" style="padding:3px 12px;border-radius:1rem;font-weight:800;">—</span>
+                                </div>
+                                <div style="margin-top:0.7rem;font-size:0.7rem;opacity:0.6;text-align:center;line-height:1.4;">
+                                    ⚠️ Estimates only. Based on yield calculator output and costs entered above. Verify with your own records.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3329,6 +3776,68 @@
                         </div>
                         <div id="pestAlertStatusMsg" style="margin-top:0.8rem;font-size:0.85rem;"></div>
                     </div>
+
+                    <!-- ── FEATURE 7: CYCLE END REMINDERS ── -->
+                    <div style="margin-top:1.4rem;margin-bottom:1.2rem;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.6rem;">
+                            <div style="font-weight:800;font-size:0.95rem;color:var(--green-900);display:flex;align-items:center;gap:8px;">
+                                <i class="fas fa-hourglass-half" style="color:#f59e0b;"></i> Cycle End Reminders
+                                <span id="cycleRemindersBadge" style="display:none;background:#f59e0b;color:white;border-radius:50%;width:20px;height:20px;font-size:0.7rem;font-weight:900;align-items:center;justify-content:center;"></span>
+                            </div>
+                            <button class="btn-secondary" onclick="loadCycleEndReminders()" style="font-size:0.82rem;padding:7px 14px;">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                        <div id="cycleRemindersWrap" style="font-size:0.82rem;color:#888;padding:0.3rem 0;">
+                            Click Refresh to check upcoming cycle ends.
+                        </div>
+                    </div>
+
+                    <!-- ── GROWER-REPORTED INCIDENTS ── -->
+                    <div style="margin-top:1.4rem;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.8rem;">
+                            <div style="font-weight:800;font-size:0.95rem;color:var(--green-900);display:flex;align-items:center;gap:8px;">
+                                <i class="fas fa-users" style="color:#d97706;"></i> Grower-Reported Incidents
+                                <span id="growerReportsBadge" style="display:none;background:#d97706;color:white;border-radius:50%;width:20px;height:20px;font-size:0.7rem;font-weight:900;align-items:center;justify-content:center;">0</span>
+                            </div>
+                            <button class="btn-secondary" onclick="loadGrowerReports()" style="font-size:0.82rem;padding:7px 14px;">
+                                <i class="fas fa-sync-alt" id="growerReportsRefreshIcon"></i> Refresh Reports
+                            </button>
+                        </div>
+                        <div style="font-size:0.8rem;color:#888;margin-bottom:0.8rem;">
+                            Growers can submit pest/disease sightings from their greenhouse. Review and acknowledge each incident below, then issue an alert if warranted.
+                        </div>
+                        <div id="growerReportsList">
+                            <div style="text-align:center;color:#aaa;padding:2rem;font-size:0.88rem;">
+                                <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;color:#ddd;"></i>
+                                Click "Refresh Reports" to load grower-submitted incidents.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── FEATURE 6: WEEKLY YIELD TREND CHART ── -->
+                    <div style="margin-top:1.4rem;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.8rem;">
+                            <div style="font-weight:800;font-size:0.95rem;color:var(--green-900);display:flex;align-items:center;gap:8px;">
+                                <i class="fas fa-chart-line" style="color:#2563eb;"></i>
+                                <span id="weeklyTrendTitle">Weekly Yield Trend</span>
+                            </div>
+                            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                                <input id="weeklyTrendGrowerInput" type="text" placeholder="Enter grower name…"
+                                    style="padding:6px 12px;border-radius:2rem;border:1.5px solid var(--green-200);font-size:0.84rem;font-family:'Outfit',sans-serif;outline:none;width:180px;"
+                                    onkeydown="if(event.key==='Enter')loadWeeklyYieldTrend(this.value.trim())">
+                                <button class="btn-secondary" onclick="loadWeeklyYieldTrend(document.getElementById('weeklyTrendGrowerInput').value.trim())" style="font-size:0.82rem;padding:7px 14px;">
+                                    <i class="fas fa-search"></i> Load Chart
+                                </button>
+                            </div>
+                        </div>
+                        <div id="weeklyTrendChartWrap" style="min-height:80px;background:#fafafa;border:1.5px dashed var(--green-200);border-radius:1rem;padding:0.8rem;">
+                            <div style="text-align:center;color:#aaa;font-size:0.82rem;padding:1rem;">
+                                <i class="fas fa-chart-line" style="font-size:1.8rem;display:block;margin-bottom:0.5rem;color:#d1d5db;"></i>
+                                Enter a grower name and click Load Chart to view their Week 1–4 yield trend.
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB: YLF Severity Report -->
@@ -3523,7 +4032,12 @@
 
         <!-- YOUR CROP RECORDS -->
         <div id="prevSubmissionsSection" class="glass-card" style="display:none;scroll-margin-top:80px;">
-            <div class="stat-title"><i class="fas fa-clipboard-list"></i> Your Crop Records</div>
+            <div class="stat-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <span><i class="fas fa-clipboard-list"></i> Your Crop Records</span>
+                <button class="btn-secondary" onclick="exportGrowerRecordsCSV()" style="font-size:0.8rem;padding:7px 14px;" title="Download your records as CSV">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </button>
+            </div>
             <div class="live-search-wrap">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="liveSearchInput" placeholder="Search by crop, variety, stage, yield, status...">
@@ -3647,6 +4161,45 @@
             </div>
         </div>
 
+        <!-- NUTRIENT DEFICIENCY VISUAL GUIDE — ADMIN ONLY (v2.7) -->
+        <div class="glass-card admin-only-section" id="nutrientDeficiencyGuideCard" style="display:none;">
+            <div class="stat-title" style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                <i class="fas fa-flask" style="color:#7c3aed;"></i>
+                Nutrient Deficiency Visual Guide
+                <span class="admin-badge" style="font-size:0.72rem;padding:2px 10px;margin-left:2px;background:#7c3aed;">ADMIN ONLY</span>
+                <span id="ndgLoadingBadge" class="admin-badge" style="font-size:0.68rem;background:#0ea5e9;display:none;">Loading…</span>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.82rem;margin:0.3rem 0 1rem 0;">
+                Identify and correct nutrient deficiencies in hydroponic Tomato, Sweet Pepper and English Cucumber crops.
+                Symptom descriptions, visual cues, correction solutions and prevention tips.
+            </p>
+
+            <!-- Crop tabs + Feature 4: Print Guide button -->
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1.1rem;" id="ndgCropTabs">
+                <button class="ndg-tab ndg-tab-active" data-ndg-crop="Tomato" onclick="ndgSelectCrop('Tomato',this)">
+                    🍅 Tomato
+                </button>
+                <button class="ndg-tab" data-ndg-crop="Sweet Pepper" onclick="ndgSelectCrop('Sweet Pepper',this)">
+                    🌶️ Sweet Pepper
+                </button>
+                <button class="ndg-tab" data-ndg-crop="English Cucumber" onclick="ndgSelectCrop('English Cucumber',this)">
+                    🥒 English Cucumber
+                </button>
+                <button onclick="printNutrientGuide(window._ndgCurrentCrop)" title="Print / PDF current crop guide"
+                    style="margin-left:auto;padding:6px 14px;border-radius:2rem;border:1.5px solid #7c3aed;background:#f5f3ff;color:#6d28d9;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:5px;transition:all .18s;"
+                    onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
+                    <i class="fas fa-print"></i> Print Guide
+                </button>
+            </div>
+
+            <!-- Deficiency cards container -->
+            <div id="ndgCardsContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:0.85rem;">
+                <div style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center;" id="ndgPlaceholder">
+                    <i class="fas fa-spinner fa-spin"></i> Loading guide data…
+                </div>
+            </div>
+        </div>
+
         <!-- INTERACTIVE GROWING TIPS (Admin only) -->
         <div id="growingTipsSection" class="growing-tips-section">
             <div class="growing-tips-title"><i class="fas fa-seedling" style="color:var(--green-600);"></i> <span data-i18n="section.growing.tips">Interactive Growing Guide — Seedling to Harvest</span> <span class="admin-badge" style="font-size:0.72rem;" data-i18n="ui.admin.only">ADMIN ONLY</span></div>
@@ -3753,6 +4306,24 @@
                 </div>
                 <div class="form-group" style="margin:0;" id="editHarvestMonthsSection"><label>Harvest Duration (months)</label>
                     <input type="number" inputmode="decimal" step="0.5" id="editHarvestMonths" min="0">
+                </div>
+                <!-- Harvest Weight Photo Verification -->
+                <div id="editHarvestPhotoSection" style="margin-top:0.6rem;padding:1rem;background:linear-gradient(135deg,#f0fdf4,#e8f5ea);border:1.5px dashed var(--green-300);border-radius:var(--radius-lg);">
+                    <div style="font-size:0.8rem;font-weight:800;color:var(--green-800);margin-bottom:0.6rem;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:0.04em;">
+                        <i class="fas fa-camera" style="color:var(--green-600);"></i> Harvest Weight Photo Verification
+                        <span style="font-size:0.65rem;font-weight:600;color:#888;text-transform:none;letter-spacing:0;margin-left:4px;">— optional but recommended</span>
+                    </div>
+                    <div style="font-size:0.76rem;color:#666;margin-bottom:0.7rem;line-height:1.5;">
+                        Attach a photo of your harvest on a scale, crates, or produce bags for admin verification. Up to 3 photos.
+                    </div>
+                    <div class="hwp-upload-zone" onclick="document.getElementById('hwp_file_input').click()">
+                        <input type="file" id="hwp_file_input" accept="image/*" multiple style="display:none;" onchange="hwpHandlePhotos(event)">
+                        <i class="fas fa-scale-balanced" style="font-size:1.3rem;color:var(--green-400);margin-bottom:4px;"></i>
+                        <div style="font-size:0.8rem;font-weight:700;color:var(--green-700);">Tap to capture / upload</div>
+                        <div style="font-size:0.68rem;color:#aaa;">Weigh scale, crates, harvest bags — JPG/PNG/WebP, max 4MB each</div>
+                    </div>
+                    <div id="hwp_previews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+                    <div id="hwp_status" style="font-size:0.76rem;color:var(--green-700);margin-top:6px;min-height:1.1em;"></div>
                 </div>
             </div>
         </div>
@@ -3886,7 +4457,22 @@ function toggleEl(el, show, display) {
 
 // ==================== v19: KREOL (MKR) i18n SYSTEM ====================
 const _LANG_KEY = 'mohydro-lang';
-let _currentLang = (function(){ try { return localStorage.getItem(_LANG_KEY) || 'en'; } catch(e){ return 'en'; } })();
+// v33: Read persisted language BEFORE any render. The applyLang() call at
+// the bottom of the page re-applies after the DOM is ready, but this
+// initialises _currentLang synchronously so all dynamic HTML built during
+// page-load (e.g. renderActivityLog, renderPestCards) already uses the
+// correct locale without waiting for DOMContentLoaded.
+let _currentLang = (function(){
+    try {
+        const saved = localStorage.getItem(_LANG_KEY);
+        // If user had Kreol selected, set html[lang] immediately to avoid
+        // a flash of English text on hard reload
+        if (saved && saved !== 'en') {
+            try { document.documentElement.lang = 'mfe'; } catch(e){}
+        }
+        return saved || 'en';
+    } catch(e){ return 'en'; }
+})();
 
 const TRANSLATIONS = {
     en: {
@@ -4470,7 +5056,7 @@ const YIELD_FACTORS = [
     { id:'didymella',      name:'Didymella spp.',         type:'Fungal Disease',   maxImpact:0.50, crops:['English Cucumber'] },
     { id:'botrytis',       name:'Botrytis',               type:'Fungal Disease',   maxImpact:0.45, crops:['English Cucumber'] },
     { id:'root_rot',       name:'Root Rot',               type:'Fungal Disease',   maxImpact:0.60, crops:['English Cucumber'] },
-    { id:'powdery_mildew', name:'Powdery Mildew',         type:'Fungal Disease',   maxImpact:0.55, crops:['English Cucumber'] },
+    { id:'powdery_mildew', name:'Powdery Mildew',         type:'Fungal Disease',   maxImpact:0.55, crops:['English Cucumber','Okra'] },
     { id:'downy_mildew_cu',name:'Downy Mildew',           type:'Fungal Disease',   maxImpact:0.60, crops:['English Cucumber'] },
     { id:'aphids',         name:'Aphids',                 type:'Pest (Insect)',    maxImpact:0.35, crops:['English Cucumber','Lettuce'] },
     // ── Lettuce specific ──
@@ -4478,6 +5064,8 @@ const YIELD_FACTORS = [
     { id:'downy_mildew',   name:'Downy Mildew',           type:'Fungal Disease',   maxImpact:0.55, crops:['Lettuce'] },
     { id:'lettuce_mosaic', name:'Lettuce Mosaic Virus',   type:'Viral Disease',    maxImpact:0.60, crops:['Lettuce'] },
     { id:'bolting',        name:'Bolting',                type:'Physiological',    maxImpact:0.65, crops:['Lettuce'] },
+    // ── Okra & Eggplant specific ──
+    { id:'jassids',        name:'Jassids (Leafhoppers)',  type:'Pest (Insect)',    maxImpact:0.45, crops:['Okra','Eggplant'] },
     { id:'slugs_snails',   name:'Slugs / Snails',         type:'Pest (Mollusc)',   maxImpact:0.30, crops:['Lettuce'] },
 ];
 
@@ -4642,6 +5230,250 @@ const GROWING_TIPS = {
                 { icon: "fa-thermometer-half", text: "Temperatures above 28°C trigger bolting before harvest — install shade cloth or increase ventilation." },
                 { icon: "fa-chart-line", text: "Record heads per m² per cycle for efficiency tracking." },
                 { icon: "fa-recycle", text: "After harvest, flush NFT channels with clean water. Sanitize before replanting." }
+            ]}
+        }
+    },
+
+    // --------------------------------------------------------------
+    // CABBAGE - Soilless / Substrate under Greenhouse
+    // --------------------------------------------------------------
+    "Cabbage": {
+        stages: ["Seedling", "Vegetative", "Harvesting"],
+        durations: ["14–21 days", "35–50 days", "30–45 days"],
+        icons: ["🌱", "🌿", "🥬"],
+        system_note: "Coco / Aggregates | Greenhouse or open soilless",
+        tips: {
+            "Seedling": { title: "🌱 Cabbage — Seedling Stage", ec: "EC: 0.8–1.2 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-thermometer-half", text: "Optimal germination 18–22°C. Cabbage tolerates cooler temps well once established." },
+                { icon: "fa-tint", text: "Keep medium moist. Avoid waterlogging — young cabbages are prone to damping-off." },
+                { icon: "fa-ruler-vertical", text: "Transplant when seedlings reach 10–15cm with 4–5 true leaves." },
+                { icon: "fa-exclamation-triangle", text: "Check undersides of leaves for early aphid and caterpillar colonies." }
+            ]},
+            "Vegetative": { title: "🌿 Cabbage — Vegetative Stage", ec: "EC: 1.5–2.0 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-flask", text: "High N requirement during leaf expansion. Balance with K to avoid soft, disease-prone leaves." },
+                { icon: "fa-ruler-combined", text: "Maintain 40–50cm spacing. Overcrowding in greenhouse → humidity buildup → fungal risk." },
+                { icon: "fa-bug", text: "Scout for diamondback moth (Plutella) and cabbage looper — both devastating in Zone E2." },
+                { icon: "fa-tint", text: "Consistent moisture critical. Irregular irrigation causes head splitting at harvest." },
+                { icon: "fa-wind", text: "Ensure good airflow. Cabbage is susceptible to downy mildew in humid, stagnant conditions." }
+            ]},
+            "Harvesting": { title: "🥬 Cabbage — Harvesting Stage", ec: "EC: 1.2–1.6 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-calendar-check", text: "Harvest when head is firm and compact (squeeze test). Typical 70–90 days from transplant." },
+                { icon: "fa-cut", text: "Cut at the base with a sharp knife. Leave 2–3 outer wrapper leaves for protection." },
+                { icon: "fa-thermometer-half", text: "Harvest in early morning when temps are cool. Cabbage wilts rapidly in midday heat." },
+                { icon: "fa-chart-line", text: "Record head weight and count per m². Target 2–4 kg heads in good conditions." },
+                { icon: "fa-recycle", text: "Remove all plant debris after harvest — cabbage root mats harbour clubroot spores." }
+            ]}
+        }
+    },
+
+    // --------------------------------------------------------------
+    // CAULIFLOWER - Soilless under Greenhouse
+    // --------------------------------------------------------------
+    "Cauliflower": {
+        stages: ["Seedling", "Vegetative", "Harvesting"],
+        durations: ["14–21 days", "35–50 days", "14–21 days"],
+        icons: ["🌱", "🌿", "🥦"],
+        system_note: "Coco / Aggregates | Greenhouse soilless",
+        tips: {
+            "Seedling": { title: "🌱 Cauliflower — Seedling Stage", ec: "EC: 0.8–1.2 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-thermometer-half", text: "Cool start: 15–20°C ideal for germination. Heat >28°C causes button-head (premature curd)." },
+                { icon: "fa-tint", text: "Maintain even moisture. Do not let seedlings wilt — stress triggers early curd initiation." },
+                { icon: "fa-ruler-vertical", text: "Transplant at 4–5 true leaves, 12–15cm height into pre-buffered coco or aggregate beds." },
+                { icon: "fa-exclamation-triangle", text: "Watch for damping-off. Use bio-fungicide drench on transplant day." }
+            ]},
+            "Vegetative": { title: "🌿 Cauliflower — Vegetative Stage", ec: "EC: 1.6–2.2 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-flask", text: "Boron deficiency causes hollow stem and poor curd quality. Include trace elements in nutrient solution." },
+                { icon: "fa-thermometer-half", text: "Keep greenhouse 15–22°C. Temperatures above 27°C consistently → ricey, poor-quality curd." },
+                { icon: "fa-bug", text: "Caterpillars (diamondback moth, cabbage white) are the primary pest. Scout twice weekly." },
+                { icon: "fa-leaf", text: "When curd begins to emerge, tie outer leaves over curd to blanch (whiten). Check daily." }
+            ]},
+            "Harvesting": { title: "🥦 Cauliflower — Harvesting Stage", ec: "EC: 1.2–1.6 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-calendar-check", text: "Harvest when curd is compact, white, and 12–20cm diameter. Do not over-mature — curd loosens rapidly." },
+                { icon: "fa-cut", text: "Cut stem 5–7cm below the curd with a clean sharp knife. Include wrapper leaves for protection." },
+                { icon: "fa-thermometer-half", text: "Cool rapidly after harvest. Cauliflower has high respiration rate and deteriorates quickly in heat." },
+                { icon: "fa-chart-line", text: "Record curd weight per plant. Target 800g–1.5kg per head in soilless GH systems." }
+            ]}
+        }
+    },
+
+    // --------------------------------------------------------------
+    // EGGPLANT - Soilless (Coco) under Greenhouse
+    // --------------------------------------------------------------
+    "Eggplant": {
+        stages: ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"],
+        durations: ["14–21 days", "28–35 days", "14–21 days", "21–35 days", "90–120 days"],
+        icons: ["🌱", "🌿", "🌸", "🍆", "🧺"],
+        system_note: "Coco coir | Greenhouse soilless",
+        tips: {
+            "Seedling": { title: "🌱 Eggplant — Seedling Stage (Coco/GH)", ec: "EC: 0.8–1.2 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-thermometer-half", text: "Warm germination: 25–30°C optimal. Eggplant is the most heat-demanding of Zone E2 crops." },
+                { icon: "fa-tint", text: "Pre-wet coco coir thoroughly before seeding. Eggplant dislikes dry starts." },
+                { icon: "fa-ruler-vertical", text: "Transplant at 5–7 true leaves (6–8 weeks). Eggplant is slow to establish — be patient." },
+                { icon: "fa-exclamation-triangle", text: "Thrips and spider mites colonise seedlings quickly. Inspect daily under greenhouse." }
+            ]},
+            "Vegetative": { title: "🌿 Eggplant — Vegetative Stage (Coco/GH)", ec: "EC: 1.5–2.0 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-flask", text: "Balanced N-P-K in coco. Avoid excessive N → delayed flowering." },
+                { icon: "fa-arrows-alt-v", text: "Trellis and train to 2-stem system. Remove all side shoots below first flower." },
+                { icon: "fa-bug", text: "Eggplant fruit borer (Leucinodes orbonalis) is endemic in Mauritius — install fine-mesh screens." },
+                { icon: "fa-exclamation-triangle", text: "🚨 Jassids (Empoasca spp.) are a serious eggplant pest in Zone E2 — they suck sap from young leaves causing bronze/brown 'hopper burn' symptoms. Use sticky traps and systemic insecticide at first detection." },
+                { icon: "fa-wind", text: "Ventilate well. Eggplant in humid GH is prone to Botrytis on young growth." }
+            ]},
+            "Flowering": { title: "🌸 Eggplant — Flowering Stage (Coco/GH)", ec: "EC: 1.8–2.3 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-shower", text: "Vibrate flowers gently or use electric pollinator. Eggplant flowers drop easily in heat." },
+                { icon: "fa-thermometer-half", text: "GH temp 22–30°C. >35°C causes flower and young fruit drop significantly." },
+                { icon: "fa-flask", text: "Boost Ca and K during early fruiting. Foliar B spray at 50% flowering." },
+                { icon: "fa-exclamation-triangle", text: "Watch for Phomopsis blight (brown fruit lesions). Remove and destroy infected material immediately." }
+            ]},
+            "Fruiting": { title: "🍆 Eggplant — Fruiting Stage (Coco/GH)", ec: "EC: 2.0–2.5 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-flask", text: "High K for skin colour development. Dark purple varieties need >2.0 EC for best colour." },
+                { icon: "fa-tint", text: "Consistent irrigation in coco critical. Irregular watering = fruit bronzing and cracking." },
+                { icon: "fa-leaf", text: "Progressive defoliation — keep lower canopy open to reduce Botrytis risk." },
+                { icon: "fa-balance-scale", text: "Limit fruit load — remove excess small fruits to maintain 8–12 per plant." }
+            ]},
+            "Harvesting": { title: "🧺 Eggplant — Harvesting Stage (Coco/GH)", ec: "EC: 1.6–2.0 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-calendar-check", text: "Harvest when fruit is firm, glossy, and at correct size for variety (12–20cm long types)." },
+                { icon: "fa-cut", text: "Cut stem with sharp pruning shears. Never pull — damages calyx and plant." },
+                { icon: "fa-chart-line", text: "Record kg per plant per week. Average 3–5 kg/m² per harvest season in GH." },
+                { icon: "fa-recycle", text: "After final harvest, clear all plant material. Sanitize growing system before next cycle." }
+            ]}
+        }
+    },
+
+    // --------------------------------------------------------------
+    // GREENS (Spinach / Asian greens) - NFT / Float under Greenhouse
+    // --------------------------------------------------------------
+    "Greens": {
+        stages: ["Seedling", "Vegetative", "Harvesting"],
+        durations: ["5–10 days", "14–21 days", "7–14 days"],
+        icons: ["🌱", "🌿", "🥗"],
+        system_note: "NFT / Float | Greenhouse — rapid turnover crop",
+        tips: {
+            "Seedling": { title: "🌱 Greens — Seedling Stage (NFT/GH)", ec: "EC: 0.6–1.0 mS/cm | pH: 5.8–6.5", items: [
+                { icon: "fa-tint", text: "Direct-sow into NFT foam plugs or float raft cells. Keep nutrient solution level consistent." },
+                { icon: "fa-thermometer-half", text: "Fast germination at 20–25°C. Greens are heat-sensitive — maintain below 28°C in greenhouse." },
+                { icon: "fa-sun", text: "Moderate light 150–250 µmol/m²/s. Direct hot sun causes tipburn on young leaves." },
+                { icon: "fa-exclamation-triangle", text: "Sanitation is critical — greens systems cycle rapidly and diseases spread fast." }
+            ]},
+            "Vegetative": { title: "🌿 Greens — Vegetative Stage (NFT/GH)", ec: "EC: 1.0–1.6 mS/cm | pH: 5.8–6.5", items: [
+                { icon: "fa-flask", text: "Nitrogen-forward nutrient solution for rapid leaf development. Avoid deficiency — leaves yellow quickly." },
+                { icon: "fa-tint", text: "Steady NFT flow (1–2 L/min per channel). Temperature of solution below 25°C critical for root health." },
+                { icon: "fa-wind", text: "Strong air circulation prevents condensation on leaves and reduces downy mildew." },
+                { icon: "fa-bug", text: "Aphids and fungus gnats are the most common pests. Use yellow sticky traps throughout greenhouse." }
+            ]},
+            "Harvesting": { title: "🥗 Greens — Harvesting Stage (NFT/GH)", ec: "EC: 0.8–1.2 mS/cm | pH: 5.8–6.5", items: [
+                { icon: "fa-calendar-check", text: "Baby leaf harvest: 18–25 days. Full head harvest: 28–40 days. Cut-and-come-again possible for spinach types." },
+                { icon: "fa-cut", text: "Harvest in early morning. Greens wilt rapidly post-harvest in heat. Cool immediately." },
+                { icon: "fa-chart-line", text: "Measure yield per tray/channel. Greens have the fastest ROI of all Zone E2 hydroponic crops." },
+                { icon: "fa-recycle", text: "Flush channels after each cycle. Biofilm in NFT channels builds rapidly with leafy crops." }
+            ]}
+        }
+    },
+
+    // --------------------------------------------------------------
+    // MELON - Coco / NFT under Greenhouse
+    // --------------------------------------------------------------
+    "Melon": {
+        stages: ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvesting"],
+        durations: ["7–14 days", "21–28 days", "14–21 days", "35–50 days", "21–35 days"],
+        icons: ["🌱", "🌿", "🌸", "🍈", "🧺"],
+        system_note: "Coco / Aggregates | Greenhouse soilless",
+        tips: {
+            "Seedling": { title: "🌱 Melon — Seedling Stage (Coco/GH)", ec: "EC: 0.8–1.2 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-thermometer-half", text: "Melon needs warm start: 25–30°C soil temperature. Cold roots = stunted seedlings." },
+                { icon: "fa-tint", text: "Coco should be moist but not wet. Melon roots are sensitive to anaerobic conditions." },
+                { icon: "fa-ruler-vertical", text: "Transplant at 2–3 true leaves (10–14 days). Handle tap root gently — melon dislikes root disturbance." },
+                { icon: "fa-sun", text: "High light requirement from day one. >400 µmol/m²/s critical for vigorous early growth." }
+            ]},
+            "Vegetative": { title: "🌿 Melon — Vegetative Stage (Coco/GH)", ec: "EC: 1.5–2.0 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-arrows-alt-v", text: "Single-stem vertical training (cordon). Remove all lateral shoots below node 8–10." },
+                { icon: "fa-flask", text: "Higher P early in vegetative phase promotes root development in coco. Switch to K-forward after node 10." },
+                { icon: "fa-wind", text: "Ventilate well to reduce powdery mildew (major melon threat in Zone E2's humidity)." },
+                { icon: "fa-bug", text: "Spider mites spread rapidly on melon vines. Weekly scouting and preventive sulphur spray." }
+            ]},
+            "Flowering": { title: "🌸 Melon — Flowering Stage (Coco/GH)", ec: "EC: 1.8–2.5 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-shower", text: "Hand-pollinate or introduce bees. Melon requires insect or manual pollination — no wind pollination." },
+                { icon: "fa-calendar", text: "Allow only 1–2 fruits per plant for premium size. Pinch out excess flowers at nodes 10–14." },
+                { icon: "fa-flask", text: "Calcium + Boron foliar spray at flowering. Blossom End Rot is common in melon at high EC." },
+                { icon: "fa-thermometer-half", text: "GH temp 25–32°C optimal for fruit set. Below 18°C = flower abortion." }
+            ]},
+            "Fruiting": { title: "🍈 Melon — Fruiting Stage (Coco/GH)", ec: "EC: 2.5–3.5 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-flask", text: "Elevate EC to 3.0–3.5 during fruit fill → concentrates sugars → higher Brix value." },
+                { icon: "fa-tint", text: "Reduce irrigation slightly in final 2 weeks before harvest → increases sugar concentration." },
+                { icon: "fa-leaf", text: "Support developing fruits in nets. Heavy fruits will snap the vine or coco slab without support." },
+                { icon: "fa-chart-line", text: "Track fruit development weekly. Brix target ≥12 for premium-grade Mauritian market." }
+            ]},
+            "Harvesting": { title: "🧺 Melon — Harvesting Stage", ec: "EC: 2.0–2.8 mS/cm | pH: 5.8–6.2", items: [
+                { icon: "fa-calendar-check", text: "Harvest when stem cracks begin near stalk (slip stage) or fruit emits strong fragrance." },
+                { icon: "fa-cut", text: "Cut stem with clean knife. Leave 2–3cm stalk. Avoid pressing flesh during handling." },
+                { icon: "fa-chart-line", text: "Measure Brix with a refractometer. Grade A: ≥12 Brix. Grade B: 9–12 Brix." },
+                { icon: "fa-recycle", text: "Sanitize coco slabs fully between melon cycles. Fusarium persists in substrate." }
+            ]}
+        }
+    },
+
+    // --------------------------------------------------------------
+    // OKRA - Aggregate / Coco under Greenhouse
+    // --------------------------------------------------------------
+    "Okra": {
+        stages: ["Seedling", "Vegetative", "Flowering", "Harvesting"],
+        durations: ["7–14 days", "21–35 days", "14–21 days", "60–90 days"],
+        icons: ["🌱", "🌿", "🌸", "🧺"],
+        system_note: "Coco / Aggregates | Greenhouse soilless",
+        tips: {
+            "Seedling": { title: "🌱 Okra — Seedling Stage", ec: "EC: 0.8–1.5 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-thermometer-half", text: "Soak seeds 12h before planting. Okra needs warm substrate >25°C for reliable germination." },
+                { icon: "fa-tint", text: "Direct sow into coco/aggregate pots. Okra dislikes transplanting due to sensitive taproot." },
+                { icon: "fa-sun", text: "Requires high light intensity. Under low-light conditions in greenhouse, growth is slow and plants become leggy." },
+                { icon: "fa-exclamation-triangle", text: "Jassids (leafhoppers) attack young okra seedlings causing leaf curl and stunted growth — inspect undersides of leaves daily." }
+            ]},
+            "Vegetative": { title: "🌿 Okra — Vegetative Stage", ec: "EC: 1.5–2.2 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-flask", text: "Moderate N, higher K-P ratio once plants reach 30cm. Avoid excess N → delays flower initiation." },
+                { icon: "fa-ruler-combined", text: "Space 50–60cm apart. Okra grows 1.5–2m tall in GH — plan vertical space and support." },
+                { icon: "fa-bug", text: "🚨 Jassids (Empoasca spp.) are the primary okra threat in Zone E2. Feeding causes 'hopper burn' — yellowing and upward leaf curling. Apply systemic insecticide at first sighting." },
+                { icon: "fa-cloud", text: "⚠️ Powdery Mildew (Erysiphe cichoracearum) is prevalent in okra GH — white powdery patches on upper leaf surface. Ensure good airflow and apply sulphur-based fungicide preventively." }
+            ]},
+            "Flowering": { title: "🌸 Okra — Flowering Stage", ec: "EC: 1.8–2.5 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-flask", text: "Boost K and Mg at first flower for pod quality and skin texture." },
+                { icon: "fa-shower", text: "Okra is self-pollinating. Gentle morning ventilation assists pollen transfer in greenhouse." },
+                { icon: "fa-thermometer-half", text: "Optimal fruiting temp 25–35°C. Below 15°C = flower drop. Okra is highly temperature-sensitive." },
+                { icon: "fa-bug", text: "🚨 Continue Jassid scouting during flowering — populations peak in warm dry periods. Yellow sticky traps along crop rows give early warning." },
+                { icon: "fa-cloud", text: "⚠️ Powdery Mildew spreads rapidly at flowering stage when canopy is dense. Remove heavily infected leaves and increase plant spacing or pruning to improve air circulation." }
+            ]},
+            "Harvesting": { title: "🧺 Okra — Harvesting Stage", ec: "EC: 1.5–2.0 mS/cm | pH: 6.0–6.5", items: [
+                { icon: "fa-calendar-check", text: "Harvest pods at 6–10cm length (5–7 days after flower opens). Overmatured pods are tough and fibrous." },
+                { icon: "fa-cut", text: "Wear gloves — okra plant hairs cause skin irritation. Cut cleanly with scissors." },
+                { icon: "fa-chart-line", text: "Harvest every 2–3 days during peak season. Missing harvest window reduces total pod set." },
+                { icon: "fa-recycle", text: "Remove lower leaves progressively to reduce plant height and improve harvesting access." }
+            ]}
+        }
+    },
+
+    // --------------------------------------------------------------
+    // SHALLOT - NFT / Float / Aggregate under Greenhouse
+    // --------------------------------------------------------------
+    "Shallot": {
+        stages: ["Seedling", "Vegetative", "Harvesting"],
+        durations: ["10–14 days", "28–42 days", "14–21 days"],
+        icons: ["🌱", "🌿", "🧅"],
+        system_note: "NFT / Aggregates | Greenhouse soilless",
+        tips: {
+            "Seedling": { title: "🌱 Shallot — Seedling Stage (GH)", ec: "EC: 0.8–1.2 mS/cm | pH: 6.0–6.8", items: [
+                { icon: "fa-tint", text: "Start from sets (small bulbs) or seeds in rockwool/coco cells. Sets produce faster crop." },
+                { icon: "fa-thermometer-half", text: "Cool to moderate temps: 15–22°C ideal for bulb initiation. High heat delays bulbing." },
+                { icon: "fa-ruler-vertical", text: "Place sets with tip just above substrate level. Transplant seedlings at 8–10cm (3–4 leaves)." },
+                { icon: "fa-exclamation-triangle", text: "Onion fly and thrips are the primary seedling pests. Protect under fine-mesh in greenhouse." }
+            ]},
+            "Vegetative": { title: "🌿 Shallot — Vegetative Stage (GH)", ec: "EC: 1.2–1.8 mS/cm | pH: 6.0–6.8", items: [
+                { icon: "fa-flask", text: "High N during leaf development. Switch to K-forward formula when leaves stop expanding (bulbing trigger)." },
+                { icon: "fa-sun", text: "Shallots are long-day plants. 13+ hours of daylight triggers bulbing in Zone E2 dry season months." },
+                { icon: "fa-bug", text: "Thrips are the main vector for onion yellow dwarf virus. Yellow sticky traps throughout GH are essential." },
+                { icon: "fa-wind", text: "Good ventilation prevents botrytis leaf blight — a common problem in humid Zone E2 greenhouse conditions." }
+            ]},
+            "Harvesting": { title: "🧅 Shallot — Harvesting Stage (GH)", ec: "EC: 0.8–1.2 mS/cm | pH: 6.0–6.8", items: [
+                { icon: "fa-calendar-check", text: "Harvest when 50–60% of tops have fallen over naturally. Forced early harvest reduces storability." },
+                { icon: "fa-cut", text: "Lift gently from substrate. Brush off growing medium; avoid washing bulbs before curing." },
+                { icon: "fa-thermometer-half", text: "Cure harvested shallots at 28–35°C for 7–14 days. This tightens the skin and extends shelf life." },
+                { icon: "fa-chart-line", text: "Record bulb count and weight per m². Target 1.5–2.5 kg/m² in soilless GH production." }
             ]}
         }
     }
@@ -4964,7 +5796,98 @@ function setAdminSectionsVisibility(show) {
     ['timelineSectionCard','forecastSectionCard'].forEach(id=>{const el=document.getElementById(id);if(el)toggleEl(el, show);});
     const yr=document.getElementById('yieldEfficiencyRefCard');if(yr)toggleEl(yr, show);
     const ts=document.getElementById('growingTipsSection');if(ts)toggleEl(ts, show);
+    // v2.7: Nutrient Deficiency Guide (admin only)
+    const ndg=document.getElementById('nutrientDeficiencyGuideCard');
+    if(ndg){ toggleEl(ndg, show); if(show && !window._ndgLoaded) ndgInit(); }
 }
+
+// ============================================================
+// NUTRIENT DEFICIENCY VISUAL GUIDE — v2.7  (Admin only)
+// ============================================================
+window._ndgData   = null;   // full guide data from GAS
+window._ndgLoaded = false;  // true after first successful load
+window._ndgCurrentCrop = 'Tomato';
+
+async function ndgInit() {
+    const badge = document.getElementById('ndgLoadingBadge');
+    if(badge) showEl(badge,'inline-block');
+    try {
+        const res = await fetch(GAS_URL + '?action=getNutrientDeficiencyGuide&crop=all');
+        const data = await res.json();
+        if(!data.success || !data.crops) throw new Error(data.error||'Guide data unavailable');
+        window._ndgData   = data.crops;
+        window._ndgLoaded = true;
+        ndgRenderCrop(window._ndgCurrentCrop);
+    } catch(err) {
+        const c = document.getElementById('ndgCardsContainer');
+        if(c) c.innerHTML = `<div style="color:var(--red);padding:1rem;font-size:0.85rem;">
+            <i class="fas fa-exclamation-triangle"></i> Could not load nutrient guide: ${err.message}
+            <br><button onclick="ndgInit()" style="margin-top:0.5rem;padding:4px 12px;border-radius:6px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-size:0.8rem;">Retry</button>
+        </div>`;
+    } finally {
+        if(badge) hideEl(badge);
+    }
+}
+
+function ndgSelectCrop(cropName, btn) {
+    window._ndgCurrentCrop = cropName;
+    // Update tab styles
+    document.querySelectorAll('.ndg-tab').forEach(t => {
+        t.classList.toggle('ndg-tab-active', t.dataset.ndgCrop === cropName);
+    });
+    ndgRenderCrop(cropName);
+}
+
+function ndgRenderCrop(cropName) {
+    const container = document.getElementById('ndgCardsContainer');
+    if(!container) return;
+    if(!window._ndgData) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading…</div>';
+        ndgInit();
+        return;
+    }
+    const deficiencies = window._ndgData[cropName];
+    if(!deficiencies || !deficiencies.length) {
+        container.innerHTML = `<div style="color:var(--text-muted);font-size:0.85rem;padding:1rem;">No data for ${cropName}.</div>`;
+        return;
+    }
+    container.innerHTML = deficiencies.map(d => ndgBuildCard(d)).join('');
+}
+
+function ndgBuildCard(d) {
+    const sevClass = d.severity==='critical'?'ndg-sev-critical':d.severity==='high'?'ndg-sev-high':'ndg-sev-medium';
+    const sevLabel = d.severity==='critical'?'⚠ CRITICAL':d.severity==='high'?'🔴 HIGH':'🟡 MEDIUM';
+    const accentColor = d.colorHex || '#7c3aed';
+    return `
+    <div class="ndg-card">
+        <div class="ndg-card-accent" style="background:${accentColor};"></div>
+        <div style="padding-left:10px;">
+            <div class="ndg-card-header">
+                <div style="flex:1;">
+                    <div class="ndg-card-title">${escHtml(d.name)}</div>
+                    <div class="ndg-nutrient-tag">${escHtml(d.nutrient)}</div>
+                </div>
+                <span class="ndg-sev-badge ${sevClass}">${sevLabel}</span>
+            </div>
+            <div class="ndg-section-label">📍 Affected Parts</div>
+            <p class="ndg-text">${escHtml(d.affectedParts)}</p>
+            <div class="ndg-section-label">🔬 Symptoms</div>
+            <p class="ndg-text">${escHtml(d.symptoms)}</p>
+            <div class="ndg-section-label">👁 Visual Cue</div>
+            <div class="ndg-visual-cue">${escHtml(d.visualCue)}</div>
+            <div class="ndg-section-label">💊 Correction</div>
+            <div class="ndg-correction">${escHtml(d.correctionSolution)}</div>
+            <div class="ndg-section-label">🛡 Prevention</div>
+            <div class="ndg-prevention">${escHtml(d.preventionTips)}</div>
+        </div>
+    </div>`;
+}
+
+function escHtml(str) {
+    if(!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+// ── End Nutrient Deficiency Guide ───────────────────────────
 function getYieldReference(cropName, varietyName) {
     const c = (cropName  || '').toLowerCase().trim();
     const v = (varietyName || '').toLowerCase().trim();
@@ -5756,6 +6679,16 @@ function calculateEstimatedYield() {
     const rb = document.getElementById('yr_riskBadge'); rb.textContent = risk; rb.className = `yr-risk ${riskCls}`;
     showEl(document.getElementById('yieldResultBox'));
     document.getElementById('yieldResultBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // ── Show P&L calculator and pre-fill revenue data ──
+    window._plYieldMin = finalMin;
+    window._plYieldMax = finalMax;
+    window._plArea = area;
+    window._plMonths = months;
+    window._plPrice = effectivePrice;
+    window._plUnit = unit;
+    showEl(document.getElementById('plCalcSection'));
+    recalcPL();
 }
 function resetYieldCalc() {
     document.getElementById('yc_crop').value='';document.getElementById('yc_variety').innerHTML='<option value="">-- Select Variety --</option>';
@@ -5768,6 +6701,7 @@ function resetYieldCalc() {
     buildYieldFactors('');
     showYCMarketPriceSection('');
     hideEl(document.getElementById('yieldResultBox'));
+    hideEl(document.getElementById('plCalcSection'));
 }
 
 // ==================== YIELD CALC — LOCALITY INTEGRATION ====================
@@ -6602,7 +7536,401 @@ function fetchWithTimeout(url, timeoutMs=15000, options={}) {
 }
 
 // ==================== LOGIN ====================
+// ==================== GROWER PEST INCIDENT REPORT ====================
+
+let _gprPhotos = []; // array of {dataUrl, file}
+
+function openGrowerPestReport() {
+    _gprPhotos = [];
+    document.getElementById('gpr_crop').value = '';
+    document.getElementById('gpr_gh').value = '';
+    document.getElementById('gpr_type').value = '';
+    document.getElementById('gpr_desc').value = '';
+    document.getElementById('gpr_error').textContent = '';
+    document.getElementById('gpr_photo_previews').innerHTML = '';
+    document.querySelectorAll('input[name="gpr_severity"]').forEach(r => r.checked = false);
+    const overlay = document.getElementById('growerPestReportOverlay');
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGrowerPestReport() {
+    document.getElementById('growerPestReportOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function gprHandlePhotos(event) {
+    const files = Array.from(event.target.files);
+    const remaining = 2 - _gprPhotos.length;
+    if (remaining <= 0) { toast('Maximum 2 photos allowed', true); return; }
+    files.slice(0, remaining).forEach(file => {
+        if (file.size > 4 * 1024 * 1024) { toast(`${file.name} exceeds 4MB limit`, true); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+            _gprPhotos.push({ dataUrl: e.target.result, name: file.name });
+            renderGprPreviews();
+        };
+        reader.readAsDataURL(file);
+    });
+    event.target.value = '';
+}
+
+function renderGprPreviews() {
+    const wrap = document.getElementById('gpr_photo_previews');
+    wrap.innerHTML = _gprPhotos.map((p, i) => `
+        <div class="gpr-photo-thumb">
+            <img src="${p.dataUrl}" alt="Photo ${i+1}">
+            <button class="gpr-remove-photo" onclick="gprRemovePhoto(${i})"><i class="fas fa-times"></i></button>
+        </div>`).join('');
+}
+
+function gprRemovePhoto(idx) {
+    _gprPhotos.splice(idx, 1);
+    renderGprPreviews();
+}
+
+async function submitGrowerPestReport() {
+    const crop = document.getElementById('gpr_crop').value;
+    const type = document.getElementById('gpr_type').value;
+    const desc = document.getElementById('gpr_desc').value.trim();
+    const severity = document.querySelector('input[name="gpr_severity"]:checked')?.value || '';
+    const errEl = document.getElementById('gpr_error');
+    errEl.textContent = '';
+
+    if (!crop) { errEl.textContent = '⚠️ Please select an affected crop.'; return; }
+    if (!type) { errEl.textContent = '⚠️ Please select the type of problem.'; return; }
+    if (!severity) { errEl.textContent = '⚠️ Please select severity level.'; return; }
+    if (!desc) { errEl.textContent = '⚠️ Please describe what you observed.'; return; }
+
+    const btn = document.getElementById('gpr_submitBtn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Submitting...';
+
+    try {
+        const gh = document.getElementById('gpr_gh').value.trim();
+        const payload = {
+            action: 'submitGrowerPestReport',
+            grower: currentLoggedInUser,
+            crop, gh, type, severity, desc,
+            photos: _gprPhotos.map(p => p.dataUrl),
+            timestamp: new Date().toISOString()
+        };
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify(payload))
+        });
+        // Also save locally for immediate UI feedback
+        try {
+            const existing = JSON.parse(localStorage.getItem('mohydro-grower-reports') || '[]');
+            existing.unshift({ ...payload, status: 'pending', localOnly: true });
+            localStorage.setItem('mohydro-grower-reports', JSON.stringify(existing.slice(0, 20)));
+        } catch(e) {}
+        closeGrowerPestReport();
+        toast('✅ Pest incident reported! The admin has been notified.');
+        logActivity('pest_report', `<strong>${currentLoggedInUser}</strong> reported a ${severity} ${type} incident on ${crop}${gh ? ' ('+gh+')' : ''}`);
+    } catch(e) {
+        errEl.textContent = '⚠️ Failed to submit. Your report has been saved locally.';
+        // Save to localStorage as fallback
+        try {
+            const gh = document.getElementById('gpr_gh').value.trim();
+            const existing = JSON.parse(localStorage.getItem('mohydro-grower-reports') || '[]');
+            existing.unshift({ action:'submitGrowerPestReport', grower:currentLoggedInUser, crop, gh, type, severity, desc, photos:_gprPhotos.map(p=>p.dataUrl), timestamp:new Date().toISOString(), status:'pending', localOnly:true });
+            localStorage.setItem('mohydro-grower-reports', JSON.stringify(existing.slice(0,20)));
+        } catch(e2) {}
+    } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Report';
+    }
+}
+
+// Admin: load grower-submitted incident reports
+async function loadGrowerReports() {
+    const container = document.getElementById('growerReportsList');
+    const icon = document.getElementById('growerReportsRefreshIcon');
+    if (icon) { icon.classList.add('fa-spin'); }
+    if (container) container.innerHTML = '<div style="text-align:center;color:#aaa;padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> Loading grower reports...</div>';
+    try {
+        const res = await fetchWithTimeout(`${SCRIPT_URL}?action=getGrowerPestReports&_=${Date.now()}`, 15000);
+        const data = await res.json();
+        const reports = data.reports || [];
+        renderGrowerReports(reports, container);
+    } catch(e) {
+        // Fallback: show locally-cached reports
+        try {
+            const local = JSON.parse(localStorage.getItem('mohydro-grower-reports') || '[]');
+            if (local.length > 0) {
+                renderGrowerReports(local, container);
+                if (container) {
+                    const note = document.createElement('div');
+                    note.style.cssText = 'font-size:0.76rem;color:#d97706;padding:6px 10px;background:#fef3c7;border-radius:0.6rem;margin-bottom:8px;';
+                    note.textContent = '⚠️ Showing locally-cached reports (server unavailable).';
+                    container.prepend(note);
+                }
+            } else {
+                if (container) container.innerHTML = '<div style="text-align:center;color:#aaa;padding:1.5rem;font-size:0.84rem;">No grower reports found (server unavailable).</div>';
+            }
+        } catch(e2) {
+            if (container) container.innerHTML = '<div style="text-align:center;color:#f87171;padding:1.5rem;font-size:0.84rem;">Failed to load reports.</div>';
+        }
+    } finally {
+        if (icon) icon.classList.remove('fa-spin');
+    }
+}
+
+function renderGrowerReports(reports, container) {
+    if (!container) return;
+    const badge = document.getElementById('growerReportsBadge');
+    const pending = reports.filter(r => r.status !== 'acknowledged');
+    if (badge) { badge.textContent = pending.length; badge.style.display = pending.length > 0 ? 'inline-flex' : 'none'; }
+    if (!reports.length) {
+        container.innerHTML = '<div style="text-align:center;color:#aaa;padding:2rem;font-size:0.84rem;"><i class="fas fa-check-circle" style="font-size:2rem;color:#86efac;display:block;margin-bottom:0.5rem;"></i>No pending grower reports.</div>';
+        return;
+    }
+    const sevClass = { low:'sev-low', medium:'sev-medium', high:'sev-high' };
+    const typeLabels = { pest:'🐛 Pest', disease:'🍄 Disease', nutrient:'💧 Nutrient', other:'❓ Other' };
+    container.innerHTML = reports.map((r, idx) => {
+        const ts = r.timestamp ? new Date(r.timestamp).toLocaleString() : '—';
+        const acked = r.status === 'acknowledged';
+        const photos = (r.photos || []).slice(0, 3).map(p =>
+            `<img src="${p}" alt="Incident photo" onclick="showGrowerReportPhoto('${p}')" style="cursor:pointer;">`).join('');
+        return `<div class="grower-report-item ${acked ? 'grower-report-acked' : ''}">
+            <div class="grower-report-header">
+                <span class="grower-report-name"><i class="fas fa-user-circle"></i> ${r.grower || 'Unknown'}</span>
+                <span class="grower-report-severity ${sevClass[r.severity] || 'sev-low'}">${(r.severity||'low').toUpperCase()}</span>
+                ${acked ? '<span class="grower-report-acked-badge"><i class="fas fa-check"></i> Acknowledged</span>' : ''}
+                <span class="grower-report-ts">${ts}</span>
+            </div>
+            <div class="grower-report-meta">
+                <span>🌱 <strong>${r.crop || '—'}</strong></span>
+                ${r.gh ? `<span>🏠 ${r.gh}</span>` : ''}
+                <span>${typeLabels[r.type] || r.type || '—'}</span>
+            </div>
+            <div class="grower-report-body" style="margin-top:0.4rem;">${r.desc || ''}</div>
+            ${photos ? `<div class="grower-report-photos">${photos}</div>` : ''}
+            ${!acked ? `<button class="grower-report-ack-btn" onclick="acknowledgeGrowerReport(JSON.stringify((r.timestamp||"").substring(0,19)+"|"+(r.grower||"")), this)">
+                <i class="fas fa-check-circle"></i> Acknowledge &amp; Mark Reviewed
+            </button>` : ''}
+        </div>`;
+    }).join('');
+}
+
+function showGrowerReportPhoto(src) {
+    const lb = document.getElementById('photoLightbox');
+    const img = document.getElementById('photoLightboxImg');
+    if (lb && img) { img.src = src; lb.style.display = 'flex'; }
+}
+
+// Fix 1: uses stable reportId = "ISOts19|grower" — no fragile array index
+async function acknowledgeGrowerReport(reportId, btn) {
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Acknowledging...';
+    try {
+        const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+            body:'data='+encodeURIComponent(JSON.stringify({action:'acknowledgeGrowerReport', reportId, admin:currentLoggedInUser})) });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Acknowledge failed');
+        btn.closest('.grower-report-item').classList.add('grower-report-acked');
+        btn.replaceWith(Object.assign(document.createElement('span'), {
+            className: 'grower-report-acked-badge',
+            innerHTML: '<i class="fas fa-check"></i> Acknowledged'
+        }));
+        toast('✅ Report acknowledged');
+        if (typeof refreshGrowerNotifications === 'function') refreshGrowerNotifications();
+    } catch(e) { btn.disabled=false; btn.innerHTML='<i class="fas fa-check-circle"></i> Acknowledge & Mark Reviewed'; toast('Failed to acknowledge — try again', true); }
+}
+
+// ============================================================
+// FEATURE 4 — NUTRIENT GUIDE PRINT / PDF EXPORT
+// Opens a print-ready window with the current crop's guide data.
+// ============================================================
+function printNutrientGuide(cropName) {
+    const crops = window._ndgData;
+    if (!crops) { toast('Load the guide first', true); return; }
+
+    const crop = cropName || Object.keys(crops)[0];
+    const defs = crops[crop];
+    if (!defs || !defs.length) { toast('No guide data for ' + crop, true); return; }
+
+    const sevLabel = { critical:'🔴 Critical', high:'🟠 High', medium:'🟡 Medium' };
+    const rows = defs.map(d => `
+        <div class="pd-card">
+            <div class="pd-header">
+                <span class="pd-name">${d.name}</span>
+                <span class="pd-sev">${sevLabel[d.severity]||d.severity}</span>
+            </div>
+            <div class="pd-nutrient">Nutrient: <strong>${d.nutrient}</strong></div>
+            <div class="pd-section">📍 Affected Parts</div>
+            <p>${d.affectedParts}</p>
+            <div class="pd-section">👁️ Visual Cue</div>
+            <p class="pd-cue">${d.visualCue}</p>
+            <div class="pd-section">🌿 Symptoms</div>
+            <p>${d.symptoms}</p>
+            <div class="pd-section">✅ Correction</div>
+            <p class="pd-fix">${d.correctionSolution}</p>
+            <div class="pd-section">🛡️ Prevention</div>
+            <p class="pd-prev">${d.preventionTips}</p>
+        </div>`).join('');
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+        <title>Nutrient Guide — ${crop}</title>
+        <style>
+            body{font-family:Arial,sans-serif;font-size:12px;color:#111;margin:20px;}
+            h1{font-size:18px;color:#0d3d12;margin-bottom:4px;}
+            h2{font-size:13px;color:#136b1e;margin:0 0 14px;}
+            .pd-card{border:1px solid #cde8c5;border-radius:8px;padding:10px 12px;margin-bottom:10px;page-break-inside:avoid;}
+            .pd-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+            .pd-name{font-weight:bold;font-size:13px;color:#0d3d12;}
+            .pd-sev{font-size:11px;font-weight:bold;padding:2px 8px;border-radius:8px;background:#fef3c7;color:#92400e;}
+            .pd-nutrient{font-size:11px;color:#555;margin-bottom:6px;}
+            .pd-section{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;color:#136b1e;margin:6px 0 2px;}
+            p{margin:0 0 4px;line-height:1.5;}
+            .pd-cue{background:#f5f3ff;border-left:3px solid #7c3aed;padding:4px 8px;border-radius:0 4px 4px 0;}
+            .pd-fix{background:#f0fdf4;border-left:3px solid #16a34a;padding:4px 8px;border-radius:0 4px 4px 0;}
+            .pd-prev{background:#fff7ed;border-left:3px solid #ea580c;padding:4px 8px;border-radius:0 4px 4px 0;}
+            @media print{body{margin:10px;}.pd-card{page-break-inside:avoid;}}
+        </style></head><body>
+        <h1>🌱 MoHydroponic — Nutrient Deficiency Guide</h1>
+        <h2>${crop} · ${defs.length} deficiency card(s) · Printed ${new Date().toLocaleDateString('en-MU')}</h2>
+        ${rows}
+        <script>window.onload=()=>{window.print();}</scr` + `ipt></body></html>`;
+
+    const win = window.open('', '_blank', 'width=800,height=900');
+    if (win) { win.document.write(html); win.document.close(); }
+    else toast('Pop-up blocked — allow pop-ups and try again', true);
+}
+
+// ==================== HARVEST WEIGHT PHOTO VERIFICATION ====================
+
+let _hwpPhotos = []; // [{dataUrl, name}]
+
+function hwpHandlePhotos(event) {
+    const files = Array.from(event.target.files);
+    const remaining = 3 - _hwpPhotos.length;
+    if (remaining <= 0) { toast('Maximum 3 harvest photos allowed', true); return; }
+    files.slice(0, remaining).forEach(file => {
+        if (file.size > 4 * 1024 * 1024) { toast(`${file.name} too large (max 4MB)`, true); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+            _hwpPhotos.push({ dataUrl: e.target.result, name: file.name });
+            renderHwpPreviews();
+        };
+        reader.readAsDataURL(file);
+    });
+    event.target.value = '';
+}
+
+function renderHwpPreviews() {
+    const wrap = document.getElementById('hwp_previews');
+    const status = document.getElementById('hwp_status');
+    if (!wrap) return;
+    wrap.innerHTML = _hwpPhotos.map((p, i) => `
+        <div class="hwp-thumb">
+            <img src="${p.dataUrl}" alt="Harvest photo ${i+1}">
+            <button onclick="hwpRemovePhoto(${i})" title="Remove"><i class="fas fa-times"></i></button>
+        </div>`).join('');
+    if (status) {
+        if (_hwpPhotos.length > 0) {
+            status.innerHTML = `<span class="hwp-verified-badge"><i class="fas fa-camera"></i> ${_hwpPhotos.length} photo${_hwpPhotos.length>1?'s':''} attached — will be submitted with record</span>`;
+        } else {
+            status.textContent = '';
+        }
+    }
+}
+
+function hwpRemovePhoto(idx) {
+    _hwpPhotos.splice(idx, 1);
+    renderHwpPreviews();
+}
+
+function hwpReset() {
+    _hwpPhotos = [];
+    renderHwpPreviews();
+    const input = document.getElementById('hwp_file_input');
+    if (input) input.value = '';
+}
+
+// Call this to attach harvest photos to a record payload
+function hwpGetPayload() {
+    return _hwpPhotos.map(p => p.dataUrl);
+}
+
+// ==================== SECURITY FEATURES ====================
+
+// --- HTTPS Check ---
+(function(){
+    if(location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'){
+        const warn = document.createElement('div');
+        warn.innerHTML = '⚠️ <strong>Insecure connection:</strong> This app is running over HTTP. For security, use HTTPS.';
+        Object.assign(warn.style,{position:'fixed',top:'0',left:'0',right:'0',background:'#f59e0b',color:'#7c2d12',padding:'8px 16px',zIndex:'9999',fontSize:'0.82rem',textAlign:'center',fontFamily:'Outfit,sans-serif',fontWeight:'700'});
+        document.body.prepend(warn);
+    }
+})();
+
+// --- Login Rate Limiter ---
+const _loginAttempts = { count: 0, lockedUntil: 0 };
+const LOGIN_MAX_ATTEMPTS = 5;
+const LOGIN_LOCKOUT_MS = 30000; // 30 seconds
+
+function checkLoginRateLimit() {
+    const now = Date.now();
+    if (_loginAttempts.lockedUntil > now) {
+        const remaining = Math.ceil((_loginAttempts.lockedUntil - now) / 1000);
+        document.getElementById('loginError').textContent = `🔒 Too many attempts. Try again in ${remaining}s.`;
+        return false;
+    }
+    return true;
+}
+function recordLoginFailure() {
+    _loginAttempts.count++;
+    if (_loginAttempts.count >= LOGIN_MAX_ATTEMPTS) {
+        _loginAttempts.lockedUntil = Date.now() + LOGIN_LOCKOUT_MS;
+        _loginAttempts.count = 0;
+    }
+}
+function resetLoginAttempts() { _loginAttempts.count = 0; _loginAttempts.lockedUntil = 0; }
+
+// --- Session Timeout ---
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+let _sessionTimer = null;
+let _sessionLastActivity = Date.now();
+
+function resetSessionTimer() {
+    _sessionLastActivity = Date.now();
+    clearTimeout(_sessionTimer);
+    if (currentLoggedInUser) {
+        _sessionTimer = setTimeout(triggerSessionExpiry, SESSION_TIMEOUT_MS);
+    }
+}
+
+function triggerSessionExpiry() {
+    if (!currentLoggedInUser) return;
+    // Show re-auth overlay instead of hard logout
+    const overlay = document.getElementById('reauthOverlay');
+    const unameEl = document.getElementById('reauthUsername');
+    if (unameEl) unameEl.textContent = `Logged in as: ${currentLoggedInUser}`;
+    if (overlay) { overlay.style.display = 'flex'; }
+    // Show a re-auth indicator in the banner
+    showReauthIndicator(true);
+}
+
+function showReauthIndicator(show) {
+    let ind = document.getElementById('reauthIndicator');
+    if (!ind) {
+        ind = document.createElement('div');
+        ind.id = 'reauthIndicator';
+        Object.assign(ind.style, {position:'fixed',bottom:'72px',right:'16px',background:'linear-gradient(135deg,#d97706,#f59e0b)',color:'white',padding:'8px 14px',borderRadius:'3rem',fontSize:'0.78rem',fontWeight:'800',fontFamily:'Outfit,sans-serif',zIndex:'1500',boxShadow:'0 4px 16px rgba(217,119,6,0.4)',cursor:'pointer',display:'none',alignItems:'center',gap:'6px'});
+        ind.innerHTML = '<i class="fas fa-lock"></i> Session expired — click to re-auth';
+        ind.onclick = () => triggerSessionExpiry();
+        document.body.appendChild(ind);
+    }
+    ind.style.display = show ? 'flex' : 'none';
+}
+
+// Track activity to reset session timer
+['click','keydown','touchstart','scroll'].forEach(ev => {
+    document.addEventListener(ev, resetSessionTimer, {passive:true});
+});
+
 async function login(username, password) {
+    if (!checkLoginRateLimit()) return;
     const btn=document.getElementById('loginBtn');const errEl=document.getElementById('loginError');
     btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Signing in...';errEl.textContent='';
     try {
@@ -6610,6 +7938,21 @@ async function login(username, password) {
         if(!res.ok)throw new Error('Server error '+res.status);
         const data=await res.json();
         if(data.success){
+            resetLoginAttempts();
+            resetSessionTimer();
+            // Fix 3: warn about concurrent session conflict
+            if (data.sessionConflict) {
+                const proceed = confirm(
+                    '⚠️ Concurrent Session Warning\n\n' +
+                    'This account is already active on another device or browser window.\n' +
+                    'Continuing here may cause data conflicts.\n\n' +
+                    'Click OK to continue anyway, or Cancel to log out.'
+                );
+                if (!proceed) {
+                    btn.disabled=false; btn.innerHTML='<i class="fas fa-sign-in-alt"></i> Sign In';
+                    return;
+                }
+            }
             currentLoggedInUser=username;
             isAdmin=data.isAdmin===true;
             hideEl(document.getElementById('loginOverlay'));
@@ -6633,6 +7976,8 @@ async function login(username, password) {
                 buildYieldFactors('');loadDashboard();loadAdminMemberCount();
                 await loadPestAlertSettings();
                 loadAllUsernamesForSuggestions(); // preload for partial search
+                // Feature 7: load cycle end reminders on admin login
+                setTimeout(() => loadCycleEndReminders(), 2000);
                 initYieldCalcLocalityDropdown();
                 initDecisionSupportLocality();
                 // update banner role
@@ -6650,6 +7995,11 @@ async function login(username, password) {
                 loadDashboard();loadActiveMemberCount();
                 // Issue #12: show grower bottom nav on mobile
                 initGrowerBottomNav();
+                // v33: show grower pest incident report button
+                const gprBar = document.getElementById('growerPestReportBar');
+                if (gprBar) showEl(gprBar);
+                // Feature 5: fetch unread notifications for this grower
+                setTimeout(() => refreshGrowerNotifications(), 1500);
             }
             initMohyBannerParticles();
             initGrowingTips();
@@ -6657,6 +8007,7 @@ async function login(username, password) {
             logActivity('login',`<strong>${username}</strong> logged in${isAdmin?' as ADMIN':''}`);
             startHeartbeat(username, isAdmin ? 'admin' : 'grower');
         } else {
+            recordLoginFailure();
             errEl.textContent='❌ Invalid username or password. Please try again.';
         }
     } catch(e){
@@ -8376,7 +9727,7 @@ async function registerNewGrower(){
     clearAllFieldErrors('reg_growerName','reg_growerNameErr','reg_phone','reg_phoneErr');
     let hasErr = false;
     if(!growerName){ showFieldError('reg_growerName','reg_growerNameErr','Grower Name is required.'); hasErr=true; }
-    if(!phone){ showFieldError('reg_phone','reg_phoneErr','Phone Number is required.'); hasErr=true; }
+    if(!phone){ /* phone is optional — no validation required */ }
     if(hasErr) return;
     const btn=document.getElementById('registerUserBtn');const origHTML=btn.innerHTML;btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin-custom"></i> Registering...';
     try {
@@ -8484,8 +9835,9 @@ async function saveEditRecord() {
     try {
         // BUG 1 FIX: frontend was sending week1Yield/week2Yield/etc. but GAS
         // handleUpdateFullRecord expects week1/week2/week3/week4. Renamed here.
+        const harvestPhotos = hwpGetPayload();
         await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-            body:'data='+encodeURIComponent(JSON.stringify({action:'updateFullRecord',username:currentEditRecord.grower,timestamp:currentEditRecord.ts,stage,area,variety,weeklyYield,week1:week1Yield,week2:week2Yield,week3:week3Yield,week4:week4Yield,weeklyUnit,harvestMonths,avgYieldPerMonth,monthly}))});
+            body:'data='+encodeURIComponent(JSON.stringify({action:'updateFullRecord',username:currentEditRecord.grower,timestamp:currentEditRecord.ts,stage,area,variety,weeklyYield,week1:week1Yield,week2:week2Yield,week3:week3Yield,week4:week4Yield,weeklyUnit,harvestMonths,avgYieldPerMonth,monthly,harvestPhotos}))});
         // BUG 1 FIX: Also save YLF remarks/observations to YLFRecords sheet in Google Sheets
         const ylfRemarks = (document.getElementById('editYLFRemarks')?.value||'').trim();
         const cropVal = document.getElementById('editCrop')?.value||'';
@@ -8906,6 +10258,49 @@ async function createYLFPhotosSheet() {
 }
 
 // ============================================================
+// FEATURE 5 — GROWER NOTIFICATION SYSTEM
+// Fetches unread notifications from GrowerNotifications sheet.
+// Shows a toast and updates the bell badge count.
+// ============================================================
+async function refreshGrowerNotifications() {
+    if (!currentLoggedInUser || isAdmin) return;
+    try {
+        const res  = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'data=' + encodeURIComponent(JSON.stringify({
+                action: 'getGrowerNotifications',
+                username: currentLoggedInUser
+            }))
+        });
+        const data = await res.json();
+        const notifs = (data.notifications || []);
+        if (!notifs.length) return;
+
+        // Update the notification panel
+        notifs.forEach(n => {
+            const typeMap = {
+                pest_ack:   { t:'success', icon:'fa-check-circle', prefix:'✅ ' },
+                pest_alert: { t:'alert',   icon:'fa-exclamation-triangle', prefix:'🚨 ' }
+            };
+            const cfg = typeMap[n.type] || { t:'info', icon:'fa-bell', prefix:'🔔 ' };
+            addNotif(cfg.t, cfg.icon, cfg.prefix + n.message);
+        });
+
+        // Update badge on notif bell if it exists
+        const bell = document.getElementById('notifBadge');
+        if (bell) {
+            const unread = (window._notifList || []).filter(n => !n.read).length;
+            bell.textContent = unread;
+            bell.style.display = unread > 0 ? 'flex' : 'none';
+        }
+
+        // Show toast for first notification
+        toast('🔔 ' + notifs.length + ' new notification' + (notifs.length > 1 ? 's' : ''));
+    } catch(e) { /* non-critical */ }
+}
+
+// ============================================================
 // HEARTBEAT — grower pings every 90 s; admin polls every 60 s
 // ============================================================
 let _heartbeatTimer    = null;
@@ -8933,6 +10328,104 @@ function startHeartbeat(username, role) {
 
 function stopHeartbeat() {
     if (_heartbeatTimer) { clearInterval(_heartbeatTimer); _heartbeatTimer = null; }
+}
+
+// ============================================================
+// FEATURE 6 — WEEKLY YIELD TREND CHART PER GROWER (Admin view)
+// Renders a Chart.js line chart for Week 1–4 yields per GH record.
+// ============================================================
+let _weeklyTrendChart = null;
+
+async function loadWeeklyYieldTrend(username) {
+    const container = document.getElementById('weeklyTrendChartWrap');
+    const title     = document.getElementById('weeklyTrendTitle');
+    if (!container) return;
+    container.innerHTML = '<div style="text-align:center;color:#aaa;padding:1rem;"><i class="fas fa-spinner fa-spin"></i> Loading trend...</div>';
+    if (title) title.textContent = 'Weekly Yield Trend — ' + username;
+    try {
+        const res  = await fetch(`${SCRIPT_URL}?action=getWeeklyYieldTrend&username=${encodeURIComponent(username)}&_=${Date.now()}`);
+        const data = await res.json();
+        renderWeeklyTrendChart(data.records || [], container);
+    } catch(e) {
+        container.innerHTML = '<div style="color:#f87171;padding:1rem;font-size:0.84rem;">Failed to load weekly trend.</div>';
+    }
+}
+
+function renderWeeklyTrendChart(records, container) {
+    if (!records.length) {
+        container.innerHTML = '<div style="text-align:center;color:#aaa;padding:1.5rem;font-size:0.84rem;"><i class="fas fa-chart-line" style="font-size:2rem;color:#d1d5db;display:block;margin-bottom:0.5rem;"></i>No weekly yield data available.</div>';
+        return;
+    }
+    container.innerHTML = '<canvas id="weeklyTrendCanvas" height="220"></canvas>';
+    const canvas = document.getElementById('weeklyTrendCanvas');
+    if (!canvas) return;
+
+    if (_weeklyTrendChart) { _weeklyTrendChart.destroy(); _weeklyTrendChart = null; }
+
+    const COLORS = ['#16a34a','#d97706','#2563eb','#dc2626','#7c3aed','#0891b2'];
+    const datasets = records.map((r, i) => {
+        const label = (r.crop || 'Crop') + (r.gh ? ' GH' + r.gh : '') + (r.variety ? ' ('+r.variety+')' : '');
+        return {
+            label,
+            data: [r.week1||0, r.week2||0, r.week3||0, r.week4||0],
+            borderColor: COLORS[i % COLORS.length],
+            backgroundColor: COLORS[i % COLORS.length] + '22',
+            tension: 0.35,
+            fill: true,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            borderWidth: 2.5
+        };
+    });
+
+    _weeklyTrendChart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: ['Week 1','Week 2','Week 3','Week 4'], datasets },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { font: { family:'Outfit', size:12 }, boxWidth:12 } },
+                tooltip: { callbacks: {
+                    label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} ${records[ctx.datasetIndex]?.yieldUnit||'kg'}`
+                }}
+            },
+            scales: {
+                y: { beginAtZero: true, title: { display:true, text:'Yield', font:{family:'Outfit'} } },
+                x: { grid: { display:false } }
+            }
+        }
+    });
+}
+
+// ============================================================
+// FEATURE 7 — CROP CYCLE END REMINDERS (Admin dashboard)
+// ============================================================
+async function loadCycleEndReminders() {
+    const container = document.getElementById('cycleRemindersWrap');
+    if (!container) return;
+    try {
+        const res  = await fetch(`${SCRIPT_URL}?action=getCycleEndReminders&username=admin&_=${Date.now()}`);
+        const data = await res.json();
+        const reminders = data.reminders || [];
+        if (!reminders.length) {
+            container.innerHTML = '<div style="color:#6b7280;font-size:0.82rem;padding:0.4rem 0;"><i class="fas fa-check-circle" style="color:#86efac;"></i> No cycles nearing end date.</div>';
+            return;
+        }
+        const urgencyColor = { overdue:'#ef4444', critical:'#f97316', high:'#f59e0b', medium:'#3b82f6' };
+        const urgencyIcon  = { overdue:'fa-exclamation-circle', critical:'fa-exclamation-triangle', high:'fa-clock', medium:'fa-calendar-alt' };
+        container.innerHTML = reminders.map(r => `
+            <div style="display:flex;align-items:flex-start;gap:8px;padding:0.5rem 0.6rem;border-radius:0.7rem;margin-bottom:0.4rem;background:${urgencyColor[r.urgency]}18;border:1px solid ${urgencyColor[r.urgency]}44;">
+                <i class="fas ${urgencyIcon[r.urgency]}" style="color:${urgencyColor[r.urgency]};margin-top:2px;flex-shrink:0;"></i>
+                <div style="font-size:0.8rem;line-height:1.45;">
+                    <strong style="color:${urgencyColor[r.urgency]};">${r.urgency.toUpperCase()}</strong>
+                    <span style="color:#374151;"> — ${r.message}</span>
+                </div>
+            </div>`).join('');
+
+        // Update badge on the reminders section header
+        const badge = document.getElementById('cycleRemindersBadge');
+        if (badge) { badge.textContent = reminders.length; badge.style.display='inline-flex'; }
+    } catch(e) { /* non-critical */ }
 }
 
 // ── Admin: load and render online growers ────────────────────
@@ -10260,6 +11753,9 @@ function refreshYieldMapIfOpen() {
 
 // ==================== EVENT LISTENERS ====================
 document.addEventListener('DOMContentLoaded', () => {
+    // v33: Re-apply saved language to stamp any DOM elements that were
+    // rendered after the initial synchronous applyLang() call
+    applyLang(_currentLang);
     initZoneHeader();initLiveSearch();initAdminLiveFilter();renderNotifList();
     renderPestAlertCards();
 
@@ -10277,17 +11773,46 @@ document.addEventListener('DOMContentLoaded', () => {
         pw.type=pw.type==='password'?'text':'password';icon.className=pw.type==='password'?'fas fa-eye':'fas fa-eye-slash';
     });
 
+    // Re-auth button
+    document.getElementById('reauthBtn')?.addEventListener('click', async () => {
+        const pw = document.getElementById('reauthPassword').value.trim();
+        const errEl = document.getElementById('reauthError');
+        errEl.textContent = '';
+        if (!pw) { errEl.textContent = '⚠️ Enter your password.'; return; }
+        const btn = document.getElementById('reauthBtn');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin-custom"></i> Verifying...';
+        try {
+            const res = await fetchWithTimeout(`${SCRIPT_URL}?action=login&username=${encodeURIComponent(currentLoggedInUser)}&password=${encodeURIComponent(pw)}&_=${Date.now()}`, 18000);
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('reauthOverlay').style.display = 'none';
+                document.getElementById('reauthPassword').value = '';
+                showReauthIndicator(false);
+                resetSessionTimer();
+                toast('✅ Re-authenticated successfully');
+            } else {
+                errEl.textContent = '❌ Incorrect password. Please try again.';
+            }
+        } catch(e) { errEl.textContent = '⚠️ Connection error. Try again.'; }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Re-authenticate'; }
+    });
+    document.getElementById('reauthPassword')?.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('reauthBtn').click(); });
+
     // Login Enter key
     ['loginUsername','loginPassword'].forEach(id=>{document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click();});});
 
     // Login button
     document.getElementById('loginBtn').addEventListener('click',()=>{
+        if (!checkLoginRateLimit()) return;
         const u=document.getElementById('loginUsername').value.trim();const p=document.getElementById('loginPassword').value.trim();
         if(!u||!p){document.getElementById('loginError').textContent='⚠️ Please enter both username and password.';return;}login(u,p);
     });
 
     // Logout
     document.getElementById('logoutBtn').addEventListener('click',()=>{
+        if(!confirm('Log out of MoHydroponic Smart Tracker?'))return;
+        clearTimeout(_sessionTimer);
+        showReauthIndicator(false);
         if(!confirm('Log out of MoHydroponic Smart Tracker?'))return;
         hideEl(document.getElementById('mainApp'));showEl(document.getElementById('loginOverlay'), 'flex');
         document.getElementById('loginUsername').value='';document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='';
@@ -10441,6 +11966,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (tabId === 'yieldMapTab') setTimeout(() => { maybeAutoLoadYieldMap(); }, 80);
         if (tabId === 'onlineNowTab') loadOnlineGrowers(false);
+    };
+
+    // Banner category tab click — smooth CSS class-based filter on nav grid cards
+    window.acpBannerTabClick = function(tabEl, cat) {
+        // 1. Update pill active state
+        document.querySelectorAll('.acp-banner-tab').forEach(t => t.classList.remove('acp-btab-active'));
+        tabEl.classList.add('acp-btab-active');
+
+        // 2. Smooth card filter using CSS classes (transitions defined in CSS)
+        const cards = document.querySelectorAll('.acp-nav-card');
+        if (cat === 'all') {
+            cards.forEach(c => {
+                c.classList.remove('acp-cat-hidden', 'acp-cat-highlight');
+            });
+        } else {
+            cards.forEach(c => {
+                const match = c.dataset.cat === cat;
+                c.classList.toggle('acp-cat-hidden', !match);
+                c.classList.toggle('acp-cat-highlight', match);
+            });
+            // 3. Navigate to first card of category
+            const firstCard = document.querySelector(`.acp-nav-card[data-cat="${cat}"]`);
+            if (firstCard) {
+                const tabId = firstCard.dataset.tab;
+                // Call the original acpSwitch directly (not the override, to avoid loop)
+                _acpSwitchBase(firstCard, tabId);
+            }
+        }
+    };
+
+    // Keep banner tab in sync when nav card is clicked directly
+    const _acpSwitchBase = window.acpSwitch;
+    window.acpSwitch = function(cardEl, tabId) {
+        if (cardEl) {
+            const cat = cardEl.dataset.cat;
+            // Sync banner tab active state
+            document.querySelectorAll('.acp-banner-tab').forEach(t => {
+                t.classList.toggle('acp-btab-active', t.dataset.cat === cat);
+            });
+            // Reset all card filter classes (direct click = show all)
+            document.querySelectorAll('.acp-nav-card').forEach(c => {
+                c.classList.remove('acp-cat-hidden', 'acp-cat-highlight');
+            });
+            // Re-highlight cards of this category subtly
+            document.querySelectorAll(`.acp-nav-card[data-cat="${cat}"]`).forEach(c => {
+                c.classList.add('acp-cat-highlight');
+            });
+            document.querySelectorAll(`.acp-nav-card:not([data-cat="${cat}"])`).forEach(c => {
+                c.classList.remove('acp-cat-highlight');
+            });
+        }
+        _acpSwitchBase(cardEl, tabId);
     };
 
     // Stage area filter
@@ -10891,6 +12468,113 @@ async function hnSaveModalItem() {
 
     if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = origHTML; }
 }
+
+// ==================== PROFITABILITY P&L CALCULATOR ====================
+function recalcPL() {
+    const panel = document.getElementById('plResultPanel');
+    if (!panel) return;
+    const yieldMid = ((window._plYieldMin || 0) + (window._plYieldMax || 0)) / 2;
+    const area     = window._plArea || 0;
+    const months   = window._plMonths || 6;
+    const price    = window._plPrice || 0;
+    if (!yieldMid || !area || !price) { hideEl(panel); return; }
+
+    const substrate = parseFloat(document.getElementById('pl_substrate')?.value) || 0;
+    const water     = parseFloat(document.getElementById('pl_water')?.value)     || 0;
+    const labour    = parseFloat(document.getElementById('pl_labour')?.value)    || 0;
+    const overhead  = parseFloat(document.getElementById('pl_overhead')?.value)  || 0;
+
+    const revenue   = Math.round(yieldMid * price);
+    const costRec   = Math.round(substrate * area);
+    const costRecur = Math.round((water + labour + overhead) * area * months);
+    const totalCost = costRec + costRecur;
+    const netProfit = revenue - totalCost;
+    const margin    = revenue > 0 ? Math.round((netProfit / revenue) * 100) : 0;
+    const roi       = totalCost > 0 ? Math.round((netProfit / totalCost) * 100) : 0;
+
+    const fmt = v => (v < 0 ? '−' : '') + 'MUR ' + Math.abs(v).toLocaleString();
+    document.getElementById('pl_revenue').textContent  = fmt(revenue);
+    document.getElementById('pl_totalcost').textContent = fmt(totalCost);
+    document.getElementById('pl_netprofit').textContent = fmt(netProfit);
+    document.getElementById('pl_netprofit').style.color = netProfit >= 0 ? '#fbbf24' : '#fca5a5';
+
+    const marginBadge  = document.getElementById('pl_margin_badge');
+    const roiBadge     = document.getElementById('pl_roi_badge');
+    const verdictBadge = document.getElementById('pl_verdict_badge');
+
+    if (marginBadge) { marginBadge.textContent = `${margin}% margin`; marginBadge.style.background = margin >= 30 ? '#166534' : margin >= 10 ? '#78350f' : '#7f1d1d'; }
+    if (roiBadge)    { roiBadge.textContent = `${roi}% ROI`; roiBadge.style.background = 'rgba(255,255,255,0.15)'; }
+    if (verdictBadge) {
+        if (netProfit > 0 && margin >= 30) { verdictBadge.textContent = '✅ Profitable'; verdictBadge.style.background = '#166534'; }
+        else if (netProfit > 0)             { verdictBadge.textContent = '📊 Marginal profit'; verdictBadge.style.background = '#92400e'; }
+        else                                { verdictBadge.textContent = '❌ Loss projected'; verdictBadge.style.background = '#7f1d1d'; }
+    }
+    showEl(panel);
+}
+
+// ==================== CSV EXPORT ====================
+function _downloadCSV(filename, rows, headers) {
+    const escape = v => {
+        const s = String(v == null ? '' : v).replace(/"/g, '""');
+        return /[",\n\r]/.test(s) ? `"${s}"` : s;
+    };
+    const lines = [headers.map(escape).join(',')];
+    rows.forEach(r => lines.push(r.map(escape).join(',')));
+    const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    toast(`✅ CSV exported: ${filename}`);
+}
+
+function exportGrowerRecordsCSV() {
+    const cards = document.querySelectorAll('#cropRecordsGrid .record-card');
+    if (!cards.length) { toast('No records to export.', true); return; }
+    const headers = ['Crop','Variety','Stage','GH No.','Area (m²)','Weekly Yield','Unit','Status','Transplant Date'];
+    const rows = [];
+    cards.forEach(card => {
+        const get = sel => { const el = card.querySelector(sel); return el ? el.textContent.trim() : '—'; };
+        rows.push([
+            get('.record-crop-name') || get('[data-field="crop"]') || get('.record-badge-crop') || '—',
+            get('.record-variety') || get('[data-field="variety"]') || '—',
+            get('.record-stage') || get('[data-field="stage"]') || '—',
+            get('.record-gh') || get('[data-field="ghnum"]') || '—',
+            get('.record-area') || get('[data-field="area"]') || '—',
+            get('.record-weekly') || get('[data-field="yield"]') || '—',
+            get('.record-unit') || get('[data-field="unit"]') || '—',
+            get('.record-status-btn, .record-status-text, .completed-badge') || '—',
+            get('.record-date') || get('[data-field="date"]') || '—',
+        ]);
+    });
+    const ts = new Date().toISOString().slice(0,10);
+    _downloadCSV(`MoHydro_MyRecords_${ts}.csv`, rows, headers);
+}
+
+function exportAdminSearchCSV() {
+    const grid = document.getElementById('adminSearchGrid');
+    if (!grid) { toast('No data to export.', true); return; }
+    const cards = grid.querySelectorAll('.record-card');
+    if (!cards.length) { toast('No records to export.', true); return; }
+    const grower = document.getElementById('adminSearchedUsernameText')?.textContent || 'grower';
+    const headers = ['Crop','Variety','Stage','GH No.','Area (m²)','Weekly Yield','Status'];
+    const rows = [];
+    cards.forEach(card => {
+        const get = sel => { const el = card.querySelector(sel); return el ? el.textContent.trim() : '—'; };
+        rows.push([
+            get('.record-crop-name') || get('.record-badge-crop') || '—',
+            get('.record-variety') || '—',
+            get('.record-stage') || '—',
+            get('.record-gh') || '—',
+            get('.record-area') || '—',
+            get('.record-weekly') || '—',
+            get('.record-status-btn, .completed-badge') || '—',
+        ]);
+    });
+    const ts = new Date().toISOString().slice(0,10);
+    _downloadCSV(`MoHydro_Grower_${grower}_${ts}.csv`, rows, headers);
+}
+// ==================== END CSV EXPORT ====================
 
 function ylfLightboxClose() {
     const lb = document.getElementById('ylfLightbox');
