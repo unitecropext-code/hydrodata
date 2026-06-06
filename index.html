@@ -11018,34 +11018,57 @@ const VARIETY_COLORS = {
 const STAGE_COLORS = ['#a7f3d0','#34d399','#059669','#d97706','#1a7e22'];
 const STAGE_NAMES  = ['Seedling','Vegetative','Flowering','Fruiting','Harvesting'];
 
+// v37: ResizeObserver handle — kept so we can disconnect the old one before
+// wiring a new one each time the map is (re)created.
+let _yieldMapResizeObserver = null;
+
+function _destroyYieldMap() {
+    // Disconnect any live ResizeObserver first to avoid callbacks on a dead map.
+    if (_yieldMapResizeObserver) {
+        _yieldMapResizeObserver.disconnect();
+        _yieldMapResizeObserver = null;
+    }
+    if (_yieldMapInstance) {
+        // Remove the dark-mode listener so it doesn't fire on the dead instance.
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', _onDarkModeChangeTiles);
+        }
+        _yieldMapInstance.remove();   // tears down the Leaflet instance + clears the DOM node
+        _yieldMapInstance  = null;
+        _yieldMapTileLayer = null;
+        _yieldMapMarkers   = [];
+        _yieldMapPulseMarkers = [];
+    }
+}
+
 function initYieldMap() {
     const container = document.getElementById('yieldMapContainer');
     if (!container) return;
 
-    // Use requestAnimationFrame + a size check instead of offsetParent (unreliable with
-    // display:none !important). We wait for the container to have real pixel dimensions
-    // before letting Leaflet measure it, preventing the classic tile-grid distortion.
+    // v37 FIX: Always destroy before recreating.
+    // Reusing a map instance whose container was in display:none — even briefly — risks
+    // Leaflet anchoring tiles at (0,0) of the page instead of the container, because
+    // offsetLeft/offsetTop are captured once at init time and scroll-into-view may still
+    // be animating. Destroying and recreating on every tab-show is cheap and bulletproof.
+    _destroyYieldMap();
+
+    // Wait until the container has real pixel dimensions (display:none gives 0).
+    // RAF alone isn't enough when scrollIntoView is still animating, so we poll
+    // with a short timeout until width > 0.
     const w = container.getBoundingClientRect().width;
     if (w === 0) {
-        // Not laid out yet — retry after next paint cycle
         requestAnimationFrame(() => setTimeout(initYieldMap, 50));
         return;
     }
 
-    if (_yieldMapInstance) {
-        // Already initialised — just fix the tile layout after display:none→block.
-        // Fire twice: once immediately for a quick repaint, once after the 220ms
-        // tabFadeIn animation fully completes to catch any residual layout shift.
-        _yieldMapInstance.invalidateSize({ pan: true });
-        _yieldMapInstance.setView([-20.2566, 57.6004], _yieldMapInstance.getZoom());
-        setTimeout(() => {
-            _yieldMapInstance.invalidateSize({ pan: true });
-            _yieldMapInstance.setView([-20.2566, 57.6004], _yieldMapInstance.getZoom());
-        }, 260);
-        return;
-    }
+    // Create a fresh map instance every time the tab is opened.
+    _yieldMapInstance = L.map('yieldMapContainer', {
+        // Disable the built-in fade animation: it causes tiles to be positioned
+        // relative to the old (stale) container origin during the animation frame.
+        fadeAnimation: false,
+        zoomAnimation: false,
+    }).setView([-20.2566, 57.6004], 11);
 
-    _yieldMapInstance = L.map('yieldMapContainer').setView([-20.2566, 57.6004], 11);
     // v19: use CARTO dark tiles in dark mode, OSM light tiles otherwise
     const _darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const _initTileURL = _darkMode
@@ -11055,8 +11078,24 @@ function initYieldMap() {
         ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
         : '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
     _yieldMapTileLayer = L.tileLayer(_initTileURL, { attribution: _initTileAttr, maxZoom: 17 }).addTo(_yieldMapInstance);
-    // Watch for runtime dark/light mode changes and swap tiles live
-    if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', _onDarkModeChangeTiles);
+
+    // Watch for runtime dark/light mode changes and swap tiles live.
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', _onDarkModeChangeTiles);
+    }
+
+    // v37 FIX: Wire a ResizeObserver so that any subsequent container resize
+    // (expand/collapse toggle, window resize, panel slide) calls invalidateSize
+    // with the real final dimensions instead of whatever RAF happened to catch.
+    if (typeof ResizeObserver !== 'undefined') {
+        _yieldMapResizeObserver = new ResizeObserver(() => {
+            if (_yieldMapInstance) {
+                _yieldMapInstance.invalidateSize({ pan: false });
+            }
+        });
+        _yieldMapResizeObserver.observe(container);
+    }
+
     if (_yieldMapData) renderYieldMapLayer(_yieldMapCrop);
 }
 
@@ -11087,9 +11126,10 @@ function toggleMapExpand() {
         if (icon) { icon.classList.replace('fa-compress-alt','fa-expand-alt'); }
         if (lbl)  lbl.textContent = 'Expand';
     }
-    // FIX: height transition is 0.3s (300 ms); fire invalidateSize at 360 ms so it always
-    // runs after the container has its final dimensions, not mid-transition.
-    if (_yieldMapInstance) { setTimeout(()=>{ _yieldMapInstance.invalidateSize({ pan:true }); },360); }
+    // v37: ResizeObserver fires invalidateSize automatically as the height transition runs,
+    // including at its final value. No manual setTimeout needed; keep a single deferred
+    // call only as a belt-and-suspenders guard for browsers that batch ResizeObserver late.
+    if (_yieldMapInstance) { setTimeout(()=>{ _yieldMapInstance.invalidateSize({ pan:false }); }, 380); }
 }
 
 function toggleMockMode() {
@@ -12113,10 +12153,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tabId === 'varietyPerfTab' && !_vpRawData.length) {
             const msg = document.getElementById('vpStatusMsg'); if (msg) showEl(msg);
         }
-        // 400 ms: clears the 220ms tabFadeIn animation + scroll-into-view reflow before
-        // Leaflet measures the container. The RAF+size-check inside initYieldMap is the
-        // real safety net, but starting later means fewer retry cycles needed.
-        if (tabId === 'yieldMapTab') setTimeout(() => { maybeAutoLoadYieldMap(); }, 400);
+        // v37: No delay needed — initYieldMap now destroys and recreates the map
+        // instance every time the tab is shown, and polls until the container has
+        // real pixel dimensions before calling L.map(). The ResizeObserver then
+        // handles any subsequent container resizes automatically.
+        if (tabId === 'yieldMapTab') maybeAutoLoadYieldMap();
         if (tabId === 'onlineNowTab') loadOnlineGrowers(false);
     };
 
