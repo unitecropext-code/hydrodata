@@ -760,6 +760,14 @@
             animation: tabFadeIn 0.22s ease-out;
         }
         @keyframes tabFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        /* v37 FIX: yield map tab MUST NOT use transform in its fade animation.
+           Leaflet reads getBoundingClientRect() and CSS transform offsets during L.map() init.
+           A translateY on the ancestor corrupts _getMapPanePos() → tile-grid fragmentation.
+           Use opacity-only fade for this tab so the container is always at its true position. */
+        #yieldMapTab.active {
+            animation: tabFadeInOpacityOnly 0.22s ease-out;
+        }
+        @keyframes tabFadeInOpacityOnly { from { opacity: 0; } to { opacity: 1; } }
         /* scroll-margin so sticky header doesn't cover the newly-shown section */
         .admin-tab-content { scroll-margin-top: 80px; }
 
@@ -12147,17 +12155,22 @@ document.addEventListener('DOMContentLoaded', () => {
             chip.innerHTML = `<i class="fas ${ACP_BREADCRUMB[tabId].icon}"></i> ${ACP_BREADCRUMB[tabId].label}`;
         }
         // 4. Issue #15: smooth scroll so sticky header doesn't obscure content
-        if (tab) tab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // v37 FIX: for yieldMapTab use 'instant' scroll — smooth-scroll keeps changing
+        // getBoundingClientRect() while Leaflet is initialising, corrupting tile placement.
+        if (tab) {
+            const scrollBehavior = (tabId === 'yieldMapTab') ? 'instant' : 'smooth';
+            tab.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
+        }
         // 5. Tab-specific side effects
         if (tabId === 'adminGHTab') renderAdminGHForm();
         if (tabId === 'varietyPerfTab' && !_vpRawData.length) {
             const msg = document.getElementById('vpStatusMsg'); if (msg) showEl(msg);
         }
-        // v37: No delay needed — initYieldMap now destroys and recreates the map
-        // instance every time the tab is shown, and polls until the container has
-        // real pixel dimensions before calling L.map(). The ResizeObserver then
-        // handles any subsequent container resizes automatically.
-        if (tabId === 'yieldMapTab') maybeAutoLoadYieldMap();
+        // v37 FIX: defer until after the 220ms tabFadeInOpacityOnly animation completes.
+        // The CSS animation runs on the tab's own element (no transform, opacity only), but
+        // the browser may still defer compositing until the animation frame finishes.
+        // Waiting 250ms (220ms anim + 30ms buffer) guarantees L.map() sees stable geometry.
+        if (tabId === 'yieldMapTab') setTimeout(() => maybeAutoLoadYieldMap(), 250);
         if (tabId === 'onlineNowTab') loadOnlineGrowers(false);
     };
 
