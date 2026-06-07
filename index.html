@@ -8511,7 +8511,7 @@ function renderUserRecords(rows, headers) {
         const swipeWrapClass = isCompleted ? 'completed' : 'active-cycle';
         return `<div class="record-card-swipe-wrap" data-swipe-idx="${i}">
             <div class="record-swipe-actions">
-                <button class="rsa-btn rsa-edit" onclick="openEditModal(${i})" aria-label="Edit record">
+                <button class="rsa-btn rsa-edit" onclick="openEditModal(${i}, '${tsRaw.replace(/'/g,"\\'")}', '${ghNum.replace(/'/g,"\\'")}')" aria-label="Edit record">
                     <i class="fas fa-edit"></i>Edit
                 </button>
                 <button class="rsa-btn ${toggleBtnClass}" onclick="swipeToggleCycle('${currentLoggedInUser}','${tsRaw.replace(/'/g,"\\'")}',${i})" aria-label="${toggleBtnLabel}">
@@ -8538,9 +8538,7 @@ function renderUserRecords(rows, headers) {
                     title="${isCompleted?'Click to restore to Active':'Click to mark as Completed'}">
                     ${toggleLabel}
                 </button>
-                <button class="edit-record-btn" onclick="openEditModal(${i})">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
+                ${renderCropRecordActions(tsRaw, ghNum, i)}
             </div>
             <div class="ylf-section">
                 <!-- v30 pill-style toggle bar -->
@@ -8697,18 +8695,36 @@ function initRecordCardSwipe() {
 }
 
 // ==================== EDIT MODAL (Grower — own records) ====================
-function openEditModal(idx) {
+function openEditModal(idx, recordTs, recordGhNum) {
     if(!currentUserRecords)return;
-    const row=currentUserRecords.rows[idx];const headers=currentUserRecords.headers;
-    // FIX v31: set currentEditRecord BEFORE _populateEditModal so the grid
-    // timestamp stamp (dataset.editGhTimestamp) captures the correct value.
+    // Fix 1: look up by stable timestamp key instead of mutable array index.
+    // recordTs and recordGhNum are baked into the button at render time and
+    // never shift when the record list is re-sorted or re-fetched.
+    const headers=currentUserRecords.headers;
     const hdr=headers.map(h=>h.toString().toLowerCase());
     const tsCol=hdr.findIndex(h=>h.includes('timestamp'));
+    let row, resolvedIdx;
+    if(recordTs && tsCol!==-1){
+        resolvedIdx=currentUserRecords.rows.findIndex(r=>String(r[tsCol]||'')===recordTs);
+        row=resolvedIdx!==-1?currentUserRecords.rows[resolvedIdx]:currentUserRecords.rows[idx];
+        if(resolvedIdx===-1)resolvedIdx=idx;
+    } else {
+        row=currentUserRecords.rows[idx];
+        resolvedIdx=idx;
+    }
+    if(!row)return;
     const growerCol=hdr.findIndex(h=>h.includes('grower name'));
-    currentEditRecord={row,headers,idx,ts:tsCol!==-1?String(row[tsCol]||''):'',grower:growerCol!==-1?String(row[growerCol]||''):currentLoggedInUser,isAdminEdit:false};
+    const ts=tsCol!==-1?String(row[tsCol]||''):'';
+    const grower=growerCol!==-1?String(row[growerCol]||''):currentLoggedInUser;
+    currentEditRecord={row,headers,idx:resolvedIdx,ts,grower,isAdminEdit:false};
     adminEditContext=null;
+    // Fix 1: stamp stable identifiers onto the modal DOM so saveCropEdit reads
+    // the correct record even if currentEditRecord is clobbered by a rapid second open.
+    const overlay=document.getElementById('editModalOverlay');
+    overlay.setAttribute('data-target-ts', ts);
+    overlay.setAttribute('data-target-gh', recordGhNum||'');
     _populateEditModal(row,headers,currentLoggedInUser,false);
-    showEl(document.getElementById('editModalOverlay'), 'flex');
+    showEl(overlay, 'flex');
     document.body.style.overflow='hidden';
 }
 
@@ -8722,10 +8738,16 @@ function openAdminEditModal(username, rowIndex, rows, headers) {
     const ts=tsCol!==-1?String(row[tsCol]||''):'';
     const grower=growerCol!==-1?String(row[growerCol]||''):username;
     // FIX v31: set currentEditRecord BEFORE _populateEditModal
+    const ghCol=hdr.findIndex(h=>h.includes('gh number'));
+    const ghNum=ghCol!==-1?String(row[ghCol]||''):'';
     currentEditRecord={row,headers,idx:rowIndex,ts,grower,isAdminEdit:true};
     adminEditContext={username,rowIndex,rows,headers};
+    // Fix 1 (admin): stamp stable identifiers onto modal DOM to prevent cross-greenhouse saves
+    const overlay=document.getElementById('editModalOverlay');
+    overlay.setAttribute('data-target-ts', ts);
+    overlay.setAttribute('data-target-gh', ghNum);
     _populateEditModal(row,headers,username,true);
-    showEl(document.getElementById('editModalOverlay'), 'flex');
+    showEl(overlay, 'flex');
     document.body.style.overflow='hidden';
 }
 
@@ -10182,8 +10204,27 @@ function toggleWeeklySection() {
 // ==================== SAVE EDIT RECORD ====================
 async function saveEditRecord() {
     if(!currentEditRecord)return;
-    // FIX v30: sanity-check that the modal timestamp still matches the record we opened
-    // (guards against rare race condition where admin opens two records quickly)
+    // Fix 2: primary mismatch guard — compare the ts stamped onto the overlay at open-time
+    // against currentEditRecord.ts. If they differ, a rapid second open has clobbered the
+    // global and saving now would write to the wrong greenhouse row.
+    const overlay = document.getElementById('editModalOverlay');
+    const domTargetTs = overlay ? overlay.getAttribute('data-target-ts') : null;
+    if(domTargetTs && domTargetTs !== currentEditRecord.ts) {
+        toast('⚠️ Record mismatch detected — please close and reopen the edit modal.', true);
+        return;
+    }
+    // Fix 3: also guard on GH number to prevent cross-greenhouse data leakage
+    const domTargetGh = overlay ? overlay.getAttribute('data-target-gh') : null;
+    if(domTargetGh !== null && domTargetGh !== '') {
+        const _hdrLowG = (currentEditRecord.headers||[]).map(h=>String(h).toLowerCase());
+        const _ghColG  = _hdrLowG.findIndex(h=>h.includes('gh number'));
+        const _recGh   = _ghColG !== -1 ? String(currentEditRecord.row[_ghColG]||'') : '';
+        if(_recGh && _recGh !== domTargetGh) {
+            toast('⚠️ Greenhouse mismatch — please close and reopen the edit modal.', true);
+            return;
+        }
+    }
+    // FIX v30: secondary guard via grid dataset (kept for backwards compat)
     const gridEl = document.getElementById('editMonthlyGrid');
     if(gridEl && gridEl.dataset.editGhTimestamp &&
        gridEl.dataset.editGhTimestamp !== currentEditRecord.ts) {
@@ -13066,6 +13107,20 @@ function exportAdminSearchCSV() {
 }
 // ==================== END CSV EXPORT ====================
 
+// ==================== CROP RECORD ACTIONS TEMPLATE (Fix 3) ====================
+// Pass the full row data object (with ts and ghNum) so both identifiers are
+// baked into the onclick at render time — immune to index shifts on re-render.
+// Usage: renderCropRecordActions(tsRaw, ghNum, idx)
+function renderCropRecordActions(tsRaw, ghNum, idx) {
+    // Returns only the edit button — caller owns the .record-card-actions wrapper
+    const tsSafe = (tsRaw||'').replace(/'/g,"\'");
+    const ghSafe = (ghNum||'').replace(/'/g,"\'");
+    return `<button class="edit-record-btn" onclick="openEditModal(${idx},'${tsSafe}','${ghSafe}')">
+        <i class="fas fa-edit"></i> Edit
+    </button>`;
+}
+// ==================== END CROP RECORD ACTIONS TEMPLATE ====================
+
 function ylfLightboxClose() {
     const lb = document.getElementById('ylfLightbox');
     if (lb) lb.classList.remove('open');
@@ -13146,7 +13201,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <script>
     // v19: apply saved language preference on page load
-    applyLang(_currentLang);
+    // Defensive guard: applyLang may not be defined if main script block errored
+    if (typeof applyLang === 'function') applyLang(_currentLang);
 
     // Service Worker registration for PWA offline support
     if ('serviceWorker' in navigator) {
