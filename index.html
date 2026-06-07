@@ -8,19 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="MoHydro">
     <meta name="description" content="MoHydroponic Smart Tracker — Real-Time Crop Intelligence for Zone E2 growers">
-    <!-- ═══════════════════════════════════════════════════════════════
-         SECURITY HARDENING NOTES (v38) — apply these server-side:
-         1. Move CSP to HTTP response header (meta CSP cannot block all vectors)
-         2. Replace 'unsafe-inline' in script-src with a nonce or hash
-         3. Tighten connect-src to exact GAS endpoint, not wildcard https:
-         4. Add Referrer-Policy: strict-origin-when-cross-origin header
-         5. Add Permissions-Policy: camera=(), microphone=() if not needed
-         6. Ensure HTTPS-only; add HSTS header: Strict-Transport-Security: max-age=63072000
-         7. Rate-limit login attempts server-side (GAS endpoint)
-         8. Never log or expose credentials in URL params — use POST body only
-         9. Sanitize all user inputs before rendering innerHTML (use textContent)
-        10. Rotate IndexedDB / localStorage cache keys on logout to prevent data leakage
-         ══════════════════════════════════════════════════════════════ -->
+
     <!-- Security: Content Security Policy (tightened — restrict connect-src to GAS only) -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'none'; upgrade-insecure-requests;">
     <meta http-equiv="X-Frame-Options" content="DENY">
@@ -99,15 +87,22 @@
             animation: popIn 0.3s ease-out;
         }
         @keyframes popIn { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
-        .login-logo {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg,var(--green-800),var(--green-500));
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 1.2rem; box-shadow: 0 8px 20px rgba(30,120,50,0.4);
+        .login-logo-svg-wrap {
+            width: 120px; height: 120px; margin: 0 auto 0.6rem; display: block;
         }
-        .login-logo i { color: white; font-size: 1.6rem; }
-        .login-header { font-size: 1.6rem; font-weight: 800; color: var(--green-800); margin-bottom: 0.3rem; }
-        .login-sub { font-size: 0.82rem; color: #888; margin-bottom: 1.8rem; }
+        .mohy-svg-logo {
+            width: 100%; height: 100%;
+        }
+        .mohy-svg-logo--header {
+            width: 68px; height: 68px;
+        }
+        .login-header { font-size: 1.7rem; font-weight: 900; margin-bottom: 0.15rem; letter-spacing: -0.02em; }
+        .login-mo { color: #f5a623; }
+        .login-hydro { color: var(--green-800); }
+        .login-sub-title { font-size: 1rem; font-weight: 600; color: var(--green-600); margin-bottom: 0.25rem; letter-spacing: 0.05em; }
+        .login-sub { font-size: 0.78rem; color: #999; margin-bottom: 1.6rem; letter-spacing: 0.04em; }
+        .mohy-title-mo { color: #f5a623; }
+        .mohy-title-hydro { color: white; }
         .login-input-wrap { position: relative; margin-bottom: 1rem; }
         .login-input-wrap i.icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--green-400); font-size: 0.9rem; }
         .login-card input {
@@ -2950,9 +2945,39 @@
     <!-- LOGIN OVERLAY -->
     <div id="loginOverlay" class="login-overlay" role="dialog" aria-label="Login to MoHydroponic Smart Tracker" aria-modal="true">
         <div class="login-card">
-            <div class="login-logo"><i class="fas fa-leaf"></i></div>
-            <div class="login-header" data-i18n="login.title">MoHydroponic Smart Tracker</div>
-            <div class="login-sub" data-i18n="login.sub">Real-Time Crop Insights</div>
+            <div class="login-logo-svg-wrap">
+<svg class="mohy-svg-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <clipPath id="logoClip">
+      <circle cx="100" cy="100" r="90"/>
+    </clipPath>
+  </defs>
+  <circle cx="100" cy="100" r="90" fill="rgba(255,255,255,0.06)"/>
+  <path d="M 14 62 A 90 90 0 0 0 14 138" fill="none" stroke="#f5a623" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 178 55 A 78 78 0 0 1 185 148" fill="none" stroke="#f5a623" stroke-width="7" stroke-linecap="round"/>
+  <path d="M 34 74 A 70 70 0 0 0 34 126" fill="none" stroke="#3a6b0f" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 162 72 A 56 56 0 0 1 168 129" fill="none" stroke="#3a6b0f" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 58 84 A 44 44 0 0 0 58 116" fill="none" stroke="#8dc63f" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="100" cy="30"  r="11" fill="#3a6b0f"/>
+  <circle cx="74"  cy="58"  r="7"  fill="#3a6b0f"/>
+  <circle cx="98"  cy="170" r="13" fill="#3a6b0f"/>
+  <circle cx="130" cy="158" r="8"  fill="#3a6b0f"/>
+  <circle cx="40"  cy="84"  r="4"  fill="#f5a623"/>
+  <circle cx="38"  cy="118" r="4"  fill="#f5a623"/>
+  <circle cx="162" cy="88"  r="3.5" fill="#f5a623"/>
+  <circle cx="164" cy="115" r="3.5" fill="#f5a623"/>
+  <polyline points="70,100 77,89 85,108 92,94 100,100 108,94 116,108 123,89 130,100" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="76" y="107" width="48" height="34" rx="2" fill="#c8e49a" stroke="#3a6b0f" stroke-width="1.5"/>
+  <path d="M 73 110 Q 100 94 127 110" fill="#8dc63f" stroke="#3a6b0f" stroke-width="1.5" stroke-linejoin="round"/>
+  <rect x="88"  y="116" width="12" height="16" rx="1" fill="white"   stroke="#3a6b0f" stroke-width="1"/>
+  <rect x="104" y="116" width="10" height="10" rx="1" fill="#e8f5d8" stroke="#3a6b0f" stroke-width="1"/>
+  <line x1="76" y1="122" x2="124" y2="122" stroke="#3a6b0f" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <line x1="84" y1="107" x2="84"  y2="141" stroke="#3a6b0f" stroke-width="0.8"/>
+  <line x1="116" y1="107" x2="116" y2="141" stroke="#3a6b0f" stroke-width="0.8"/>
+</svg>
+            </div>
+            <div class="login-header" data-i18n="login.title"><span class="login-mo">Mo</span><span class="login-hydro">Hydroponic</span></div>
+            <div class="login-sub" data-i18n="login.sub">Data Capture &nbsp;·&nbsp; Real-Time &nbsp;·&nbsp; Insights</div>
             <div class="login-input-wrap">
                 <i class="fas fa-user icon"></i>
                 <input type="text" id="loginUsername" placeholder="Username" autocomplete="username" data-i18n="login.username" data-i18n-attr="placeholder">
@@ -3015,17 +3040,39 @@
                     <!-- Branding left -->
                     <div class="mohy-left">
                         <div class="mohy-logo-ring" id="mohyLogoRing">
-                            <div class="mohy-logo-inner">
-                                <i class="fas fa-seedling"></i>
-                            </div>
-                            <svg class="mohy-ring-svg" viewBox="0 0 80 80">
-                                <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(74,222,128,0.32)" stroke-width="1.5" stroke-dasharray="5 4"/>
-                                <circle cx="40" cy="40" r="26" fill="none" stroke="rgba(74,222,128,0.13)" stroke-width="1"/>
-                            </svg>
+<svg class="mohy-svg-logo mohy-svg-logo--header" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <clipPath id="logoClip">
+      <circle cx="100" cy="100" r="90"/>
+    </clipPath>
+  </defs>
+  <circle cx="100" cy="100" r="90" fill="rgba(255,255,255,0.06)"/>
+  <path d="M 14 62 A 90 90 0 0 0 14 138" fill="none" stroke="#f5a623" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 178 55 A 78 78 0 0 1 185 148" fill="none" stroke="#f5a623" stroke-width="7" stroke-linecap="round"/>
+  <path d="M 34 74 A 70 70 0 0 0 34 126" fill="none" stroke="#3a6b0f" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 162 72 A 56 56 0 0 1 168 129" fill="none" stroke="#3a6b0f" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 58 84 A 44 44 0 0 0 58 116" fill="none" stroke="#8dc63f" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="100" cy="30"  r="11" fill="#3a6b0f"/>
+  <circle cx="74"  cy="58"  r="7"  fill="#3a6b0f"/>
+  <circle cx="98"  cy="170" r="13" fill="#3a6b0f"/>
+  <circle cx="130" cy="158" r="8"  fill="#3a6b0f"/>
+  <circle cx="40"  cy="84"  r="4"  fill="#f5a623"/>
+  <circle cx="38"  cy="118" r="4"  fill="#f5a623"/>
+  <circle cx="162" cy="88"  r="3.5" fill="#f5a623"/>
+  <circle cx="164" cy="115" r="3.5" fill="#f5a623"/>
+  <polyline points="70,100 77,89 85,108 92,94 100,100 108,94 116,108 123,89 130,100" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="76" y="107" width="48" height="34" rx="2" fill="#c8e49a" stroke="#3a6b0f" stroke-width="1.5"/>
+  <path d="M 73 110 Q 100 94 127 110" fill="#8dc63f" stroke="#3a6b0f" stroke-width="1.5" stroke-linejoin="round"/>
+  <rect x="88"  y="116" width="12" height="16" rx="1" fill="white"   stroke="#3a6b0f" stroke-width="1"/>
+  <rect x="104" y="116" width="10" height="10" rx="1" fill="#e8f5d8" stroke="#3a6b0f" stroke-width="1"/>
+  <line x1="76" y1="122" x2="124" y2="122" stroke="#3a6b0f" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <line x1="84" y1="107" x2="84"  y2="141" stroke="#3a6b0f" stroke-width="0.8"/>
+  <line x1="116" y1="107" x2="116" y2="141" stroke="#3a6b0f" stroke-width="0.8"/>
+</svg>
                         </div>
                         <div class="mohy-title-block">
                             <div class="mohy-eyebrow"><span class="mohy-live-dot"></span>&nbsp;LIVE PLATFORM</div>
-                            <h1 class="mohy-title">MoHydroponic<br><span class="mohy-title-accent">Smart Data Tracker</span></h1>
+                            <h1 class="mohy-title"><span class="mohy-title-mo">Mo</span><span class="mohy-title-hydro">Hydroponic</span><br><span class="mohy-title-accent">Data Tracker</span></h1>
                             <div class="mohy-tagline" id="mohyTagline" data-i18n="header.tagline">Real-Time Crop Intelligence </div>
                         </div>
                     </div>
