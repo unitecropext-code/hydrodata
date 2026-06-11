@@ -1296,43 +1296,100 @@
         .ts-fruiting    { background: linear-gradient(135deg,#f07832,#b83b10); }
         .ts-harvesting  { background: linear-gradient(135deg,#5b70f0,#1a3ec2); }
 
-        /* Content panel */
-        .tips-content-panel { background: linear-gradient(145deg,#f5fdf6,#eaf6ec); border: 1.5px solid var(--green-200); border-radius: var(--radius-lg); padding: 1.1rem 1.2rem; animation: tipsFadeIn 0.28s ease; }
-        @keyframes tipsFadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .tips-content-panel { background: linear-gradient(145deg,#f5fdf6,#eaf6ec); border: 1.5px solid var(--green-200); border-radius: var(--radius-lg); padding: 1.2rem 1.3rem; animation: tipsFadeIn 0.28s ease; }
+        @keyframes tipsFadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .tcp-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.9rem; flex-wrap: wrap; }
-        .tcp-stage-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: var(--radius-pill); padding: 5px 14px; font-size: 0.8rem; font-weight: 800; color: white; flex-shrink:0; }
-        .tcp-title { font-weight: 800; font-size: 1.05rem; color: var(--green-900); line-height: 1.3; }
-        .tcp-system { font-size: 0.75rem; color: #777; font-weight: 600; margin-top: 2px; }
+        .tcp-stage-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: var(--radius-pill); padding: 6px 16px; font-size: 0.82rem; font-weight: 800; color: white; flex-shrink:0; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
 
-        /* EC/pH gauge strip */
-        .tcp-ec-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
-        .tcp-ec-pill { display: inline-flex; align-items: center; gap: 6px; background: white; border: 1.5px solid var(--green-200); border-radius: var(--radius-pill); padding: 5px 12px; font-size: 0.78rem; font-weight: 700; color: var(--green-800); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-        .tcp-ec-pill i { color: var(--green-500); }
-        .tcp-ec-pill.ph-pill { border-color: #93c5fd; color: #1e40af; }
-        .tcp-ec-pill.ph-pill i { color: #3b82f6; }
-
-        /* Tip cards grid */
-        .tcp-tips-grid { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
+        /* Tip cards grid — enhanced dynamic design */
+        .tcp-tips-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
         @media (min-width: 600px) { .tcp-tips-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 900px) { .tcp-tips-grid { grid-template-columns: repeat(3, 1fr); } }
-        .tcp-tip-card { background: white; border-radius: 0.9rem; padding: 0.7rem 0.85rem; font-size: 0.82rem; color: #333; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.15s, box-shadow 0.15s; }
-        .tcp-tip-card:hover { transform: translateY(-2px); box-shadow: 0 5px 16px rgba(25,120,50,0.12); }
-        .tcp-tip-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.8rem; margin-top: 1px; }
-        .tcp-tip-icon.ic-water  { background: #dbeafe; color: #2563eb; }
+        .tcp-tip-card {
+            background: white;
+            border-radius: 1.1rem;
+            padding: 0.85rem 1rem;
+            font-size: 0.84rem;
+            color: #1a2e1a;
+            line-height: 1.55;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+            border: 1.5px solid rgba(0,0,0,0.055);
+            transition: transform 0.18s cubic-bezier(0.4,0,0.2,1), box-shadow 0.18s, border-color 0.18s;
+            position: relative;
+            overflow: hidden;
+        }
+        .tcp-tip-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3.5px;
+            border-radius: 2px 0 0 2px;
+            background: var(--tip-accent, var(--green-400));
+        }
+        .tcp-tip-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(25,120,50,0.14);
+            border-color: var(--tip-accent, var(--green-300));
+        }
+        .tcp-tip-icon {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+            margin-top: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .tcp-tip-text { flex: 1; font-weight: 500; color: #1c2e1c; }
+        .tcp-tip-card.ic-water  { --tip-accent:#3b82f6; }
+        .tcp-tip-card.ic-chem   { --tip-accent:#10b981; }
+        .tcp-tip-card.ic-warn   { --tip-accent:#f59e0b; }
+        .tcp-tip-card.ic-bug    { --tip-accent:#ef4444; }
+        .tcp-tip-card.ic-plant  { --tip-accent:#22c55e; }
+        .tcp-tip-card.ic-temp   { --tip-accent:#ec4899; }
+        .tcp-tip-card.ic-wind   { --tip-accent:#0ea5e9; }
+        .tcp-tip-card.ic-ruler  { --tip-accent:#8b5cf6; }
+        .tcp-tip-card.ic-sun    { --tip-accent:#eab308; }
+        .tcp-tip-card.ic-scale  { --tip-accent:#6b7280; }
+        .tcp-tip-card.ic-rec    { --tip-accent:#14b8a6; }
+        .tcp-tip-card.ic-cut    { --tip-accent:#f472b6; }
+        .tcp-tip-card.ic-cal    { --tip-accent:#6366f1; }
+        .tcp-tip-card.ic-chart  { --tip-accent:#0d9488; }
+        .tcp-tip-card.ic-clip   { --tip-accent:#0284c7; }
+        .tcp-tip-icon.ic-water  { background: #dbeafe; color: #1d4ed8; }
         .tcp-tip-icon.ic-chem   { background: #d1fae5; color: #065f46; }
-        .tcp-tip-icon.ic-warn   { background: #fef3c7; color: #b45309; }
-        .tcp-tip-icon.ic-bug    { background: #fee2e2; color: #b91c1c; }
+        .tcp-tip-icon.ic-warn   { background: #fef3c7; color: #92400e; }
+        .tcp-tip-icon.ic-bug    { background: #fee2e2; color: #991b1b; }
         .tcp-tip-icon.ic-plant  { background: #dcfce7; color: #15803d; }
         .tcp-tip-icon.ic-temp   { background: #fce7f3; color: #9d174d; }
         .tcp-tip-icon.ic-wind   { background: #e0f2fe; color: #0369a1; }
         .tcp-tip-icon.ic-ruler  { background: #ede9fe; color: #6d28d9; }
-        .tcp-tip-icon.ic-sun    { background: #fef9c3; color: #a16207; }
+        .tcp-tip-icon.ic-sun    { background: #fef9c3; color: #92400e; }
         .tcp-tip-icon.ic-scale  { background: #f3f4f6; color: #374151; }
-        .tcp-tip-icon.ic-rec    { background: #d1fae5; color: #047857; }
+        .tcp-tip-icon.ic-rec    { background: #ccfbf1; color: #0f766e; }
         .tcp-tip-icon.ic-cut    { background: #fce7f3; color: #be185d; }
         .tcp-tip-icon.ic-cal    { background: #e0e7ff; color: #3730a3; }
-        .tcp-tip-icon.ic-chart  { background: #d1fae5; color: #065f46; }
+        .tcp-tip-icon.ic-chart  { background: #ccfbf1; color: #065f46; }
         .tcp-tip-icon.ic-clip   { background: #e0f2fe; color: #0c4a6e; }
+        @keyframes tipCardIn { from { opacity:0; transform:translateY(10px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .tcp-tip-card { animation: tipCardIn 0.22s ease both; }
+        .tcp-tip-card:nth-child(2) { animation-delay:.04s; }
+        .tcp-tip-card:nth-child(3) { animation-delay:.08s; }
+        .tcp-tip-card:nth-child(4) { animation-delay:.12s; }
+        .tcp-tip-card:nth-child(5) { animation-delay:.16s; }
+        .tcp-tip-card:nth-child(6) { animation-delay:.20s; }
+        /* EC/pH strip enhancements */
+        .tcp-ec-strip { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1rem; }
+        .tcp-ec-pill { display:inline-flex;align-items:center;gap:7px;background:white;border:1.5px solid var(--green-200);border-radius:var(--radius-pill);padding:6px 14px;font-size:0.8rem;font-weight:700;color:var(--green-800);box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+        .tcp-ec-pill i { color:var(--green-500); }
+        .tcp-ec-pill.ph-pill { border-color:#93c5fd;color:#1e40af; }
+        .tcp-ec-pill.ph-pill i { color:#3b82f6; }
+        /* Content panel header */
+        .tcp-title { font-weight:800;font-size:1.08rem;color:var(--green-900);line-height:1.3; }
+        .tcp-system { font-size:0.76rem;color:#666;font-weight:600;margin-top:2px; }
 
         .variety-cards-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
         @media (min-width: 520px) { .variety-cards-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -4947,6 +5004,10 @@ self.addEventListener('fetch', e => {
     );
 });
 `;
+    // FIX v3: blob: URLs are not a valid SW scope origin. Only register
+    // when the page itself is served over http/https (not file:, blob:, etc.)
+    const pageProto = location.protocol;
+    if (pageProto !== 'http:' && pageProto !== 'https:') return;
     const blob = new Blob([swCode], { type: 'text/javascript' });
     const swUrl = URL.createObjectURL(blob);
     navigator.serviceWorker.register(swUrl, { scope: './' }).then(reg => {
@@ -6483,6 +6544,15 @@ self.addEventListener('fetch', e => {
         // ============================================================
         // YIELD EFFICIENCY TABLE — Dynamic v2 (Admin)
         // ============================================================
+        // FIX v3: escapeHtml is defined in the main script block below,
+        // but this inline block executes earlier. Hoist a local copy so
+        // yieldRenderTable() can call it without a ReferenceError.
+        if (typeof escapeHtml === 'undefined') {
+            window.escapeHtml = function(str) {
+                if (!str) return '';
+                return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+            };
+        }
         const YIELD_CROP_EMOJIS = {
             'Tomato':'🍅','Sweet Pepper':'🌶️','English Cucumber':'🥒','Lettuce':'🥬',
             'Basil':'🌿','Spinach':'🥬','Kale':'🥬','Mint':'🌿'
@@ -6661,13 +6731,13 @@ self.addEventListener('fetch', e => {
         yieldRenderTable(_yieldData);
         </script>
 
-        <!-- NUTRIENT DEFICIENCY VISUAL GUIDE — ADMIN ONLY (v3.0) -->
-        <div class="glass-card admin-only-section" id="nutrientDeficiencyGuideCard" style="display:none;">
+        <!-- NUTRIENT DEFICIENCY VISUAL GUIDE — visible to all users -->
+        <div class="glass-card" id="nutrientDeficiencyGuideCard" style="display:block;">
             <!-- Header -->
             <div class="stat-title" style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
                 <i class="fas fa-flask" style="color:var(--green-600);"></i>
                 Nutrient Deficiency Visual Guide
-                <span class="admin-badge" style="font-size:0.72rem;padding:2px 10px;margin-left:2px;">ADMIN ONLY</span>
+                <span class="admin-badge" style="font-size:0.72rem;padding:2px 10px;margin-left:2px;background:linear-gradient(90deg,#0e7490,#0891b2);">GUIDE</span>
                 <span id="ndgLoadingBadge" class="admin-badge" style="font-size:0.68rem;background:#0ea5e9;display:none;"><i class="fas fa-spinner fa-spin"></i> Loading…</span>
             </div>
             <p style="color:#666;font-size:0.82rem;margin:0.2rem 0 1rem 0;line-height:1.6;">
@@ -6719,7 +6789,7 @@ self.addEventListener('fetch', e => {
 
         <!-- INTERACTIVE GROWING TIPS (Admin only) -->
         <div id="growingTipsSection" class="growing-tips-section">
-            <div class="growing-tips-title"><i class="fas fa-seedling" style="color:var(--green-600);"></i> <span data-i18n="section.growing.tips">Interactive Growing Guide — Seedling to Harvest</span> <span class="admin-badge" style="font-size:0.72rem;" data-i18n="ui.admin.only">ADMIN ONLY</span></div>
+            <div class="growing-tips-title"><i class="fas fa-seedling" style="color:var(--green-600);"></i> <span data-i18n="section.growing.tips">Interactive Growing Guide — Seedling to Harvest</span> <span class="admin-badge" style="font-size:0.72rem;background:linear-gradient(90deg,#0e7490,#0891b2);">GUIDE</span></div>
 
             <!-- Crop selector -->
             <div class="tips-crop-tabs" id="tipsCropTabs">
@@ -6747,6 +6817,23 @@ self.addEventListener('fetch', e => {
     </div><!-- /mainApp -->
     <div class="footer" data-i18n="footer.copy">Copyright &copy; 2026 | MoHydroponic Smart Data Tracker | All Rights Reserved</div>
 </div><!-- /container -->
+
+<!-- SIGN-OUT CONFIRMATION MODAL -->
+<div id="signOutModal" style="display:none;position:fixed;inset:0;z-index:9000;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);">
+    <div style="background:white;border-radius:1.5rem;padding:2rem 2.2rem;max-width:360px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,0.35);text-align:center;animation:popIn 0.25s ease-out both;">
+        <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#fee2e2,#fecaca);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.6rem;">🚪</div>
+        <div style="font-size:1.1rem;font-weight:800;color:#1a1a1a;margin-bottom:0.4rem;">Sign out?</div>
+        <div style="font-size:0.84rem;color:#666;line-height:1.5;margin-bottom:1.4rem;">You'll be returned to the login screen. Any unsaved changes will be lost.</div>
+        <div style="display:flex;gap:0.75rem;justify-content:center;">
+            <button onclick="document.getElementById('signOutModal').style.display='none';"
+                style="flex:1;padding:10px 18px;border-radius:3rem;border:1.5px solid #e2e8f0;background:#f8fafc;color:#374151;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .18s;"
+                onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">Cancel</button>
+            <button onclick="doSignOut();"
+                style="flex:1;padding:10px 18px;border-radius:3rem;border:none;background:linear-gradient(100deg,#b91c1c,#ef4444);color:white;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Outfit',sans-serif;box-shadow:0 4px 12px rgba(185,28,28,0.3);transition:all .18s;"
+                onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+        </div>
+    </div>
+</div>
 
 <!-- EDIT MODAL — used by both growers (own records) AND admins (any grower) -->
 <div id="editModalOverlay" class="modal-overlay">
@@ -8479,10 +8566,10 @@ function escapeHtml(str) {
 function setAdminSectionsVisibility(show) {
     ['timelineSectionCard'].forEach(id=>{const el=document.getElementById(id);if(el)toggleEl(el, show);});
     const yr=document.getElementById('yieldEfficiencyRefCard');if(yr)toggleEl(yr, show);
-    const ts=document.getElementById('growingTipsSection');if(ts)toggleEl(ts, show);
-    // v3.0: Nutrient Deficiency Guide (admin only)
+    // growingTipsSection and nutrientDeficiencyGuideCard are now visible to ALL users
+    // v3.0: Nutrient Deficiency Guide — visible to ALL users (not admin-only)
     const ndg=document.getElementById('nutrientDeficiencyGuideCard');
-    if(ndg){ toggleEl(ndg, show); if(show && !window._ndgLoaded) ndgInit(); }
+    if(ndg && !window._ndgLoaded) ndgInit();
 }
 
 // ============================================================
@@ -8509,97 +8596,98 @@ const _NDG_LOCAL = (function(){
             'Older leaves, stems',
             'Uniform yellowing of older (lower) leaves first, progressing upward. Stunted growth, thin stems, reduced fruit set.',
             'Pale green to yellow lower leaves; purple tinge on stems/petioles in tomato. New growth stays small and pale.',
-            'Raise nitrate-N in nutrient solution. Increase EC by 0.3–0.5. Monitor drainage EC — rising drain EC with low N signals root-zone N lockout.',
+            'Raise nitrate-N in nutrient solution. Increase EC by 0.3–0.5 and verify NO₃⁻ is 150–200 ppm. Foliar urea spray (0.5%) for fast response.',
+            'Maintain EC within crop targets. Monitor drainage EC — rising drain EC with low N signals root-zone N lockout.',
             '#b91c1c'),
         mk('N2','Phosphorus Deficiency','Phosphorus (P)','high',ALL,
             'Older leaves, undersides, stems',
             'Purple/reddish discoloration on undersides of older leaves and stems. Dark green upper surface, dull appearance.',
             'Purple-red colour on leaf undersides, petioles and stems. In cucumber: leaves curl downward with mottled dark green patches.',
-            'Check pH — P availability crashes above 6.5 and below 5.5. Warm root zone (>18 °C) if cold-induced.',
+            'Raise H₂PO₄⁻ to 50–60 ppm. Check pH — P availability crashes above 6.5 and below 5.5. Warm root zone (>18 °C) if cold-induced.',
             'Keep pH 5.8–6.2. Avoid overwatering which cools root zone and blocks P uptake.',
             '#7c3aed'),
         mk('N3','Potassium Deficiency','Potassium (K)','high',ALL,
             'Leaf margins, older leaves, fruit',
             'Marginal leaf scorch (brown crispy edges) on older leaves. Weak stems, poor fruit sizing.',
             'Brown, necrotic margins on lower/mid-canopy leaves. Interveinal chlorosis in advanced stages. Fruit remains small.',
-            'Raise K⁺. Balance with Ca — K:Ca ratio should be ~2:1.',
+            'Raise K⁺ to 200–250 ppm. Balance with Ca — K:Ca ratio should be ~2:1. Reduce competing NH₄⁺ to <10 ppm.',
             'Monitor K through weekly solution analysis. High humidity and low transpiration reduce K uptake — ensure good air circulation.',
             '#d97706'),
         mk('N4','Calcium Deficiency','Calcium (Ca)','critical',ALL,
             'Youngest leaves, growing tips, fruit (blossom end)',
             'Tip burn on young leaves, blossom-end rot on fruit. Young growing points collapse or die back.',
             'Necrotic brown margins on newest leaves. In tomato/pepper: dark sunken patches on blossom end of fruit. Cucumber tip burn.',
-            'Raise Ca²⁺ to 150–200 ppm. Ensure good transpiration (ventilate). Foliar Calcium based products at early fruit set. Ca moves in transpiration stream only.',
+            'Raise Ca²⁺ to 150–200 ppm. Ensure good transpiration (ventilate). Foliar CaCl₂ (0.4%) at early fruit set. Ca moves in transpiration stream only.',
             'Maintain humidity 65–80%. Avoid high K or Mg competing with Ca. Do not allow wilting.',
             '#b91c1c'),
         mk('N5','Magnesium Deficiency','Magnesium (Mg)','high',ALL,
             'Older leaves (interveinal tissue)',
             'Interveinal chlorosis on older leaves — veins stay green while tissue between turns yellow.',
             'Classic "green veins, yellow blades" pattern on mid/lower canopy. Leaves may become brittle and curl upward at edges.',
-            'Apply MgSO₄ as foliar spray for fast correction. Raise Mg²⁺ in solution. ',
+            'Apply MgSO₄ as foliar spray (0.5–1%) for fast correction. Raise Mg²⁺ in solution to 50–60 ppm. Check K:Mg ratio (<5:1).',
             'Avoid excessive K⁺ which antagonises Mg uptake. Replenish Mg when using high-K nutrient formulations.',
             '#d97706'),
         mk('N6','Iron Deficiency','Iron (Fe)','high',ALL,
             'Youngest leaves, growing tips',
             'Interveinal chlorosis on youngest leaves first. New growth is pale yellow to white while veins remain distinctly green.',
             'Bright yellow new leaves with sharp green vein contrast. Growing tip may bleach white in severe cases.',
-            'Check pH — Fe precipitates above 6.5. Lower to 5.8–6.0. Apply chelated Fe-EDTA/DTPA foliar.',
-            'Maintain pH 5.8–6.2 rigorously. Use chelated iron (Fe-DTPA stable up to pH 7).',
+            'Check pH — Fe precipitates above 6.5. Lower to 5.8–6.0. Apply chelated Fe-EDTA/DTPA foliar (0.1%). Verify Fe in solution at 2–3 ppm.',
+            'Maintain pH 5.8–6.2 rigorously. Use chelated iron (Fe-DTPA stable up to pH 7). Avoid bicarbonate buildup in water.',
             '#d97706'),
         mk('N7','Manganese Deficiency','Manganese (Mn)','medium',ALL,
             'Young-mid canopy leaves',
             'Interveinal chlorosis on young leaves similar to Fe deficiency but less intense. Brown speckling may appear in advanced stage.',
             'Yellow-green patches between veins on newer leaves. Tiny brown necrotic spots in advanced stage. Less dramatic than Fe deficiency.',
-            'Foliar MnSO₄ spray. Lower pH if above 6.5.',
+            'Foliar MnSO₄ spray (0.1–0.2%). Raise solution Mn to 0.5–1 ppm. Lower pH if above 6.5.',
             'Keep pH below 6.3. Mn and Fe deficiencies often occur together — check both.',
             '#059669'),
         mk('N8','Zinc Deficiency','Zinc (Zn)','medium',ALL,
             'New leaves, shoot tips, internodes',
             'Small, distorted new leaves. Short internodes, rosette-like growth, mottled younger leaves.',
             'Stunted new growth with reduced leaf size. Mottled pale green/yellow pattern on young leaves. Zigzag or compressed internode growth.',
-            'Foliar ZnSO₄ or chelated Zn spray. Lower pH if elevated.',
+            'Foliar ZnSO₄ or chelated Zn spray (0.05%). Raise solution Zn to 0.1–0.3 ppm. Lower pH if elevated.',
             'Avoid excess phosphorus which antagonises Zn. Maintain balanced micronutrient programme.',
             '#059669'),
         mk('N9','Boron Deficiency','Boron (B)','critical',ALL,
             'Growing tips, flowers, young fruit',
             'Growing tips die, flowers abort, fruit deformed or cracked. Leaves thick, brittle, cupped downward.',
             'Distorted, thickened young leaves. Growing tips turn brown and die. Fruit cracks or develops corky patches on skin.',
-            'Foliar boron spray (0.1% — do not exceed). Boron toxicity is easy to induce.',
+            'Foliar borax spray (0.1% — do not exceed). Raise solution B to 0.3–0.5 ppm. Do not over-correct — B toxicity is easy to induce.',
             'Maintain consistent watering — drought concentrates B. Avoid over-liming which raises pH and locks out B.',
             '#b91c1c'),
         mk('N10','Copper Deficiency','Copper (Cu)','medium',ALL,
             'Young leaves, growing points',
             'Wilting of young leaves despite adequate moisture. Leaves dark bluish-green, limp. Poor fruit set.',
             'Young leaves droop and wilt even when well watered. Pale green to yellow new growth in advanced cases. Limp growing tips.',
-            'Foliar CuSO₄ spray. Very low amounts needed — excess is toxic.',
+            'Foliar CuSO₄ spray (0.05%). Raise solution Cu to 0.05–0.1 ppm. Very low amounts needed — excess is toxic.',
             'Avoid excess iron or zinc which antagonise Cu. Use chelated micronutrient mixes.',
             '#059669'),
         mk('N11','Blossom-End Rot','Calcium / Water stress','critical',['Tomato','Sweet Pepper'],
             'Fruit (blossom end)',
             'Dark, sunken, leathery patch at blossom end of fruit. Affects tomato and pepper. Not caused by Ca absence in solution — a transport issue.',
             'Black/dark brown collapsed tissue at fruit tip. Internal tissue brown and dry. First truss most affected. Worsens in high-EC, high-temp conditions.',
-            'Improve Ca transport: increase ventilation, avoid water stress, reduce high-humidity nights. Foliar Calcium based products at first fruit set.',
+            'Improve Ca transport: increase ventilation, avoid water stress, reduce high-humidity nights. Foliar CaCl₂ (0.4%) at first fruit set.',
             'Consistent irrigation — avoid EC spikes. Ca in solution means nothing if transpiration is too low to move it into fruit.',
             '#b91c1c'),
         mk('N12','Tip Burn','Calcium (inner leaf transport)','high',['English Cucumber'],
             'Inner/young leaves, margins',
             'Brown, papery margins on inner/young leaves. A local Ca deficiency — Ca cannot reach inner leaves via transpiration stream.',
-            'Crispy brown edges on newest leaves. Common in cucumber in humid, low-airflow conditions.',
-            'Increase airflow directly over crop canopy. Foliar Calcium based products. Reduce humidity. Widen plant spacing.',
+            'Crispy brown edges on newest leaves that never fully unfurl. Common in cucumber in humid, low-airflow conditions.',
+            'Increase airflow directly over crop canopy. Foliar CaCl₂. Reduce humidity. Widen plant spacing.',
             'Keep humidity <80%. Overhead fans. Avoid dense planting that prevents air movement to inner leaves.',
             '#d97706'),
         mk('N13','Sulfur Deficiency','Sulfur (S)','medium',ALL,
             'Young leaves, shoot tips',
             'Uniform yellowing of young leaves — similar to N deficiency but affects new growth first, not old leaves.',
             'Pale yellow new leaves with uniform colour loss. Older leaves remain greener. Stunted growth with light green overall appearance.',
-            'Add MgSO₄ or K₂SO₄ to raise SO₄²⁻.Usually corrects without foliar spray.',
-            'Sulfur deficiency is rare in balanced nutrient solutions. Appears when tap water is very low in sulfate.',
+            'Add MgSO₄ or K₂SO₄ to raise SO₄²⁻ to 50–80 ppm. Usually corrects without foliar spray.',
+            'Sulfur deficiency rare in balanced nutrient solutions. Appears when tap water is very low in sulfate.',
             '#059669'),
         mk('N14','Molybdenum Deficiency','Molybdenum (Mo)','medium',['Tomato','Sweet Pepper'],
             'Older/mid-canopy leaves',
             'Marginal scorch and rolling/cupping of older leaves. In tomato: "whiptail" — leaves become narrow and strappy.',
             'Interveinal scorch on mid-canopy leaves. Leaf blades curl upward and become strappy/strap-like in severe cases.',
-            'Raise solution pH — Mo becomes available above pH 6.0.',
+            'Raise solution pH — Mo becomes available above pH 6.0. Add sodium molybdate at 0.05 ppm if pH is already correct.',
             'Molybdenum deficiency is almost always pH-induced. Correct pH before adding Mo supplements.',
             '#059669'),
     ];
@@ -10427,9 +10515,9 @@ function renderTipsContent(crop,stage) {
         <div class="tcp-ec-pill ph-pill"><i class="fas fa-tint"></i> <strong>pH:</strong> ${phVal}</div>
         <div class="tcp-ec-pill" style="border-color:#86efac;color:#166534;"><i class="fas fa-seedling"></i> <strong>Duration:</strong> ${data.durations[data.stages.indexOf(stage)]||'—'}</div>
     </div>
-    <div class="tcp-tips-grid">${tipData.items.map(item=>{
+    <div class="tcp-tips-grid">${tipData.items.map((item,idx)=>{
         const icat=TIPS_ICON_MAP[item.icon]||'ic-plant';
-        return `<div class="tcp-tip-card"><div class="tcp-tip-icon ${icat}"><i class="fas ${item.icon}"></i></div><span>${item.text}</span></div>`;
+        return `<div class="tcp-tip-card ${icat}" style="animation-delay:${idx*0.045}s"><div class="tcp-tip-icon ${icat}"><i class="fas ${item.icon}"></i></div><span class="tcp-tip-text">${item.text}</span></div>`;
     }).join('')}</div>`;
 }
 
@@ -10441,6 +10529,25 @@ function initGrowingTips() {
 }
 // Keep legacy alias for any remaining onclick references
 function selectTipsStage(crop,stage,el){ selectTipsStageNew(crop,stage); }
+
+// ==================== SIGN OUT ====================
+function doSignOut() {
+    document.getElementById('signOutModal').style.display='none';
+    clearTimeout(_sessionTimer);
+    showReauthIndicator(false);
+    hideEl(document.getElementById('mainApp'));
+    showEl(document.getElementById('loginOverlay'), 'flex');
+    document.getElementById('loginUsername').value='';
+    document.getElementById('loginPassword').value='';
+    document.getElementById('loginError').textContent='';
+    _adminPrivacyBypassed = false;
+    const _privBox = document.getElementById('privacyNoticeBox');
+    if (_privBox) { _privBox.style.cssText='margin-top:1.1rem;padding:0.75rem 1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:0.75rem;font-size:0.72rem;color:#555;line-height:1.6;text-align:left;'; _privBox.innerHTML='<div style="font-weight:700;color:var(--green-800);margin-bottom:0.45rem;font-size:0.78rem;">🔒 Privacy Notice <span style=\"font-weight:400;color:#888;\">(Growers)</span></div><label style="display:flex;align-items:flex-start;gap:0.55rem;cursor:pointer;"><input type="checkbox" id="privacyConsent" style="margin-top:2px;min-width:15px;height:15px;accent-color:var(--green-700);cursor:pointer;" /><span>I agree – By ticking this box, you consent to the collection and use of your agricultural data only for statistical purposes (e.g., anonymised aggregation to analyse yield trends or resource use). All data is treated as strictly confidential, stored securely, and never shared with third parties.</span></label><div style="margin-top:0.55rem;text-align:right;"><button type="button" onclick="mohyAdminSkipPrivacy()" style="background:none;border:none;color:var(--green-600);font-size:0.68rem;cursor:pointer;text-decoration:underline;padding:0;font-family:\'Outfit\',sans-serif;opacity:0.75;"><i class="fas fa-shield-alt"></i> Administrator? Skip this</button></div>'; }
+    currentLoggedInUser=''; isAdmin=false; dashboardStats=null; activityLog=[]; allGrowersActivityLog=[]; pestAlertCards=[]; allGrowerUsernames=[]; currentUserRecords=null; notifList=[];
+    window._adminSearchRows=null; window._adminSearchHeaders=null; window._adminSearchUsername=null;
+    if(timelineChart){timelineChart.destroy();timelineChart=null;}
+    hideEl(document.getElementById('pestAlertBanner'));
+}
 
 // ==================== FETCH WITH TIMEOUT ====================
 // Fix v11: Promise.race() replaces AbortController — AbortSignal is not
@@ -10971,6 +11078,7 @@ async function login(username, password) {
             }
             initMohyBannerParticles();
             initGrowingTips();
+            if(!window._ndgLoaded) ndgInit(); // ensure NDG loads for all roles
             updatePestAlertBanner();
             logActivity('login',`<strong>${username}</strong> logged in${isAdmin?' as ADMIN':''}`);
             startHeartbeat(username, isAdmin ? 'admin' : 'grower');
@@ -11330,9 +11438,13 @@ function openEditModal(idx, recordTs, recordGhNum) {
     adminEditContext=null;
     // Fix 1: stamp stable identifiers onto the modal DOM so saveCropEdit reads
     // the correct record even if currentEditRecord is clobbered by a rapid second open.
+    // FIX v3: also read GH directly from the resolved row so the stored value is
+    // always consistent with what saveEditRecord will read from currentEditRecord.row.
+    const _ghColOpen = hdr.findIndex(h=>h.includes('gh number'));
+    const _rowGhOpen = _ghColOpen !== -1 ? String(row[_ghColOpen]||'').replace(/^GH/i,'').trim() : (recordGhNum||'').replace(/^GH/i,'').trim();
     const overlay=document.getElementById('editModalOverlay');
     overlay.setAttribute('data-target-ts', ts);
-    overlay.setAttribute('data-target-gh', recordGhNum||'');
+    overlay.setAttribute('data-target-gh', _rowGhOpen);
     _populateEditModal(row,headers,currentLoggedInUser,false);
     showEl(overlay, 'flex');
     document.body.style.overflow='hidden';
@@ -11349,7 +11461,8 @@ function openAdminEditModal(username, rowIndex, rows, headers) {
     const grower=growerCol!==-1?String(row[growerCol]||''):username;
     // FIX v31: set currentEditRecord BEFORE _populateEditModal
     const ghCol=hdr.findIndex(h=>h.includes('gh number'));
-    const ghNum=ghCol!==-1?String(row[ghCol]||''):'';
+    // FIX v3: normalise GH number (strip "GH" prefix, trim) so save-guard comparison is consistent
+    const ghNum=ghCol!==-1?String(row[ghCol]||'').replace(/^GH/i,'').trim():'';
     currentEditRecord={row,headers,idx:rowIndex,ts,grower,isAdminEdit:true};
     adminEditContext={username,rowIndex,rows,headers};
     // Fix 1 (admin): stamp stable identifiers onto modal DOM to prevent cross-greenhouse saves
@@ -12918,12 +13031,16 @@ async function saveEditRecord() {
         return;
     }
     // Fix 3: also guard on GH number to prevent cross-greenhouse data leakage
+    // FIX v3: normalise both sides (strip "GH" prefix, trim whitespace) so that
+    // "GH3" vs "3" or "GH 2A" vs "2A" no longer triggers a false mismatch.
     const domTargetGh = overlay ? overlay.getAttribute('data-target-gh') : null;
     if(domTargetGh !== null && domTargetGh !== '') {
+        const _normaliseGh = v => String(v||'').replace(/^GH/i,'').trim();
         const _hdrLowG = (currentEditRecord.headers||[]).map(h=>String(h).toLowerCase());
         const _ghColG  = _hdrLowG.findIndex(h=>h.includes('gh number'));
-        const _recGh   = _ghColG !== -1 ? String(currentEditRecord.row[_ghColG]||'') : '';
-        if(_recGh && _recGh !== domTargetGh) {
+        const _recGh   = _ghColG !== -1 ? _normaliseGh(currentEditRecord.row[_ghColG]) : '';
+        const _domGhN  = _normaliseGh(domTargetGh);
+        if(_recGh && _domGhN && _recGh !== _domGhN) {
             toast('⚠️ Greenhouse mismatch — please close and reopen the edit modal.', true);
             return;
         }
@@ -15076,20 +15193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         login(u,p);
     });
 
-    // Logout
+    // Logout — use custom modal to avoid spurious browser confirm() dialogs on page load
     document.getElementById('logoutBtn').addEventListener('click',()=>{
-        if(!confirm('Log out of MoHydroponic Smart Tracker?'))return;
-        clearTimeout(_sessionTimer);
-        showReauthIndicator(false);
-        hideEl(document.getElementById('mainApp'));showEl(document.getElementById('loginOverlay'), 'flex');
-        document.getElementById('loginUsername').value='';document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='';
-        _adminPrivacyBypassed = false; // reset bypass flag so next login requires fresh consent
-        const _privBox = document.getElementById('privacyNoticeBox');
-        if (_privBox) { _privBox.style.cssText='margin-top:1.1rem;padding:0.75rem 1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:0.75rem;font-size:0.72rem;color:#555;line-height:1.6;text-align:left;'; _privBox.innerHTML='<div style="font-weight:700;color:var(--green-800);margin-bottom:0.45rem;font-size:0.78rem;">\uD83D\uDD12 Privacy Notice <span style=\"font-weight:400;color:#888;\">(Growers)</span></div><label style="display:flex;align-items:flex-start;gap:0.55rem;cursor:pointer;"><input type="checkbox" id="privacyConsent" style="margin-top:2px;min-width:15px;height:15px;accent-color:var(--green-700);cursor:pointer;" /><span>I agree \u2013 By ticking this box, you consent to the collection and use of your agricultural data only for statistical purposes (e.g., anonymised aggregation to analyse yield trends or resource use). All data is treated as strictly confidential, stored securely, and never shared with third parties.</span></label><div style="margin-top:0.55rem;text-align:right;"><button type="button" onclick="mohyAdminSkipPrivacy()" style="background:none;border:none;color:var(--green-600);font-size:0.68rem;cursor:pointer;text-decoration:underline;padding:0;font-family:\'Outfit\',sans-serif;opacity:0.75;"><i class=\"fas fa-shield-alt\"></i> Administrator? Skip this</button></div>'; }
-        currentLoggedInUser='';isAdmin=false;dashboardStats=null;activityLog=[];allGrowersActivityLog=[];pestAlertCards=[];allGrowerUsernames=[];currentUserRecords=null;notifList=[];
-        window._adminSearchRows=null;window._adminSearchHeaders=null;window._adminSearchUsername=null;
-        if(timelineChart){timelineChart.destroy();timelineChart=null;}
-        hideEl(document.getElementById('pestAlertBanner'));
+        const m=document.getElementById('signOutModal');if(m)m.style.display='flex';
     });
 
     // Refresh Banner Button (with spin animation + feedback)
