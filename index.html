@@ -1244,6 +1244,19 @@
         .yr-risk.high { background: #fee2e2; color: #7f1d1d; }
         .yr-risk.critical { background: #4c0519; color: #fecdd3; }
 
+        /* ── PROFITABILITY CALCULATOR — Editable Cost Items (Insert/Edit) ── */
+        .pl-cost-items-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.7rem; }
+        .pl-cost-row { display: grid; grid-template-columns: 1.6fr 1.5fr 0.9fr auto; gap: 0.5rem; align-items: center; background: white; border: 1.5px solid var(--green-200); border-radius: var(--radius-pill); padding: 0.35rem 0.5rem 0.35rem 0.9rem; }
+        @media (max-width: 560px) { .pl-cost-row { grid-template-columns: 1fr 1fr; grid-template-areas: "name name" "type amount" "remove remove"; border-radius: 1rem; padding: 0.6rem 0.7rem; } .pl-cost-row .pl-cost-name{grid-area:name;} .pl-cost-row .pl-cost-type{grid-area:type;} .pl-cost-row .pl-cost-amount{grid-area:amount;} .pl-cost-row .pl-cost-remove{grid-area:remove;justify-self:end;} }
+        .pl-cost-name { border: none; outline: none; font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--green-900); background: transparent; padding: 0.3rem 0; min-width: 0; }
+        .pl-cost-type { border: 1.5px solid var(--green-100); border-radius: var(--radius-pill); font-family: 'Outfit', sans-serif; font-size: 0.74rem; padding: 0.35rem 0.5rem; background: #f8fffe; color: #555; outline: none; }
+        .pl-cost-amount { border: 1.5px solid var(--green-100); border-radius: var(--radius-pill); font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 700; padding: 0.35rem 0.6rem; width: 100%; outline: none; text-align: right; }
+        .pl-cost-remove { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 50%; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.18s; flex-shrink: 0; }
+        .pl-cost-remove:hover { background: #fecaca; }
+        .pl-add-cost-btn { background: linear-gradient(100deg, var(--green-600), var(--green-700)); color: white; border: none; border-radius: var(--radius-pill); padding: 8px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; margin-bottom: 0.8rem; }
+        .pl-add-cost-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .pl-assumptions-note { font-size: 0.74rem; color: #5b6b5e; background: #f8fffe; border: 1px dashed var(--green-200); border-radius: 0.8rem; padding: 0.6rem 0.8rem; margin-bottom: 0.8rem; line-height: 1.5; }
+
         /* ── REDESIGNED GROWING TIPS ── */
         .growing-tips-section { background: rgba(255,255,255,0.97); border-radius: var(--radius-xl); padding: 1.4rem; margin-top: 1.4rem; box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 20px 35px -12px rgba(0,0,0,0.16); border: 1px solid rgba(70,130,50,0.18); }
         .growing-tips-title { font-size: 1.1rem; font-weight: 800; color: var(--green-900); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
@@ -4772,6 +4785,12 @@ button:disabled {
     .pest-alert-card { background: #1c0808; border-color: #7f1d1d; }
     .photo-upload-area { background: #1c0808; border-color: #7f1d1d; }
 
+    /* ── Profitability Calculator cost items ── */
+    .pl-cost-row { background: #0e2212; border-color: #1e4a26; }
+    .pl-cost-name { color: #d1f5d4; }
+    .pl-cost-type, .pl-cost-amount { background: #0a1c0e; color: #d1f5d4; border-color: #1e4a26; }
+    .pl-assumptions-note { background: #0e2212; border-color: #2a6036; color: #9ecba4; }
+
     /* ── Greenhouse / Saved items ── */
     .greenhouse-section-inner { background: linear-gradient(135deg,#0a2414,#0d2a18); border-color: #1e4a26; }
     .saved-item { background: #0e2212; border-color: #1e4a26; }
@@ -5779,26 +5798,23 @@ self.addEventListener('fetch', e => {
                             <div id="yc_price_tomato" class="yc-price-row" style="display:none;">
                                 <div class="yc-price-label"><i class="fas fa-tag"></i> Market Price (Rs/kg)</div>
                                 <div class="yc-price-btns" id="yc_tomato_price_btns">
-                                    <button type="button" class="yc-price-btn" data-price="100" onclick="selectYCPrice(100,this,'tomato')">
+                                    <button type="button" class="yc-price-btn" data-price="0" onclick="selectYCPrice(0,this,'tomato')">
                                         <span class="yc-pb-type">🍅 Cooking / Roma</span>
-                                        <span class="yc-pb-price">Rs 100/kg</span>
                                     </button>
-                                    <button type="button" class="yc-price-btn" data-price="90" onclick="selectYCPrice(90,this,'tomato')">
+                                    <button type="button" class="yc-price-btn" data-price="0" onclick="selectYCPrice(0,this,'tomato')">
                                         <span class="yc-pb-type">🥗 Salad</span>
-                                        <span class="yc-pb-price">Rs 90/kg</span>
                                     </button>
-                                    <button type="button" class="yc-price-btn" data-price="90" onclick="selectYCPrice(90,this,'tomato')">
+                                    <button type="button" class="yc-price-btn" data-price="0" onclick="selectYCPrice(0,this,'tomato')">
                                         <span class="yc-pb-type">🍒 Cherry</span>
-                                        <span class="yc-pb-price">Rs 90/kg</span>
                                     </button>
                                 </div>
                                 <div class="yc-price-custom">
-                                    <label><i class="fas fa-pencil-alt"></i> Custom price:</label>
+                                    <label><i class="fas fa-pencil-alt"></i> Enter market price:</label>
                                     <span style="font-size:0.82rem;font-weight:700;color:#6d28d9;">Rs</span>
-                                    <input type="number" id="yc_custom_price_tomato" inputmode="numeric" min="0" step="1" placeholder="e.g. 110" oninput="onYCCustomPrice(this.value,'tomato')">
+                                    <input type="number" id="yc_custom_price_tomato" inputmode="numeric" min="0" step="1" placeholder="e.g. 100" oninput="onYCCustomPrice(this.value,'tomato')">
                                     <span style="font-size:0.82rem;font-weight:700;color:#6d28d9;">/kg</span>
                                 </div>
-                                <div class="yc-price-note" id="yc_price_note_tomato">Select a price above or enter a custom value.</div>
+                                <div class="yc-price-note" id="yc_price_note_tomato">Select a variety type above, then enter the current market price.</div>
                             </div>
                             <!-- Sweet Pepper price (driven by colour selection) -->
                             <div id="yc_price_pepper" class="yc-price-row" style="display:none;">
@@ -5807,29 +5823,28 @@ self.addEventListener('fetch', e => {
                                     <span id="yc_pepper_price_display" style="font-size:1rem;font-weight:800;color:#5b21b6;">— Select a colour first</span>
                                 </div>
                                 <div class="yc-price-custom">
-                                    <label><i class="fas fa-pencil-alt"></i> Custom price:</label>
+                                    <label><i class="fas fa-pencil-alt"></i> Enter market price:</label>
                                     <span style="font-size:0.82rem;font-weight:700;color:#6d28d9;">Rs</span>
                                     <input type="number" id="yc_custom_price_pepper" inputmode="numeric" min="0" step="1" placeholder="e.g. 200" oninput="onYCCustomPrice(this.value,'pepper')">
                                     <span style="font-size:0.82rem;font-weight:700;color:#6d28d9;">/kg</span>
                                 </div>
-                                <div class="yc-price-note" id="yc_price_note_pepper">Price is set by colour. Override with a custom value if needed.</div>
+                                <div class="yc-price-note" id="yc_price_note_pepper">Enter the current market price for this pepper colour.</div>
                             </div>
                             <!-- Cucumber price -->
                             <div id="yc_price_cucumber" class="yc-price-row" style="display:none;">
                                 <div class="yc-price-label"><i class="fas fa-tag"></i> Market Price (Rs/unit)</div>
                                 <div class="yc-price-btns">
-                                    <button type="button" class="yc-price-btn active" data-price="15" onclick="selectYCPrice(15,this,'cucumber')">
+                                    <button type="button" class="yc-price-btn active" data-price="0" onclick="selectYCPrice(0,this,'cucumber')">
                                         <span class="yc-pb-type">🥒 English Cucumber</span>
-                                        <span class="yc-pb-price">Rs 15/unit</span>
                                     </button>
                                 </div>
                                 <div class="yc-price-custom">
-                                    <label><i class="fas fa-pencil-alt"></i> Custom price:</label>
+                                    <label><i class="fas fa-pencil-alt"></i> Enter market price:</label>
                                     <span style="font-size:0.82rem;font-weight:700;color:#6d28d9;">Rs</span>
-                                    <input type="number" id="yc_custom_price_cucumber" inputmode="numeric" min="0" step="1" placeholder="e.g. 18" oninput="onYCCustomPrice(this.value,'cucumber')">
+                                    <input type="number" id="yc_custom_price_cucumber" inputmode="numeric" min="0" step="1" placeholder="e.g. 15" oninput="onYCCustomPrice(this.value,'cucumber')">
                                     <span style="font-size:0.82rem;font-weight:700;color:#6d28d9;">/unit</span>
                                 </div>
-                                <div class="yc-price-note" id="yc_price_note_cucumber">Default Rs 15/unit. Override if market price has changed.</div>
+                                <div class="yc-price-note" id="yc_price_note_cucumber">Enter the current market price per unit.</div>
                             </div>
                         </div>
 
@@ -5849,25 +5864,32 @@ self.addEventListener('fetch', e => {
 
                         <!-- ── PROFITABILITY P&L CALCULATOR ── -->
                         <div id="plCalcSection" style="display:none;margin-top:1.2rem;background:linear-gradient(135deg,#f0fdf4,#e6f7ec);border:1.5px solid var(--green-300);border-radius:var(--radius-lg);padding:1.2rem;">
-                            <div style="font-weight:800;font-size:1rem;color:var(--green-900);margin-bottom:0.9rem;display:flex;align-items:center;gap:8px;">
+                            <div style="font-weight:800;font-size:1rem;color:var(--green-900);margin-bottom:0.9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                                 <i class="fas fa-coins" style="color:var(--amber);"></i> Profitability Calculator <span style="font-size:0.72rem;font-weight:600;color:#888;margin-left:4px;">(batch P&L estimate)</span>
+                                <button type="button" id="plEditCostsBtn" onclick="togglePLCostEditor()" style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:var(--radius-pill);background:#fff3cd;color:#856404;border:1.5px solid #ffc107;font-size:0.76rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.18s;">
+                                    <i class="fas fa-edit"></i> Edit Costs
+                                </button>
                             </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:0.8rem;">
-                                <div class="form-group" style="margin:0;">
-                                    <label style="font-size:0.75rem;">🌱 Substrate cost (MUR/m²)</label>
-                                    <input type="number" id="pl_substrate" inputmode="decimal" placeholder="e.g. 120" min="0" step="1" value="120" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
+
+                            <!-- Cost summary chips (always visible) -->
+                            <div id="plCostSummaryChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.8rem;"></div>
+
+                            <!-- Collapsible cost editor panel -->
+                            <div id="plCostEditorPanel" style="display:none;background:white;border:1.5px solid var(--green-200);border-radius:1rem;padding:1rem;margin-bottom:0.8rem;">
+                                <div style="font-size:0.78rem;font-weight:800;color:var(--green-800);margin-bottom:0.6rem;display:flex;align-items:center;gap:6px;">
+                                    <i class="fas fa-list-ul" style="color:var(--green-600);"></i> Operating Costs per crop cycle
+                                    <span style="font-size:0.68rem;font-weight:600;color:#888;margin-left:4px;">— edit amounts, add or remove items</span>
                                 </div>
-                                <div class="form-group" style="margin:0;">
-                                    <label style="font-size:0.75rem;">💧 Water &amp; nutrients (MUR/m²/month)</label>
-                                    <input type="number" id="pl_water" inputmode="decimal" placeholder="e.g. 45" min="0" step="1" value="45" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
+                                <div id="plCostItemsList" class="pl-cost-items-list"></div>
+                                <button type="button" id="plAddCostBtn" class="pl-add-cost-btn" onclick="addPLCostItem()"><i class="fas fa-plus"></i> Add Cost Item</button>
+                                <div class="pl-assumptions-note" style="margin-top:0.6rem;">
+                                    <i class="fas fa-info-circle"></i> <strong>Assumptions (all editable):</strong> "One-time" costs are charged once per m² for the cycle; "Recurring" costs are charged per m² for every month of the cycle. Defaults are typical Zone E2 greenhouse estimates — adjust to match your own records.
+                                    <br><strong>Labour note:</strong> the MUR 60/m²/month default assumes roughly MUR 20,000/month for one skilled greenhouse worker. The national minimum wage in Mauritius (Jan 2026) is Rs 17,745/month — our default is slightly above minimum, reflecting skilled greenhouse work.
                                 </div>
-                                <div class="form-group" style="margin:0;">
-                                    <label style="font-size:0.75rem;">👷 Labour (MUR/m²/month)</label>
-                                    <input type="number" id="pl_labour" inputmode="decimal" placeholder="e.g. 60" min="0" step="1" value="60" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
-                                </div>
-                                <div class="form-group" style="margin:0;">
-                                    <label style="font-size:0.75rem;">🏗️ Electricity (MUR/m²/month)</label>
-                                    <input type="number" id="pl_electricity" inputmode="decimal" placeholder="e.g. 30" min="0" step="1" value="30" oninput="recalcPL()" style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--green-200);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;">
+                                <div style="text-align:right;margin-top:0.6rem;">
+                                    <button type="button" onclick="togglePLCostEditor()" style="padding:5px 14px;border-radius:var(--radius-pill);background:var(--green-600);color:white;border:none;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;">
+                                        <i class="fas fa-check"></i> Done
+                                    </button>
                                 </div>
                             </div>
                             <div id="plResultPanel" style="display:none;background:linear-gradient(135deg,#0d3d12,#136b1e);color:white;border-radius:1rem;padding:1.1rem 1.2rem;margin-top:0.5rem;">
@@ -7812,10 +7834,12 @@ const PRE_HARVEST_DAYS = { "Tomato":75, "Sweet Pepper":75, "English Cucumber":45
 
 const YIELD_FACTORS = [
     { id:'late_blight',    name:'Late Blight',           type:'Fungal Disease',   maxImpact:0.55, crops:['Tomato'] },
+    { id:'fulva_leaf_mould',name:'Fulva spp (Leaf mould)',type:'Fungal Disease',  maxImpact:0.45, crops:['Tomato'] },
     { id:'pseudo_corrugata',name:'Pseudomonas corrugata',type:'Bacterial Disease', maxImpact:0.45, crops:['Tomato','Sweet Pepper'] },
     { id:'bact_wilt',      name:'Bacterial Wilt',        type:'Bacterial Disease', maxImpact:0.60, crops:['Tomato','Sweet Pepper','English Cucumber'] },
     { id:'tuta_absoluta',  name:'Tuta absoluta',         type:'Pest (Moth)',       maxImpact:0.70, crops:['Tomato'] },
     { id:'blossom_end_rot',name:'Blossom End Rot',       type:'Physiological',    maxImpact:0.40, crops:['Tomato','Sweet Pepper'] },
+    { id:'sunscald',       name:'Sunscald (Sunburn)',    type:'Physiological',    maxImpact:0.35, crops:['Tomato','Sweet Pepper','English Cucumber'] },
     { id:'flower_drop',    name:'Flower/Fruit Drop',     type:'Physiological',    maxImpact:0.50, crops:['Tomato','Sweet Pepper','English Cucumber'] },
     { id:'thrips',         name:'Thrips',                type:'Pest (Insect)',    maxImpact:0.35, crops:['Tomato','Sweet Pepper','English Cucumber'] },
     { id:'mites',          name:'Spider Mites',          type:'Pest (Arachnid)',  maxImpact:0.40, crops:['Tomato','Sweet Pepper','English Cucumber'] },
@@ -7825,6 +7849,7 @@ const YIELD_FACTORS = [
     { id:'broad_mites',    name:'Broad Mites',           type:'Pest (Arachnid)',  maxImpact:0.50, crops:['Sweet Pepper'] },
     { id:'anthracnose',    name:'Anthracnose',            type:'Fungal Disease',   maxImpact:0.55, crops:['Sweet Pepper'] },
     // ── English Cucumber specific ──
+    { id:'fruit_crooking', name:'Fruit Crooking',        type:'Physiological',    maxImpact:0.35, crops:['English Cucumber'] },
     { id:'didymella',      name:'Didymella spp.',         type:'Fungal Disease',   maxImpact:0.50, crops:['English Cucumber'] },
     { id:'botrytis',       name:'Botrytis',               type:'Fungal Disease',   maxImpact:0.45, crops:['English Cucumber'] },
     { id:'root_rot',       name:'Root Rot',               type:'Fungal Disease',   maxImpact:0.60, crops:['English Cucumber'] },
@@ -9665,13 +9690,15 @@ function calculateEstimatedYield() {
 
     // 9. Revenue estimate
     const mktPriceYC = getMarketPrice(crop, variety, pepperColour);
-    const effectivePrice = (_ycActivePrice > 0) ? _ycActivePrice : mktPriceYC.price;
-    const effectiveLabel = (_ycActivePrice > 0)
-        ? `Rs ${_ycActivePrice}/${mktPriceYC.unit} (selected)`
-        : mktPriceYC.label.replace('MUR','Rs');
-    const revenueMin = Math.round(finalMin * effectivePrice);
-    const revenueMax = Math.round(finalMax * effectivePrice);
-    const revLabel = `<div style="font-size:0.82rem;color:#c4b5fd;margin-top:0.3rem;">💰 Est. revenue: <strong>Rs ${revenueMin.toLocaleString()} – ${revenueMax.toLocaleString()}</strong> <span style="font-size:0.72rem;opacity:0.8;">(${effectiveLabel})</span></div>`;
+    const effectivePrice = _ycActivePrice > 0 ? _ycActivePrice : 0;
+    const effectiveLabel = effectivePrice > 0
+        ? `Rs ${effectivePrice}/${mktPriceYC.unit}`
+        : null;
+    const revenueMin = effectivePrice > 0 ? Math.round(finalMin * effectivePrice) : 0;
+    const revenueMax = effectivePrice > 0 ? Math.round(finalMax * effectivePrice) : 0;
+    const revLabel = effectivePrice > 0
+        ? `<div style="font-size:0.82rem;color:#c4b5fd;margin-top:0.3rem;">💰 Est. revenue: <strong>Rs ${revenueMin.toLocaleString()} – ${revenueMax.toLocaleString()}</strong> <span style="font-size:0.72rem;opacity:0.8;">(${effectiveLabel})</span></div>`
+        : `<div style="font-size:0.8rem;color:#fcd34d;margin-top:0.3rem;">⚠️ Enter a market price above to see revenue estimate.</div>`;
 
     document.getElementById('yr_finalYield').innerHTML =
         `${finalMin.toFixed(0)} – ${finalMax.toFixed(0)} ${unit} ${modelBadge}${ciNote}${revLabel}`;
@@ -9693,7 +9720,7 @@ function calculateEstimatedYield() {
     window._plPrice = effectivePrice;
     window._plUnit = unit;
     showEl(document.getElementById('plCalcSection'));
-    recalcPL();
+    renderPLCostItems();
 }
 function resetYieldCalc() {
     document.getElementById('yc_crop').value='';document.getElementById('yc_variety').innerHTML='<option value="">-- Select Variety --</option>';
@@ -9707,6 +9734,7 @@ function resetYieldCalc() {
     showYCMarketPriceSection('');
     hideEl(document.getElementById('yieldResultBox'));
     hideEl(document.getElementById('plCalcSection'));
+    plCostItems = PL_DEFAULT_COST_ITEMS.map(i => ({ ...i }));
 }
 
 // ==================== YIELD CALC — LOCALITY INTEGRATION ====================
@@ -9860,50 +9888,57 @@ function selectPepperColor(color, btn) {
     // Highlight button
     document.querySelectorAll('.yc-pepper-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    // Set price from colour
-    const priceMap = { green: 150, red: 250, yellow: 250 };
-    const price = priceMap[color] || 150;
-    _ycActivePrice = price;
-    // Update pepper price display
-    const display = document.getElementById('yc_pepper_price_display');
+    // Show color label, prompt user for price
     const colorLabel = color.charAt(0).toUpperCase() + color.slice(1);
-    if (display) display.innerHTML = `<strong style="font-size:1.1rem;">Rs ${price}/kg</strong> <span style="font-size:0.8rem;color:#7c3aed;">(${colorLabel} pepper)</span>`;
+    const display = document.getElementById('yc_pepper_price_display');
+    if (display) display.innerHTML = `<span style="font-size:0.9rem;color:#7c3aed;">${colorLabel} pepper selected — enter market price below</span>`;
     const note = document.getElementById('yc_price_note_pepper');
-    if (note) note.textContent = `Using Rs ${price}/kg for ${colorLabel} pepper. Enter a custom price to override.`;
-    // Clear custom input so it doesn't override
+    if (note) note.textContent = `${colorLabel} pepper selected. Enter the current market price per kg.`;
+    // Clear any previous price; require user to enter
+    _ycActivePrice = 0;
     const ci = document.getElementById('yc_custom_price_pepper');
-    if (ci) ci.value = '';
+    if (ci) { ci.value = ''; ci.focus(); }
     // Trigger variety update for base yield info
     onYieldCalcVarietyChange();
 }
 
 function selectYCPrice(price, btn, cropKey) {
-    _ycActivePrice = price;
-    // Deactivate siblings in same container
+    // Buttons now only select variety type — price must be entered manually
     if (btn && btn.parentElement) {
         btn.parentElement.querySelectorAll('.yc-price-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
-    // Clear custom input
+    // Don't set _ycActivePrice from button; prompt user to enter price
     const ci = document.getElementById(`yc_custom_price_${cropKey}`);
-    if (ci) ci.value = '';
-    // Update note
+    const currentCustom = ci ? parseFloat(ci.value) : 0;
+    if (currentCustom > 0) {
+        _ycActivePrice = currentCustom;
+    } else {
+        _ycActivePrice = 0;
+    }
     const note = document.getElementById(`yc_price_note_${cropKey}`);
-    if (note) note.textContent = `Active price: Rs ${price}/${cropKey === 'cucumber' ? 'unit' : 'kg'}`;
+    if (note) {
+        if (_ycActivePrice > 0) {
+            note.textContent = `Price: Rs ${_ycActivePrice}/${cropKey === 'cucumber' ? 'unit' : 'kg'}`;
+        } else {
+            note.textContent = `Variety selected. Enter the current market price ${cropKey === 'cucumber' ? 'per unit' : 'per kg'} below.`;
+        }
+    }
+    if (ci && !currentCustom) setTimeout(() => ci.focus(), 50);
 }
 
 function onYCCustomPrice(val, cropKey) {
     const parsed = parseFloat(val);
     if (parsed > 0) {
         _ycActivePrice = parsed;
-        // Deactivate any selected btn
+        // Keep active btn highlight (variety selection) but note price is from custom entry
         document.querySelectorAll(`#yc_price_${cropKey === 'pepper' ? 'pepper' : cropKey === 'cucumber' ? 'cucumber' : 'tomato'} .yc-price-btn`).forEach(b => b.classList.remove('active'));
         const note = document.getElementById(`yc_price_note_${cropKey}`);
-        if (note) note.textContent = `Custom price active: Rs ${parsed}/${cropKey === 'cucumber' ? 'unit' : 'kg'}`;
+        if (note) note.textContent = `Price set: Rs ${parsed}/${cropKey === 'cucumber' ? 'unit' : 'kg'}`;
     } else {
-        // Revert to last selected button price
-        const activeBtn = document.querySelector(`#yc_price_${cropKey === 'pepper' ? 'pepper' : cropKey === 'cucumber' ? 'cucumber' : 'tomato'} .yc-price-btn.active`);
-        _ycActivePrice = activeBtn ? parseFloat(activeBtn.dataset.price) : 0;
+        _ycActivePrice = 0;
+        const note = document.getElementById(`yc_price_note_${cropKey}`);
+        if (note) note.textContent = `Enter the current market price ${cropKey === 'cucumber' ? 'per unit' : 'per kg'}.`;
     }
 }
 
@@ -9916,26 +9951,32 @@ function showYCMarketPriceSection(crop) {
     // Hide all panels, show correct one
     Object.values(panels).forEach(id => { const el = document.getElementById(id); if (el) hideEl(el); });
     let key = '';
-    if (crop === 'Tomato')            key = 'tomato';
-    else if (crop === 'Sweet Pepper') key = 'pepper';
-    else if (crop === 'English Cucumber') { key = 'cucumber'; _ycActivePrice = 15; }
+    if (crop === 'Tomato')                key = 'tomato';
+    else if (crop === 'Sweet Pepper')     key = 'pepper';
+    else if (crop === 'English Cucumber') key = 'cucumber';
     if (key && panels[key]) {
         const panel = document.getElementById(panels[key]);
         if (panel) showEl(panel);
     }
-    // Auto-select first tomato button
+    // Clear all price buttons and custom inputs on crop change
     if (key === 'tomato') {
-        const first = document.querySelector('#yc_tomato_price_btns .yc-price-btn');
-        if (first) { selectYCPrice(parseFloat(first.dataset.price), first, 'tomato'); }
+        document.querySelectorAll('#yc_tomato_price_btns .yc-price-btn').forEach(b => b.classList.remove('active'));
+        const ci = document.getElementById('yc_custom_price_tomato'); if (ci) ci.value = '';
+        const note = document.getElementById('yc_price_note_tomato');
+        if (note) note.textContent = 'Select a variety type above, then enter the current market price.';
     }
-    // Reset cucumber custom
-    if (key === 'cucumber') { const ci = document.getElementById('yc_custom_price_cucumber'); if (ci) ci.value = ''; }
+    if (key === 'cucumber') {
+        document.querySelectorAll('#yc_price_cucumber .yc-price-btn').forEach(b => b.classList.remove('active'));
+        const ci = document.getElementById('yc_custom_price_cucumber'); if (ci) ci.value = '';
+        const note = document.getElementById('yc_price_note_cucumber');
+        if (note) note.textContent = 'Enter the current market price per unit.';
+    }
     // Reset pepper display
     if (key === 'pepper') {
         const display = document.getElementById('yc_pepper_price_display');
         if (display) display.innerHTML = '— Select a colour first';
         const note = document.getElementById('yc_price_note_pepper');
-        if (note) note.textContent = 'Price is set by colour. Override with a custom value if needed.';
+        if (note) note.textContent = 'Select a pepper colour above, then enter the current market price per kg.';
         const ci = document.getElementById('yc_custom_price_pepper'); if (ci) ci.value = '';
         document.querySelectorAll('.yc-pepper-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('yc_pepper_color').value = '';
@@ -10089,7 +10130,7 @@ function buildDSFactorPanel(crop) {
                    oninput="updateDSFactorDisplay('${f.id}')" disabled>
             <div class="ds-factor-impact" id="dsimp_${f.id}">Severity: <strong>30%</strong> — max loss: <strong>${Math.round(f.maxImpact * 30)}%</strong></div>
         </div>`).join('');
-    pantoggleEl(el, relevant.length);
+    toggleEl(panel, relevant.length > 0);
 }
 
 function updateDSFactorSlider(id) {
@@ -13896,10 +13937,12 @@ function loadYLFState(idx) { _ylfLoadState(idx); }
 // Curated Wikimedia/CC public domain image URLs for each factor
 const YLF_PHOTOS = {
     'late_blight':     { label:'Late Blight', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Late_blight_on_tomato.jpg/320px-Late_blight_on_tomato.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Late_blight_leaf_tomato.jpg/320px-Late_blight_leaf_tomato.jpg'], desc:'Dark water-soaked lesions on leaves/stems; white mold on underside in humid conditions.' },
+    'fulva_leaf_mould':{ label:'Fulva spp (Leaf mould)', imgs:[], desc:'Pale yellow blotches on upper leaf surface with olive-green to brownish velvety mould underneath; spreads fast in humid, poorly ventilated greenhouses; causes early leaf drop and reduced fruiting.' },
     'pseudo_corrugata':{ label:'Pseudomonas corrugata', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Bacterial_canker_tomato.jpg/320px-Bacterial_canker_tomato.jpg'], desc:'Pith browning, internal stem necrosis; wilting despite healthy roots.' },
     'bact_wilt':       { label:'Bacterial Wilt', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Bacterial_wilt_tomato.jpg/320px-Bacterial_wilt_tomato.jpg'], desc:'Sudden wilt without yellowing; milky threads in cut stem dipped in water.' },
     'tuta_absoluta':   { label:'Tuta absoluta', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Tuta_absoluta_leaf_mines.jpg/320px-Tuta_absoluta_leaf_mines.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Tuta_absoluta_fruit.jpg/320px-Tuta_absoluta_fruit.jpg'], desc:'Silvery leaf mines; frass-filled galleries in fruit; larvae inside green tomatoes.' },
     'blossom_end_rot': { label:'Blossom End Rot', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Blossom_end_rot_tomato.jpg/320px-Blossom_end_rot_tomato.jpg'], desc:'Dark leathery sunken patch at blossom end of fruit; calcium/water stress.' },
+    'sunscald':        { label:'Sunscald (Sunburn)', imgs:[], desc:'Bleached white/yellow patches on the sun-facing shoulder of the fruit, often becoming papery or sunken; follows sudden exposure after pruning or leaf loss in strong sunlight.' },
     'flower_drop':     { label:'Flower/Fruit Drop', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Cucumber_flower_abortion.jpg/320px-Cucumber_flower_abortion.jpg'], desc:'Flowers or tiny fruits detach; usually heat >32°C, cold <15°C, or water stress.' },
     'thrips':          { label:'Thrips', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Thrips_damage_leaf.jpg/320px-Thrips_damage_leaf.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Thrips_adult.jpg/320px-Thrips_adult.jpg'], desc:'Silver-bronze streaks on leaves; distorted growing points; tiny slender insects.' },
     'mites':           { label:'Spider Mites', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Spider_mite_damage.jpg/320px-Spider_mite_damage.jpg','https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Spider_mites_webbing.jpg/320px-Spider_mites_webbing.jpg'], desc:'Stippled/bronzed leaves; fine webbing on underside; mites visible with hand lens.' },
@@ -13907,6 +13950,7 @@ const YLF_PHOTOS = {
     'deformed_fruits': { label:'Deformed Fruits', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Deformed_pepper.jpg/320px-Deformed_pepper.jpg'], desc:'Catface, uneven growth, poor wall development; heat/cold stress or pollination failure.' },
     'broad_mites':     { label:'Broad Mites', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Broad_mite_damage.jpg/320px-Broad_mite_damage.jpg'], desc:'Distorted shoot tips, downward leaf curl, bronzing of young tissue; invisible to naked eye.' },
     'anthracnose':     { label:'Anthracnose', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Anthracnose_pepper.jpg/320px-Anthracnose_pepper.jpg'], desc:'Sunken tan/brown circular lesions on ripe fruit; orange spore masses in humid weather.' },
+    'fruit_crooking':  { label:'Fruit Crooking', imgs:[], desc:'Curved, hooked or C-shaped fruit; usually from poor pollination, fruit-to-fruit crowding, uneven irrigation/EC, or low potassium.' },
     'didymella':       { label:'Didymella spp.', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Gummy_stem_blight_cucumber.jpg/320px-Gummy_stem_blight_cucumber.jpg'], desc:'Brown stem lesions near nodes; gummy exudate; leaf spots with dark margins.' },
     'botrytis':        { label:'Botrytis (Grey Mould)', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Botrytis_cinerea_on_strawberry.jpg/320px-Botrytis_cinerea_on_strawberry.jpg'], desc:'Grey fuzzy mold on flowers/stems/fruit in humid conditions; tan lesions.' },
     'root_rot':        { label:'Root Rot', imgs:['https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Root_rot_cucumber.jpg/320px-Root_rot_cucumber.jpg'], desc:'Brown/black roots; wilting despite moist substrate; orange-brown discoloration.' },
@@ -15869,6 +15913,97 @@ async function hnSaveModalItem() {
 }
 
 // ==================== PROFITABILITY P&L CALCULATOR ====================
+// Editable list of operating-cost line items (Insert/Edit feature).
+//   type: 'onetime'   → MUR/m², charged once for the whole cycle
+//         'recurring' → MUR/m²/month, charged for every month of the cycle
+const PL_DEFAULT_COST_ITEMS = [
+    { id:'seeds',       name:'🌰 Seeds / Seedlings', type:'onetime',   amount:15  },
+    { id:'substrate',   name:'🌱 Substrate',          type:'onetime',   amount:120 },
+    { id:'water',       name:'💧 Water & Nutrients',  type:'recurring', amount:45  },
+    { id:'fertiliser',  name:'🧪 Fertilisers',        type:'recurring', amount:20  },
+    { id:'labour',      name:'👷 Labour',             type:'recurring', amount:60  },
+    { id:'electricity', name:'🏗️ Electricity',       type:'recurring', amount:30  },
+    { id:'pesticide',   name:'🐞 Pesticides',         type:'recurring', amount:10  },
+    { id:'transport',   name:'🚚 Transport',          type:'recurring', amount:8   },
+];
+let plCostItems = PL_DEFAULT_COST_ITEMS.map(i => ({ ...i }));
+
+// Toggle the cost editor panel open/closed
+function togglePLCostEditor() {
+    const panel = document.getElementById('plCostEditorPanel');
+    const btn   = document.getElementById('plEditCostsBtn');
+    if (!panel) return;
+    const isOpen = panel.style.display !== 'none';
+    panel.style.display = isOpen ? 'none' : 'block';
+    if (btn) {
+        btn.innerHTML = isOpen
+            ? '<i class="fas fa-edit"></i> Edit Costs'
+            : '<i class="fas fa-times"></i> Close';
+        btn.style.background = isOpen ? '#fff3cd' : '#fde8e4';
+        btn.style.color      = isOpen ? '#856404' : '#b91c1c';
+        btn.style.borderColor = isOpen ? '#ffc107' : '#fca5a5';
+    }
+    if (!isOpen) renderPLCostItems();
+}
+
+// Render cost summary chips (compact view, always visible when P&L is shown)
+function renderPLCostChips() {
+    const chips = document.getElementById('plCostSummaryChips');
+    if (!chips) return;
+    const months = window._plMonths || 6;
+    chips.innerHTML = plCostItems.map(item => {
+        const cost = item.type === 'onetime' ? item.amount : item.amount * months;
+        return `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--radius-pill);background:white;border:1.5px solid var(--green-200);font-size:0.72rem;font-weight:700;color:var(--green-800);">
+            ${escapeHtml(item.name || '—')} <span style="color:#b45309;font-size:0.68rem;">${item.type==='onetime'?'one-off':'×'+months+'mo'}</span> <span style="color:var(--green-700);">MUR ${item.amount}/m²</span>
+        </span>`;
+    }).join('');
+}
+
+// Render the editable cost-items list (each row: name, type, amount, remove)
+function renderPLCostItems() {
+    const list = document.getElementById('plCostItemsList');
+    if (!list) return;
+    list.innerHTML = plCostItems.map(item => `
+        <div class="pl-cost-row" data-pl-id="${item.id}">
+            <input type="text" class="pl-cost-name" value="${escapeHtml(item.name)}" placeholder="Cost item name" oninput="updatePLCostItem('${item.id}','name',this.value)">
+            <select class="pl-cost-type" onchange="updatePLCostItem('${item.id}','type',this.value)">
+                <option value="onetime" ${item.type==='onetime'?'selected':''}>One-time (MUR/m²)</option>
+                <option value="recurring" ${item.type==='recurring'?'selected':''}>Recurring (MUR/m²/month)</option>
+            </select>
+            <input type="number" class="pl-cost-amount" inputmode="decimal" min="0" step="1" value="${item.amount}" oninput="updatePLCostItem('${item.id}','amount',this.value)">
+            <button type="button" class="pl-cost-remove" onclick="removePLCostItem('${item.id}')" title="Remove cost item"><i class="fas fa-trash-alt"></i></button>
+        </div>`).join('');
+    renderPLCostChips();
+    recalcPL();
+}
+
+// Insert a new blank cost item row
+function addPLCostItem() {
+    const id = 'custom_' + Date.now();
+    plCostItems.push({ id, name:'', type:'recurring', amount:0 });
+    renderPLCostItems();
+    setTimeout(() => {
+        const row = document.querySelector(`.pl-cost-row[data-pl-id="${id}"] .pl-cost-name`);
+        if (row) row.focus();
+    }, 30);
+}
+
+// Remove a cost item row
+function removePLCostItem(id) {
+    plCostItems = plCostItems.filter(i => i.id !== id);
+    renderPLCostItems();
+    renderPLCostChips();
+}
+
+// Edit a field (name / type / amount) of an existing cost item
+function updatePLCostItem(id, field, value) {
+    const item = plCostItems.find(i => i.id === id);
+    if (!item) return;
+    item[field] = (field === 'amount') ? (parseFloat(value) || 0) : value;
+    renderPLCostChips();
+    recalcPL();
+}
+
 function recalcPL() {
     const panel = document.getElementById('plResultPanel');
     if (!panel) return;
@@ -15878,15 +16013,16 @@ function recalcPL() {
     const price    = window._plPrice || 0;
     if (!yieldMid || !area || !price) { hideEl(panel); return; }
 
-    const substrate = parseFloat(document.getElementById('pl_substrate')?.value) || 0;
-    const water     = parseFloat(document.getElementById('pl_water')?.value)     || 0;
-    const labour    = parseFloat(document.getElementById('pl_labour')?.value)    || 0;
-    const overhead  = parseFloat(document.getElementById('pl_overhead')?.value)  || 0;
+    // Sum all cost items: one-time costs are charged once per m²,
+    // recurring costs are charged per m² for every month of the cycle.
+    let totalCost = 0;
+    plCostItems.forEach(item => {
+        const amt = item.amount || 0;
+        totalCost += (item.type === 'onetime') ? (amt * area) : (amt * area * months);
+    });
+    totalCost = Math.round(totalCost);
 
     const revenue   = Math.round(yieldMid * price);
-    const costRec   = Math.round(substrate * area);
-    const costRecur = Math.round((water + labour + overhead) * area * months);
-    const totalCost = costRec + costRecur;
     const netProfit = revenue - totalCost;
     const margin    = revenue > 0 ? Math.round((netProfit / revenue) * 100) : 0;
     const roi       = totalCost > 0 ? Math.round((netProfit / totalCost) * 100) : 0;
